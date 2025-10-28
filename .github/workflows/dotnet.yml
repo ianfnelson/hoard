@@ -55,7 +55,7 @@ jobs:
         if: success()
         uses: docker/build-push-action@v6
         with:
-          context: src
+          context: src/server
           file: src/server/Hoard.Api/Dockerfile
           push: true
           tags: |
@@ -69,7 +69,7 @@ jobs:
         if: success()
         uses: docker/build-push-action@v6
         with:
-          context: src
+          context: src/server
           file: src/server/Hoard.Bus/Dockerfile
           push: true
           tags: |
@@ -83,7 +83,7 @@ jobs:
         if: success()
         uses: docker/build-push-action@v6
         with:
-          context: src
+          context: src/server
           file: src/server/Hoard.Scheduler/Dockerfile
           push: true
           tags: |
