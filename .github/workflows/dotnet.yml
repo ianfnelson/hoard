@@ -37,7 +37,7 @@ jobs:
         run: dotnet build Hoard.sln -c ${{ env.BUILD_CONFIGURATION }} --no-restore
 
       - name: Test
-        run: dotnet test Hoard.sln --no-build --verbosity normal
+        run: dotnet test Hoard.sln -c ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
 
       - name: Log in to GitHub Container Registry
         if: success()
