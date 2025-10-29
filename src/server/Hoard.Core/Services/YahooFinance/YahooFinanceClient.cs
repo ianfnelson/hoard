@@ -5,6 +5,8 @@ namespace Hoard.Core.Services.YahooFinance;
 public class YahooFinanceClient
     : IHistoricalPriceService, IQuoteService
 {
+    private const string Source = "Yahoo! Finance";
+    
     private static readonly Field[] Fields = [
         Field.Symbol, Field.LongName, Field.Bid, Field.Ask, Field.FiftyTwoWeekHigh, Field.FiftyTwoWeekLow, 
         Field.RegularMarketPrice, Field.RegularMarketChange, Field.RegularMarketChangePercent
@@ -48,7 +50,8 @@ public class YahooFinanceClient
             FiftyTwoWeekLow = GetRoundedDecimal(security.FiftyTwoWeekLow),
             RegularMarketPrice = GetRoundedDecimal(security.RegularMarketPrice),
             RegularMarketChange = GetRoundedDecimal(security.RegularMarketChange),
-            RegularMarketChangePercent = GetRoundedDecimal(security.RegularMarketChangePercent)
+            RegularMarketChangePercent = GetRoundedDecimal(security.RegularMarketChangePercent),
+            Source = Source
         };
     }
 
@@ -62,7 +65,8 @@ public class YahooFinanceClient
             Low = GetRoundedDecimal(candle.Low),
             Close = GetRoundedDecimal(candle.Close),
             Volume = candle.Volume,
-            AdjustedClose = GetRoundedDecimal(candle.AdjustedClose)
+            AdjustedClose = GetRoundedDecimal(candle.AdjustedClose),
+            Source = Source
         };
     }
 

@@ -1,7 +1,7 @@
 using Hoard.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hoard.Data;
+namespace Hoard.Core.Data;
 
 public class HoardContext : DbContext
 {
@@ -22,10 +22,21 @@ public class HoardContext : DbContext
     public DbSet<TransactionLeg> TransactionLegs => Set<TransactionLeg>();
     public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
     public DbSet<TransactionLegType> TransactionLegTypes => Set<TransactionLegType>();
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        {
+            var idProp = entity.FindProperty("Id");
+            if (idProp != null)
+            {
+                var newColumnName = entity.ClrType.Name + "Id";
+                idProp.SetColumnName(newColumnName);
+            }
+        }
+        
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HoardContext).Assembly);
     }
 }

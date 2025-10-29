@@ -11,4 +11,5 @@ public class Quote
     public decimal RegularMarketPrice { get; set; }
     public decimal RegularMarketChange { get; set; }
     public decimal RegularMarketChangePercent { get; set; }
+    public required string Source { get; set; }
 }
