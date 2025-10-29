@@ -17,6 +17,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+      <PackageReference Include="YahooFinanceApiNext" Version="2.3.10" />
     </ItemGroup>
 
 </Project>
