@@ -37,6 +37,7 @@ public class YahooFinanceClientFixture
         // Assert
         var fwrg = quotes.Single();
         Assert.Contains("Invesco FTSE All-World", fwrg.Name);
+        Assert.Equal("Yahoo! Finance", fwrg.Source);
     }
 
     [Fact]
@@ -50,6 +51,7 @@ public class YahooFinanceClientFixture
         
         // Assert
         Assert.Equal(6, prices.Count);
+        Assert.Equal("Yahoo! Finance", prices[0].Source);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,1) && x.Open == 598.0M);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,2) && x.High == 607.53M);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,3) && x.Low == 600.5M);
