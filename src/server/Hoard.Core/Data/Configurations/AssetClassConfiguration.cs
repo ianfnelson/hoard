@@ -9,7 +9,14 @@ public class AssetClassConfiguration : IEntityTypeConfiguration<AssetClass>
     public void Configure(EntityTypeBuilder<AssetClass> builder)
     {
         builder.ToTable("AssetClass");
+        
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id)
+            .ValueGeneratedNever();
+        
+        builder.Property(a => a.Code).IsRequired().HasMaxLength(10);
         builder.Property(a => a.Name).IsRequired().HasMaxLength(50);
-        builder.Property(a => a.ShortName).IsRequired().HasMaxLength(10);
+        
+        builder.HasIndex(a => a.Code).IsUnique();
     }
 }
