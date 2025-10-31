@@ -20,8 +20,8 @@ public class HoardContext : DbContext
     public DbSet<Price> Prices => Set<Price>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<TransactionLeg> TransactionLegs => Set<TransactionLeg>();
-    public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
-    public DbSet<TransactionLegType> TransactionLegTypes => Set<TransactionLegType>();
+    public DbSet<TransactionCategory> TransactionTypes => Set<TransactionCategory>();
+    public DbSet<TransactionLegCategory> TransactionLegTypes => Set<TransactionLegCategory>();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

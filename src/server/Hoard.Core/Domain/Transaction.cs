@@ -6,7 +6,7 @@ public class Transaction : Entity<int>
     public Account Account { get; set; } = null!;
     
     public int TransactionTypeId { get; set; }
-    public TransactionType TransactionType { get; set; } = null!;
+    public TransactionCategory TransactionCategory { get; set; } = null!;
     
     public DateOnly Date { get; set; }
     public string? Notes { get; set; }

@@ -17,7 +17,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .HasForeignKey(t => t.AccountId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(t => t.TransactionType)
+        builder.HasOne(t => t.TransactionCategory)
             .WithMany()
             .HasForeignKey(t => t.TransactionTypeId)
             .OnDelete(DeleteBehavior.Restrict);
