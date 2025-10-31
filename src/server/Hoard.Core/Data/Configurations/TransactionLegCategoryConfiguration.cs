@@ -9,7 +9,11 @@ public class TransactionLegCategoryConfiguration : IEntityTypeConfiguration<Tran
     public void Configure(EntityTypeBuilder<TransactionLegCategory> builder)
     {
         builder.ToTable("TransactionLegCategory");
-        builder.Property(t => t.Code).IsRequired().HasMaxLength(20);
+        
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id)
+            .ValueGeneratedNever();
+        
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
     }
 }

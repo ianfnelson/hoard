@@ -9,7 +9,11 @@ public class TransactionCategoryConfiguration : IEntityTypeConfiguration<Transac
     public void Configure(EntityTypeBuilder<TransactionCategory> builder)
     {
         builder.ToTable("TransactionCategory");
-        builder.Property(t => t.Code).IsRequired().HasMaxLength(20);
+        
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id)
+            .ValueGeneratedNever();
+        
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
     }
 }

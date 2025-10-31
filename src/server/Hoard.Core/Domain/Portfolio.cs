@@ -6,6 +6,6 @@ public class Portfolio : Entity<int>
     
     public ICollection<Account> Accounts { get; set; } = new List<Account>();
     public ICollection<PortfolioAssetTarget> AssetTargets { get; set; } = new List<PortfolioAssetTarget>();
-    
-    public bool IsActive { get; set; }
+
+    public bool IsActive { get; set; } = true;
 }

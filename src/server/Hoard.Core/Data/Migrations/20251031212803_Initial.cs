@@ -15,8 +15,7 @@ namespace Hoard.Core.Data.Migrations
                 name: "AccountType",
                 columns: table => new
                 {
-                    AccountTypeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountTypeId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -28,10 +27,9 @@ namespace Hoard.Core.Data.Migrations
                 name: "AssetClass",
                 columns: table => new
                 {
-                    AssetClassId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AssetClassId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ShortName = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,8 +52,7 @@ namespace Hoard.Core.Data.Migrations
                 name: "InstrumentType",
                 columns: table => new
                 {
-                    InstrumentTypeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InstrumentTypeId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsCash = table.Column<bool>(type: "bit", nullable: false),
@@ -85,9 +82,7 @@ namespace Hoard.Core.Data.Migrations
                 name: "TransactionCategory",
                 columns: table => new
                 {
-                    TransactionCategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TransactionCategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -99,9 +94,7 @@ namespace Hoard.Core.Data.Migrations
                 name: "TransactionLegCategory",
                 columns: table => new
                 {
-                    TransactionLegCategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TransactionLegCategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -134,11 +127,10 @@ namespace Hoard.Core.Data.Migrations
                 name: "AssetSubclass",
                 columns: table => new
                 {
-                    AssetSubclassId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AssetSubclassId = table.Column<int>(type: "int", nullable: false),
                     AssetClassId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ShortName = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -149,6 +141,25 @@ namespace Hoard.Core.Data.Migrations
                         principalTable: "AssetClass",
                         principalColumn: "AssetClassId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TransactionLegSubcategory",
+                columns: table => new
+                {
+                    TransactionLegSubcategoryId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionLegSubcategory", x => x.TransactionLegSubcategoryId);
+                    table.ForeignKey(
+                        name: "FK_TransactionLegSubcategory_TransactionLegCategory_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "TransactionLegCategory",
+                        principalColumn: "TransactionLegCategoryId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -182,7 +193,7 @@ namespace Hoard.Core.Data.Migrations
                     TransactionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<int>(type: "int", nullable: false),
-                    TransactionTypeId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -196,8 +207,8 @@ namespace Hoard.Core.Data.Migrations
                         principalColumn: "AccountId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Transaction_TransactionCategory_TransactionTypeId",
-                        column: x => x.TransactionTypeId,
+                        name: "FK_Transaction_TransactionCategory_CategoryId",
+                        column: x => x.CategoryId,
                         principalTable: "TransactionCategory",
                         principalColumn: "TransactionCategoryId",
                         onDelete: ReferentialAction.Restrict);
@@ -214,8 +225,8 @@ namespace Hoard.Core.Data.Migrations
                     AssetSubclassId = table.Column<int>(type: "int", nullable: false),
                     BaseCurrencyId = table.Column<string>(type: "char(3)", nullable: false),
                     QuoteCurrencyId = table.Column<string>(type: "char(3)", nullable: false),
-                    TickerApi = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    TickerDisplay = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TickerApi = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Ticker = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     EnablePriceUpdates = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -368,8 +379,9 @@ namespace Hoard.Core.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TransactionId = table.Column<int>(type: "int", nullable: false),
                     InstrumentId = table.Column<int>(type: "int", nullable: false),
-                    TransactionLegTypeId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    SubcategoryId = table.Column<int>(type: "int", nullable: true),
+                    ValueGbp = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Units = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -383,10 +395,16 @@ namespace Hoard.Core.Data.Migrations
                         principalColumn: "InstrumentId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TransactionLeg_TransactionLegCategory_TransactionLegTypeId",
-                        column: x => x.TransactionLegTypeId,
+                        name: "FK_TransactionLeg_TransactionLegCategory_CategoryId",
+                        column: x => x.CategoryId,
                         principalTable: "TransactionLegCategory",
                         principalColumn: "TransactionLegCategoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TransactionLeg_TransactionLegSubcategory_SubcategoryId",
+                        column: x => x.SubcategoryId,
+                        principalTable: "TransactionLegSubcategory",
+                        principalColumn: "TransactionLegSubcategoryId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TransactionLeg_Transaction_TransactionId",
@@ -402,9 +420,21 @@ namespace Hoard.Core.Data.Migrations
                 column: "AccountTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssetClass_Code",
+                table: "AssetClass",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AssetSubclass_AssetClassId",
                 table: "AssetSubclass",
                 column: "AssetClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetSubclass_Code",
+                table: "AssetSubclass",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Holding_AccountId_InstrumentId_AsOfDate",
@@ -436,6 +466,12 @@ namespace Hoard.Core.Data.Migrations
                 name: "IX_Instrument_QuoteCurrencyId",
                 table: "Instrument",
                 column: "QuoteCurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InstrumentType_Code",
+                table: "InstrumentType",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PortfolioAccount_AccountId",
@@ -471,9 +507,19 @@ namespace Hoard.Core.Data.Migrations
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transaction_TransactionTypeId",
+                name: "IX_Transaction_CategoryId",
                 table: "Transaction",
-                column: "TransactionTypeId");
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_Date",
+                table: "Transaction",
+                column: "Date");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionLeg_CategoryId",
+                table: "TransactionLeg",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransactionLeg_InstrumentId",
@@ -481,14 +527,19 @@ namespace Hoard.Core.Data.Migrations
                 column: "InstrumentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TransactionLeg_SubcategoryId",
+                table: "TransactionLeg",
+                column: "SubcategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TransactionLeg_TransactionId",
                 table: "TransactionLeg",
                 column: "TransactionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransactionLeg_TransactionLegTypeId",
-                table: "TransactionLeg",
-                column: "TransactionLegTypeId");
+                name: "IX_TransactionLegSubcategory_CategoryId",
+                table: "TransactionLegSubcategory",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -519,7 +570,7 @@ namespace Hoard.Core.Data.Migrations
                 name: "Instrument");
 
             migrationBuilder.DropTable(
-                name: "TransactionLegCategory");
+                name: "TransactionLegSubcategory");
 
             migrationBuilder.DropTable(
                 name: "Transaction");
@@ -532,6 +583,9 @@ namespace Hoard.Core.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "InstrumentType");
+
+            migrationBuilder.DropTable(
+                name: "TransactionLegCategory");
 
             migrationBuilder.DropTable(
                 name: "Account");

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Hoard.Core.Domain;
 
 public class Instrument : Entity<int>
@@ -9,17 +11,17 @@ public class Instrument : Entity<int>
     
     public int AssetSubclassId { get; set; }
     public AssetSubclass AssetSubclass { get; set; } = null!;
-
+    
     public required string BaseCurrencyId { get; set; }
     public Currency BaseCurrency { get; set; } = null!;
     
     public required string QuoteCurrencyId { get; set; }
     public Currency QuoteCurrency { get; set; } = null!;
     
-    public required string TickerApi { get; set; }
-    public required string TickerDisplay { get; set; }
+    public string? TickerApi { get; set; }
+    public required string Ticker { get; set; }
     public bool EnablePriceUpdates  { get; set; }
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
     
     public bool IsCash => InstrumentType.IsCash;
     public bool IsExternal => InstrumentType.IsExternal;

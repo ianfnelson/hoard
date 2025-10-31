@@ -8,6 +8,6 @@ public class Account : Entity<int>
     public AccountType AccountType { get; set; } = null!;
     
     public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
-    
-    public bool IsActive { get; set; }
+
+    public bool IsActive { get; set; } = true;
 }

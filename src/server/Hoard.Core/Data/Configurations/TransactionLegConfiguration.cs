@@ -11,7 +11,7 @@ public class TransactionLegConfiguration : IEntityTypeConfiguration<TransactionL
         builder.ToTable("TransactionLeg");
 
         builder.Property(l => l.Units).HasColumnType("decimal(18,6)");
-        builder.Property(l => l.Value).HasColumnType("decimal(18,2)");
+        builder.Property(l => l.ValueGbp).HasColumnType("decimal(18,2)");
 
         builder.HasOne(l => l.Transaction)
             .WithMany(t => t.Legs)
@@ -23,9 +23,14 @@ public class TransactionLegConfiguration : IEntityTypeConfiguration<TransactionL
             .HasForeignKey(l => l.InstrumentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(l => l.TransactionLegCategory)
+        builder.HasOne(l => l.Category)
             .WithMany()
-            .HasForeignKey(l => l.TransactionLegTypeId)
+            .HasForeignKey(l => l.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(l => l.Subcategory)
+            .WithMany()
+            .HasForeignKey(l => l.SubcategoryId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
