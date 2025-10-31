@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class TransactionTypeConfiguration : IEntityTypeConfiguration<TransactionType>
+public class TransactionLegCategoryConfiguration : IEntityTypeConfiguration<TransactionLegCategory>
 {
-    public void Configure(EntityTypeBuilder<TransactionType> builder)
+    public void Configure(EntityTypeBuilder<TransactionLegCategory> builder)
     {
-        builder.ToTable("TransactionType");
+        builder.ToTable("TransactionLegCategory");
         builder.Property(t => t.Code).IsRequired().HasMaxLength(20);
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
     }

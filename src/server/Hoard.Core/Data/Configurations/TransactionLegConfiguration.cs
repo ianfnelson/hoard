@@ -23,7 +23,7 @@ public class TransactionLegConfiguration : IEntityTypeConfiguration<TransactionL
             .HasForeignKey(l => l.InstrumentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(l => l.TransactionLegType)
+        builder.HasOne(l => l.TransactionLegCategory)
             .WithMany()
             .HasForeignKey(l => l.TransactionLegTypeId)
             .OnDelete(DeleteBehavior.Restrict);
