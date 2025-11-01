@@ -28,6 +28,11 @@ builder.Services.AddHangfireServer();
 builder.Services.AddHostedService<SchedulerBootstrapper>();
 
 var app = builder.Build();
-app.UseHangfireDashboard("/jobs");
+
+app.UseHangfireDashboard("/jobs", new DashboardOptions
+{
+    Authorization = [new AllowAllDashboardAuthorizationFilter()]
+});
+
 app.MapGet("/", () => "Hoard Scheduler running.");
 await app.RunAsync();
