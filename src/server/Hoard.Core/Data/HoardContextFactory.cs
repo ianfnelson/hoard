@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Hoard.Core.Data;
 
@@ -9,15 +10,20 @@ public class HoardContextFactory : IDesignTimeDbContextFactory<HoardContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<HoardContext>();
 
-        // Try to read from environment variable
-        var connectionString = Environment.GetEnvironmentVariable("HOARD_CONNSTR");
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddUserSecrets<HoardContextFactory>()
+            .AddEnvironmentVariables()
+            .Build();
+
+        var connectionString = configuration.GetConnectionString("HoardDatabase");
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             throw new InvalidOperationException(
-                "Environment variable 'HOARD_CONNSTR' not set. " +
-                "Please define it before running migrations, e.g.:\n" +
-                "  export HOARD_CONNSTR=\"Server=localhost;Database=Hoard;User Id=sa;Password=...;TrustServerCertificate=True;\"");
+                "Connection string HoardDatabase not found.\nPlease define it before running migrations.");
         }
 
         optionsBuilder.UseSqlServer(connectionString);
