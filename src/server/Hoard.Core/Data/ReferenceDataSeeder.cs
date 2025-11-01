@@ -39,6 +39,7 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
+            new AccountType { Id = 0, Name = "Unknown" },
             new AccountType { Id = 1, Name = "SIPP" },
             new AccountType { Id = 2, Name = "ISA" },
             new AccountType { Id = 3, Name = "GIA" }
@@ -65,6 +66,7 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
+            new AssetClass { Id = 0, Code = "UK", Name = "Unknown"},
             new AssetClass { Id = 1, Code = "EQ", Name = "Equities" },
             new AssetClass { Id = 2, Code = "BD", Name = "Bonds and Defensives" },
             new AssetClass { Id = 3, Code = "AL", Name = "Alternatives" },
@@ -78,6 +80,7 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
+            new AssetSubclass { Id = 0, AssetClassId = 0, Code = "UK", Name = "Unknown" },
             new AssetSubclass { Id = 1, AssetClassId = 1, Code = "UKEQ", Name = "UK Equities" },
             new AssetSubclass { Id = 2, AssetClassId = 1, Code = "GLEQ", Name = "Global Equities" },
             new AssetSubclass { Id = 3, AssetClassId = 1, Code = "USEQ", Name = "US Equities" },
@@ -102,6 +105,7 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
+            new InstrumentType { Id = 0, Code = "UNKNOWN", Name = "Unknown" },
             new InstrumentType { Id = 1, Code = "SHR", Name = "Share" },
             new InstrumentType { Id = 2, Code = "ETF", Name = "Exchange Traded Fund" },
             new InstrumentType { Id = 3, Code = "OEIC", Name = "Open-Ended Investment Company" },
@@ -130,14 +134,14 @@ public class ReferenceDataSeeder
     
     private async Task SeedTransactionLegCategoriesAsync()
     {
-        var items = new[]
+        var items = new[] 
         {
+            new TransactionLegCategory { Id = 0, Name = "Cash" },
             new TransactionLegCategory { Id = 1, Name = "Principal" },
-            new TransactionLegCategory { Id = 2, Name = "Cash" },
-            new TransactionLegCategory { Id = 3, Name = "Income" },
-            new TransactionLegCategory { Id = 4, Name = "Fee" },
-            new TransactionLegCategory { Id = 5, Name = "Tax" },
-            new TransactionLegCategory { Id = 6, Name = "External" }
+            new TransactionLegCategory { Id = 2, Name = "Income" },
+            new TransactionLegCategory { Id = 3, Name = "Fee" },
+            new TransactionLegCategory { Id = 4, Name = "Tax" },
+            new TransactionLegCategory { Id = 5, Name = "External" }
         };
         await UpsertAsync(_db.TransactionLegCategories, items, x => x.Id);
     }
@@ -146,17 +150,17 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new TransactionLegSubcategory { Id = 1, CategoryId = 6, Name = "Personal Contribution" },
-            new TransactionLegSubcategory { Id = 2, CategoryId = 6, Name = "Employer Contribution" },
-            new TransactionLegSubcategory { Id = 3, CategoryId = 6, Name = "Income Tax Reclaim" },
-            new TransactionLegSubcategory { Id = 4, CategoryId = 6, Name = "Transfer In" },
+            new TransactionLegSubcategory { Id = 1, CategoryId = 5, Name = "Personal Contribution" },
+            new TransactionLegSubcategory { Id = 2, CategoryId = 5, Name = "Employer Contribution" },
+            new TransactionLegSubcategory { Id = 3, CategoryId = 5, Name = "Income Tax Reclaim" },
+            new TransactionLegSubcategory { Id = 4, CategoryId = 5, Name = "Transfer In" },
 
-            new TransactionLegSubcategory { Id = 5, CategoryId = 4, Name = "Account Charge" },
-            new TransactionLegSubcategory { Id = 6, CategoryId = 4, Name = "Dealing Charge" },
-            new TransactionLegSubcategory { Id = 7, CategoryId = 4, Name = "FX Conversion Charge" },
+            new TransactionLegSubcategory { Id = 5, CategoryId = 3, Name = "Account Charge" },
+            new TransactionLegSubcategory { Id = 6, CategoryId = 3, Name = "Dealing Charge" },
+            new TransactionLegSubcategory { Id = 7, CategoryId = 3, Name = "FX Conversion Charge" },
 
-            new TransactionLegSubcategory { Id = 8, CategoryId = 5, Name = "Stamp Duty" },
-            new TransactionLegSubcategory { Id = 9, CategoryId = 5, Name = "PTM Levy" },
+            new TransactionLegSubcategory { Id = 8, CategoryId = 4, Name = "Stamp Duty" },
+            new TransactionLegSubcategory { Id = 9, CategoryId = 4, Name = "PTM Levy" },
         };
         await UpsertAsync(_db.TransactionLegSubcategories, items, x => x.Id);
     }

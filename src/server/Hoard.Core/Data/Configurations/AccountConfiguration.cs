@@ -14,6 +14,10 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(i => i.AccountTypeId)
+            .HasDefaultValue(0)
+            .IsRequired();
+        
         builder.HasOne(a => a.AccountType)
             .WithMany()
             .HasForeignKey(a => a.AccountTypeId)
