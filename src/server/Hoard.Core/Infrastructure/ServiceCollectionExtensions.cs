@@ -1,4 +1,5 @@
 using Hoard.Core.Data;
+using Hoard.Core.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,12 +31,27 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddHoardRebus(this IServiceCollection services, string rabbitConnStr)
+    public static IServiceCollection AddHoardRebus(this IServiceCollection services, string rabbitConnectionString, bool sendOnly)
     {
-        services.AddRebus(configure => configure
-            .Logging(l => l.Console())
-            .Transport(t => t.UseRabbitMq(rabbitConnStr, "hoard.bus"))
-            .Routing(r => r.TypeBased().MapAssemblyOf<HoardContext>("hoard.input")));
+        services.AddRebus(configure =>
+        {
+            var config = sendOnly ?
+                configure.Transport(t => t.UseRabbitMqAsOneWayClient(rabbitConnectionString)) :
+                configure.Transport(t => t.UseRabbitMq(rabbitConnectionString, "hoard.bus"));
+
+            if (!sendOnly)
+            {
+                config.Options(o =>
+                {
+                    o.SetMaxParallelism(8);
+                    o.SetNumberOfWorkers(1);
+                });
+            }
+
+            config.Routing(r => r.TypeBased().MapAssemblyNamespaceOf<RecalculateHoldingsCommand>("hoard.bus"));
+
+            return config;
+        });
         return services;
     }
 }

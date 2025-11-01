@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>96ae34de-3870-4860-9c73-4e18aad4e6a5</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Hangfire" Version="1.8.21" />
+      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
+      <PackageReference Include="Hangfire.SqlServer" Version="1.8.21" />
       <PackageReference Include="Rebus" Version="8.9.0" />
       <PackageReference Include="Rebus.RabbitMq" Version="10.1.0" />
       <PackageReference Include="Rebus.ServiceProvider" Version="10.6.0" />

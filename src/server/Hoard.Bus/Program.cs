@@ -6,15 +6,15 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddHoardConfiguration();
 
-var sqlConnStr = builder.Configuration.GetConnectionString("HoardDatabase")
+var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDatabase")
                  ?? throw new InvalidOperationException("No connection string configured.");
-var rabbitConnStr = builder.Configuration.GetConnectionString("RabbitMq")
+var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                     ?? "amqp://guest:guest@localhost/";
 
 builder.Services
-    .AddHoardData(sqlConnStr)
+    .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
-    .AddHoardRebus(rabbitConnStr);
+    .AddHoardRebus(rabbitConnectionString, sendOnly:false);
 
 var app = builder.Build();
 await app.ApplyMigrationsAndSeedAsync();
