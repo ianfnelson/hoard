@@ -15,11 +15,19 @@ public class InstrumentConfiguration : IEntityTypeConfiguration<Instrument>
         builder.Property(i => i.Ticker).IsRequired().HasMaxLength(20);
         builder.Property(i => i.EnablePriceUpdates).IsRequired();
 
+        builder.Property(i => i.AssetSubclassId)
+            .HasDefaultValue(0)
+            .IsRequired();
+        
         builder.HasOne(i => i.AssetSubclass)
             .WithMany()
             .HasForeignKey(i => i.AssetSubclassId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
+        builder.Property(i => i.InstrumentTypeId)
+            .HasDefaultValue(0)
+            .IsRequired();
+        
         builder.HasOne(i => i.InstrumentType)
             .WithMany()
             .HasForeignKey(i => i.InstrumentTypeId)
