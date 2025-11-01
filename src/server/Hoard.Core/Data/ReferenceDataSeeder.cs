@@ -27,6 +27,9 @@ public class ReferenceDataSeeder
         await SeedTransactionCategoriesAsync();
         await SeedTransactionLegCategoriesAsync();
         await SeedTransactionLegSubCategoriesAsync();
+        
+        await _db.SaveChangesAsync(cancellationToken);
+        
         await SeedInstrumentsAsync();
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -53,7 +56,7 @@ public class ReferenceDataSeeder
         var items = new[]
         {
             new Currency { Id = "GBP", Name = "Pound Sterling" },
-            new Currency { Id = "GBp", Name = "Pence Sterling" },
+            new Currency { Id = "GBX", Name = "Pence Sterling" },
             new Currency { Id = "USD", Name = "US Dollar" },
             new Currency { Id = "EUR", Name = "Euro" },
             new Currency { Id = "JPY", Name = "Japanese Yen" }
@@ -167,50 +170,65 @@ public class ReferenceDataSeeder
     
     private async Task SeedInstrumentsAsync()
     {
-        var cashSubclassId = await _db.AssetSubclasses
-            .Where(s => s.Code == "CASH")
-            .Select(s => s.Id)
-            .FirstAsync();
-        
-        var fxSubclassId = await _db.AssetSubclasses
-            .Where(s => s.Code == "FX")
-            .Select(s => s.Id)
-            .FirstAsync();
-
         var items = new[]
         {
-            new Instrument { Id = 1, Name = "Cash (GBP)", InstrumentTypeId = cashSubclassId, 
+            new Instrument { Id = 1, Name = "Cash (GBP)", InstrumentTypeId = 5, 
                 BaseCurrencyId = "GBP", QuoteCurrencyId = "GBP", EnablePriceUpdates = false,
-                Ticker = "CASH" },
-            new Instrument { Id = 2, Name = "External Cash (GBP)", InstrumentTypeId = cashSubclassId, 
+                Ticker = "CASH", AssetSubclassId = 15},
+            new Instrument { Id = 2, Name = "External Cash (GBP)", InstrumentTypeId = 6, 
                 BaseCurrencyId = "GBP", QuoteCurrencyId = "GBP", EnablePriceUpdates = false, 
-                Ticker = "EXTERNAL" },
+                Ticker = "EXTERNAL", AssetSubclassId = 15 },
 
-            new Instrument { Id = 10, Name = "GBP/USD", InstrumentTypeId = fxSubclassId, 
+            new Instrument { Id = 10, Name = "GBP/USD", InstrumentTypeId = 7, 
                 BaseCurrencyId = "GBP", QuoteCurrencyId = "USD", Ticker = "GBPUSD", 
-                TickerApi = "GBPUSD=X", EnablePriceUpdates = true },
-            new Instrument { Id = 11, Name = "GBP/EUR", InstrumentTypeId = fxSubclassId, 
+                TickerApi = "GBPUSD=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
+            new Instrument { Id = 11, Name = "GBP/EUR", InstrumentTypeId = 7, 
                 BaseCurrencyId = "GBP", QuoteCurrencyId = "EUR", Ticker = "GBPEUR", 
-                TickerApi = "GBPEUR=X", EnablePriceUpdates = true },
-            new Instrument { Id = 12, Name = "GBP/JPY", InstrumentTypeId = fxSubclassId, 
+                TickerApi = "GBPEUR=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
+            new Instrument { Id = 12, Name = "GBP/JPY", InstrumentTypeId = 7, 
                 BaseCurrencyId = "GBP", QuoteCurrencyId = "JPY", Ticker = "GBPJPY", 
-                TickerApi = "GBPJPY=X", EnablePriceUpdates = true }
+                TickerApi = "GBPJPY=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
         };
 
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+        await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument ON");
+
         await UpsertAsync(_db.Instruments, items, x => x.Id);
+        await _db.SaveChangesAsync();
+
+        await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument OFF");
+        await transaction.CommitAsync();
     }
     
     private static async Task UpsertAsync<TEntity, TKey>(
         DbSet<TEntity> dbSet,
         IEnumerable<TEntity> seedItems,
         Func<TEntity, TKey> keySelector)
-        where TEntity : class
+        where TEntity : class where TKey : notnull
     {
         var existing = await dbSet.AsNoTracking().ToListAsync();
-        var keySet = existing.Select(keySelector).ToHashSet();
-        var newItems = seedItems.Where(item => !keySet.Contains(keySelector(item))).ToList();
+        var existingMap = existing.ToDictionary(keySelector);
 
-        if (newItems.Any())
-            await dbSet.AddRangeAsync(newItems);
+        var toAdd = new List<TEntity>();
+        var toUpdate = new List<TEntity>();
+
+        foreach (var item in seedItems)
+        {
+            var key = keySelector(item);
+            if (existingMap.TryGetValue(key, out var existingItem))
+            {
+                // Update the tracked entity
+                dbSet.Attach(item);
+                dbSet.Entry(item).State = EntityState.Modified;
+                toUpdate.Add(item);
+            }
+            else
+            {
+                toAdd.Add(item);
+            }
+        }
+
+        if (toAdd.Any())
+            await dbSet.AddRangeAsync(toAdd);
     }
 }
