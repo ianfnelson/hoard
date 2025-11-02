@@ -72,6 +72,23 @@ public class ProcessController : ControllerBase
     }
     
     /// <summary>
+    /// Triggers a recalculation of all holdings for a given date range
+    /// </summary>
+    /// <remarks>
+    /// Sends a <see cref="BackfillHistoricalHoldingsCommand"/> to the message bus.
+    /// </remarks>
+    /// <response code="202">Batch job accepted.</response>
+    [HttpPost("backfill-holdings")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> BackfillHoldingsAsync([FromBody] BackfillHoldingsRequest model)
+    {
+        _logger.LogInformation("Received request to backfill holdings.");
+
+        await _bus.Send(new BackfillHistoricalHoldingsCommand(Guid.NewGuid(), model.StartDate, model.EndDate));
+        return Accepted(new { message = "Backfill holdings triggered." });
+    }
+    
+    /// <summary>
     /// Triggers a recalculation of all valuations
     /// </summary>
     /// <remarks>
