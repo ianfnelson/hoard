@@ -8,7 +8,7 @@ namespace Hoard.Core.Services
 {
     public interface IHoldingsRecalculationService
     {
-        Task<int> RecalculateHoldingsAsync(DateOnly asOfDate, int? accountId = null, CancellationToken ct = default);
+        Task<int> RecalculateHoldingsAsync(DateOnly asOfDate, CancellationToken ct = default);
     }
     
     public class HoldingsRecalculationService : IHoldingsRecalculationService
@@ -22,32 +22,26 @@ namespace Hoard.Core.Services
             _logger = logger;
         }
         
-        public async Task<int> RecalculateHoldingsAsync(DateOnly asOfDate, int? accountId = null, CancellationToken ct = default)
+        public async Task<int> RecalculateHoldingsAsync(DateOnly asOfDate, CancellationToken ct = default)
         {
-            _logger.LogInformation("Starting holdings recalculation for {Date}, {Account}", asOfDate.ToString("yyyy-MM-dd"), 
-                accountId.HasValue ? accountId.Value : "all accounts");
+            _logger.LogInformation("Starting holdings recalculation for {Date}", asOfDate.ToString("yyyy-MM-dd"));
 
             try
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                var sql = accountId.HasValue
-                    ? "EXEC RecalculateHoldings @AsOfDate, @AccountId"
-                    : "EXEC RecalculateHoldings @AsOfDate";
-                
                 var parameters = new[]
                 {
-                    new SqlParameter("@AsOfDate", asOfDate.ToDateTime(TimeOnly.MinValue)),
-                    new SqlParameter("@AccountId", accountId ?? (object)DBNull.Value)
+                    new SqlParameter("@AsOfDate", asOfDate.ToDateTime(TimeOnly.MinValue))
                 };
                 
-                var result = await _db.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken: ct);
+                var result = await _db.Database.ExecuteSqlRawAsync("EXEC RecalculateHoldings @AsOfDate", parameters, cancellationToken: ct);
 
                 sw.Stop();
 
                 _logger.LogInformation(
-                    "Holdings recalculated for {Date}, {Account} ({Count} rows affected) in {Elapsed} ms",
-                    asOfDate.ToString("yyyy-MM-dd"), accountId.HasValue ? accountId.Value : "all accounts", result, sw.ElapsedMilliseconds);
+                    "Holdings recalculated for {Date} ({Count} rows affected) in {Elapsed} ms",
+                    asOfDate.ToString("yyyy-MM-dd"), result, sw.ElapsedMilliseconds);
 
                 return result;
             }

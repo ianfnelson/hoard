@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rebus.Config;
+using Rebus.Persistence.InMem;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 
@@ -50,6 +51,8 @@ public static class ServiceCollectionExtensions
             
             if (!sendOnly)
             {
+                config.Sagas(x => x.StoreInMemory());
+                
                 config.Options(o =>
                 {
                     o.SetMaxParallelism(8);
