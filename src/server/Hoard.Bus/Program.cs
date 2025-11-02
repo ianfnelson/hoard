@@ -1,6 +1,9 @@
-﻿using Hoard.Core.Infrastructure;
+﻿using Hoard.Bus.Handlers;
+using Hoard.Core.Infrastructure;
+using Hoard.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Rebus.Config;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -14,7 +17,9 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
-    .AddHoardRebus(rabbitConnectionString, sendOnly:false, "hoard.bus");
+    .AutoRegisterHandlersFromAssemblyNamespaceOf<RecalculateHoldingsCommandHandler>()
+    .AddHoardRebus(rabbitConnectionString, sendOnly: false, "hoard.bus")
+    .AddHoardServices();
 
 var app = builder.Build();
 await app.ApplyMigrationsAndSeedAsync();
