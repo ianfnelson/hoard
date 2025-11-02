@@ -11,6 +11,10 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.ToTable("Transaction");
 
         builder.Property(t => t.Date).IsRequired();
+        
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
 
         builder.HasOne(t => t.Account)
             .WithMany()

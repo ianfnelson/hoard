@@ -16,6 +16,10 @@ public class PortfolioAssetTargetConfiguration : IEntityTypeConfiguration<Portfo
             .HasColumnType("decimal(5,2)")
             .HasPrecision(5,2);
         
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
+        
         builder.HasOne(t => t.Portfolio)
             .WithMany(p => p.AssetTargets)
             .HasForeignKey(t => t.PortfolioId)

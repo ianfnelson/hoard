@@ -18,5 +18,9 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
         builder.Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(50);
+        
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
     }
 }
