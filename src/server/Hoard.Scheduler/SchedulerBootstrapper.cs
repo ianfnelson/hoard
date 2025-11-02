@@ -29,36 +29,77 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Registering Hoard Scheduler jobs...");
 
-        _recurring.AddOrUpdate(
-            "refresh-quotes-batch",
-            () => SendRefreshQuotesBatchCommand(),
-            "*/15 8-17 * * 1-5" // every 15 minutes during UK trading hours
-        );
+        RegisterRecalculateHoldings();
+        RegisterRefreshQuotes();
+        RegisterFetchDailyPrices();
+        RegisterRecalculateValuations();
+        
+        return Task.CompletedTask;
+    }
 
+    private void RegisterRecalculateHoldings()
+    {
         _recurring.AddOrUpdate(
             "recalculate-holdings",
             () => SendRecalculateHoldingsCommand(),
             "0 2 * * *" // nightly at 2am
         );
-
-        return Task.CompletedTask;
+    }
+    
+    private void RegisterRefreshQuotes()
+    {
+        _recurring.AddOrUpdate(
+            "refresh-quotes",
+            () => SendRefreshQuotesCommand(),
+            "*/2 8-17 * * 1-5" // every two minutes during UK trading hours
+        );
     }
 
+    private void RegisterFetchDailyPrices()
+    {
+        _recurring.AddOrUpdate(
+            "fetch-daily-prices",
+            () => SendFetchDailyPricesCommand(),
+            "40 21 * * *" // daily at 21:40
+        );
+    }
+    
+    private void RegisterRecalculateValuations()
+    {
+        _recurring.AddOrUpdate(
+            "recalculate-valuations",
+            () => SendRecalculateValuationsCommand(),
+            "0 23 * * *" // daily at 23:00
+        );
+    }
+    
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Scheduler stopping...");
         return Task.CompletedTask;
     }
 
-    public async Task SendRefreshQuotesBatchCommand()
-    {
-        _logger.LogInformation("Enqueuing RefreshQuotesBatchCommand...");
-        await _bus.Send(new RefreshQuotesBatchCommand());
-    }
-
-    public async Task SendRecalculateHoldingsCommand()
+    private async Task SendRecalculateHoldingsCommand()
     {
         _logger.LogInformation("Enqueuing RecalculateHoldingsCommand...");
-        await _bus.Send(new RecalculateHoldingsCommand());
+        await _bus.Send(new RecalculateHoldingsCommand(DateOnly.FromDateTime(DateTime.Now)));
+    }
+
+    private async Task SendRefreshQuotesCommand()
+    {
+        _logger.LogInformation("Enqueuing RefreshQuotesCommand...");
+        await _bus.Send(new RefreshQuotesCommand());
+    }
+
+    private async Task SendFetchDailyPricesCommand()
+    {
+        _logger.LogInformation("Enqueuing FetchDailyPricesCommand...");
+        await _bus.Send(new FetchDailyPricesCommand(DateOnly.FromDateTime(DateTime.Now)));
+    }
+    
+    private async Task SendRecalculateValuationsCommand()
+    {
+        _logger.LogInformation("Enqueuing RecalculateValuationsCommand...");
+        await _bus.Send(new RecalculateValuationsCommand(DateOnly.FromDateTime(DateTime.Now)));
     }
 }
