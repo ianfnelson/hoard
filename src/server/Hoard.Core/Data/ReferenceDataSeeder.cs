@@ -139,12 +139,12 @@ public class ReferenceDataSeeder
     {
         var items = new[] 
         {
-            new TransactionLegCategory { Id = 0, Name = "Cash" },
-            new TransactionLegCategory { Id = 1, Name = "Principal" },
-            new TransactionLegCategory { Id = 2, Name = "Income" },
-            new TransactionLegCategory { Id = 3, Name = "Fee" },
-            new TransactionLegCategory { Id = 4, Name = "Tax" },
-            new TransactionLegCategory { Id = 5, Name = "External" }
+            new TransactionLegCategory { Id = 1, Name = "Cash" },
+            new TransactionLegCategory { Id = 2, Name = "Principal" },
+            new TransactionLegCategory { Id = 3, Name = "Income" },
+            new TransactionLegCategory { Id = 4, Name = "Fee" },
+            new TransactionLegCategory { Id = 5, Name = "Tax" },
+            new TransactionLegCategory { Id = 6, Name = "External" }
         };
         await UpsertAsync(_db.TransactionLegCategories, items, x => x.Id);
     }
@@ -153,17 +153,17 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new TransactionLegSubcategory { Id = 1, CategoryId = 5, Name = "Personal Contribution" },
-            new TransactionLegSubcategory { Id = 2, CategoryId = 5, Name = "Employer Contribution" },
-            new TransactionLegSubcategory { Id = 3, CategoryId = 5, Name = "Income Tax Reclaim" },
-            new TransactionLegSubcategory { Id = 4, CategoryId = 5, Name = "Transfer In" },
+            new TransactionLegSubcategory { Id = 1, CategoryId = 6, Name = "Personal Contribution" },
+            new TransactionLegSubcategory { Id = 2, CategoryId = 6, Name = "Employer Contribution" },
+            new TransactionLegSubcategory { Id = 3, CategoryId = 6, Name = "Income Tax Reclaim" },
+            new TransactionLegSubcategory { Id = 4, CategoryId = 6, Name = "Transfer In" },
 
-            new TransactionLegSubcategory { Id = 5, CategoryId = 3, Name = "Account Charge" },
-            new TransactionLegSubcategory { Id = 6, CategoryId = 3, Name = "Dealing Charge" },
-            new TransactionLegSubcategory { Id = 7, CategoryId = 3, Name = "FX Conversion Charge" },
+            new TransactionLegSubcategory { Id = 5, CategoryId = 4, Name = "Account Charge" },
+            new TransactionLegSubcategory { Id = 6, CategoryId = 4, Name = "Dealing Charge" },
+            new TransactionLegSubcategory { Id = 7, CategoryId = 4, Name = "FX Conversion Charge" },
 
-            new TransactionLegSubcategory { Id = 8, CategoryId = 4, Name = "Stamp Duty" },
-            new TransactionLegSubcategory { Id = 9, CategoryId = 4, Name = "PTM Levy" },
+            new TransactionLegSubcategory { Id = 8, CategoryId = 5, Name = "Stamp Duty" },
+            new TransactionLegSubcategory { Id = 9, CategoryId = 5, Name = "PTM Levy" },
         };
         await UpsertAsync(_db.TransactionLegSubcategories, items, x => x.Id);
     }
