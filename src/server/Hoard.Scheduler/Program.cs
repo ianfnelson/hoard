@@ -16,7 +16,7 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 
 builder.Services
     .AddHoardLogging()
-    .AddHoardRebus(rabbitConnectionString, sendOnly: true);
+    .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.scheduler");
 
 builder.Services.AddHangfire(config =>
 {

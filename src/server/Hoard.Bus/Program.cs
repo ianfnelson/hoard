@@ -14,7 +14,7 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
-    .AddHoardRebus(rabbitConnectionString, sendOnly:false);
+    .AddHoardRebus(rabbitConnectionString, sendOnly:false, "hoard.bus");
 
 var app = builder.Build();
 await app.ApplyMigrationsAndSeedAsync();

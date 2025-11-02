@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rebus.Config;
+using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 
 namespace Hoard.Core.Infrastructure;
@@ -31,20 +32,33 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddHoardRebus(this IServiceCollection services, string rabbitConnectionString, bool sendOnly)
+    public static IServiceCollection AddHoardRebus(
+        this IServiceCollection services, 
+        string rabbitConnectionString, 
+        bool sendOnly, 
+        string connectionName)
     {
         services.AddRebus(configure =>
         {
             var config = sendOnly ?
-                configure.Transport(t => t.UseRabbitMqAsOneWayClient(rabbitConnectionString)) :
-                configure.Transport(t => t.UseRabbitMq(rabbitConnectionString, "hoard.bus"));
-
+                configure.Transport(t => t
+                    .UseRabbitMqAsOneWayClient(rabbitConnectionString)
+                    .ClientConnectionName(connectionName)) :
+                configure.Transport(t => t
+                    .UseRabbitMq(rabbitConnectionString, "hoard.bus")
+                    .ClientConnectionName(connectionName));
+            
             if (!sendOnly)
             {
                 config.Options(o =>
                 {
                     o.SetMaxParallelism(8);
                     o.SetNumberOfWorkers(1);
+
+                    o.RetryStrategy(
+                        "hoard.error",
+                        maxDeliveryAttempts: 5, 
+                        secondLevelRetriesEnabled: true);
                 });
             }
 
