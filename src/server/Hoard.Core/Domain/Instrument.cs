@@ -23,6 +23,8 @@ public class Instrument : Entity<int>
     public bool EnablePriceUpdates  { get; set; }
     public bool IsActive { get; set; } = true;
     
+    public DateTime CreatedUtc { get; set; } = DateTime.Now;
+    
     public bool IsCash => InstrumentType.IsCash;
     public bool IsExternal => InstrumentType.IsExternal;
     public bool IsFxPair => InstrumentType.IsFxPair;

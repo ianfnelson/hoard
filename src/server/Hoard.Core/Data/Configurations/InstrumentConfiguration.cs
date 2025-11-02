@@ -27,6 +27,10 @@ public class InstrumentConfiguration : IEntityTypeConfiguration<Instrument>
         builder.Property(i => i.InstrumentTypeId)
             .HasDefaultValue(0)
             .IsRequired();
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
+        
         
         builder.HasOne(i => i.InstrumentType)
             .WithMany()

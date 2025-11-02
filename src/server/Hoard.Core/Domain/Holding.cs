@@ -10,4 +10,6 @@ public class Holding : Entity<int>
     
     public DateOnly AsOfDate { get; set; }
     public decimal Units { get; set; }
+    
+    public DateTime UpdatedUtc { get; set; }
 }

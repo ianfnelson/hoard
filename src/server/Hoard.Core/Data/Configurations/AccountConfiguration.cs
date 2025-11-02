@@ -22,6 +22,10 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .WithMany()
             .HasForeignKey(a => a.AccountTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
 
         builder.HasMany(a => a.Portfolios)
             .WithMany(p => p.Accounts)

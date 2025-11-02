@@ -9,4 +9,6 @@ public class PortfolioAssetTarget : Entity<int>
     public AssetSubclass AssetSubclass { get; set; } = null!;
     
     public decimal Target { get; set; }
+    
+    public DateTime CreatedUtc { get; set; } = DateTime.Now;
 }

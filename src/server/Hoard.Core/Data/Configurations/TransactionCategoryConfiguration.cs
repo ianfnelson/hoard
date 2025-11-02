@@ -14,6 +14,10 @@ public class TransactionCategoryConfiguration : IEntityTypeConfiguration<Transac
         builder.Property(e => e.Id)
             .ValueGeneratedNever();
         
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
+        
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
     }
 }

@@ -8,4 +8,6 @@ public class Portfolio : Entity<int>
     public ICollection<PortfolioAssetTarget> AssetTargets { get; set; } = new List<PortfolioAssetTarget>();
 
     public bool IsActive { get; set; } = true;
+    
+    public DateTime CreatedUtc { get; set; } = DateTime.Now;
 }

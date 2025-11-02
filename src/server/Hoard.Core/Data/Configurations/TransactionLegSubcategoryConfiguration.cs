@@ -15,6 +15,10 @@ public class TransactionLegSubcategoryConfiguration : IEntityTypeConfiguration<T
             .ValueGeneratedNever();
         
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
+        
+        builder.Property(e => e.CreatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
 
         builder.HasOne(t => t.Category)
             .WithMany()
