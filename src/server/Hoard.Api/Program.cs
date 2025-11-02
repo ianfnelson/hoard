@@ -1,4 +1,5 @@
 using Hoard.Core.Infrastructure;
+using Hoard.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,8 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
-    .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.api");
+    .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.api")
+    .AddHoardServices();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
