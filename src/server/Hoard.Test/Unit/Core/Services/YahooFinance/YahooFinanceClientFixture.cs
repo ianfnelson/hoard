@@ -15,12 +15,12 @@ public class YahooFinanceClientFixture
 
         // Assert
         Assert.Equal(2, quotes.Count);
-        
-        var apple = quotes.Single(x => x.Symbol == "AAPL");
+
+        var apple = quotes["AAPL"];
         Assert.True(apple.Bid > 0);
         Assert.True(apple.Ask > 0);
-        
-        var microsoft = quotes.Single(x => x.Symbol == "MSFT");
+
+        var microsoft = quotes["MSFT"];
         Assert.True(microsoft.Bid > 0);
         Assert.True(microsoft.Ask > 0);
     }
@@ -35,7 +35,7 @@ public class YahooFinanceClientFixture
         var quotes = await sut.GetQuotesAsync(["FWRG.L"]);
 
         // Assert
-        var fwrg = quotes.Single();
+        var fwrg = quotes["FWRG.L"];
         Assert.Contains("Invesco FTSE All-World", fwrg.Name);
         Assert.Equal("Yahoo! Finance", fwrg.Source);
     }

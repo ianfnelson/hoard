@@ -22,7 +22,7 @@ public class QuoteConfiguration : IEntityTypeConfiguration<Quote>
         builder.Property(p => p.Source).IsRequired().HasMaxLength(50);
         
         builder.HasOne(q => q.Instrument)
-            .WithOne()
+            .WithOne(i => i.Quote)
             .HasForeignKey<Quote>(q => q.InstrumentId)
             .OnDelete(DeleteBehavior.Cascade);
     }

@@ -1,6 +1,6 @@
 namespace Hoard.Core.Services;
 
-public class Quote
+public class QuoteDto
 {
     public required string Symbol { get; set; }
     public required string Name { get; set; }

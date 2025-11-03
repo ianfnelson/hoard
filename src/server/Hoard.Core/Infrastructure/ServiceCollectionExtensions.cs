@@ -52,6 +52,7 @@ public static class ServiceCollectionExtensions
             if (!sendOnly)
             {
                 config.Sagas(x => x.StoreInMemory());
+                config.Timeouts(x => x.StoreInMemory());
                 
                 config.Options(o =>
                 {

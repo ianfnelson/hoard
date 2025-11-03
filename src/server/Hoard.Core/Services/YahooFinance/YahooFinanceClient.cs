@@ -12,7 +12,7 @@ public class YahooFinanceClient
         Field.RegularMarketPrice, Field.RegularMarketChange, Field.RegularMarketChangePercent
     ];
     
-    public async Task<IReadOnlyList<Quote>> GetQuotesAsync(IEnumerable<string> tickers)
+    public async Task<Dictionary<string, QuoteDto>> GetQuotesAsync(IEnumerable<string> tickers)
     {
         var tickerList = tickers.ToList();
         
@@ -22,12 +22,12 @@ public class YahooFinanceClient
 
         var quotes = securities
             .Select(x => MapSecurityToQuote(x.Value))
-            .ToList();
+            .ToDictionary(x => x.Symbol);
         
         return quotes;
     }
 
-    public async Task<IReadOnlyList<HistoricalPrice>> GetHistoricalAsync(string ticker, DateOnly from, DateOnly to)
+    public async Task<IReadOnlyList<HistoricalPriceDto>> GetHistoricalAsync(string ticker, DateOnly from, DateOnly to)
     {
        var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to));
 
@@ -38,9 +38,9 @@ public class YahooFinanceClient
        return results;
     }
 
-    private static Quote MapSecurityToQuote(Security security)
+    private static QuoteDto MapSecurityToQuote(Security security)
     {
-        return new Quote
+        return new QuoteDto
         {
             Symbol = security.Symbol,
             Ask = GetRoundedDecimal(security.Ask),
@@ -55,9 +55,9 @@ public class YahooFinanceClient
         };
     }
 
-    private static HistoricalPrice MapCandleToHistoricalPrice(Candle candle)
+    private static HistoricalPriceDto MapCandleToHistoricalPrice(Candle candle)
     {
-        return new HistoricalPrice
+        return new HistoricalPriceDto
         {
             Date = GetDateOnly(candle.DateTime),
             Open = GetRoundedDecimal(candle.Open),
