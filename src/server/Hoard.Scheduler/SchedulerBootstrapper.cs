@@ -79,25 +79,29 @@ public class SchedulerBootstrapper : IHostedService
         return Task.CompletedTask;
     }
 
-    private async Task SendRecalculateHoldingsCommand()
+    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
+    public async Task SendRecalculateHoldingsCommand()
     {
         _logger.LogInformation("Enqueuing RecalculateHoldingsCommand...");
         await _bus.Send(new RecalculateHoldingsCommand(DateOnly.FromDateTime(DateTime.Now)));
     }
 
-    private async Task SendRefreshQuotesCommand()
+    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
+    public async Task SendRefreshQuotesCommand()
     {
         _logger.LogInformation("Enqueuing RefreshQuotesCommand...");
         await _bus.Send(new RefreshQuotesCommand());
     }
 
-    private async Task SendFetchDailyPricesCommand()
+    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
+    public async Task SendFetchDailyPricesCommand()
     {
         _logger.LogInformation("Enqueuing FetchDailyPricesCommand...");
         await _bus.Send(new FetchDailyPricesCommand(DateOnly.FromDateTime(DateTime.Now)));
     }
     
-    private async Task SendRecalculateValuationsCommand()
+    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
+    public async Task SendRecalculateValuationsCommand()
     {
         _logger.LogInformation("Enqueuing RecalculateValuationsCommand...");
         await _bus.Send(new RecalculateValuationsCommand(DateOnly.FromDateTime(DateTime.Now)));
