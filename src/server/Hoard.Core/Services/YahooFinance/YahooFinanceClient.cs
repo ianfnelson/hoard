@@ -3,7 +3,7 @@ using YahooFinanceApi;
 namespace Hoard.Core.Services.YahooFinance;
 
 public class YahooFinanceClient
-    : IHistoricalPriceService, IQuoteService
+    : IPriceService, IQuoteService
 {
     private const string Source = "Yahoo! Finance";
     
@@ -27,7 +27,7 @@ public class YahooFinanceClient
         return quotes;
     }
 
-    public async Task<IReadOnlyList<HistoricalPriceDto>> GetHistoricalAsync(string ticker, DateOnly from, DateOnly to)
+    public async Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to)
     {
        var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to));
 
@@ -55,9 +55,9 @@ public class YahooFinanceClient
         };
     }
 
-    private static HistoricalPriceDto MapCandleToHistoricalPrice(Candle candle)
+    private static PriceDto MapCandleToHistoricalPrice(Candle candle)
     {
-        return new HistoricalPriceDto
+        return new PriceDto
         {
             Date = GetDateOnly(candle.DateTime),
             Open = GetRoundedDecimal(candle.Open),

@@ -1,6 +1,6 @@
 namespace Hoard.Core.Services;
 
-public class HistoricalPriceDto
+public class PriceDto
 {
     public DateOnly Date { get; set; }
     public decimal Open { get; set; }

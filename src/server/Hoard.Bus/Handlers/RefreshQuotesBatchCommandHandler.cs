@@ -47,7 +47,7 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
         var now = DateTime.UtcNow;
 
         var changed = new List<Instrument>();
-        UpsertQuotes(instruments.Values, freshQuotes, now, _context, changed);
+        UpsertQuotes(instruments.Values, freshQuotes, now, changed);
 
         await _context.SaveChangesAsync();
 
@@ -58,11 +58,10 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
         }
     }
 
-    private static void UpsertQuotes(
+    private void UpsertQuotes(
         IEnumerable<Instrument> instruments,
         IReadOnlyDictionary<string, QuoteDto> freshQuotes,
         DateTime now,
-        DbContext context,
         ICollection<Instrument> changed)
     {
         foreach (var instrument in instruments)
@@ -70,19 +69,15 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
             if (!freshQuotes.TryGetValue(instrument.TickerApi!, out var dto))
                 continue;
 
-            var quote = instrument.Quote;
-            var isNew = quote == null;
-
-            if (isNew)
+            if (instrument.Quote == null)
             {
-                quote = new Quote { InstrumentId = instrument.Id, Source = dto.Source };
-                context.Add(quote);
-                instrument.Quote = quote;
+                instrument.Quote = new Quote { InstrumentId = instrument.Id, Source = dto.Source };
+                _context.Add(instrument.Quote);
             }
 
-            var priceChanged = HasMeaningfulChange(quote!, dto);
+            var priceChanged = HasMeaningfulChange(instrument.Quote!, dto);
 
-            UpdateQuoteFields(quote!, dto, now);
+            UpdateQuoteFields(instrument.Quote, dto, now);
 
             if (priceChanged)
                 changed.Add(instrument);
@@ -120,11 +115,5 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
             .ToDictionaryAsync(x => x.TickerApi!);
         
         return instruments;
-    }
-
-    private async Task<Dictionary<string, QuoteDto>> GetQuotes(IEnumerable<string> tickers)
-    {
-         var quotes = await _quoteService.GetQuotesAsync(tickers);
-        return quotes;
     }
 }
