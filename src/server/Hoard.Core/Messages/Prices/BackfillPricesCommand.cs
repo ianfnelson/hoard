@@ -26,9 +26,19 @@ public record BackfillPricesCommand(Guid BatchId)
 }
 
 /// <summary>
+/// Internal saga step during prices backfill
+/// </summary>
+/// <param name="BatchId">For correlating messages</param>
+/// <param name="InstrumentId">Instrument for which prices to be backfilled</param>
+/// <param name="StartDate">Start date of range</param>
+/// <param name="EndDate">End date of range</param>
+public record BackfillPricesBatchCommand(Guid BatchId, int InstrumentId, DateOnly StartDate, DateOnly EndDate);
+
+/// <summary>
 /// Event raised on completion of backfill of historical prices for an instrument.
 /// </summary>
+/// <param name="BatchId">For correlating messages</param>
 /// <param name="InstrumentId">Instrument for which prices have been backfilled.</param>
 /// <param name="StartDate">Start date of backfill range</param>
 /// <param name="EndDate">End date of backfill range</param>
-public record PricesBackfilledEvent(int InstrumentId, DateOnly StartDate, DateOnly EndDate);
+public record PricesBackfilledEvent(Guid BatchId, int InstrumentId, DateOnly StartDate, DateOnly EndDate);

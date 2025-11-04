@@ -20,14 +20,14 @@ public record BackfillHoldingsCommand(Guid BatchId)
 }
 
 /// <summary>
-/// Internal saga step message during valuation calculation
+/// Internal saga step message during holding calculation
 /// </summary>
 /// <param name="BatchId">For correlating messages</param>
 /// <param name="AsOfDate">Date for which to calculate holdings</param>
 public record BackfillHoldingsForDateCommand(Guid BatchId, DateOnly AsOfDate);
 
 /// <summary>
-/// Event raised when historical holdings have been calculated for a date
+/// Event raised when holdings have been calculated for a date
 /// </summary>
 /// <param name="BatchId">For correlating messages</param>
 /// <param name="AsOfDate">Date for which holdings have been calculated</param>
