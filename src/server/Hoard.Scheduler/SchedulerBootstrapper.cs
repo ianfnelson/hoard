@@ -1,5 +1,9 @@
 using Hangfire;
-using Hoard.Core.Messages;
+using Hoard.Core;
+using Hoard.Core.Messages.Holdings;
+using Hoard.Core.Messages.Prices;
+using Hoard.Core.Messages.Quotes;
+using Hoard.Core.Messages.Valuations;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -29,19 +33,19 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Registering Hoard Scheduler jobs...");
 
-        RegisterRecalculateHoldings();
+        RegisterCalculateHoldings();
         RegisterRefreshQuotes();
-        RegisterFetchDailyPrices();
-        RegisterRecalculateValuations();
+        RegisterFetchPrices();
+        RegisterCalculateValuations();
         
         return Task.CompletedTask;
     }
 
-    private void RegisterRecalculateHoldings()
+    private void RegisterCalculateHoldings()
     {
         _recurring.AddOrUpdate(
-            "recalculate-holdings",
-            () => SendRecalculateHoldingsCommand(),
+            "calculate-holdings",
+            () => SendCalculateHoldingsCommand(),
             "0 2 * * *" // nightly at 2am
         );
     }
@@ -55,20 +59,20 @@ public class SchedulerBootstrapper : IHostedService
         );
     }
 
-    private void RegisterFetchDailyPrices()
+    private void RegisterFetchPrices()
     {
         _recurring.AddOrUpdate(
-            "fetch-daily-prices",
-            () => SendFetchDailyPricesCommand(),
+            "fetch-prices",
+            () => SendFetchPricesCommand(),
             "40 21 * * *" // daily at 21:40
         );
     }
     
-    private void RegisterRecalculateValuations()
+    private void RegisterCalculateValuations()
     {
         _recurring.AddOrUpdate(
-            "recalculate-valuations",
-            () => SendRecalculateValuationsCommand(),
+            "calculate-valuations",
+            () => SendCalculateValuationsCommand(),
             "0 23 * * *" // daily at 23:00
         );
     }
@@ -80,10 +84,16 @@ public class SchedulerBootstrapper : IHostedService
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task SendRecalculateHoldingsCommand()
+    public async Task SendCalculateHoldingsCommand()
     {
-        _logger.LogInformation("Enqueuing RecalculateHoldingsCommand...");
-        await _bus.Send(new RecalculateHoldingsCommand(DateOnly.FromDateTime(DateTime.Now)));
+        _logger.LogInformation("Enqueuing CalculateHoldingsCommand...");
+
+        var command = new CalculateHoldingsCommand
+        {
+            AsOfDate = DateOnlyHelper.TodayLocal()
+        };
+        
+        await _bus.Send(command);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
@@ -94,16 +104,28 @@ public class SchedulerBootstrapper : IHostedService
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task SendFetchDailyPricesCommand()
+    public async Task SendFetchPricesCommand()
     {
-        _logger.LogInformation("Enqueuing FetchDailyPricesCommand...");
-        await _bus.Send(new FetchDailyPricesCommand(DateOnly.FromDateTime(DateTime.Now)));
+        _logger.LogInformation("Enqueuing FetchPricesCommand...");
+
+        var command = new FetchPricesCommand
+        {
+            AsOfDate = DateOnlyHelper.TodayLocal()
+        };
+        
+        await _bus.Send(command);
     }
     
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task SendRecalculateValuationsCommand()
+    public async Task SendCalculateValuationsCommand()
     {
-        _logger.LogInformation("Enqueuing RecalculateValuationsCommand...");
-        await _bus.Send(new RecalculateValuationsCommand(DateOnly.FromDateTime(DateTime.Now)));
+        _logger.LogInformation("Enqueuing CalculateValuationsCommand...");
+
+        var command = new CalculateValuationsCommand
+        {
+            AsOfDate = DateOnlyHelper.TodayLocal()
+        };
+        
+        await _bus.Send(command);
     }
 }

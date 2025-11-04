@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "ec7f6342-247b-4285-bd7f-c72d1b0521b0",
+		"name": "Hoard",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "98471"
+	},
+	"item": [
+		{
+			"name": "Holdings",
+			"item": [
+				{
+					"name": "Backfill Holdings",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"StartDate\": \"2023-01-01\"   // Optional start date of range - defaults to earliest trade\n    ,\"EndDate\": \"2023-12-31\"    // Optional end date of range - default to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/holdings/backfill",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"holdings",
+								"backfill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Holdings",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-04\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/holdings/calculate",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"holdings",
+								"calculate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Prices",
+			"item": [
+				{
+					"name": "Fetch Prices",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-03\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/prices/fetch",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"prices",
+								"fetch"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Quotes",
+			"item": [
+				{
+					"name": "Refresh Quotes",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/quotes/refresh",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"quotes",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
