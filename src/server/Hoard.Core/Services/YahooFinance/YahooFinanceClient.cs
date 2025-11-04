@@ -3,7 +3,7 @@ using YahooFinanceApi;
 namespace Hoard.Core.Services.YahooFinance;
 
 public class YahooFinanceClient
-    : IPriceService, IQuoteService
+    : PriceService, QuoteService
 {
     private const string Source = "Yahoo! Finance";
     
@@ -77,5 +77,5 @@ public class YahooFinanceClient
         GetRoundedDecimal((decimal)value);
     
     private static decimal GetRoundedDecimal(decimal value) =>
-        Math.Round(value, 2, MidpointRounding.AwayFromZero);
+        Math.Round(value, 4, MidpointRounding.AwayFromZero);
 }

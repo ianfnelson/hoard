@@ -53,7 +53,7 @@ public class YahooFinanceClientFixture
         Assert.Equal(6, prices.Count);
         Assert.Equal("Yahoo! Finance", prices[0].Source);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,1) && x.Open == 598.0M);
-        Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,2) && x.High == 607.53M);
+        Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,2) && x.High == 607.526M);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,3) && x.Low == 600.5M);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,6) && x.Close == 608.0M);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025,10,7) && x.AdjustedClose == 607.4M);

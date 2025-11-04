@@ -7,10 +7,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddHoardServices(this IServiceCollection services)
     {
-        services.AddScoped<IQuoteService, YahooFinanceClient>();
-        services.AddScoped<IPriceService, YahooFinanceClient>();
+        services.AddScoped<QuoteService, YahooFinanceClient>();
+        services.AddScoped<PriceService, YahooFinanceClient>();
 
-        services.AddScoped<IHoldingsRecalculationService, HoldingsRecalculationService>();
+        services.AddScoped<IHoldingsCalculationService, HoldingsCalculationService>();
         
         return services;
     }

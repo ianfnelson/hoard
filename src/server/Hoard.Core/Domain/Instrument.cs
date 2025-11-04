@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Hoard.Core.Domain;
 
 public class Instrument : Entity<int>
@@ -26,8 +24,4 @@ public class Instrument : Entity<int>
     public DateTime CreatedUtc { get; set; } = DateTime.Now;
     
     public Quote? Quote { get; set; } 
-    
-    public bool IsCash => InstrumentType.IsCash;
-    public bool IsExternal => InstrumentType.IsExternal;
-    public bool IsFxPair => InstrumentType.IsFxPair;
 }
