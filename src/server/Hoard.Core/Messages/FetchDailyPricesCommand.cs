@@ -8,6 +8,13 @@ namespace Hoard.Core.Messages;
 public record FetchDailyPricesCommand(DateOnly AsOfDate);
 
 /// <summary>
+/// Fetch daily prices for a single instrument
+/// </summary>
+/// <param name="InstrumentId">ID of instrument for which to retrieve prices</param>
+/// <param name="AsOfDate">Date for which to fetch daily prices</param>
+public record FetchDailyPriceCommand(int InstrumentId, DateOnly AsOfDate);
+
+/// <summary>
 /// Event published when price has been updated for an instrument.
 /// </summary>
 /// <param name="InstrumentId">ID of instrument whose price has been updated</param>

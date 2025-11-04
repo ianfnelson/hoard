@@ -47,7 +47,7 @@ public class YahooFinanceClientFixture
         var sut = new YahooFinanceClient();
         
         // Act
-        var prices = await sut.GetHistoricalAsync("FWRG.L", new DateOnly(2025,10,1), new DateOnly(2025,10,8));
+        var prices = await sut.GetPricesAsync("FWRG.L", new DateOnly(2025,10,1), new DateOnly(2025,10,8));
         
         // Assert
         Assert.Equal(6, prices.Count);

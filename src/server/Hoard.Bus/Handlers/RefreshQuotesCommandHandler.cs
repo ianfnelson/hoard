@@ -44,6 +44,7 @@ public class RefreshQuotesCommandHandler : IHandleMessages<RefreshQuotesCommand>
             .Where(x => x.Instrument.EnablePriceUpdates)
             .Where(x => x.Instrument.TickerApi != null)
             .Select(x => x.InstrumentId)
+            .Distinct()
             .ToListAsync();
     }
 }
