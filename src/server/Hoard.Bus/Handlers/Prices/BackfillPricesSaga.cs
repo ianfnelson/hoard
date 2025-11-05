@@ -52,7 +52,7 @@ public class BackfillPricesSaga :
         foreach (var instrumentId in instrumentIds)
         {
             var command =
-                new BackfillPricesBatchCommand(Data.BatchId, instrumentId, dateRange.StartDate, dateRange.EndDate);
+                new BackfillPricesForInstrumentCommand(Data.BatchId, instrumentId, dateRange.StartDate, dateRange.EndDate);
             await _bus.DeferLocal(delay, command);
             delay+=TimeSpan.FromSeconds(5);
         }   

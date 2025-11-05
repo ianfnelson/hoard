@@ -32,7 +32,7 @@ public record BackfillPricesCommand(Guid BatchId)
 /// <param name="InstrumentId">Instrument for which prices to be backfilled</param>
 /// <param name="StartDate">Start date of range</param>
 /// <param name="EndDate">End date of range</param>
-public record BackfillPricesBatchCommand(Guid BatchId, int InstrumentId, DateOnly StartDate, DateOnly EndDate);
+public record BackfillPricesForInstrumentCommand(Guid BatchId, int InstrumentId, DateOnly StartDate, DateOnly EndDate);
 
 /// <summary>
 /// Event raised on completion of backfill of historical prices for an instrument.
