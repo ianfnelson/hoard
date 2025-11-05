@@ -67,7 +67,6 @@ public static class ServiceCollectionExtensions
             }
 
             config.Routing(r => r.TypeBased().MapAssemblyOf<CalculateHoldingsCommand>("hoard.bus"));
-
             return config;
         });
         return services;

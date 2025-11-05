@@ -1,8 +1,13 @@
 ﻿using Hoard.Bus.Handlers.Holdings;
 using Hoard.Core.Infrastructure;
+using Hoard.Core.Messages.Holdings;
+using Hoard.Core.Messages.Prices;
+using Hoard.Core.Messages.Quotes;
 using Hoard.Core.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Rebus.Bus;
 using Rebus.Config;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -22,5 +27,15 @@ builder.Services
     .AddHoardServices();
 
 var app = builder.Build();
-await app.ApplyMigrationsAndSeedAsync();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var bus = scope.ServiceProvider.GetRequiredService<IBus>();
+    await bus.Subscribe<HoldingsBackfilledForDateEvent>();
+    await bus.Subscribe<HoldingsCalculatedEvent>();
+    await bus.Subscribe<PricesBackfilledEvent>();
+    await bus.Subscribe<PriceUpdatedEvent>();
+    await bus.Subscribe<QuoteRefreshedEvent>();
+}
+
 await app.RunAsync();

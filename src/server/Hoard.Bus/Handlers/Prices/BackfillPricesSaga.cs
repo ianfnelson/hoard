@@ -36,6 +36,8 @@ public class BackfillPricesSaga :
 
     public async Task Handle(BackfillPricesCommand message)
     {
+        Data.BatchId = message.BatchId;
+        
         var instrumentIds = await GetTargetInstrumentIdsAsync(message.InstrumentId);
 
         _logger.LogInformation("Started backfill prices saga {BatchId} for {Count} instruments",
