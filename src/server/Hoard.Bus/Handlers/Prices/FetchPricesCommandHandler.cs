@@ -20,7 +20,7 @@ public class FetchPricesCommandHandler : IHandleMessages<FetchPricesCommand>
     
     public async Task Handle(FetchPricesCommand message)
     {
-        var asOfDate = message.AsOfDate.OrTodayIfNull();
+        var asOfDate = message.AsOfDate.OrToday();
         
         var instruments = await GetInstrumentsForPricing(asOfDate);
 

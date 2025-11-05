@@ -100,8 +100,8 @@ public class BackfillPricesSaga :
                 .OrderBy(t => t.Date)
                 .Select(x => x.Date)
                 .FirstOrDefaultAsync();
-        
-            return earliestTradeDate == default ? DateOnlyHelper.TodayLocal() : earliestTradeDate;
+
+            return earliestTradeDate.OrOneYearAgo();
         }
         
         var earliestHoldingDate = await _context.Holdings
@@ -110,7 +110,7 @@ public class BackfillPricesSaga :
             .Select(x => x.AsOfDate)
             .FirstOrDefaultAsync();
 
-        return earliestHoldingDate == default ? DateOnlyHelper.TodayLocal() : earliestHoldingDate;
+        return earliestHoldingDate.OrOneYearAgo();
     }
 
     private async Task<DateOnly> GetEndDate(Instrument instrument)
@@ -125,8 +125,8 @@ public class BackfillPricesSaga :
             .OrderByDescending(x => x.AsOfDate)
             .Select(x => x.AsOfDate)
             .FirstOrDefaultAsync();
-        
-        return latestHoldingDate == default ? DateOnlyHelper.TodayLocal() : latestHoldingDate;
+
+        return latestHoldingDate.OrToday();
     }
     
     private async Task<List<Instrument>> GetTargetInstrumentsAsync(int? instrumentId)

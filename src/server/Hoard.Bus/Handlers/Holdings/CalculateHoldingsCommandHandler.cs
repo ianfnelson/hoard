@@ -19,7 +19,7 @@ public class CalculateHoldingsCommandHandler : IHandleMessages<CalculateHoldings
     
     public async Task Handle(CalculateHoldingsCommand message)
     {
-        var asOfDate = message.AsOfDate.OrTodayIfNull();
+        var asOfDate = message.AsOfDate.OrToday();
         
         await _holdingsCalculationService.CalculateHoldingsAsync(asOfDate);
         await _bus.Publish(new HoldingsCalculatedEvent(asOfDate));
