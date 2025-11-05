@@ -22,21 +22,24 @@ public class FetchPricesCommandHandler : IHandleMessages<FetchPricesCommand>
     {
         var asOfDate = message.AsOfDate.OrToday();
         
-        var instruments = await GetInstrumentsForPricing(asOfDate);
+        var instrumentIds = await GetInstrumentIdsForRefresh();
 
         var delay = TimeSpan.Zero;
 
-        foreach (var instrument in instruments)
+        foreach (var instrumentId in instrumentIds)
         {
-            await _bus.Defer(delay, new FetchPriceCommand(instrument, asOfDate));
+            await _bus.Defer(delay, new FetchPriceCommand(instrumentId, asOfDate));
             delay+=TimeSpan.FromSeconds(5);
         }
     }
 
-    private async Task<List<int>> GetInstrumentsForPricing(DateOnly asOfDate)
+    private async Task<IList<int>> GetInstrumentIdsForRefresh()
     {
         return await _context
-            .GetRefreshableInstrumentsAsOf(asOfDate)
+            .Instruments
+            .Where(i => i.EnablePriceUpdates)
+            .Where(i => i.IsActive)
+            .Where(i => i.TickerApi != null)
             .Select(x => x.Id)
             .ToListAsync();
     }
