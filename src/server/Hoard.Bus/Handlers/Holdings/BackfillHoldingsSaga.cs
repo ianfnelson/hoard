@@ -54,7 +54,7 @@ public class BackfillHoldingsSaga :
     private async Task<DateRange> GetDateRange(BackfillHoldingsCommand message)
     {
         var startDate = message.StartDate ?? await GetDefaultStartDate();
-        var endDate = message.EndDate.OrTodayIfNull();
+        var endDate = message.EndDate.OrToday();
         
         return new DateRange(startDate, endDate);
     }
@@ -66,7 +66,7 @@ public class BackfillHoldingsSaga :
             .Select(x => x.Date)
             .FirstOrDefaultAsync();
         
-        return earliestTradeDate == default ? DateOnlyHelper.TodayLocal() : earliestTradeDate;
+        return earliestTradeDate.OrToday().OrToday();
     }
 
     public Task Handle(HoldingsBackfilledForDateEvent message)
