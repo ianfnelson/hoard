@@ -6,16 +6,17 @@ public class YahooFinanceClient
     : PriceService, QuoteService
 {
     private const string Source = "Yahoo! Finance";
-    
-    private static readonly Field[] Fields = [
-        Field.Symbol, Field.LongName, Field.Bid, Field.Ask, Field.FiftyTwoWeekHigh, Field.FiftyTwoWeekLow, 
+
+    private static readonly Field[] Fields =
+    [
+        Field.Symbol, Field.LongName, Field.Bid, Field.Ask, Field.FiftyTwoWeekHigh, Field.FiftyTwoWeekLow,
         Field.RegularMarketPrice, Field.RegularMarketChange, Field.RegularMarketChangePercent
     ];
-    
+
     public async Task<Dictionary<string, QuoteDto>> GetQuotesAsync(IEnumerable<string> tickers)
     {
         var tickerList = tickers.ToList();
-        
+
         var securities = await Yahoo.Symbols(tickerList.ToArray())
             .Fields(Fields)
             .QueryAsync();
@@ -23,19 +24,20 @@ public class YahooFinanceClient
         var quotes = securities
             .Select(x => MapSecurityToQuote(x.Value))
             .ToDictionary(x => x.Symbol);
-        
+
         return quotes;
     }
 
     public async Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to)
     {
-       var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to));
+        Yahoo.IgnoreEmptyRows = true;
+        var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to));
 
-       var results = history
-           .Select(MapCandleToHistoricalPrice)
-           .ToList();
+        var results = history
+            .Select(MapCandleToHistoricalPrice)
+            .ToList();
 
-       return results;
+        return results;
     }
 
     private static QuoteDto MapSecurityToQuote(Security security)
@@ -75,7 +77,7 @@ public class YahooFinanceClient
 
     private static decimal GetRoundedDecimal(double value) =>
         GetRoundedDecimal((decimal)value);
-    
+
     private static decimal GetRoundedDecimal(decimal value) =>
         Math.Round(value, 4, MidpointRounding.AwayFromZero);
 }

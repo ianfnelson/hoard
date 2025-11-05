@@ -1,6 +1,5 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
-using Hoard.Core.Extensions;
 using Hoard.Core.Messages.Prices;
 using Hoard.Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -10,17 +9,17 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class FetchPriceCommandHandler : IHandleMessages<FetchPriceCommand>
+public class BackfillPricesBatchCommandHandler : IHandleMessages<BackfillPricesBatchCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     private readonly PriceService _priceService;
-    private readonly ILogger<FetchPriceCommandHandler> _logger;
+    private readonly ILogger<BackfillPricesBatchCommandHandler> _logger;
     
-    public FetchPriceCommandHandler(
+    public BackfillPricesBatchCommandHandler(
         IBus bus, 
         HoardContext context, 
-        ILogger<FetchPriceCommandHandler> logger, 
+        ILogger<BackfillPricesBatchCommandHandler> logger, 
         PriceService priceService)
     {
         _bus = bus;
@@ -29,13 +28,13 @@ public class FetchPriceCommandHandler : IHandleMessages<FetchPriceCommand>
         _priceService = priceService;
     }
 
-    public async Task Handle(FetchPriceCommand message)
+    public async Task Handle(BackfillPricesBatchCommand message)
     {
         var instrument = await _context.Instruments
             .FindAsync(message.InstrumentId);
         if (instrument == null)
         {
-            _logger.LogWarning("Received FetchDailyPriceCommand with unknown Instrument {InstrumentId}", message.InstrumentId);
+            _logger.LogWarning("Received BackfillPricesBatchCommand with unknown Instrument {InstrumentId}", message.InstrumentId);
             return;
         }
 
@@ -45,24 +44,22 @@ public class FetchPriceCommandHandler : IHandleMessages<FetchPriceCommand>
             return;
         }
         
-        var prices = await _priceService.GetPricesAsync(instrument.TickerApi!, message.AsOfDate, message.AsOfDate);
-        var price = prices.FirstOrDefault(x => x.Date == message.AsOfDate);
-        if (price == null)
-        {
-            _logger.LogWarning("No price fetched for Instrument {InstrumentId}, Date {date}", message.InstrumentId, message.AsOfDate.ToIsoDateString());
-            return;
-        }
-
+        var prices = await _priceService.GetPricesAsync(instrument.TickerApi!, message.StartDate, message.EndDate);
         var now = DateTime.UtcNow;
-        await UpsertDailyPrice(message.InstrumentId, price, now);
+        
+        foreach (var price in prices)
+        {
+            await UpsertPrice(instrument.Id, price, now);
+        }
+        
         await _context.SaveChangesAsync();
         
-        await _bus.Publish(new PriceUpdatedEvent(instrument.Id, message.AsOfDate, now));
-        _logger.LogInformation("Prices fetched for Instrument {InstrumentId}", instrument.Id);
+        await _bus.Publish(new PricesBackfilledEvent(
+            message.BatchId, message.InstrumentId, message.StartDate, message.EndDate));
     }
 
-    private async Task UpsertDailyPrice(int instrumentId, PriceDto priceDto, DateTime now)
-    {
+    private async Task UpsertPrice(int instrumentId, PriceDto priceDto, DateTime now)
+    {        
         var price = await _context.Prices
             .FirstOrDefaultAsync(x => x.InstrumentId == instrumentId && x.AsOfDate == priceDto.Date);
 

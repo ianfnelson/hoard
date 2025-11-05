@@ -20,6 +20,24 @@ public class PricesController : ControllerBase
     }
     
     /// <summary>
+    /// Triggers a backfill of prices.
+    /// </summary>
+    /// <remarks>
+    /// Sends a <see cref="BackfillPricesCommand"/> to the message bus.
+    /// </remarks>
+    /// <response code="202">Batch job accepted.</response>
+    [HttpPost("backfill")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> BackfillPricesAsync([FromBody] BackfillPricesRequest model)
+    {
+        _logger.LogInformation("Received request to backfill prices.");
+        
+        await _bus.Send(model.ToCommand());
+        
+        return Accepted(new { message = "Prices backfill triggered." });
+    }
+    
+    /// <summary>
     /// Triggers a fetch of prices for active instruments and currencies.
     /// </summary>
     /// <remarks>
