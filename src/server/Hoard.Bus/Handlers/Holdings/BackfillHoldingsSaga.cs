@@ -37,6 +37,8 @@ public class BackfillHoldingsSaga :
 
     public async Task Handle(BackfillHoldingsCommand message)
     {
+        Data.BatchId = message.BatchId;
+        
         var dateRange = await GetDateRange(message);
         
         _logger.LogInformation("Starting holdings recomputation {Start} → {End}", dateRange.StartDate.ToIsoDateString(), dateRange.EndDate.ToIsoDateString());
@@ -66,7 +68,7 @@ public class BackfillHoldingsSaga :
             .Select(x => x.Date)
             .FirstOrDefaultAsync();
         
-        return earliestTradeDate.OrToday().OrToday();
+        return earliestTradeDate.OrToday();
     }
 
     public Task Handle(HoldingsBackfilledForDateEvent message)
