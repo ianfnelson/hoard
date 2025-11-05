@@ -9,17 +9,17 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class BackfillPricesBatchCommandHandler : IHandleMessages<BackfillPricesBatchCommand>
+public class BackfillPricesInstrumentCommandHandler : IHandleMessages<BackfillPricesForInstrumentCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     private readonly PriceService _priceService;
-    private readonly ILogger<BackfillPricesBatchCommandHandler> _logger;
+    private readonly ILogger<BackfillPricesInstrumentCommandHandler> _logger;
     
-    public BackfillPricesBatchCommandHandler(
+    public BackfillPricesInstrumentCommandHandler(
         IBus bus, 
         HoardContext context, 
-        ILogger<BackfillPricesBatchCommandHandler> logger, 
+        ILogger<BackfillPricesInstrumentCommandHandler> logger, 
         PriceService priceService)
     {
         _bus = bus;
@@ -28,7 +28,7 @@ public class BackfillPricesBatchCommandHandler : IHandleMessages<BackfillPricesB
         _priceService = priceService;
     }
 
-    public async Task Handle(BackfillPricesBatchCommand message)
+    public async Task Handle(BackfillPricesForInstrumentCommand message)
     {
         var instrument = await _context.Instruments
             .FindAsync(message.InstrumentId);
