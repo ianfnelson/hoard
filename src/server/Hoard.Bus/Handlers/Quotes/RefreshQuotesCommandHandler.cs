@@ -39,7 +39,10 @@ public class RefreshQuotesCommandHandler : IHandleMessages<RefreshQuotesCommand>
     private async Task<IList<int>> GetInstrumentIdsForRefresh()
     {
         return await _context
-            .GetRefreshableInstruments()
+            .Instruments
+            .Where(i => i.EnablePriceUpdates)
+            .Where(i => i.IsActive)
+            .Where(i => i.TickerApi != null)
             .Select(x => x.Id)
             .ToListAsync();
     }
