@@ -31,7 +31,7 @@ public class QuotesController : ControllerBase
     {
         _logger.LogInformation("Received request to refresh quotes.");
 
-        await _bus.Send(new RefreshQuotesCommand());
+        await _bus.Send(new RefreshQuotesCommand(Guid.NewGuid()));
         
         return Accepted(new { message = "Quote refresh triggered." });
     }

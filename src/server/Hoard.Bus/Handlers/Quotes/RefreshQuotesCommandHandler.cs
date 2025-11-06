@@ -31,7 +31,7 @@ public class RefreshQuotesCommandHandler : IHandleMessages<RefreshQuotesCommand>
         
         foreach (var batch in instruments.BatchesOf(BatchSize))
         {
-            await _bus.Defer(delay, new RefreshQuotesBatchCommand(batch));
+            await _bus.Defer(delay, new RefreshQuotesBatchCommand(message.CorrelationId, batch));
             delay+=TimeSpan.FromSeconds(1);
         }
     }

@@ -9,17 +9,17 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class BackfillPricesInstrumentCommandHandler : IHandleMessages<BackfillPricesForInstrumentCommand>
+public class RefreshPricesBatchCommandHandler : IHandleMessages<RefreshPricesBatchCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     private readonly PriceService _priceService;
-    private readonly ILogger<BackfillPricesInstrumentCommandHandler> _logger;
+    private readonly ILogger<RefreshPricesBatchCommandHandler> _logger;
     
-    public BackfillPricesInstrumentCommandHandler(
+    public RefreshPricesBatchCommandHandler(
         IBus bus, 
         HoardContext context, 
-        ILogger<BackfillPricesInstrumentCommandHandler> logger, 
+        ILogger<RefreshPricesBatchCommandHandler> logger, 
         PriceService priceService)
     {
         _bus = bus;
@@ -28,13 +28,13 @@ public class BackfillPricesInstrumentCommandHandler : IHandleMessages<BackfillPr
         _priceService = priceService;
     }
 
-    public async Task Handle(BackfillPricesForInstrumentCommand message)
+    public async Task Handle(RefreshPricesBatchCommand message)
     {
         var instrument = await _context.Instruments
             .FindAsync(message.InstrumentId);
         if (instrument == null)
         {
-            _logger.LogWarning("Received BackfillPricesBatchCommand with unknown Instrument {InstrumentId}", message.InstrumentId);
+            _logger.LogWarning("Received RefreshPricesBatchCommand with unknown Instrument {InstrumentId}", message.InstrumentId);
             return;
         }
 
@@ -54,8 +54,8 @@ public class BackfillPricesInstrumentCommandHandler : IHandleMessages<BackfillPr
         
         await _context.SaveChangesAsync();
         
-        await _bus.Publish(new PricesBackfilledEvent(
-            message.BatchId, message.InstrumentId, message.StartDate, message.EndDate));
+        await _bus.Publish(new PriceRefreshedEvent(message.CorrelationId, instrument.Id, message.StartDate, message.EndDate, now));
+        _logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
     }
 
     private async Task UpsertPrice(int instrumentId, PriceDto priceDto, DateTime now)

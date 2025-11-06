@@ -53,7 +53,7 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
 
         foreach (var instrument in changed)
         {
-            await _bus.Publish(new QuoteRefreshedEvent(instrument.Id, now));
+            await _bus.Publish(new QuoteRefreshedEvent(message.CorrelationId, instrument.Id, now));
             _logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
         }
     }

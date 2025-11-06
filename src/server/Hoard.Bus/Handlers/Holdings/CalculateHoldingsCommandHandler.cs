@@ -1,6 +1,9 @@
+using Hoard.Core.Data;
 using Hoard.Core.Extensions;
 using Hoard.Core.Messages.Holdings;
-using Hoard.Core.Services;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rebus.Bus;
 using Rebus.Handlers;
 
@@ -9,19 +12,50 @@ namespace Hoard.Bus.Handlers.Holdings;
 public class CalculateHoldingsCommandHandler : IHandleMessages<CalculateHoldingsCommand>
 {
     private readonly IBus _bus;
-    private readonly IHoldingsCalculationService _holdingsCalculationService;
+    private readonly HoardContext _db;
+    private readonly ILogger<CalculateHoldingsCommandHandler> _logger;
 
-    public CalculateHoldingsCommandHandler(IBus bus, IHoldingsCalculationService holdingsCalculationService)
+    public CalculateHoldingsCommandHandler(IBus bus,  ILogger<CalculateHoldingsCommandHandler> logger, HoardContext db)
     {
         _bus = bus;
-        _holdingsCalculationService = holdingsCalculationService;
+        _logger = logger;
+        _db = db;
     }
     
     public async Task Handle(CalculateHoldingsCommand message)
     {
         var asOfDate = message.AsOfDate.OrToday();
         
-        await _holdingsCalculationService.CalculateHoldingsAsync(asOfDate);
-        await _bus.Publish(new HoldingsCalculatedEvent(asOfDate));
+        _logger.LogInformation("Starting holdings calculation for {Date}", asOfDate.ToIsoDateString());
+
+        await CalculateHoldings(asOfDate);
+
+        await _bus.Publish(new HoldingsCalculatedEvent(message.CorrelationId, asOfDate));
+    }
+
+    private async Task CalculateHoldings(DateOnly asOfDate)
+    {
+        try
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            var parameters = new[]
+            {
+                new SqlParameter("@AsOfDate", asOfDate.ToDateTime(TimeOnly.MinValue))
+            };
+                
+            var result = await _db.Database.ExecuteSqlRawAsync("EXEC CalculateHoldings @AsOfDate", parameters);
+
+            sw.Stop();
+
+            _logger.LogInformation(
+                "Holdings calculated for {Date} ({Count} rows affected) in {Elapsed} ms",
+                asOfDate.ToIsoDateString(), result, sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to calculate holdings for {Date}", asOfDate.ToIsoDateString());
+            throw;
+        }
     }
 }

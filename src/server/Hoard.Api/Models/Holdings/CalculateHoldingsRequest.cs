@@ -8,7 +8,7 @@ public class CalculateHoldingsRequest
 
     public CalculateHoldingsCommand ToCommand()
     {
-        return new CalculateHoldingsCommand
+        return new CalculateHoldingsCommand(Guid.NewGuid())
         {
             AsOfDate = AsOfDate
         };

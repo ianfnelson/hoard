@@ -4,7 +4,8 @@ namespace Hoard.Core.Messages.Holdings;
 /// Calculate all holdings for all accounts, for the specified day.
 /// This will be scheduled to run in the early hours of every day.
 /// </summary>
-public record CalculateHoldingsCommand
+/// <param name="CorrelationId">For correlating messages</param>
+public record CalculateHoldingsCommand(Guid CorrelationId)
 {
     /// <summary>
     /// Date for which holdings to be calculated.
@@ -12,9 +13,3 @@ public record CalculateHoldingsCommand
     /// </summary>
     public DateOnly? AsOfDate { get; init; }
 }
-
-/// <summary>
-/// Event raised when holdings have been calculated.
-/// </summary>
-/// <param name="AsOfDate">Date for which holdings have been calculated.</param>
-public record HoldingsCalculatedEvent(DateOnly AsOfDate);

@@ -13,7 +13,7 @@ namespace Hoard.Bus.Handlers.Holdings;
 public class BackfillHoldingsSaga :
     Saga<BackfillHoldingsSagaData>,
     IAmInitiatedBy<BackfillHoldingsCommand>,
-    IHandleMessages<HoldingsBackfilledForDateEvent>
+    IHandleMessages<HoldingsCalculatedEvent>
 {
     private readonly IBus _bus;
     private readonly ILogger<BackfillHoldingsSaga> _logger;
@@ -31,13 +31,13 @@ public class BackfillHoldingsSaga :
 
     protected override void CorrelateMessages(ICorrelationConfig<BackfillHoldingsSagaData> cfg)
     {
-        cfg.Correlate<BackfillHoldingsCommand>(m => m.BatchId, d => d.BatchId);
-        cfg.Correlate<HoldingsBackfilledForDateEvent>(m => m.BatchId, d => d.BatchId);
+        cfg.Correlate<BackfillHoldingsCommand>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<HoldingsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
 
     public async Task Handle(BackfillHoldingsCommand message)
     {
-        Data.BatchId = message.BatchId;
+        Data.CorrelationId = message.CorrelationId;
         
         var dateRange = await GetDateRange(message);
         
@@ -46,10 +46,10 @@ public class BackfillHoldingsSaga :
         Data.PendingDates = Enumerable.Range(0, dateRange.EndDate.DayNumber - dateRange.StartDate.DayNumber + 1)
             .Select(i => dateRange.StartDate.AddDays(i))
             .ToHashSet();
-        
+
         for (var nextDate = dateRange.StartDate; nextDate <= dateRange.EndDate; nextDate = nextDate.AddDays(1))
         {
-            await _bus.Send(new BackfillHoldingsForDateCommand(message.BatchId, nextDate));
+            await _bus.SendLocal(new CalculateHoldingsCommand(message.CorrelationId) { AsOfDate = nextDate });
         }
     }
 
@@ -71,7 +71,7 @@ public class BackfillHoldingsSaga :
         return earliestTradeDate.OrToday();
     }
 
-    public Task Handle(HoldingsBackfilledForDateEvent message)
+    public Task Handle(HoldingsCalculatedEvent message)
     {
         Data.PendingDates.Remove(message.AsOfDate);
         if (Data.PendingDates.Count == 0)
@@ -86,6 +86,6 @@ public class BackfillHoldingsSaga :
 
 public class BackfillHoldingsSagaData : SagaData
 {
-    public Guid BatchId { get; set; }
+    public Guid CorrelationId { get; set; }
     public HashSet<DateOnly> PendingDates { get; set; } = new();
 }
