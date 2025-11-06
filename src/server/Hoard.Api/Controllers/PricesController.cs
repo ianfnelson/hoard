@@ -38,20 +38,20 @@ public class PricesController : ControllerBase
     }
     
     /// <summary>
-    /// Triggers a fetch of prices for active instruments and currencies.
+    /// Triggers a refresh of prices for active instruments and currencies.
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="FetchPricesCommand"/> to the message bus.
+    /// Sends a <see cref="RefreshPricesCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
-    [HttpPost("fetch")]
+    [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> FetchPricesAsync([FromBody] FetchPricesRequest model)
+    public async Task<IActionResult> RefreshPricesAsync([FromBody] RefreshPricesRequest model)
     {
-        _logger.LogInformation("Received request to fetch prices.");
+        _logger.LogInformation("Received request to refresh prices.");
         
         await _bus.Send(model.ToCommand());
         
-        return Accepted(new { message = "Prices fetch triggered." });
+        return Accepted(new { message = "Prices refresh triggered." });
     }
 }

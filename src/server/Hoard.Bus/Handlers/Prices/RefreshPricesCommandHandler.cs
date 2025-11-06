@@ -7,18 +7,18 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class FetchPricesCommandHandler : IHandleMessages<FetchPricesCommand>
+public class RefreshPricesCommandHandler : IHandleMessages<RefreshPricesCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     
-    public FetchPricesCommandHandler(IBus bus, HoardContext context)
+    public RefreshPricesCommandHandler(IBus bus, HoardContext context)
     {
         _bus = bus;
         _context = context;
     }
     
-    public async Task Handle(FetchPricesCommand message)
+    public async Task Handle(RefreshPricesCommand message)
     {
         var asOfDate = message.AsOfDate.OrToday();
         
@@ -28,7 +28,7 @@ public class FetchPricesCommandHandler : IHandleMessages<FetchPricesCommand>
 
         foreach (var instrumentId in instrumentIds)
         {
-            await _bus.Defer(delay, new FetchPriceCommand(instrumentId, asOfDate));
+            await _bus.Defer(delay, new RefreshPricesBatchCommand(message.CorrelationId, instrumentId, asOfDate, asOfDate));
             delay+=TimeSpan.FromSeconds(5);
         }
     }

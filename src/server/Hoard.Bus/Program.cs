@@ -31,10 +31,8 @@ var app = builder.Build();
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var bus = scope.ServiceProvider.GetRequiredService<IBus>();
-    await bus.Subscribe<HoldingsBackfilledForDateEvent>();
     await bus.Subscribe<HoldingsCalculatedEvent>();
-    await bus.Subscribe<PricesBackfilledEvent>();
-    await bus.Subscribe<PriceUpdatedEvent>();
+    await bus.Subscribe<PriceRefreshedEvent>();
     await bus.Subscribe<QuoteRefreshedEvent>();
 }
 

@@ -9,8 +9,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<QuoteService, YahooFinanceClient>();
         services.AddScoped<PriceService, YahooFinanceClient>();
-
-        services.AddScoped<IHoldingsCalculationService, HoldingsCalculationService>();
         
         return services;
     }

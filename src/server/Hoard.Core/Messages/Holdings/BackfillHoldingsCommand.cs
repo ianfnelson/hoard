@@ -3,8 +3,8 @@ namespace Hoard.Core.Messages.Holdings;
 /// <summary>
 /// Initiates backfill of holdings for a date range and account
 /// </summary>
-/// <param name="BatchId">For correlating messages</param>
-public record BackfillHoldingsCommand(Guid BatchId)
+/// <param name="CorrelationId">For correlating messages</param>
+public record BackfillHoldingsCommand(Guid CorrelationId)
 {
     /// <summary>
     /// Start date of range for backfill.
@@ -18,17 +18,3 @@ public record BackfillHoldingsCommand(Guid BatchId)
     /// </summary>
     public DateOnly? EndDate { get; init; }
 }
-
-/// <summary>
-/// Internal saga step message during holding calculation
-/// </summary>
-/// <param name="BatchId">For correlating messages</param>
-/// <param name="AsOfDate">Date for which to calculate holdings</param>
-public record BackfillHoldingsForDateCommand(Guid BatchId, DateOnly AsOfDate);
-
-/// <summary>
-/// Event raised when holdings have been calculated for a date
-/// </summary>
-/// <param name="BatchId">For correlating messages</param>
-/// <param name="AsOfDate">Date for which holdings have been calculated</param>
-public record HoldingsBackfilledForDateEvent(Guid BatchId, DateOnly AsOfDate);

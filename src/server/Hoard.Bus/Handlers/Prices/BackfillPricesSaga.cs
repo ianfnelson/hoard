@@ -12,7 +12,7 @@ namespace Hoard.Bus.Handlers.Prices;
 public class BackfillPricesSaga :
     Saga<BackfillPricesSagaData>,
     IAmInitiatedBy<BackfillPricesCommand>,
-    IHandleMessages<PricesBackfilledEvent>
+    IHandleMessages<PriceRefreshedEvent>
 {
     private readonly IBus _bus;
     private readonly ILogger<BackfillPricesSaga> _logger;
@@ -30,18 +30,18 @@ public class BackfillPricesSaga :
     
     protected override void CorrelateMessages(ICorrelationConfig<BackfillPricesSagaData> cfg)
     {
-        cfg.Correlate<BackfillPricesCommand>(m => m.BatchId, d => d.BatchId);
-        cfg.Correlate<PricesBackfilledEvent>(m => m.BatchId, d => d.BatchId);
+        cfg.Correlate<BackfillPricesCommand>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<PriceRefreshedEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
 
     public async Task Handle(BackfillPricesCommand message)
     {
-        Data.BatchId = message.BatchId;
+        Data.CorrelationId = message.CorrelationId;
         
         var instrumentIds = await GetTargetInstrumentIdsAsync(message.InstrumentId);
 
-        _logger.LogInformation("Started backfill prices saga {BatchId} for {Count} instruments",
-            Data.BatchId, instrumentIds.Count);
+        _logger.LogInformation("Started backfill prices saga {CorrelationId} for {Count} instruments",
+            Data.CorrelationId, instrumentIds.Count);
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
@@ -52,18 +52,18 @@ public class BackfillPricesSaga :
         foreach (var instrumentId in instrumentIds)
         {
             var command =
-                new BackfillPricesForInstrumentCommand(Data.BatchId, instrumentId, dateRange.StartDate, dateRange.EndDate);
+                new RefreshPricesBatchCommand(Data.CorrelationId, instrumentId, dateRange.StartDate, dateRange.EndDate);
             await _bus.DeferLocal(delay, command);
             delay+=TimeSpan.FromSeconds(5);
         }   
     }
     
-    public Task Handle(PricesBackfilledEvent message)
+    public Task Handle(PriceRefreshedEvent message)
     {
         Data.PendingInstruments.Remove(message.InstrumentId);
         if (Data.PendingInstruments.Count == 0)
         {
-            _logger.LogInformation("Price backfill saga {BatchId} complete", Data.BatchId);
+            _logger.LogInformation("Price backfill saga {CorrelationId} complete", Data.CorrelationId);
             MarkAsComplete();
         }
 
@@ -106,6 +106,6 @@ public class BackfillPricesSaga :
 
 public class BackfillPricesSagaData : SagaData
 {
-    public Guid BatchId { get; set; }
+    public Guid CorrelationId { get; set; }
     public HashSet<int> PendingInstruments { get; set; } = new();
 }

@@ -8,4 +8,5 @@ namespace Hoard.Core.Messages.Quotes;
 /// have their quotes refreshed on each invocation, and in what batch sizes, and use this to
 /// raise multiple <see cref="RefreshQuotesBatchCommand"/> commands.
 /// </summary>
-public record RefreshQuotesCommand;
+/// <param name="CorrelationId">For correlation purposes</param>
+public record RefreshQuotesCommand(Guid CorrelationId);

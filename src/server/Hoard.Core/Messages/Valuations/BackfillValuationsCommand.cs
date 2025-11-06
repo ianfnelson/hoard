@@ -3,8 +3,8 @@ namespace Hoard.Core.Messages.Valuations;
 /// <summary>
 /// Initiates backfill of valuations for a date range.
 /// </summary>
-/// <param name="BatchId">For correlating messages</param>
-public record BackfillValuationsCommand(Guid BatchId)
+/// <param name="CorrelationId">For correlating messages</param>
+public record BackfillValuationsCommand(Guid CorrelationId)
 {
     /// <summary>
     /// Start date of range for backfill.
