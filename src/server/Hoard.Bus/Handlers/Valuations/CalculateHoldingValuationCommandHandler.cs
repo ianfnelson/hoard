@@ -120,6 +120,6 @@ public class CalculateHoldingValuationCommandHandler : IHandleMessages<Calculate
             .OrderByDescending(x => x.AsOfDate)
             .FirstOrDefaultAsync();
 
-        return price?.Close ?? decimal.Zero;
+        return price?.AdjustedClose ?? decimal.Zero;
     }
 }
