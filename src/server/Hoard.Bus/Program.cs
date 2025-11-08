@@ -1,8 +1,10 @@
 ﻿using Hoard.Bus.Handlers.Holdings;
+using Hoard.Bus.Handlers.Valuations;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Messages.Holdings;
 using Hoard.Core.Messages.Prices;
 using Hoard.Core.Messages.Quotes;
+using Hoard.Core.Messages.Valuations;
 using Hoard.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,10 +21,13 @@ var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDataba
 var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                     ?? "amqp://guest:guest@localhost/";
 
+builder.Services.AddSingleton<IValuationTriggerBuffer, ValuationTriggerBuffer>();
+builder.Services.AddHostedService<ValuationTriggerFlusher>();
+
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
-    .AutoRegisterHandlersFromAssemblyOf<BackfillHoldingsSaga>()
+    .AutoRegisterHandlersFromAssemblyOf<CalculateValuationsSaga>()
     .AddHoardRebus(rabbitConnectionString, sendOnly: false, "hoard.bus")
     .AddHoardServices();
 
@@ -34,6 +39,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<HoldingsCalculatedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
     await bus.Subscribe<QuoteRefreshedEvent>();
+    await bus.Subscribe<ValuationsCalculatedEvent>();
+    await bus.Subscribe<HoldingValuationCalculatedEvent>();
 }
 
 await app.RunAsync();

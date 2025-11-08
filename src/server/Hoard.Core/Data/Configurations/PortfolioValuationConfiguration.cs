@@ -12,7 +12,8 @@ public class PortfolioValuationConfiguration : ValuationConfiguration<PortfolioV
         
         builder.HasOne(pv => pv.Portfolio)
             .WithMany()
-            .HasForeignKey(pv => pv.PortfolioId);
+            .HasForeignKey(pv => pv.PortfolioId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasIndex(av => new { av.PortfolioId, av.AsOfDate })
             .IsUnique();

@@ -12,4 +12,6 @@ public class Holding : Entity<int>
     public decimal Units { get; set; }
     
     public DateTime UpdatedUtc { get; set; }
+    
+    public HoldingValuation? Valuation { get; set; }
 }

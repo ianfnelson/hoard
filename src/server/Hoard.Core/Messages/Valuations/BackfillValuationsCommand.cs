@@ -18,9 +18,3 @@ public record BackfillValuationsCommand(Guid CorrelationId)
     /// </summary>
     public DateOnly? EndDate { get; init; }
 }
-
-/// <summary>
-/// Internal saga step message during historical valuation recalculation
-/// </summary>
-/// <param name="AsOfDate">Date for which to calculate valuations</param>
-public record RecalculateHistoricalValuationCommand(DateOnly AsOfDate);

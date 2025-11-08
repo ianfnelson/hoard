@@ -3,7 +3,8 @@ namespace Hoard.Core.Messages.Valuations;
 /// <summary>
 /// Trigger the calculation of all valuations, for the specified date.
 /// </summary>
-public record CalculateValuationsCommand
+/// <param name="CorrelationId">For correlating messages</param>
+public record CalculateValuationsCommand(Guid CorrelationId)
 {
     /// <summary>
     /// Date for which valuations to be calculated.

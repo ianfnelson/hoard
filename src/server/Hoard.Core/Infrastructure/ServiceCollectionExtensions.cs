@@ -7,6 +7,8 @@ using Rebus.Config;
 using Rebus.Persistence.InMem;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
+using Rebus.Sagas;
+using Rebus.Sagas.Exclusive;
 
 namespace Hoard.Core.Infrastructure;
 
@@ -51,13 +53,17 @@ public static class ServiceCollectionExtensions
             
             if (!sendOnly)
             {
-                config.Sagas(x => x.StoreInMemory());
+                config.Sagas(x =>
+                {
+                    x.StoreInMemory();
+                    x.EnforceExclusiveAccess();
+                });
                 config.Timeouts(x => x.StoreInMemory());
                 
                 config.Options(o =>
                 {
-                    o.SetMaxParallelism(8);
-                    o.SetNumberOfWorkers(1);
+                    o.SetMaxParallelism(32);
+                    o.SetNumberOfWorkers(8);
 
                     o.RetryStrategy(
                         "hoard.error",

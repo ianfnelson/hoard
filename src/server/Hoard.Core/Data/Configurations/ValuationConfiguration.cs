@@ -10,5 +10,9 @@ public class ValuationConfiguration<TValuation> : IEntityTypeConfiguration<TValu
     {
         builder.Property(iv => iv.ValuationGbp)
             .HasColumnType("decimal(18,2)");
+        
+        builder.Property(e => e.UpdatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
     }
 }

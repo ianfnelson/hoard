@@ -4,6 +4,7 @@ using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hoard.Core.Data.Migrations
 {
     [DbContext(typeof(HoardContext))]
-    partial class HoardContextModelSnapshot : ModelSnapshot
+    [Migration("20251107221859_Valuations")]
+    partial class Valuations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,6 +78,35 @@ namespace Hoard.Core.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AccountType", (string)null);
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.AccountValuation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("AccountValuationId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("AsOfDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("UpdatedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("ValuationGbp")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId", "AsOfDate")
+                        .IsUnique();
+
+                    b.ToTable("AccountValuation", (string)null);
                 });
 
             modelBuilder.Entity("Hoard.Core.Domain.AssetClass", b =>
@@ -210,9 +242,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(3)")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("ValuationGbp")
                         .HasColumnType("decimal(18,2)");
@@ -408,9 +438,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(3)")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("ValuationGbp")
                         .HasColumnType("decimal(18,2)");
@@ -698,6 +726,17 @@ namespace Hoard.Core.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("AccountType");
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.AccountValuation", b =>
+                {
+                    b.HasOne("Hoard.Core.Domain.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("Hoard.Core.Domain.AssetSubclass", b =>
