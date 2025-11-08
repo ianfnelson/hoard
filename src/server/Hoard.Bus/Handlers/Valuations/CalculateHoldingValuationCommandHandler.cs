@@ -53,7 +53,7 @@ public class CalculateHoldingValuationCommandHandler : IHandleMessages<Calculate
 
     private async Task<decimal> CalculateValuation(Holding holding)
     {
-        if (holding.InstrumentId == 1)
+        if (holding.InstrumentId == Instrument.CashGbpId)
         {
             return holding.Units;
         }
@@ -78,15 +78,13 @@ public class CalculateHoldingValuationCommandHandler : IHandleMessages<Calculate
 
     private async Task<decimal> GetFxRate(Holding holding)
     {
-        // TODO — I am not wild about the magic numbers here; revisit this
-
         return holding.Instrument.QuoteCurrencyId switch
         {
-            "GBP" => 1M,
-            "GBX" => 100M,
-            "USD" => await GetLatestPriceForFxInstrument(10, holding.AsOfDate),
-            "EUR" => await GetLatestPriceForFxInstrument(11, holding.AsOfDate),
-            "JPY" => await GetLatestPriceForFxInstrument(12, holding.AsOfDate),
+            Currency.Gbp => 1M,
+            Currency.Gbx => 100M,
+            Currency.Usd => await GetLatestPriceForFxInstrument(Instrument.GbpUsdId, holding.AsOfDate),
+            Currency.Eur => await GetLatestPriceForFxInstrument(Instrument.GbpEurId, holding.AsOfDate),
+            Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpyId, holding.AsOfDate),
             _ => throw new InvalidOperationException($"Unknown currency {holding.Instrument.QuoteCurrencyId}")
         };
     }

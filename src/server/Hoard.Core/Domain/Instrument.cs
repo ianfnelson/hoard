@@ -1,6 +1,6 @@
 namespace Hoard.Core.Domain;
 
-public class Instrument : Entity<int>
+public partial class Instrument : Entity<int>
 {
     public required string Name { get; set; }
     
