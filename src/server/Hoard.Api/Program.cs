@@ -1,3 +1,4 @@
+using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
 
@@ -14,7 +15,8 @@ builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
     .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.api")
-    .AddHoardServices();
+    .AddHoardServices()
+    .AddHoardApplication();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

@@ -1,0 +1,4 @@
+namespace Hoard.Core.Application;
+
+public interface ICommand;
+public interface ICommand<TResult> : ICommand;

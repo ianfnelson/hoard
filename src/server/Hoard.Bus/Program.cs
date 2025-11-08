@@ -1,5 +1,6 @@
 ﻿using Hoard.Bus.Handlers.Holdings;
 using Hoard.Bus.Handlers.Valuations;
+using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Messages.Holdings;
 using Hoard.Core.Messages.Prices;
@@ -29,7 +30,8 @@ builder.Services
     .AddHoardLogging()
     .AutoRegisterHandlersFromAssemblyOf<CalculateValuationsSaga>()
     .AddHoardRebus(rabbitConnectionString, sendOnly: false, "hoard.bus")
-    .AddHoardServices();
+    .AddHoardServices()
+    .AddHoardApplication();
 
 var app = builder.Build();
 
