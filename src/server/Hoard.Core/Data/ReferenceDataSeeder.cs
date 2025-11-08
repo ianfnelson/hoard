@@ -55,11 +55,11 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new Currency { Id = "GBP", Name = "Pound Sterling" },
-            new Currency { Id = "GBX", Name = "Pence Sterling" },
-            new Currency { Id = "USD", Name = "US Dollar" },
-            new Currency { Id = "EUR", Name = "Euro" },
-            new Currency { Id = "JPY", Name = "Japanese Yen" }
+            new Currency { Id = Currency.Gbp, Name = "Pound Sterling" },
+            new Currency { Id = Currency.Gbx, Name = "Pence Sterling" },
+            new Currency { Id = Currency.Usd, Name = "US Dollar" },
+            new Currency { Id = Currency.Eur, Name = "Euro" },
+            new Currency { Id = Currency.Jpy, Name = "Japanese Yen" }
         };
 
         await UpsertAsync(_context.Currencies, items, x => x.Id);
@@ -172,21 +172,21 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new Instrument { Id = 1, Name = "Cash (GBP)", InstrumentTypeId = 5, 
-                BaseCurrencyId = "GBP", QuoteCurrencyId = "GBP", EnablePriceUpdates = false,
+            new Instrument { Id = Instrument.CashGbpId, Name = "Cash (GBP)", InstrumentTypeId = 5, 
+                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Gbp, EnablePriceUpdates = false,
                 Ticker = "CASH", AssetSubclassId = 15},
-            new Instrument { Id = 2, Name = "External Cash (GBP)", InstrumentTypeId = 6, 
-                BaseCurrencyId = "GBP", QuoteCurrencyId = "GBP", EnablePriceUpdates = false, 
+            new Instrument { Id = Instrument.ExternalCashGbpId, Name = "External Cash (GBP)", InstrumentTypeId = 6, 
+                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Gbp, EnablePriceUpdates = false, 
                 Ticker = "EXTERNAL", AssetSubclassId = 15 },
 
-            new Instrument { Id = 10, Name = "GBP/USD", InstrumentTypeId = 7, 
-                BaseCurrencyId = "GBP", QuoteCurrencyId = "USD", Ticker = "GBPUSD", 
+            new Instrument { Id = Instrument.GbpUsdId, Name = "GBP/USD", InstrumentTypeId = 7, 
+                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Usd, Ticker = "GBPUSD", 
                 TickerApi = "GBPUSD=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = 11, Name = "GBP/EUR", InstrumentTypeId = 7, 
-                BaseCurrencyId = "GBP", QuoteCurrencyId = "EUR", Ticker = "GBPEUR", 
+            new Instrument { Id = Instrument.GbpEurId, Name = "GBP/EUR", InstrumentTypeId = 7, 
+                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Eur, Ticker = "GBPEUR", 
                 TickerApi = "GBPEUR=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = 12, Name = "GBP/JPY", InstrumentTypeId = 7, 
-                BaseCurrencyId = "GBP", QuoteCurrencyId = "JPY", Ticker = "GBPJPY", 
+            new Instrument { Id = Instrument.GbpJpyId, Name = "GBP/JPY", InstrumentTypeId = 7, 
+                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Jpy, Ticker = "GBPJPY", 
                 TickerApi = "GBPJPY=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
         };
 
