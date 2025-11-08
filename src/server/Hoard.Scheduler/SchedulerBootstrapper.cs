@@ -121,7 +121,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Enqueuing CalculateValuationsCommand...");
 
-        var command = new CalculateValuationsCommand
+        var command = new CalculateValuationsCommand(Guid.NewGuid())
         {
             AsOfDate = DateOnlyHelper.TodayLocal()
         };

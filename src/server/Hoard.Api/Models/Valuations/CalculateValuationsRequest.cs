@@ -8,6 +8,6 @@ public class CalculateValuationsRequest
 
     public CalculateValuationsCommand ToCommand()
     {
-        return new CalculateValuationsCommand { AsOfDate = AsOfDate };
+        return new CalculateValuationsCommand(Guid.NewGuid()) { AsOfDate = AsOfDate };
     }
 }

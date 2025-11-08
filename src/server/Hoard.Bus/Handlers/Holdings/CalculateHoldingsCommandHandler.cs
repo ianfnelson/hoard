@@ -12,14 +12,14 @@ namespace Hoard.Bus.Handlers.Holdings;
 public class CalculateHoldingsCommandHandler : IHandleMessages<CalculateHoldingsCommand>
 {
     private readonly IBus _bus;
-    private readonly HoardContext _db;
+    private readonly HoardContext _context;
     private readonly ILogger<CalculateHoldingsCommandHandler> _logger;
 
-    public CalculateHoldingsCommandHandler(IBus bus,  ILogger<CalculateHoldingsCommandHandler> logger, HoardContext db)
+    public CalculateHoldingsCommandHandler(IBus bus,  ILogger<CalculateHoldingsCommandHandler> logger, HoardContext context)
     {
         _bus = bus;
         _logger = logger;
-        _db = db;
+        _context = context;
     }
     
     public async Task Handle(CalculateHoldingsCommand message)
@@ -44,7 +44,7 @@ public class CalculateHoldingsCommandHandler : IHandleMessages<CalculateHoldings
                 new SqlParameter("@AsOfDate", asOfDate.ToDateTime(TimeOnly.MinValue))
             };
                 
-            var result = await _db.Database.ExecuteSqlRawAsync("EXEC CalculateHoldings @AsOfDate", parameters);
+            var result = await _context.Database.ExecuteSqlRawAsync("EXEC CalculateHoldings @AsOfDate", parameters);
 
             sw.Stop();
 

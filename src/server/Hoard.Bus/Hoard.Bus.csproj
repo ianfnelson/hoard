@@ -32,8 +32,4 @@
       <PackageReference Include="Rebus.ServiceProvider" Version="10.6.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Handlers\Valuations\" />
-    </ItemGroup>
-
 </Project>

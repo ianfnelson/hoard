@@ -8,7 +8,7 @@ public record BackfillPricesCommand(Guid CorrelationId)
 {
     /// <summary>
     /// Instrument for which prices to be backfilled.
-    /// If not specified, all active holdings (including currencies) will be backfilled.
+    /// If not specified, all holdings will be backfilled.
     /// </summary>
     public int? InstrumentId { get; init; }
     

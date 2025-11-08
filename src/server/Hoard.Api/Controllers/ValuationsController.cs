@@ -20,6 +20,24 @@ public class ValuationsController : ControllerBase
     }
     
     /// <summary>
+    /// Triggers a calculation of all valuations for a given date range
+    /// </summary>
+    /// <remarks>
+    /// Sends a <see cref="BackfillValuationsCommand"/> to the message bus.
+    /// </remarks>
+    /// <response code="202">Batch job accepted.</response>
+    [HttpPost("backfill")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> BackfillHoldingsAsync([FromBody] BackfillValuationsRequest model)
+    {
+        _logger.LogInformation("Received request to backfill valuations.");
+        
+        await _bus.Send(model.ToCommand());
+        
+        return Accepted(new { message = "Backfill valuations triggered." });
+    }
+    
+    /// <summary>
     /// Triggers calculation of all valuations
     /// </summary>
     /// <remarks>

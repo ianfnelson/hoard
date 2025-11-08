@@ -6,12 +6,12 @@ namespace Hoard.Core.Data;
 
 public class ReferenceDataSeeder
 {
-    private readonly HoardContext _db;
+    private readonly HoardContext _context;
     private readonly ILogger<ReferenceDataSeeder> _logger;
 
-    public ReferenceDataSeeder(HoardContext db, ILogger<ReferenceDataSeeder> logger)
+    public ReferenceDataSeeder(HoardContext context, ILogger<ReferenceDataSeeder> logger)
     {
-        _db = db;
+        _context = context;
         _logger = logger;
     }
 
@@ -28,11 +28,11 @@ public class ReferenceDataSeeder
         await SeedTransactionLegCategoriesAsync();
         await SeedTransactionLegSubCategoriesAsync();
         
-        await _db.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         
         await SeedInstrumentsAsync();
 
-        await _db.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Reference data seeding complete.");
     }
@@ -48,7 +48,7 @@ public class ReferenceDataSeeder
             new AccountType { Id = 3, Name = "GIA" }
         };
 
-        await UpsertAsync(_db.AccountTypes, items, x => x.Id);
+        await UpsertAsync(_context.AccountTypes, items, x => x.Id);
     }
     
     private async Task SeedCurrenciesAsync()
@@ -62,7 +62,7 @@ public class ReferenceDataSeeder
             new Currency { Id = "JPY", Name = "Japanese Yen" }
         };
 
-        await UpsertAsync(_db.Currencies, items, x => x.Id);
+        await UpsertAsync(_context.Currencies, items, x => x.Id);
     }
     
     private async Task SeedAssetClassesAsync()
@@ -76,7 +76,7 @@ public class ReferenceDataSeeder
             new AssetClass { Id = 4, Code = "CA", Name = "Cash" },
             new AssetClass { Id = 5, Code = "FX", Name = "FX / Currency" }
         };
-        await UpsertAsync(_db.AssetClasses, items, x => x.Id);
+        await UpsertAsync(_context.AssetClasses, items, x => x.Id);
     }
 
     private async Task SeedAssetSubclassesAsync()
@@ -101,7 +101,7 @@ public class ReferenceDataSeeder
             new AssetSubclass { Id = 15, AssetClassId = 4, Code = "CASH", Name = "Cash" },
             new AssetSubclass { Id = 16, AssetClassId = 5, Code = "FX", Name = "FX / Currency" }
         };
-        await UpsertAsync(_db.AssetSubclasses, items, x => x.Id);
+        await UpsertAsync(_context.AssetSubclasses, items, x => x.Id);
     }
     
     private async Task SeedInstrumentTypesAsync()
@@ -117,7 +117,7 @@ public class ReferenceDataSeeder
             new InstrumentType { Id = 6, Code = "EXT", Name = "External Cash", IsCash = true, IsExternal = true },
             new InstrumentType { Id = 7, Code = "FX", Name = "Foreign Exchange Pair", IsFxPair = true }
         };
-        await UpsertAsync(_db.InstrumentTypes, items, x => x.Id);
+        await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);
     }
     
     private async Task SeedTransactionCategoriesAsync()
@@ -132,7 +132,7 @@ public class ReferenceDataSeeder
             new TransactionCategory { Id = 6, Name = "Deposit" },
             new TransactionCategory { Id = 7, Name = "Withdrawal" }
         };
-        await UpsertAsync(_db.TransactionCategories, items, x => x.Id);
+        await UpsertAsync(_context.TransactionCategories, items, x => x.Id);
     }
     
     private async Task SeedTransactionLegCategoriesAsync()
@@ -146,7 +146,7 @@ public class ReferenceDataSeeder
             new TransactionLegCategory { Id = 5, Name = "Tax" },
             new TransactionLegCategory { Id = 6, Name = "External" }
         };
-        await UpsertAsync(_db.TransactionLegCategories, items, x => x.Id);
+        await UpsertAsync(_context.TransactionLegCategories, items, x => x.Id);
     }
     
     private async Task SeedTransactionLegSubCategoriesAsync()
@@ -165,7 +165,7 @@ public class ReferenceDataSeeder
             new TransactionLegSubcategory { Id = 8, CategoryId = 5, Name = "Stamp Duty" },
             new TransactionLegSubcategory { Id = 9, CategoryId = 5, Name = "PTM Levy" },
         };
-        await UpsertAsync(_db.TransactionLegSubcategories, items, x => x.Id);
+        await UpsertAsync(_context.TransactionLegSubcategories, items, x => x.Id);
     }
     
     private async Task SeedInstrumentsAsync()
@@ -190,13 +190,13 @@ public class ReferenceDataSeeder
                 TickerApi = "GBPJPY=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
         };
 
-        await using var transaction = await _db.Database.BeginTransactionAsync();
-        await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument ON");
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument ON");
 
-        await UpsertAsync(_db.Instruments, items, x => x.Id);
-        await _db.SaveChangesAsync();
+        await UpsertAsync(_context.Instruments, items, x => x.Id);
+        await _context.SaveChangesAsync();
 
-        await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument OFF");
+        await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument OFF");
         await transaction.CommitAsync();
     }
     

@@ -4,6 +4,7 @@ using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hoard.Core.Data.Migrations
 {
     [DbContext(typeof(HoardContext))]
-    partial class HoardContextModelSnapshot : ModelSnapshot
+    [Migration("20251108132332_NoAccountValuations")]
+    partial class NoAccountValuations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,9 +213,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(3)")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("ValuationGbp")
                         .HasColumnType("decimal(18,2)");
@@ -408,9 +409,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(3)")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("ValuationGbp")
                         .HasColumnType("decimal(18,2)");
