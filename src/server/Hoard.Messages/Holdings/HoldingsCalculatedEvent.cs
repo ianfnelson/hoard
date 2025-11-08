@@ -1,4 +1,4 @@
-namespace Hoard.Core.Messages.Holdings;
+namespace Hoard.Messages.Holdings;
 
 /// <summary>
 /// Event raised when holdings have been calculated.

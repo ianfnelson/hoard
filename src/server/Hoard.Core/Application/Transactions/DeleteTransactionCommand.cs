@@ -1,5 +1,5 @@
 using Hoard.Core.Data;
-using Hoard.Core.Messages.Transactions;
+using Hoard.Messages.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
 

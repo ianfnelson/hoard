@@ -1,4 +1,4 @@
-namespace Hoard.Core.Messages.Valuations;
+namespace Hoard.Messages.Valuations;
 
 /// <summary>
 /// Event raised when a holding has been valued for a given date

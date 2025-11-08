@@ -1,7 +1,7 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
-using Hoard.Core.Messages.Prices;
 using Hoard.Core.Services;
+using Hoard.Messages.Prices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -9,17 +9,17 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class RefreshPricesBatchCommandHandler : IHandleMessages<RefreshPricesBatchCommand>
+public class RefreshPricesBatchBusHandler : IHandleMessages<RefreshPricesBatchBusCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     private readonly PriceService _priceService;
-    private readonly ILogger<RefreshPricesBatchCommandHandler> _logger;
+    private readonly ILogger<RefreshPricesBatchBusHandler> _logger;
     
-    public RefreshPricesBatchCommandHandler(
+    public RefreshPricesBatchBusHandler(
         IBus bus, 
         HoardContext context, 
-        ILogger<RefreshPricesBatchCommandHandler> logger, 
+        ILogger<RefreshPricesBatchBusHandler> logger, 
         PriceService priceService)
     {
         _bus = bus;
@@ -28,7 +28,7 @@ public class RefreshPricesBatchCommandHandler : IHandleMessages<RefreshPricesBat
         _priceService = priceService;
     }
 
-    public async Task Handle(RefreshPricesBatchCommand message)
+    public async Task Handle(RefreshPricesBatchBusCommand message)
     {
         var instrument = await _context.Instruments
             .FindAsync(message.InstrumentId);

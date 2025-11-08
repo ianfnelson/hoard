@@ -1,6 +1,6 @@
 using Hoard.Core;
 using Hoard.Core.Data;
-using Hoard.Core.Messages.Prices;
+using Hoard.Messages.Prices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -11,7 +11,7 @@ namespace Hoard.Bus.Handlers.Prices;
 
 public class BackfillPricesSaga :
     Saga<BackfillPricesSagaData>,
-    IAmInitiatedBy<BackfillPricesCommand>,
+    IAmInitiatedBy<StartBackfillPricesSagaCommand>,
     IHandleMessages<PriceRefreshedEvent>
 {
     private readonly IBus _bus;
@@ -30,11 +30,11 @@ public class BackfillPricesSaga :
     
     protected override void CorrelateMessages(ICorrelationConfig<BackfillPricesSagaData> cfg)
     {
-        cfg.Correlate<BackfillPricesCommand>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<StartBackfillPricesSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
         cfg.Correlate<PriceRefreshedEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
 
-    public async Task Handle(BackfillPricesCommand message)
+    public async Task Handle(StartBackfillPricesSagaCommand message)
     {
         Data.CorrelationId = message.CorrelationId;
         
@@ -52,7 +52,7 @@ public class BackfillPricesSaga :
         foreach (var instrumentId in instrumentIds)
         {
             var command =
-                new RefreshPricesBatchCommand(Data.CorrelationId, instrumentId, dateRange.StartDate, dateRange.EndDate);
+                new RefreshPricesBatchBusCommand(Data.CorrelationId, instrumentId, dateRange.StartDate, dateRange.EndDate);
             await _bus.DeferLocal(delay, command);
             delay+=TimeSpan.FromSeconds(5);
         }   
@@ -70,7 +70,7 @@ public class BackfillPricesSaga :
         return Task.CompletedTask;
     }
 
-    private static DateRange GetDateRange(BackfillPricesCommand message)
+    private static DateRange GetDateRange(StartBackfillPricesSagaCommand message)
     {
         var startDate = message.StartDate ?? DateOnlyHelper.EpochLocal();
         var endDate = message.EndDate ?? DateOnlyHelper.TodayLocal();

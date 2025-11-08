@@ -1,4 +1,4 @@
-namespace Hoard.Core.Messages.Prices;
+namespace Hoard.Messages.Prices;
 
 /// <summary>
 /// Refresh daily prices for a single instrument
@@ -7,4 +7,4 @@ namespace Hoard.Core.Messages.Prices;
 /// <param name="InstrumentId">ID of instrument for which to retrieve prices</param>
 /// <param name="StartDate">StartDate of range to be retrieved</param>
 /// <param name="EndDate">EndDate of range to be retrieved</param>
-public record RefreshPricesBatchCommand(Guid CorrelationId, int InstrumentId, DateOnly StartDate, DateOnly EndDate);
+public record RefreshPricesBatchBusCommand(Guid CorrelationId, int InstrumentId, DateOnly StartDate, DateOnly EndDate);

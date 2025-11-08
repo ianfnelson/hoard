@@ -1,5 +1,5 @@
 using Hoard.Api.Models.Valuations;
-using Hoard.Core.Messages.Valuations;
+using Hoard.Messages.Valuations;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 
@@ -23,7 +23,7 @@ public class ValuationsController : ControllerBase
     /// Triggers a calculation of all valuations for a given date range
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="BackfillValuationsCommand"/> to the message bus.
+    /// Sends a <see cref="StartBackfillValuationsSagaCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("backfill")]
@@ -41,7 +41,7 @@ public class ValuationsController : ControllerBase
     /// Triggers calculation of all valuations
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="CalculateValuationsCommand"/> to the message bus.
+    /// Sends a <see cref="StartCalculateValuationsSagaCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("calculate")]

@@ -1,5 +1,5 @@
 using Hoard.Core.Data;
-using Hoard.Core.Messages.Holdings;
+using Hoard.Messages.Holdings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -72,7 +72,7 @@ public static class ServiceCollectionExtensions
                 });
             }
 
-            config.Routing(r => r.TypeBased().MapAssemblyOf<CalculateHoldingsCommand>("hoard.bus"));
+            config.Routing(r => r.TypeBased().MapAssemblyOf<CalculateHoldingsBusCommand>("hoard.bus"));
             return config;
         });
         return services;

@@ -1,7 +1,7 @@
 using Hoard.Core;
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
-using Hoard.Core.Messages.Valuations;
+using Hoard.Messages.Valuations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -9,15 +9,15 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Valuations;
 
-public class CalculateHoldingValuationCommandHandler : IHandleMessages<CalculateHoldingValuationCommand>
+public class CalculateHoldingValuationBusHandler : IHandleMessages<CalculateHoldingValuationBusCommand>
 {
     private readonly IBus _bus;
-    private readonly ILogger<CalculateHoldingValuationCommandHandler> _logger;
+    private readonly ILogger<CalculateHoldingValuationBusHandler> _logger;
     private readonly HoardContext _context;
 
-    public CalculateHoldingValuationCommandHandler(
+    public CalculateHoldingValuationBusHandler(
         IBus bus,
-        ILogger<CalculateHoldingValuationCommandHandler> logger,
+        ILogger<CalculateHoldingValuationBusHandler> logger,
         HoardContext context)
     {
         _bus = bus;
@@ -25,7 +25,7 @@ public class CalculateHoldingValuationCommandHandler : IHandleMessages<Calculate
         _context = context;
     }
 
-    public async Task Handle(CalculateHoldingValuationCommand message)
+    public async Task Handle(CalculateHoldingValuationBusCommand message)
     {
         var (correlationId, holdingId) = message;
 

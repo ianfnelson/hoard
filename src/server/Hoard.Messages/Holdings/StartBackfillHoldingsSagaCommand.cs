@@ -1,10 +1,10 @@
-namespace Hoard.Core.Messages.Holdings;
+namespace Hoard.Messages.Holdings;
 
 /// <summary>
 /// Initiates backfill of holdings for a date range and account
 /// </summary>
 /// <param name="CorrelationId">For correlating messages</param>
-public record BackfillHoldingsCommand(Guid CorrelationId)
+public record StartBackfillHoldingsSagaCommand(Guid CorrelationId)
 {
     /// <summary>
     /// Start date of range for backfill.

@@ -1,7 +1,7 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
-using Hoard.Core.Messages.Quotes;
 using Hoard.Core.Services;
+using Hoard.Messages.Quotes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -9,17 +9,17 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Quotes;
 
-public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBatchCommand>
+public class RefreshQuotesBatchBusHandler : IHandleMessages<RefreshQuotesBatchBusCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     private readonly QuoteService _quoteService;
-    private readonly ILogger<RefreshQuotesBatchCommandHandler> _logger;
+    private readonly ILogger<RefreshQuotesBatchBusHandler> _logger;
     
-    public RefreshQuotesBatchCommandHandler(
+    public RefreshQuotesBatchBusHandler(
         IBus bus, 
         HoardContext context, 
-        ILogger<RefreshQuotesBatchCommandHandler> logger, 
+        ILogger<RefreshQuotesBatchBusHandler> logger, 
         QuoteService quoteService)
     {
         _bus = bus;
@@ -28,7 +28,7 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
         _quoteService = quoteService;
     }
     
-    public async Task Handle(RefreshQuotesBatchCommand message)
+    public async Task Handle(RefreshQuotesBatchBusCommand message)
     {
         if (message.InstrumentIds.Count == 0)
         {
@@ -93,7 +93,7 @@ public class RefreshQuotesBatchCommandHandler : IHandleMessages<RefreshQuotesBat
                || quote.RegularMarketChange != dto.RegularMarketChange;
     }
 
-    private async Task<Dictionary<string, Instrument>> GetInstrumentsToBeQuoted(RefreshQuotesBatchCommand message)
+    private async Task<Dictionary<string, Instrument>> GetInstrumentsToBeQuoted(RefreshQuotesBatchBusCommand message)
     {
         var instruments = await _context.Instruments
             .Include(x => x.Quote)

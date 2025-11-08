@@ -1,7 +1,7 @@
 using Hoard.Core;
 using Hoard.Core.Data;
 using Hoard.Core.Extensions;
-using Hoard.Core.Messages.Valuations;
+using Hoard.Messages.Valuations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -12,7 +12,7 @@ namespace Hoard.Bus.Handlers.Valuations;
 
 public class BackfillValuationsSaga :
     Saga<BackfillValuationsSagaData>,
-    IAmInitiatedBy<BackfillValuationsCommand>,
+    IAmInitiatedBy<StartBackfillValuationsSagaCommand>,
     IHandleMessages<ValuationsCalculatedEvent>
 {
     private readonly HoardContext _context;
@@ -31,11 +31,11 @@ public class BackfillValuationsSaga :
     
     protected override void CorrelateMessages(ICorrelationConfig<BackfillValuationsSagaData> cfg)
     {
-        cfg.Correlate<BackfillValuationsCommand>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<StartBackfillValuationsSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
         cfg.Correlate<ValuationsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
     
-    public async Task Handle(BackfillValuationsCommand message)
+    public async Task Handle(StartBackfillValuationsSagaCommand message)
     {
         Data.CorrelationId = message.CorrelationId;
         
@@ -49,11 +49,11 @@ public class BackfillValuationsSaga :
 
         for (var nextDate = dateRange.StartDate; nextDate <= dateRange.EndDate; nextDate = nextDate.AddDays(1))
         {
-            await _bus.SendLocal(new CalculateValuationsCommand(message.CorrelationId) { AsOfDate = nextDate });
+            await _bus.SendLocal(new StartCalculateValuationsSagaCommand(message.CorrelationId) { AsOfDate = nextDate });
         }
     }
     
-    private async Task<DateRange> GetDateRange(BackfillValuationsCommand message)
+    private async Task<DateRange> GetDateRange(StartBackfillValuationsSagaCommand message)
     {
         var startDate = message.StartDate ?? await GetDefaultStartDate();
         var endDate = message.EndDate.OrToday();

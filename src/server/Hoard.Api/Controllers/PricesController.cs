@@ -1,5 +1,5 @@
 using Hoard.Api.Models.Prices;
-using Hoard.Core.Messages.Prices;
+using Hoard.Messages.Prices;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 
@@ -23,7 +23,7 @@ public class PricesController : ControllerBase
     /// Triggers a backfill of prices.
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="BackfillPricesCommand"/> to the message bus.
+    /// Sends a <see cref="StartBackfillPricesSagaCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("backfill")]
@@ -41,7 +41,7 @@ public class PricesController : ControllerBase
     /// Triggers a refresh of prices for active instruments and currencies.
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="RefreshPricesCommand"/> to the message bus.
+    /// Sends a <see cref="RefreshPricesBusCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("refresh")]

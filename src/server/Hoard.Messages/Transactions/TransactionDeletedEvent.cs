@@ -1,3 +1,3 @@
-namespace Hoard.Core.Messages.Transactions;
+namespace Hoard.Messages.Transactions;
 
 public record TransactionDeletedEvent(int TransactionId, DateOnly TransactionDate);

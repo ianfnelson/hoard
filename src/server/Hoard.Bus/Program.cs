@@ -2,11 +2,11 @@
 using Hoard.Bus.Handlers.Valuations;
 using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
-using Hoard.Core.Messages.Holdings;
-using Hoard.Core.Messages.Prices;
-using Hoard.Core.Messages.Quotes;
-using Hoard.Core.Messages.Valuations;
 using Hoard.Core.Services;
+using Hoard.Messages.Holdings;
+using Hoard.Messages.Prices;
+using Hoard.Messages.Quotes;
+using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
