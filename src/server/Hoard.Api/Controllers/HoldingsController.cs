@@ -1,5 +1,4 @@
 using Hoard.Api.Models.Holdings;
-using Hoard.Messages.Holdings;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 
@@ -18,14 +17,7 @@ public class HoldingsController : ControllerBase
         _bus = bus;
         _logger = logger;
     }
-
-    /// <summary>
-    /// Triggers a calculation of all holdings for a given date range
-    /// </summary>
-    /// <remarks>
-    /// Sends a <see cref="StartBackfillHoldingsSagaCommand"/> to the message bus.
-    /// </remarks>
-    /// <response code="202">Batch job accepted.</response>
+    
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillHoldingsAsync([FromBody] BackfillHoldingsRequest model)
@@ -36,14 +28,7 @@ public class HoldingsController : ControllerBase
         
         return Accepted(new { message = "Backfill holdings triggered." });
     }
-
-    /// <summary>
-    /// Triggers calculation of all holdings
-    /// </summary>
-    /// <remarks>
-    /// Sends a <see cref="CalculateHoldingsBusCommand"/> to the message bus.
-    /// </remarks>
-    /// <response code="202">Batch job accepted.</response>
+    
     [HttpPost("calculate")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> CalculateHoldingsAsync([FromBody] CalculateHoldingsRequest model)

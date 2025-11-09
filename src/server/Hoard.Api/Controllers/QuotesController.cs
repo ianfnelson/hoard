@@ -18,13 +18,6 @@ public class QuotesController : ControllerBase
         _logger = logger;
     }
     
-    /// <summary>
-    /// Triggers a batch refresh of all quotes.
-    /// </summary>
-    /// <remarks>
-    /// Sends a <see cref="RefreshQuotesBusCommand"/> to the message bus.
-    /// </remarks>
-    /// <response code="202">Batch job accepted.</response>
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshQuotesAsync()
