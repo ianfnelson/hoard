@@ -1,5 +1,4 @@
 using Hoard.Api.Models.Prices;
-using Hoard.Messages.Prices;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 
@@ -19,13 +18,6 @@ public class PricesController : ControllerBase
         _logger = logger;
     }
     
-    /// <summary>
-    /// Triggers a backfill of prices.
-    /// </summary>
-    /// <remarks>
-    /// Sends a <see cref="StartBackfillPricesSagaCommand"/> to the message bus.
-    /// </remarks>
-    /// <response code="202">Batch job accepted.</response>
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillPricesAsync([FromBody] BackfillPricesRequest model)
@@ -36,14 +28,7 @@ public class PricesController : ControllerBase
         
         return Accepted(new { message = "Prices backfill triggered." });
     }
-    
-    /// <summary>
-    /// Triggers a refresh of prices for active instruments and currencies.
-    /// </summary>
-    /// <remarks>
-    /// Sends a <see cref="RefreshPricesBusCommand"/> to the message bus.
-    /// </remarks>
-    /// <response code="202">Batch job accepted.</response>
+
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshPricesAsync([FromBody] RefreshPricesRequest model)
