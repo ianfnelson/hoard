@@ -1,6 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Extensions;
-using Hoard.Core.Messages.Holdings;
+using Hoard.Messages.Holdings;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,20 +9,20 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Holdings;
 
-public class CalculateHoldingsCommandHandler : IHandleMessages<CalculateHoldingsCommand>
+public class CalculateHoldingsBusHandler : IHandleMessages<CalculateHoldingsBusCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
-    private readonly ILogger<CalculateHoldingsCommandHandler> _logger;
+    private readonly ILogger<CalculateHoldingsBusHandler> _logger;
 
-    public CalculateHoldingsCommandHandler(IBus bus,  ILogger<CalculateHoldingsCommandHandler> logger, HoardContext context)
+    public CalculateHoldingsBusHandler(IBus bus,  ILogger<CalculateHoldingsBusHandler> logger, HoardContext context)
     {
         _bus = bus;
         _logger = logger;
         _context = context;
     }
     
-    public async Task Handle(CalculateHoldingsCommand message)
+    public async Task Handle(CalculateHoldingsBusCommand message)
     {
         var asOfDate = message.AsOfDate.OrToday();
         

@@ -1,4 +1,4 @@
-using Hoard.Core.Messages.Prices;
+using Hoard.Messages.Prices;
 
 namespace Hoard.Api.Models.Prices;
 
@@ -8,9 +8,9 @@ public class BackfillPricesRequest
     public DateOnly? StartDate { get; init; }
     public DateOnly? EndDate { get; init; }
 
-    public BackfillPricesCommand ToCommand()
+    public StartBackfillPricesSagaCommand ToCommand()
     {
-        return new BackfillPricesCommand(Guid.NewGuid())
+        return new StartBackfillPricesSagaCommand(Guid.NewGuid())
         {
             InstrumentId = InstrumentId,
             StartDate = StartDate,

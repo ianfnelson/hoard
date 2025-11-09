@@ -1,4 +1,4 @@
-namespace Hoard.Core.Messages.Quotes;
+namespace Hoard.Messages.Quotes;
 
 /// <summary>
 /// Refresh quotes for instruments.
@@ -6,7 +6,7 @@ namespace Hoard.Core.Messages.Quotes;
 /// 
 /// The handler of this coarse-grained command will determine which instruments should
 /// have their quotes refreshed on each invocation, and in what batch sizes, and use this to
-/// raise multiple <see cref="RefreshQuotesBatchCommand"/> commands.
+/// raise multiple <see cref="RefreshQuotesBatchBusCommand"/> commands.
 /// </summary>
 /// <param name="CorrelationId">For correlation purposes</param>
-public record RefreshQuotesCommand(Guid CorrelationId);
+public record RefreshQuotesBusCommand(Guid CorrelationId);

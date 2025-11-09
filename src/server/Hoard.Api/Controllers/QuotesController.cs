@@ -1,4 +1,4 @@
-using Hoard.Core.Messages.Quotes;
+using Hoard.Messages.Quotes;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 
@@ -22,7 +22,7 @@ public class QuotesController : ControllerBase
     /// Triggers a batch refresh of all quotes.
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="RefreshQuotesCommand"/> to the message bus.
+    /// Sends a <see cref="RefreshQuotesBusCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("refresh")]
@@ -31,7 +31,7 @@ public class QuotesController : ControllerBase
     {
         _logger.LogInformation("Received request to refresh quotes.");
 
-        await _bus.Send(new RefreshQuotesCommand(Guid.NewGuid()));
+        await _bus.Send(new RefreshQuotesBusCommand(Guid.NewGuid()));
         
         return Accepted(new { message = "Quote refresh triggered." });
     }

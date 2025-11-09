@@ -1,4 +1,4 @@
-using Hoard.Core.Messages.Valuations;
+using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Configuration;
 using Rebus.Bus;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +39,7 @@ public sealed class ValuationTriggerFlusher : BackgroundService
 
                 foreach (var date in dates)
                 {
-                    await _bus.SendLocal(new CalculateValuationsCommand(Guid.NewGuid())
+                    await _bus.SendLocal(new StartCalculateValuationsSagaCommand(Guid.NewGuid())
                     {
                         AsOfDate = date
                     });

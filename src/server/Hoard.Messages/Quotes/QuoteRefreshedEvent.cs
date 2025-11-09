@@ -1,4 +1,4 @@
-namespace Hoard.Core.Messages.Quotes;
+namespace Hoard.Messages.Quotes;
 
 /// <summary>
 /// Event published when quote has been refreshed for an instrument.

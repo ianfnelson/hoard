@@ -1,9 +1,9 @@
 using Hangfire;
 using Hoard.Core;
-using Hoard.Core.Messages.Holdings;
-using Hoard.Core.Messages.Prices;
-using Hoard.Core.Messages.Quotes;
-using Hoard.Core.Messages.Valuations;
+using Hoard.Messages.Holdings;
+using Hoard.Messages.Prices;
+using Hoard.Messages.Quotes;
+using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -88,7 +88,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Enqueuing CalculateHoldingsCommand...");
 
-        var command = new CalculateHoldingsCommand(Guid.NewGuid())
+        var command = new CalculateHoldingsBusCommand(Guid.NewGuid())
         {
             AsOfDate = DateOnlyHelper.TodayLocal()
         };
@@ -100,7 +100,7 @@ public class SchedulerBootstrapper : IHostedService
     public async Task SendRefreshQuotesCommand()
     {
         _logger.LogInformation("Enqueuing RefreshQuotesCommand...");
-        await _bus.Send(new RefreshQuotesCommand(Guid.NewGuid()));
+        await _bus.Send(new RefreshQuotesBusCommand(Guid.NewGuid()));
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
@@ -108,7 +108,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Enqueuing RefreshPricesCommand...");
 
-        var command = new RefreshPricesCommand(Guid.NewGuid())
+        var command = new RefreshPricesBusCommand(Guid.NewGuid())
         {
             AsOfDate = DateOnlyHelper.TodayLocal()
         };
@@ -121,7 +121,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Enqueuing CalculateValuationsCommand...");
 
-        var command = new CalculateValuationsCommand(Guid.NewGuid())
+        var command = new StartCalculateValuationsSagaCommand(Guid.NewGuid())
         {
             AsOfDate = DateOnlyHelper.TodayLocal()
         };

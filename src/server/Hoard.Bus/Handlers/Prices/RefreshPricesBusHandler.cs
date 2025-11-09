@@ -1,24 +1,24 @@
 using Hoard.Core.Data;
 using Hoard.Core.Extensions;
-using Hoard.Core.Messages.Prices;
+using Hoard.Messages.Prices;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
 using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class RefreshPricesCommandHandler : IHandleMessages<RefreshPricesCommand>
+public class RefreshPricesBusHandler : IHandleMessages<RefreshPricesBusCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     
-    public RefreshPricesCommandHandler(IBus bus, HoardContext context)
+    public RefreshPricesBusHandler(IBus bus, HoardContext context)
     {
         _bus = bus;
         _context = context;
     }
     
-    public async Task Handle(RefreshPricesCommand message)
+    public async Task Handle(RefreshPricesBusCommand message)
     {
         var asOfDate = message.AsOfDate.OrToday();
         
@@ -28,7 +28,7 @@ public class RefreshPricesCommandHandler : IHandleMessages<RefreshPricesCommand>
 
         foreach (var instrumentId in instrumentIds)
         {
-            await _bus.Defer(delay, new RefreshPricesBatchCommand(message.CorrelationId, instrumentId, asOfDate, asOfDate));
+            await _bus.Defer(delay, new RefreshPricesBatchBusCommand(message.CorrelationId, instrumentId, asOfDate, asOfDate));
             delay+=TimeSpan.FromSeconds(5);
         }
     }

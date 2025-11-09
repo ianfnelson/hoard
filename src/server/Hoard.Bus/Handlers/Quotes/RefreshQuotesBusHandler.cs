@@ -1,26 +1,26 @@
 using Hoard.Core.Data;
 using Hoard.Core.Extensions;
-using Hoard.Core.Messages.Quotes;
+using Hoard.Messages.Quotes;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
 using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Quotes;
 
-public class RefreshQuotesCommandHandler : IHandleMessages<RefreshQuotesCommand>
+public class RefreshQuotesBusHandler : IHandleMessages<RefreshQuotesBusCommand>
 {
     private readonly IBus _bus;
     private readonly HoardContext _context;
     
     private const int BatchSize = 5;
 
-    public RefreshQuotesCommandHandler(IBus bus, HoardContext context)
+    public RefreshQuotesBusHandler(IBus bus, HoardContext context)
     {
         _bus = bus;
         _context = context;
     }
 
-    public async Task Handle(RefreshQuotesCommand message)
+    public async Task Handle(RefreshQuotesBusCommand message)
     {
         var instruments = await GetInstrumentIdsForRefresh();
 
@@ -31,7 +31,7 @@ public class RefreshQuotesCommandHandler : IHandleMessages<RefreshQuotesCommand>
         
         foreach (var batch in instruments.BatchesOf(BatchSize))
         {
-            await _bus.Defer(delay, new RefreshQuotesBatchCommand(message.CorrelationId, batch));
+            await _bus.Defer(delay, new RefreshQuotesBatchBusCommand(message.CorrelationId, batch));
             delay+=TimeSpan.FromSeconds(1);
         }
     }

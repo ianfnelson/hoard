@@ -1,6 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Extensions;
-using Hoard.Core.Messages.Valuations;
+using Hoard.Messages.Valuations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,7 +12,7 @@ namespace Hoard.Bus.Handlers.Valuations;
 
 public class CalculateValuationsSaga :
     Saga<CalculateValuationsSagaData>,
-    IAmInitiatedBy<CalculateValuationsCommand>,
+    IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
     IHandleMessages<HoldingValuationCalculatedEvent>
 {
     private readonly IBus _bus;
@@ -28,7 +28,7 @@ public class CalculateValuationsSaga :
 
     protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
     {
-        cfg.Correlate<CalculateValuationsCommand>(
+        cfg.Correlate<StartCalculateValuationsSagaCommand>(
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
 
@@ -37,7 +37,7 @@ public class CalculateValuationsSaga :
             d => d.CorrelationKey);
     }
 
-    public async Task Handle(CalculateValuationsCommand message)
+    public async Task Handle(StartCalculateValuationsSagaCommand message)
     {
         Data.CorrelationId = message.CorrelationId;
 
@@ -59,7 +59,7 @@ public class CalculateValuationsSaga :
 
         foreach (var holdingId in holdingIds)
         {
-            var command = new CalculateHoldingValuationCommand(Data.CorrelationId, holdingId);
+            var command = new CalculateHoldingValuationBusCommand(Data.CorrelationId, holdingId);
             await _bus.SendLocal(command);
         }
     }

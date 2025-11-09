@@ -1,4 +1,4 @@
-namespace Hoard.Core.Messages.Prices;
+namespace Hoard.Messages.Prices;
 
 /// <summary>
 /// Event published when price has been refreshed for an instrument.

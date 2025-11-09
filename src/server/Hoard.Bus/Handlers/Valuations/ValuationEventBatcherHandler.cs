@@ -1,7 +1,7 @@
 using Hoard.Core.Extensions;
-using Hoard.Core.Messages.Holdings;
-using Hoard.Core.Messages.Prices;
-using Hoard.Core.Messages.Quotes;
+using Hoard.Messages.Holdings;
+using Hoard.Messages.Prices;
+using Hoard.Messages.Quotes;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
 

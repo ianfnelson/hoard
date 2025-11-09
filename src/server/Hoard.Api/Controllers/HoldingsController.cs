@@ -1,5 +1,5 @@
 using Hoard.Api.Models.Holdings;
-using Hoard.Core.Messages.Holdings;
+using Hoard.Messages.Holdings;
 using Microsoft.AspNetCore.Mvc;
 using Rebus.Bus;
 
@@ -23,7 +23,7 @@ public class HoldingsController : ControllerBase
     /// Triggers a calculation of all holdings for a given date range
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="BackfillHoldingsCommand"/> to the message bus.
+    /// Sends a <see cref="StartBackfillHoldingsSagaCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("backfill")]
@@ -41,7 +41,7 @@ public class HoldingsController : ControllerBase
     /// Triggers calculation of all holdings
     /// </summary>
     /// <remarks>
-    /// Sends a <see cref="CalculateHoldingsCommand"/> to the message bus.
+    /// Sends a <see cref="CalculateHoldingsBusCommand"/> to the message bus.
     /// </remarks>
     /// <response code="202">Batch job accepted.</response>
     [HttpPost("calculate")]

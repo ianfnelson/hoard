@@ -1,4 +1,4 @@
-using Hoard.Core.Messages.Holdings;
+using Hoard.Messages.Holdings;
 
 namespace Hoard.Api.Models.Holdings;
 
@@ -6,9 +6,9 @@ public class CalculateHoldingsRequest
 {
     public DateOnly? AsOfDate { get; set; }
 
-    public CalculateHoldingsCommand ToCommand()
+    public CalculateHoldingsBusCommand ToCommand()
     {
-        return new CalculateHoldingsCommand(Guid.NewGuid())
+        return new CalculateHoldingsBusCommand(Guid.NewGuid())
         {
             AsOfDate = AsOfDate
         };

@@ -40,4 +40,8 @@
     <ItemGroup>
       <Folder Include="Data\Migrations\" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Hoard.Messages\Hoard.Messages.csproj" />
+    </ItemGroup>
 </Project>
