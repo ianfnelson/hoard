@@ -105,13 +105,15 @@ public class CalculateHoldingValuationBusHandler : IHandleMessages<CalculateHold
 
     private async Task<decimal> GetLatestPriceForInstrument(Instrument instrument, DateOnly asOfDate)
     {
-        // If we are valuing a holding for today, use the quote if there is one.
-        if (asOfDate == DateOnlyHelper.TodayLocal() && instrument.Quote != null)
+        // If we are valuing a holding for today before 22;00, use the quote if there is one.
+        if (asOfDate == DateOnlyHelper.TodayLocal() 
+            && DateTime.Now.TimeOfDay < new TimeSpan(22,0,0)
+            && instrument.Quote != null)
         {
             return instrument.Quote.RegularMarketPrice;
         }
 
-        // No quote, or this is a valuation for an earlier day. Look in price history.
+        // No quote, or this is a valuation for an earlier day, or after 10pm. Look in price history.
         var price = await _context.Prices
             .Where(x => x.InstrumentId == instrument.Id)
             .Where(x => x.AsOfDate <= asOfDate)
