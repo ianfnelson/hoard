@@ -2,7 +2,7 @@ namespace Hoard.Core.Services;
 
 public interface PriceService
 {
-    Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to);
+    Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to, CancellationToken ct = default);
 }
 
 public class PriceDto

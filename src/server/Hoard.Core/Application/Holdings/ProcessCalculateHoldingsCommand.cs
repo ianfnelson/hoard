@@ -22,12 +22,12 @@ public class ProcessCalculateHoldingsHandler(
         
         logger.LogInformation("Starting holdings calculation for {Date}", asOfDate.ToIsoDateString());
 
-        await CalculateHoldings(asOfDate);
+        await CalculateHoldings(asOfDate, ct);
 
         await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate));
     }
     
-    private async Task CalculateHoldings(DateOnly asOfDate)
+    private async Task CalculateHoldings(DateOnly asOfDate, CancellationToken ct)
     {
         try
         {
@@ -38,7 +38,7 @@ public class ProcessCalculateHoldingsHandler(
                 new SqlParameter("@AsOfDate", asOfDate.ToDateTime(TimeOnly.MinValue))
             };
                 
-            var result = await context.Database.ExecuteSqlRawAsync("EXEC CalculateHoldings @AsOfDate", parameters);
+            var result = await context.Database.ExecuteSqlRawAsync("EXEC CalculateHoldings @AsOfDate", parameters, ct);
 
             sw.Stop();
 

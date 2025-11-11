@@ -24,7 +24,7 @@ public class ProcessRefreshPricesBatchHandler(
     public async Task HandleAsync(ProcessRefreshPricesBatchCommand command, CancellationToken ct = default)
     {
         var instrument = await context.Instruments
-            .FindAsync(command.InstrumentId);
+            .FindAsync(new object?[command.InstrumentId], cancellationToken: ct);
         if (instrument == null)
         {
             logger.LogWarning("Received RefreshPricesBatchCommand with unknown Instrument {InstrumentId}", command.InstrumentId);
@@ -37,12 +37,12 @@ public class ProcessRefreshPricesBatchHandler(
             return;
         }
         
-        var prices = await priceService.GetPricesAsync(instrument.TickerApi!, command.StartDate, command.EndDate);
+        var prices = await priceService.GetPricesAsync(instrument.TickerApi!, command.StartDate, command.EndDate, ct);
         var now = DateTime.UtcNow;
         
         foreach (var price in prices)
         {
-            await UpsertPrice(instrument.Id, price, now);
+            await UpsertPrice(instrument.Id, price, now, ct);
         }
         
         await context.SaveChangesAsync(ct);
@@ -52,10 +52,10 @@ public class ProcessRefreshPricesBatchHandler(
 
     }
     
-    private async Task UpsertPrice(int instrumentId, PriceDto priceDto, DateTime now)
+    private async Task UpsertPrice(int instrumentId, PriceDto priceDto, DateTime now, CancellationToken ct = default)
     {        
         var price = await context.Prices
-            .FirstOrDefaultAsync(x => x.InstrumentId == instrumentId && x.AsOfDate == priceDto.Date);
+            .FirstOrDefaultAsync(x => x.InstrumentId == instrumentId && x.AsOfDate == priceDto.Date, ct);
 
         if (price == null)
         {
