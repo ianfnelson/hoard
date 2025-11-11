@@ -124,13 +124,13 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new TransactionCategory { Id = 1, Name = "Buy" },
-            new TransactionCategory { Id = 2, Name = "Sell" },
-            new TransactionCategory { Id = 3, Name = "Dividend" },
-            new TransactionCategory { Id = 4, Name = "Interest" },
-            new TransactionCategory { Id = 5, Name = "Fee" },
-            new TransactionCategory { Id = 6, Name = "Deposit" },
-            new TransactionCategory { Id = 7, Name = "Withdrawal" }
+            new TransactionCategory { Id = TransactionCategory.Buy, Name = "Buy" },
+            new TransactionCategory { Id = TransactionCategory.Sell, Name = "Sell" },
+            new TransactionCategory { Id = TransactionCategory.Dividend, Name = "Dividend" },
+            new TransactionCategory { Id = TransactionCategory.Interest, Name = "Interest" },
+            new TransactionCategory { Id = TransactionCategory.Fee, Name = "Fee" },
+            new TransactionCategory { Id = TransactionCategory.Deposit, Name = "Deposit" },
+            new TransactionCategory { Id = TransactionCategory.Withdrawal, Name = "Withdrawal" }
         };
         await UpsertAsync(_context.TransactionCategories, items, x => x.Id);
     }
@@ -139,12 +139,12 @@ public class ReferenceDataSeeder
     {
         var items = new[] 
         {
-            new TransactionLegCategory { Id = 1, Name = "Cash" },
-            new TransactionLegCategory { Id = 2, Name = "Principal" },
-            new TransactionLegCategory { Id = 3, Name = "Income" },
-            new TransactionLegCategory { Id = 4, Name = "Fee" },
-            new TransactionLegCategory { Id = 5, Name = "Tax" },
-            new TransactionLegCategory { Id = 6, Name = "External" }
+            new TransactionLegCategory { Id = TransactionLegCategory.Cash, Name = "Cash" },
+            new TransactionLegCategory { Id = TransactionLegCategory.Principal, Name = "Principal" },
+            new TransactionLegCategory { Id = TransactionLegCategory.Income, Name = "Income" },
+            new TransactionLegCategory { Id = TransactionLegCategory.Fee, Name = "Fee" },
+            new TransactionLegCategory { Id = TransactionLegCategory.Tax, Name = "Tax" },
+            new TransactionLegCategory { Id = TransactionLegCategory.External, Name = "External" }
         };
         await UpsertAsync(_context.TransactionLegCategories, items, x => x.Id);
     }
@@ -153,17 +153,62 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new TransactionLegSubcategory { Id = 1, CategoryId = 6, Name = "Personal Contribution" },
-            new TransactionLegSubcategory { Id = 2, CategoryId = 6, Name = "Employer Contribution" },
-            new TransactionLegSubcategory { Id = 3, CategoryId = 6, Name = "Income Tax Reclaim" },
-            new TransactionLegSubcategory { Id = 4, CategoryId = 6, Name = "Transfer In" },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.PersonalContribution, 
+                CategoryId = TransactionLegCategory.External, 
+                Name = "Personal Contribution"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.EmployerContribution, 
+                CategoryId = TransactionLegCategory.External, 
+                Name = "Employer Contribution"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.IncomeTaxReclaim, 
+                CategoryId = TransactionLegCategory.External, 
+                Name = "Income Tax Reclaim"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.TransferIn, 
+                CategoryId = TransactionLegCategory.External, 
+                Name = "Transfer In"
+            },
 
-            new TransactionLegSubcategory { Id = 5, CategoryId = 4, Name = "Account Charge" },
-            new TransactionLegSubcategory { Id = 6, CategoryId = 4, Name = "Dealing Charge" },
-            new TransactionLegSubcategory { Id = 7, CategoryId = 4, Name = "FX Conversion Charge" },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.AccountCharge, 
+                CategoryId = TransactionLegCategory.Fee, 
+                Name = "Account Charge"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.DealingCharge, 
+                CategoryId = TransactionLegCategory.Fee, 
+                Name = "Dealing Charge"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.FxConversionCharge, 
+                CategoryId = TransactionLegCategory.Fee, 
+                Name = "FX Conversion Charge"
+            },
 
-            new TransactionLegSubcategory { Id = 8, CategoryId = 5, Name = "Stamp Duty" },
-            new TransactionLegSubcategory { Id = 9, CategoryId = 5, Name = "PTM Levy" },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.StampDuty, 
+                CategoryId = TransactionLegCategory.Tax, 
+                Name = "Stamp Duty"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.PtmLevy, 
+                CategoryId = TransactionLegCategory.Tax, 
+                Name = "PTM Levy"
+            },
         };
         await UpsertAsync(_context.TransactionLegSubcategories, items, x => x.Id);
     }
