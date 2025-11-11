@@ -24,16 +24,18 @@ public class BackfillValuationsSaga(
     
     public async Task Handle(StartBackfillValuationsSagaCommand message)
     {
-        Data.CorrelationId = message.CorrelationId;
+        var (correlationId, startDate, endDate) = message;
+        
+        Data.CorrelationId = correlationId;
         
         var dates = await mediator.QueryAsync<GetDatesForBackfillQuery, IReadOnlyList<DateOnly>>(
-            new GetDatesForBackfillQuery(message.StartDate, message.EndDate));
+            new GetDatesForBackfillQuery(startDate, endDate));
         
         logger.LogInformation("Starting valuations recomputation {Start} → {End}", dates.Min().ToIsoDateString(), dates.Max().ToIsoDateString());
 
         Data.PendingDates = dates.ToHashSet();
 
-        await mediator.SendAsync(new DispatchBackfillValuationsCommand(message.CorrelationId, dates));
+        await mediator.SendAsync(new DispatchBackfillValuationsCommand(correlationId, dates));
     }
     
     public Task Handle(ValuationsCalculatedEvent message)
