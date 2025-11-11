@@ -1,46 +1,20 @@
-using Hoard.Core.Data;
-using Hoard.Core.Extensions;
+using Hoard.Core.Application;
+using Hoard.Core.Application.Prices;
 using Hoard.Messages.Prices;
-using Microsoft.EntityFrameworkCore;
-using Rebus.Bus;
 using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class RefreshPricesBusHandler : IHandleMessages<RefreshPricesBusCommand>
+public class RefreshPricesBusHandler(IMediator mediator) 
+    : IHandleMessages<RefreshPricesBusCommand>
 {
-    private readonly IBus _bus;
-    private readonly HoardContext _context;
-    
-    public RefreshPricesBusHandler(IBus bus, HoardContext context)
-    {
-        _bus = bus;
-        _context = context;
-    }
-    
     public async Task Handle(RefreshPricesBusCommand message)
     {
-        var asOfDate = message.AsOfDate.OrToday();
-        
-        var instrumentIds = await GetInstrumentIdsForRefresh();
-
-        var delay = TimeSpan.Zero;
-
-        foreach (var instrumentId in instrumentIds)
+        var appCommand = new ProcessRefreshPricesCommand(message.CorrelationId, message.AsOfDate)
         {
-            await _bus.Defer(delay, new RefreshPricesBatchBusCommand(message.CorrelationId, instrumentId, asOfDate, asOfDate));
-            delay+=TimeSpan.FromSeconds(5);
-        }
-    }
+            AsOfDate = message.AsOfDate
+        };
 
-    private async Task<IList<int>> GetInstrumentIdsForRefresh()
-    {
-        return await _context
-            .Instruments
-            .Where(i => i.EnablePriceUpdates)
-            .Where(i => i.IsActive)
-            .Where(i => i.TickerApi != null)
-            .Select(x => x.Id)
-            .ToListAsync();
+        await mediator.SendAsync(appCommand);
     }
 }

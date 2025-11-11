@@ -1,30 +1,21 @@
-using Hoard.Messages.Quotes;
+using Hoard.Core.Application;
+using Hoard.Core.Application.Quotes;
 using Microsoft.AspNetCore.Mvc;
-using Rebus.Bus;
 
 namespace Hoard.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-public class QuotesController : ControllerBase
+public class QuotesController(IMediator mediator, ILogger<QuotesController> logger) : ControllerBase
 {
-    private readonly IBus _bus;
-    private readonly ILogger<QuotesController> _logger;
-
-    public QuotesController(IBus bus, ILogger<QuotesController> logger)
-    {
-        _bus = bus;
-        _logger = logger;
-    }
-    
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshQuotesAsync()
     {
-        _logger.LogInformation("Received request to refresh quotes.");
+        logger.LogInformation("Received request to refresh quotes.");
 
-        await _bus.Send(new RefreshQuotesBusCommand(Guid.NewGuid()));
+        await mediator.SendAsync(new TriggerRefreshQuotesCommand(Guid.NewGuid()));
         
         return Accepted(new { message = "Quote refresh triggered." });
     }

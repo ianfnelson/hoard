@@ -1,33 +1,19 @@
-using Hoard.Core;
-using Hoard.Core.Data;
+using Hoard.Core.Application;
+using Hoard.Core.Application.Prices;
 using Hoard.Messages.Prices;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
 namespace Hoard.Bus.Handlers.Prices;
 
-public class BackfillPricesSaga :
+public class BackfillPricesSaga(
+    IMediator mediator,
+    ILogger<BackfillPricesSaga> logger) :
     Saga<BackfillPricesSagaData>,
     IAmInitiatedBy<StartBackfillPricesSagaCommand>,
     IHandleMessages<PriceRefreshedEvent>
 {
-    private readonly IBus _bus;
-    private readonly ILogger<BackfillPricesSaga> _logger;
-    private readonly HoardContext _context;
-
-    public BackfillPricesSaga(
-        HoardContext context,
-        IBus bus, 
-        ILogger<BackfillPricesSaga> logger)
-    {
-        _context = context;
-        _bus = bus;
-        _logger = logger;
-    }
-    
     protected override void CorrelateMessages(ICorrelationConfig<BackfillPricesSagaData> cfg)
     {
         cfg.Correlate<StartBackfillPricesSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
@@ -37,25 +23,16 @@ public class BackfillPricesSaga :
     public async Task Handle(StartBackfillPricesSagaCommand message)
     {
         Data.CorrelationId = message.CorrelationId;
-        
-        var instrumentIds = await GetTargetInstrumentIdsAsync(message.InstrumentId);
 
-        _logger.LogInformation("Started backfill prices saga {CorrelationId} for {Count} instruments",
+        var instrumentIds = await mediator.QueryAsync<GetInstrumentsForBackfillQuery, IReadOnlyList<int>>(
+            new GetInstrumentsForBackfillQuery(message.InstrumentId));
+
+        logger.LogInformation("Started backfill prices saga {CorrelationId} for {Count} instruments",
             Data.CorrelationId, instrumentIds.Count);
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
-        var dateRange = GetDateRange(message);
-        
-        var delay = TimeSpan.Zero;
-        
-        foreach (var instrumentId in instrumentIds)
-        {
-            var command =
-                new RefreshPricesBatchBusCommand(Data.CorrelationId, instrumentId, dateRange.StartDate, dateRange.EndDate);
-            await _bus.DeferLocal(delay, command);
-            delay+=TimeSpan.FromSeconds(5);
-        }   
+        await mediator.SendAsync(new DispatchBackfillPricesCommand(message.CorrelationId, instrumentIds, message.StartDate, message.EndDate));
     }
     
     public Task Handle(PriceRefreshedEvent message)
@@ -63,44 +40,11 @@ public class BackfillPricesSaga :
         Data.PendingInstruments.Remove(message.InstrumentId);
         if (Data.PendingInstruments.Count == 0)
         {
-            _logger.LogInformation("Price backfill saga {CorrelationId} complete", Data.CorrelationId);
+            logger.LogInformation("Price backfill saga {CorrelationId} complete", Data.CorrelationId);
             MarkAsComplete();
         }
 
         return Task.CompletedTask;
-    }
-
-    private static DateRange GetDateRange(StartBackfillPricesSagaCommand message)
-    {
-        var startDate = message.StartDate ?? DateOnlyHelper.EpochLocal();
-        var endDate = message.EndDate ?? DateOnlyHelper.TodayLocal();
-        
-        return new DateRange(startDate, endDate);
-    }
-    
-    private async Task<List<int>> GetTargetInstrumentIdsAsync(int? instrumentId)
-    {
-        if (!instrumentId.HasValue)
-        {
-            return await _context.Instruments
-                .Include(x => x.InstrumentType)
-                .Where(x => x.EnablePriceUpdates)
-                .Where(x => x.TickerApi != null)
-                .Select(x => x.Id)
-                .ToListAsync();
-        }
-        
-        var instrument = await _context.Instruments
-            .Include(x => x.InstrumentType)
-            .FirstOrDefaultAsync(x => x.Id == instrumentId.Value);
-
-        if (instrument == null)
-        {
-            _logger.LogWarning("Instrument with id {InstrumentId} not found", instrumentId);
-            return [];
-        }
-        
-        return [instrumentId.Value];
     }
 }
 

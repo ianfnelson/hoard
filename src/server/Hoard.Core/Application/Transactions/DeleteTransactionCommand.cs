@@ -7,20 +7,12 @@ namespace Hoard.Core.Application.Transactions;
 
 public record DeleteTransactionCommand(int TransactionId) : ICommand;
 
-public class DeleteTransactionHandler : ICommandHandler<DeleteTransactionCommand>
+public class DeleteTransactionHandler(HoardContext context, IBus bus) 
+    : ICommandHandler<DeleteTransactionCommand>
 {
-    private readonly HoardContext _context;
-    private readonly IBus _bus;
-
-    public DeleteTransactionHandler(HoardContext context, IBus bus)
-    {
-        _context = context;
-        _bus = bus;
-    }
-
     public async Task HandleAsync(DeleteTransactionCommand command, CancellationToken ct = default)
     {
-        var txn = await _context.Transactions
+        var txn = await context.Transactions
             .SingleOrDefaultAsync(t => t.Id == command.TransactionId, ct);
 
         if (txn == null)
@@ -28,9 +20,9 @@ public class DeleteTransactionHandler : ICommandHandler<DeleteTransactionCommand
 
         var transactionDate = txn.Date;
         
-        _context.Transactions.Remove(txn);
-        await _context.SaveChangesAsync(ct);
+        context.Transactions.Remove(txn);
+        await context.SaveChangesAsync(ct);
         
-        await _bus.Publish(new TransactionDeletedEvent(command.TransactionId, transactionDate));
+        await bus.Publish(new TransactionDeletedEvent(command.TransactionId, transactionDate));
     }
 }

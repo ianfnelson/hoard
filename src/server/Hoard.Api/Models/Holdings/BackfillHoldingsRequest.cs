@@ -1,4 +1,4 @@
-using Hoard.Messages.Holdings;
+using Hoard.Core.Application.Holdings;
 
 namespace Hoard.Api.Models.Holdings;
 
@@ -7,12 +7,8 @@ public class BackfillHoldingsRequest
     public DateOnly? StartDate { get; init; }
     public DateOnly? EndDate { get; init; }
 
-    public StartBackfillHoldingsSagaCommand ToCommand()
+    public TriggerBackfillHoldingsCommand ToCommand()
     {
-        return new StartBackfillHoldingsSagaCommand(Guid.NewGuid())
-        {
-            StartDate = StartDate,
-            EndDate = EndDate
-        };
+        return new TriggerBackfillHoldingsCommand(Guid.NewGuid(), StartDate, EndDate);
     }
 }

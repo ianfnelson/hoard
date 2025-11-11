@@ -1,4 +1,4 @@
-using Hoard.Messages.Prices;
+using Hoard.Core.Application.Prices;
 
 namespace Hoard.Api.Models.Prices;
 
@@ -6,11 +6,8 @@ public class RefreshPricesRequest
 {
     public DateOnly? AsOfDate { get; set; }
 
-    public RefreshPricesBusCommand ToCommand()
+    public TriggerRefreshPricesCommand ToCommand()
     {
-        return new RefreshPricesBusCommand(Guid.NewGuid())
-        {
-            AsOfDate = AsOfDate
-        };
+        return new TriggerRefreshPricesCommand(Guid.NewGuid(), AsOfDate);
     }
 }

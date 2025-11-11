@@ -1,30 +1,21 @@
 using Hoard.Api.Models.Valuations;
+using Hoard.Core.Application;
 using Microsoft.AspNetCore.Mvc;
-using Rebus.Bus;
 
 namespace Hoard.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-public class ValuationsController : ControllerBase
+public class ValuationsController(IMediator mediator, ILogger<ValuationsController> logger) : ControllerBase
 {
-    private readonly IBus _bus;
-    private readonly ILogger<ValuationsController> _logger;
-
-    public ValuationsController(IBus bus, ILogger<ValuationsController> logger)
-    {
-        _bus = bus;
-        _logger = logger;
-    }
-    
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillHoldingsAsync([FromBody] BackfillValuationsRequest model)
     {
-        _logger.LogInformation("Received request to backfill valuations.");
+        logger.LogInformation("Received request to backfill valuations.");
         
-        await _bus.Send(model.ToCommand());
+        await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Backfill valuations triggered." });
     }
@@ -33,9 +24,9 @@ public class ValuationsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> CalculateValuationsAsync([FromBody] CalculateValuationsRequest model)
     {
-        _logger.LogInformation("Received request to calculate valuations.");
+        logger.LogInformation("Received request to calculate valuations.");
 
-        await _bus.Send(model.ToCommand());
+        await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Calculate valuations triggered." });
     }

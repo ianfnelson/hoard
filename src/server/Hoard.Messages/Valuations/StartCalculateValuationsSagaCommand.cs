@@ -1,6 +1,3 @@
 namespace Hoard.Messages.Valuations;
 
-public record StartCalculateValuationsSagaCommand(Guid CorrelationId)
-{
-    public DateOnly? AsOfDate { get; init; }
-}
+public record StartCalculateValuationsSagaCommand(Guid CorrelationId, DateOnly? AsOfDate);
