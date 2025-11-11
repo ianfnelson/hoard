@@ -24,7 +24,7 @@ public class ProcessRefreshPricesBatchHandler(
     public async Task HandleAsync(ProcessRefreshPricesBatchCommand command, CancellationToken ct = default)
     {
         var instrument = await context.Instruments
-            .FindAsync(new object?[command.InstrumentId], cancellationToken: ct);
+            .FindAsync(new object?[]{command.InstrumentId}, cancellationToken: ct);
         if (instrument == null)
         {
             logger.LogWarning("Received RefreshPricesBatchCommand with unknown Instrument {InstrumentId}", command.InstrumentId);
