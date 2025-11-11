@@ -36,7 +36,6 @@ public class SchedulerBootstrapper : IHostedService
         RegisterCalculateHoldings();
         RegisterRefreshQuotes();
         RegisterRefreshPrices();
-        RegisterCalculateValuations();
         
         return Task.CompletedTask;
     }
@@ -64,16 +63,7 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "refresh-prices",
             () => SendRefreshPricesCommand(),
-            "40 21 * * *" // daily at 21:40
-        );
-    }
-    
-    private void RegisterCalculateValuations()
-    {
-        _recurring.AddOrUpdate(
-            "calculate-valuations",
-            () => SendCalculateValuationsCommand(),
-            "0 23 * * *" // daily at 23:00
+            "9 17,22,23 * * *" // daily at 17:00, 22:00, 23:00
         );
     }
     
@@ -109,19 +99,6 @@ public class SchedulerBootstrapper : IHostedService
         _logger.LogInformation("Enqueuing RefreshPricesCommand...");
 
         var command = new RefreshPricesBusCommand(Guid.NewGuid())
-        {
-            AsOfDate = DateOnlyHelper.TodayLocal()
-        };
-        
-        await _bus.Send(command);
-    }
-    
-    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task SendCalculateValuationsCommand()
-    {
-        _logger.LogInformation("Enqueuing CalculateValuationsCommand...");
-
-        var command = new StartCalculateValuationsSagaCommand(Guid.NewGuid())
         {
             AsOfDate = DateOnlyHelper.TodayLocal()
         };
