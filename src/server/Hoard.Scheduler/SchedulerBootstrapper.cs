@@ -62,7 +62,7 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "refresh-prices",
             () => SendRefreshPricesCommand(),
-            "9 17,22,23 * * *" // daily at 17:00, 22:00, 23:00
+            "0 17,22,23 * * 1-5" // weekdays at 17:00, 22:00, 23:00
         );
     }
     
