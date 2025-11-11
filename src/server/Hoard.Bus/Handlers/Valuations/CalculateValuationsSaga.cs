@@ -1,31 +1,19 @@
-using Hoard.Core.Data;
+using Hoard.Core.Application;
+using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Valuations;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
 namespace Hoard.Bus.Handlers.Valuations;
 
-public class CalculateValuationsSaga :
-    Saga<CalculateValuationsSagaData>,
-    IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
-    IHandleMessages<HoldingValuationCalculatedEvent>
+public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IMediator mediator)
+    :
+        Saga<CalculateValuationsSagaData>,
+        IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
+        IHandleMessages<HoldingValuationCalculatedEvent>
 {
-    private readonly IBus _bus;
-    private readonly ILogger<CalculateValuationsSaga> _logger;
-    private readonly HoardContext _context;
-
-    public CalculateValuationsSaga(IBus bus, ILogger<CalculateValuationsSaga> logger, HoardContext context)
-    {
-        _bus = bus;
-        _logger = logger;
-        _context = context;
-    }
-
     protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
     {
         cfg.Correlate<StartCalculateValuationsSagaCommand>(
@@ -44,32 +32,21 @@ public class CalculateValuationsSaga :
         var asOfDate = message.AsOfDate.OrToday();
         Data.AsOfDate = asOfDate;
 
-        var holdingIds = await GetHoldingIdsAsync(asOfDate);
-
+        var holdingIds = await mediator.QueryAsync<GetHoldingsForValuationQuery, IReadOnlyList<int>>(
+            new GetHoldingsForValuationQuery(asOfDate));
+        
         if (holdingIds.Count == 0)
         {
             MarkAsComplete();
             return;
         }
 
-        _logger.LogInformation("Started calculate valuations saga {CorrelationKey} for {Count} holdings",
+        logger.LogInformation("Started calculate valuations saga {CorrelationKey} for {Count} holdings",
             Data.CorrelationKey, holdingIds.Count);
 
         Data.PendingHoldings = holdingIds.ToHashSet();
-
-        foreach (var holdingId in holdingIds)
-        {
-            var command = new CalculateHoldingValuationBusCommand(Data.CorrelationId, holdingId);
-            await _bus.SendLocal(command);
-        }
-    }
-
-    private async Task<List<int>> GetHoldingIdsAsync(DateOnly asOfDate)
-    {
-        return await _context.Holdings
-            .Where(x => x.AsOfDate == asOfDate)
-            .Select(x => x.Id)
-            .ToListAsync();
+        
+        await mediator.SendAsync(new DispatchHoldingsValuationCommand(message.CorrelationId, holdingIds));
     }
 
     public async Task Handle(HoldingValuationCalculatedEvent message)
@@ -77,40 +54,11 @@ public class CalculateValuationsSaga :
         Data.PendingHoldings.Remove(message.HoldingId);
         if (Data.PendingHoldings.Count == 0)
         {
-            await CalculatePortfolioValuations();
-
-            await _bus.Publish(new ValuationsCalculatedEvent(Data.CorrelationId, Data.AsOfDate));
-
-            _logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
+            await mediator.SendAsync(
+                new ProcessCalculatePortfolioValuationsCommand(message.CorrelationId, message.AsOfDate));
+            
+            logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();
-        }
-    }
-
-    private async Task CalculatePortfolioValuations()
-    {
-        try
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-
-            var parameters = new[]
-            {
-                new SqlParameter("@AsOfDate", Data.AsOfDate.ToDateTime(TimeOnly.MinValue))
-            };
-
-            var result =
-                await _context.Database.ExecuteSqlRawAsync("EXEC CalculatePortfolioValuations @AsOfDate", parameters);
-
-            sw.Stop();
-
-            _logger.LogInformation(
-                "Portfolio valuations calculated for {Date} ({Count} rows affected) in {Elapsed} ms",
-                Data.AsOfDate.ToIsoDateString(), result, sw.ElapsedMilliseconds);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to calculate Portfolio valuations for {Date}",
-                Data.AsOfDate.ToIsoDateString());
-            throw;
         }
     }
 }
