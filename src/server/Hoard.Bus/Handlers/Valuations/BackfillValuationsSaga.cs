@@ -1,34 +1,21 @@
-using Hoard.Core;
-using Hoard.Core.Data;
+using Hoard.Core.Application;
+using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Valuations;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
 namespace Hoard.Bus.Handlers.Valuations;
 
-public class BackfillValuationsSaga :
-    Saga<BackfillValuationsSagaData>,
-    IAmInitiatedBy<StartBackfillValuationsSagaCommand>,
-    IHandleMessages<ValuationsCalculatedEvent>
+public class BackfillValuationsSaga(
+    IMediator mediator,
+    ILogger<BackfillValuationsSaga> logger)
+    :
+        Saga<BackfillValuationsSagaData>,
+        IAmInitiatedBy<StartBackfillValuationsSagaCommand>,
+        IHandleMessages<ValuationsCalculatedEvent>
 {
-    private readonly HoardContext _context;
-    private readonly IBus _bus;
-    private readonly ILogger<BackfillValuationsSaga> _logger;
-
-    public BackfillValuationsSaga(
-        HoardContext context,
-        IBus bus, 
-        ILogger<BackfillValuationsSaga> logger)
-    {
-        _context = context;
-        _bus = bus;
-        _logger = logger;
-    }
-    
     protected override void CorrelateMessages(ICorrelationConfig<BackfillValuationsSagaData> cfg)
     {
         cfg.Correlate<StartBackfillValuationsSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
@@ -39,36 +26,14 @@ public class BackfillValuationsSaga :
     {
         Data.CorrelationId = message.CorrelationId;
         
-        var dateRange = await GetDateRange(message);
+        var dates = await mediator.QueryAsync<GetDatesForBackfillQuery, IReadOnlyList<DateOnly>>(
+            new GetDatesForBackfillQuery(message.StartDate, message.EndDate));
         
-        _logger.LogInformation("Starting valuations recomputation {Start} → {End}", dateRange.StartDate.ToIsoDateString(), dateRange.EndDate.ToIsoDateString());
-        
-        Data.PendingDates = Enumerable.Range(0, dateRange.EndDate.DayNumber - dateRange.StartDate.DayNumber + 1)
-            .Select(i => dateRange.StartDate.AddDays(i))
-            .ToHashSet();
+        logger.LogInformation("Starting valuations recomputation {Start} → {End}", dates.Min().ToIsoDateString(), dates.Max().ToIsoDateString());
 
-        for (var nextDate = dateRange.StartDate; nextDate <= dateRange.EndDate; nextDate = nextDate.AddDays(1))
-        {
-            await _bus.SendLocal(new StartCalculateValuationsSagaCommand(message.CorrelationId) { AsOfDate = nextDate });
-        }
-    }
-    
-    private async Task<DateRange> GetDateRange(StartBackfillValuationsSagaCommand message)
-    {
-        var startDate = message.StartDate ?? await GetDefaultStartDate();
-        var endDate = message.EndDate.OrToday();
-        
-        return new DateRange(startDate, endDate);
-    }
+        Data.PendingDates = dates.ToHashSet();
 
-    private async Task<DateOnly> GetDefaultStartDate()
-    {
-        var earliestTradeDate = await _context.Transactions
-            .OrderBy(t => t.Date)
-            .Select(x => x.Date)
-            .FirstOrDefaultAsync();
-        
-        return earliestTradeDate.OrToday();
+        await mediator.SendAsync(new DispatchBackfillValuationsCommand(message.CorrelationId, dates));
     }
     
     public Task Handle(ValuationsCalculatedEvent message)
@@ -76,7 +41,7 @@ public class BackfillValuationsSaga :
         Data.PendingDates.Remove(message.AsOfDate);
         if (Data.PendingDates.Count == 0)
         {
-            _logger.LogInformation("All valuations recomputed. Done!");
+            logger.LogInformation("All valuations recomputed. Done!");
             MarkAsComplete();
         }
 

@@ -1,12 +1,11 @@
 using Hangfire;
 using Hoard.Core;
-using Hoard.Messages.Holdings;
-using Hoard.Messages.Prices;
-using Hoard.Messages.Quotes;
-using Hoard.Messages.Valuations;
+using Hoard.Core.Application;
+using Hoard.Core.Application.Holdings;
+using Hoard.Core.Application.Prices;
+using Hoard.Core.Application.Quotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Rebus.Bus;
 
 namespace Hoard.Scheduler;
 
@@ -14,18 +13,18 @@ public class SchedulerBootstrapper : IHostedService
 {
     private readonly IBackgroundJobClient _jobs;
     private readonly IRecurringJobManager _recurring;
-    private readonly IBus _bus;
+    private readonly IMediator _mediator;
     private readonly ILogger<SchedulerBootstrapper> _logger;
 
     public SchedulerBootstrapper(
         IBackgroundJobClient jobs,
         IRecurringJobManager recurring,
-        IBus bus,
+        IMediator mediator,
         ILogger<SchedulerBootstrapper> logger)
     {
         _jobs = jobs;
         _recurring = recurring;
-        _bus = bus;
+        _mediator = mediator;
         _logger = logger;
     }
 
@@ -44,7 +43,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _recurring.AddOrUpdate(
             "calculate-holdings",
-            () => SendCalculateHoldingsCommand(),
+            () => TriggerCalculateHoldings(),
             "0 2 * * *" // nightly at 2am
         );
     }
@@ -74,35 +73,32 @@ public class SchedulerBootstrapper : IHostedService
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task SendCalculateHoldingsCommand()
+    public async Task TriggerCalculateHoldings()
     {
-        _logger.LogInformation("Enqueuing CalculateHoldingsCommand...");
+        _logger.LogInformation("Triggering Calculate Holdings");
 
-        var command = new CalculateHoldingsBusCommand(Guid.NewGuid())
-        {
-            AsOfDate = DateOnlyHelper.TodayLocal()
-        };
+        var command = new TriggerCalculateHoldingsCommand( Guid.NewGuid(), DateOnlyHelper.TodayLocal());
         
-        await _bus.Send(command);
+        await _mediator.SendAsync(command);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
     public async Task SendRefreshQuotesCommand()
     {
-        _logger.LogInformation("Enqueuing RefreshQuotesCommand...");
-        await _bus.Send(new RefreshQuotesBusCommand(Guid.NewGuid()));
+        _logger.LogInformation("Triggering Refresh Quotes");
+
+        var command = new TriggerRefreshQuotesCommand(Guid.NewGuid());
+
+        await _mediator.SendAsync(command);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
     public async Task SendRefreshPricesCommand()
     {
-        _logger.LogInformation("Enqueuing RefreshPricesCommand...");
+        _logger.LogInformation("Triggering Refresh Prices");
 
-        var command = new RefreshPricesBusCommand(Guid.NewGuid())
-        {
-            AsOfDate = DateOnlyHelper.TodayLocal()
-        };
+        var command = new TriggerRefreshPricesCommand(Guid.NewGuid(), DateOnlyHelper.TodayLocal());
         
-        await _bus.Send(command);
+        await _mediator.SendAsync(command);
     }
 }

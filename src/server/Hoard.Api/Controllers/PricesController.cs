@@ -1,30 +1,21 @@
 using Hoard.Api.Models.Prices;
+using Hoard.Core.Application;
 using Microsoft.AspNetCore.Mvc;
-using Rebus.Bus;
 
 namespace Hoard.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-public class PricesController : ControllerBase
+public class PricesController(IMediator mediator, ILogger<PricesController> logger) : ControllerBase
 {
-    private readonly IBus _bus;
-    private readonly ILogger<PricesController> _logger;
-
-    public PricesController(IBus bus, ILogger<PricesController> logger)
-    {
-        _bus = bus;
-        _logger = logger;
-    }
-    
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillPricesAsync([FromBody] BackfillPricesRequest model)
     {
-        _logger.LogInformation("Received request to backfill prices.");
+        logger.LogInformation("Received request to backfill prices.");
         
-        await _bus.Send(model.ToCommand());
+        await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Prices backfill triggered." });
     }
@@ -33,9 +24,9 @@ public class PricesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshPricesAsync([FromBody] RefreshPricesRequest model)
     {
-        _logger.LogInformation("Received request to refresh prices.");
-        
-        await _bus.Send(model.ToCommand());
+        logger.LogInformation("Received request to refresh prices.");
+
+        await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Prices refresh triggered." });
     }

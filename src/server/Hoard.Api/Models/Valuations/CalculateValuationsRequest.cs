@@ -1,4 +1,4 @@
-using Hoard.Messages.Valuations;
+using Hoard.Core.Application.Valuations;
 
 namespace Hoard.Api.Models.Valuations;
 
@@ -6,8 +6,8 @@ public class CalculateValuationsRequest
 {
     public DateOnly? AsOfDate { get; set; }
 
-    public StartCalculateValuationsSagaCommand ToCommand()
+    public TriggerCalculateValuationsCommand ToCommand()
     {
-        return new StartCalculateValuationsSagaCommand(Guid.NewGuid()) { AsOfDate = AsOfDate };
+        return new TriggerCalculateValuationsCommand(Guid.NewGuid(), AsOfDate);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Scheduler;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +17,7 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 
 builder.Services
     .AddHoardLogging()
+    .AddHoardApplication()
     .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.scheduler");
 
 builder.Services.AddHangfire(config =>

@@ -1,4 +1,4 @@
-using Hoard.Messages.Valuations;
+using Hoard.Core.Application.Valuations;
 
 namespace Hoard.Api.Models.Valuations;
 
@@ -8,12 +8,8 @@ public class BackfillValuationsRequest
     
     public DateOnly? EndDate { get; init; }
     
-    public StartBackfillValuationsSagaCommand ToCommand()
+    public TriggerBackfillValuationsCommand ToCommand()
     {
-        return new StartBackfillValuationsSagaCommand(Guid.NewGuid())
-        {
-            StartDate = StartDate,
-            EndDate = EndDate
-        };
+        return new TriggerBackfillValuationsCommand(Guid.NewGuid(), StartDate, EndDate);
     }
 }

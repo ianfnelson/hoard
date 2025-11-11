@@ -7,27 +7,20 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Valuations;
 
-public class ValuationEventBatcherHandler :
-    IHandleMessages<QuoteRefreshedEvent>,
-    IHandleMessages<PriceRefreshedEvent>,
-    IHandleMessages<HoldingsCalculatedEvent>
+public class ValuationEventBatcherHandler(
+    IValuationTriggerBuffer buffer,
+    ILogger<ValuationEventBatcherHandler> logger)
+    :
+        IHandleMessages<QuoteRefreshedEvent>,
+        IHandleMessages<PriceRefreshedEvent>,
+        IHandleMessages<HoldingsCalculatedEvent>
 {
-    private readonly IValuationTriggerBuffer _buffer;
-    private readonly ILogger<ValuationEventBatcherHandler> _logger;
-
-    public ValuationEventBatcherHandler(IValuationTriggerBuffer buffer,
-        ILogger<ValuationEventBatcherHandler> logger)
-    {
-        _buffer = buffer;
-        _logger = logger;
-    }
-
     public Task Handle(QuoteRefreshedEvent m)
     {
         var date = DateOnly.FromDateTime(m.RetrievedUtc.ToLocalTime());
-        _buffer.Add(date);
+        buffer.Add(date);
         
-        _logger.LogDebug("Queued valuation date from Quote: {Date}", date.ToIsoDateString());
+        logger.LogDebug("Queued valuation date from Quote: {Date}", date.ToIsoDateString());
         return Task.CompletedTask;
     }
 
@@ -35,18 +28,18 @@ public class ValuationEventBatcherHandler :
     {
         for (var d = m.StartDate; d <= m.EndDate; d = d.AddDays(1))
         {
-            _buffer.Add(d);
+            buffer.Add(d);
         }
         
-        _logger.LogDebug("Queued valuation dates from Price range {Start}..{End}", m.StartDate.ToIsoDateString(), m.EndDate.ToIsoDateString());
+        logger.LogDebug("Queued valuation dates from Price range {Start}..{End}", m.StartDate.ToIsoDateString(), m.EndDate.ToIsoDateString());
         return Task.CompletedTask;
     }
 
     public Task Handle(HoldingsCalculatedEvent m)
     {
-        _buffer.Add(m.AsOfDate);
+        buffer.Add(m.AsOfDate);
         
-        _logger.LogDebug("Queued valuation date from Holdings: {Date}", m.AsOfDate.ToIsoDateString());
+        logger.LogDebug("Queued valuation date from Holdings: {Date}", m.AsOfDate.ToIsoDateString());
         return Task.CompletedTask;
     }
 }
