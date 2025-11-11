@@ -33,7 +33,7 @@ public class ProcessCalculateHoldingsValuationHandler(
             return;
         }
 
-        var valuationGbp = await CalculateValuation(holding);
+        var valuationGbp = await CalculateValuation(holding, ct);
 
         UpsertValuation(holding, valuationGbp);
         await context.SaveChangesAsync(ct);
@@ -42,15 +42,15 @@ public class ProcessCalculateHoldingsValuationHandler(
         logger.LogInformation("Valuation calculated for Holding {HoldingId}", holdingId);
     }
     
-        private async Task<decimal> CalculateValuation(Holding holding)
+        private async Task<decimal> CalculateValuation(Holding holding, CancellationToken ct = default)
     {
         if (holding.InstrumentId == Instrument.CashGbpId)
         {
             return holding.Units;
         }
         
-        var price = await GetPrice(holding);
-        var fxRate = await GetFxRate(holding);
+        var price = await GetPrice(holding, ct);
+        var fxRate = await GetFxRate(holding, ct);
 
         return Math.Round(holding.Units * price / fxRate, 2, MidpointRounding.AwayFromZero);
     }
@@ -67,34 +67,34 @@ public class ProcessCalculateHoldingsValuationHandler(
         holding.Valuation.UpdatedUtc = DateTime.UtcNow;
     }
 
-    private async Task<decimal> GetFxRate(Holding holding)
+    private async Task<decimal> GetFxRate(Holding holding, CancellationToken ct = default)
     {
         return holding.Instrument.QuoteCurrencyId switch
         {
             Currency.Gbp => 1M,
             Currency.Gbx => 100M,
-            Currency.Usd => await GetLatestPriceForFxInstrument(Instrument.GbpUsdId, holding.AsOfDate),
-            Currency.Eur => await GetLatestPriceForFxInstrument(Instrument.GbpEurId, holding.AsOfDate),
-            Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpyId, holding.AsOfDate),
+            Currency.Usd => await GetLatestPriceForFxInstrument(Instrument.GbpUsdId, holding.AsOfDate, ct),
+            Currency.Eur => await GetLatestPriceForFxInstrument(Instrument.GbpEurId, holding.AsOfDate, ct),
+            Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpyId, holding.AsOfDate, ct),
             _ => throw new InvalidOperationException($"Unknown currency {holding.Instrument.QuoteCurrencyId}")
         };
     }
 
-    private async Task<decimal> GetPrice(Holding holding)
+    private async Task<decimal> GetPrice(Holding holding, CancellationToken ct = default)
     {
-        return await GetLatestPriceForInstrument(holding.Instrument, holding.AsOfDate);
+        return await GetLatestPriceForInstrument(holding.Instrument, holding.AsOfDate, ct);
     }
 
-    private async Task<decimal> GetLatestPriceForFxInstrument(int instrumentId, DateOnly asOfDate)
+    private async Task<decimal> GetLatestPriceForFxInstrument(int instrumentId, DateOnly asOfDate, CancellationToken ct = default)
     {
         var instrument = await context.Instruments
             .Include(x => x.Quote)
-            .FirstOrDefaultAsync(x => x.Id == instrumentId);
+            .FirstOrDefaultAsync(x => x.Id == instrumentId, ct);
 
-        return await GetLatestPriceForInstrument(instrument!, asOfDate);
+        return await GetLatestPriceForInstrument(instrument!, asOfDate, ct);
     }
 
-    private async Task<decimal> GetLatestPriceForInstrument(Instrument instrument, DateOnly asOfDate)
+    private async Task<decimal> GetLatestPriceForInstrument(Instrument instrument, DateOnly asOfDate, CancellationToken ct = default)
     {
         // If we are valuing a holding for today before 22;00, use the quote if there is one.
         if (asOfDate == DateOnlyHelper.TodayLocal() 
@@ -109,7 +109,7 @@ public class ProcessCalculateHoldingsValuationHandler(
             .Where(x => x.InstrumentId == instrument.Id)
             .Where(x => x.AsOfDate <= asOfDate)
             .OrderByDescending(x => x.AsOfDate)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(ct);
 
         return price?.AdjustedClose ?? decimal.Zero;
     }

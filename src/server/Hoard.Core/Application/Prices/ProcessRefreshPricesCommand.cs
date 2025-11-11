@@ -15,7 +15,7 @@ public class ProcessRefreshPricesHandler(IBus bus, HoardContext context)
     {
         var asOfDate = command.AsOfDate.OrToday();
         
-        var instrumentIds = await GetInstrumentIdsForRefresh();
+        var instrumentIds = await GetInstrumentIdsForRefresh(ct);
 
         var delay = TimeSpan.Zero;
 
@@ -26,7 +26,7 @@ public class ProcessRefreshPricesHandler(IBus bus, HoardContext context)
         }
     }
     
-    private async Task<IList<int>> GetInstrumentIdsForRefresh()
+    private async Task<IList<int>> GetInstrumentIdsForRefresh(CancellationToken ct = default)
     {
         return await context
             .Instruments
@@ -34,6 +34,6 @@ public class ProcessRefreshPricesHandler(IBus bus, HoardContext context)
             .Where(i => i.IsActive)
             .Where(i => i.TickerApi != null)
             .Select(x => x.Id)
-            .ToListAsync();
+            .ToListAsync(ct);
     }
 }

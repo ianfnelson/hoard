@@ -24,7 +24,7 @@ public class ProcessRefreshQuotesBatchHandler(
             return;
         }
 
-        var instruments = await GetInstrumentsToBeQuoted(command);
+        var instruments = await GetInstrumentsToBeQuoted(command, ct);
         if (instruments.Count == 0)
         {
             logger.LogInformation("No instruments found to update quotes for.");
@@ -81,14 +81,14 @@ public class ProcessRefreshQuotesBatchHandler(
                || quote.RegularMarketChange != dto.RegularMarketChange;
     }
 
-    private async Task<Dictionary<string, Instrument>> GetInstrumentsToBeQuoted(ProcessRefreshQuotesBatchCommand command)
+    private async Task<Dictionary<string, Instrument>> GetInstrumentsToBeQuoted(ProcessRefreshQuotesBatchCommand command, CancellationToken ct = default)
     {
         var instruments = await context.Instruments
             .Include(x => x.Quote)
             .Where(x => command.InstrumentIds.Contains(x.Id))
             .Where(x => x.EnablePriceUpdates)
             .Where(x => x.TickerApi != null)
-            .ToDictionaryAsync(x => x.TickerApi!);
+            .ToDictionaryAsync(x => x.TickerApi!, ct);
         
         return instruments;
     }

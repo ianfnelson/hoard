@@ -28,10 +28,10 @@ public class YahooFinanceClient
         return quotes;
     }
 
-    public async Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to)
+    public async Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to, CancellationToken ct = default)
     {
         Yahoo.IgnoreEmptyRows = true;
-        var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to));
+        var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to), token:ct);
 
         var results = history
             .Select(MapCandleToHistoricalPrice)

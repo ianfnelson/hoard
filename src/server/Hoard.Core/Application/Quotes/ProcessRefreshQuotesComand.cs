@@ -16,7 +16,7 @@ public class ProcessRefreshQuotesHandler(
     
     public async Task HandleAsync(ProcessRefreshQuotesCommand command, CancellationToken ct = default)
     {
-        var instruments = await GetInstrumentIdsForRefresh();
+        var instruments = await GetInstrumentIdsForRefresh(ct);
 
         // Shuffle the instruments before batching
         instruments = instruments.Shuffle();
@@ -30,7 +30,7 @@ public class ProcessRefreshQuotesHandler(
         }
     }
     
-    private async Task<IList<int>> GetInstrumentIdsForRefresh()
+    private async Task<IList<int>> GetInstrumentIdsForRefresh(CancellationToken ct = default)
     {
         return await context
             .Instruments
@@ -38,6 +38,6 @@ public class ProcessRefreshQuotesHandler(
             .Where(i => i.IsActive)
             .Where(i => i.TickerApi != null)
             .Select(x => x.Id)
-            .ToListAsync();
+            .ToListAsync(ct);
     }
 }
