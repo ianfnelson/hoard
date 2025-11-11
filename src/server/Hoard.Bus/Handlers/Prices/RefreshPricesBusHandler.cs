@@ -10,10 +10,7 @@ public class RefreshPricesBusHandler(IMediator mediator)
 {
     public async Task Handle(RefreshPricesBusCommand message)
     {
-        var appCommand = new ProcessRefreshPricesCommand(message.CorrelationId, message.AsOfDate)
-        {
-            AsOfDate = message.AsOfDate
-        };
+        var appCommand = new ProcessRefreshPricesCommand(message.CorrelationId, message.AsOfDate);
 
         await mediator.SendAsync(appCommand);
     }

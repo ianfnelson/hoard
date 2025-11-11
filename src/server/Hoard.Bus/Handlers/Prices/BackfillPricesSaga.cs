@@ -22,17 +22,19 @@ public class BackfillPricesSaga(
 
     public async Task Handle(StartBackfillPricesSagaCommand message)
     {
-        Data.CorrelationId = message.CorrelationId;
+        var (correlationId, instrumentId, startDate, endDate) = message;
+        
+        Data.CorrelationId = correlationId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForBackfillQuery, IReadOnlyList<int>>(
-            new GetInstrumentsForBackfillQuery(message.InstrumentId));
+            new GetInstrumentsForBackfillQuery(instrumentId));
 
         logger.LogInformation("Started backfill prices saga {CorrelationId} for {Count} instruments",
             Data.CorrelationId, instrumentIds.Count);
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchBackfillPricesCommand(message.CorrelationId, instrumentIds, message.StartDate, message.EndDate));
+        await mediator.SendAsync(new DispatchBackfillPricesCommand(correlationId, instrumentIds, startDate, endDate));
     }
     
     public Task Handle(PriceRefreshedEvent message)
