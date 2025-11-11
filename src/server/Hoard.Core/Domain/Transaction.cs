@@ -5,6 +5,9 @@ public class Transaction : Entity<int>
     public int AccountId { get; set; }
     public Account Account { get; set; } = null!;
     
+    public int? InstrumentId { get; set; }
+    public Instrument? Instrument { get; set; }
+    
     public int CategoryId { get; set; }
     public TransactionCategory Category { get; set; } = null!;
     
