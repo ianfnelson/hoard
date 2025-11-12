@@ -213,13 +213,13 @@ public class ReferenceDataSeeder
             {
                 Id = TransactionLegSubcategory.Interest, 
                 CategoryId = TransactionLegCategory.Income, 
-                Name = "Stamp Duty"
+                Name = "Interest"
             },
             new TransactionLegSubcategory
             {
                 Id = TransactionLegSubcategory.LoyaltyBonus, 
                 CategoryId = TransactionLegCategory.Income, 
-                Name = "PTM Levy"
+                Name = "Loyalty Bonus"
             },
         };
         await UpsertAsync(_context.TransactionLegSubcategories, items, x => x.Id);
