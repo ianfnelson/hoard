@@ -11,4 +11,6 @@ public partial class TransactionLegSubcategory
     public const int FxConversionCharge = 7;
     public const int StampDuty = 8;
     public const int PtmLevy = 9;
+    public const int Interest = 10;
+    public const int LoyaltyBonus = 11;
 }
