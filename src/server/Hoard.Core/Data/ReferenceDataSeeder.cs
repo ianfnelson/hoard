@@ -126,8 +126,7 @@ public class ReferenceDataSeeder
         {
             new TransactionCategory { Id = TransactionCategory.Buy, Name = "Buy" },
             new TransactionCategory { Id = TransactionCategory.Sell, Name = "Sell" },
-            new TransactionCategory { Id = TransactionCategory.Dividend, Name = "Dividend" },
-            new TransactionCategory { Id = TransactionCategory.Interest, Name = "Interest" },
+            new TransactionCategory { Id = TransactionCategory.Income, Name = "Income" },
             new TransactionCategory { Id = TransactionCategory.Fee, Name = "Fee" },
             new TransactionCategory { Id = TransactionCategory.Deposit, Name = "Deposit" },
             new TransactionCategory { Id = TransactionCategory.Withdrawal, Name = "Withdrawal" }
@@ -207,6 +206,19 @@ public class ReferenceDataSeeder
             {
                 Id = TransactionLegSubcategory.PtmLevy, 
                 CategoryId = TransactionLegCategory.Tax, 
+                Name = "PTM Levy"
+            },
+            
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.Interest, 
+                CategoryId = TransactionLegCategory.Income, 
+                Name = "Stamp Duty"
+            },
+            new TransactionLegSubcategory
+            {
+                Id = TransactionLegSubcategory.LoyaltyBonus, 
+                CategoryId = TransactionLegCategory.Income, 
                 Name = "PTM Levy"
             },
         };
