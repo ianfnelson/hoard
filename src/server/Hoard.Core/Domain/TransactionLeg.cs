@@ -16,7 +16,6 @@ public class TransactionLeg : Entity<int>
     
     public decimal ValueGbp { get; set; }
     public decimal Units { get; set; }
-    public string? Notes { get; set; }
     
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 }

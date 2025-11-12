@@ -14,6 +14,8 @@ public class Transaction : Entity<int>
     public DateOnly Date { get; set; }
     public string? Notes { get; set; }
     
+    public string? ContractNoteReference { get; set; }
+    
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     
     public ICollection<TransactionLeg> Legs { get; set; } = new List<TransactionLeg>();
