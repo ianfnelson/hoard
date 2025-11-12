@@ -12,17 +12,21 @@ public class DeleteTransactionHandler(HoardContext context, IBus bus)
 {
     public async Task HandleAsync(DeleteTransactionCommand command, CancellationToken ct = default)
     {
-        var txn = await context.Transactions
-            .SingleOrDefaultAsync(t => t.Id == command.TransactionId, ct);
+        var tx = await GetExistingTransaction(command.TransactionId, ct);
 
-        if (txn == null)
-            throw new KeyNotFoundException($"Transaction {command.TransactionId} not found.");
-
-        var transactionDate = txn.Date;
+        var transactionDate = tx.Date;
         
-        context.Transactions.Remove(txn);
+        context.Transactions.Remove(tx);
         await context.SaveChangesAsync(ct);
         
         await bus.Publish(new TransactionDeletedEvent(command.TransactionId, transactionDate));
+    }
+
+    private async Task<Domain.Transaction> GetExistingTransaction(int id, CancellationToken ct = default)
+    {
+        var tx = await context.Transactions
+            .SingleOrDefaultAsync(t => t.Id == id, ct);
+
+        return tx ?? throw new KeyNotFoundException($"Transaction {id} not found.");
     }
 }

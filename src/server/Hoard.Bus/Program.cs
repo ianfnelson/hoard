@@ -25,6 +25,9 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 builder.Services.AddSingleton<IValuationTriggerBuffer, ValuationTriggerBuffer>();
 builder.Services.AddHostedService<ValuationTriggerFlusher>();
 
+builder.Services.AddSingleton<IHoldingTriggerBuffer, HoldingTriggerBuffer>();
+builder.Services.AddHostedService<HoldingTriggerFlusher>();
+
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()

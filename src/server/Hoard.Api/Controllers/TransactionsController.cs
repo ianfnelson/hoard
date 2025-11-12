@@ -1,5 +1,6 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Transactions;
+using Hoard.Core.Application.Transactions.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -9,6 +10,26 @@ namespace Hoard.Api.Controllers;
 [Produces("application/json")]
 public class TransactionsController(IMediator mediator, ILogger<TransactionsController> logger) : ControllerBase
 {
+    [HttpGet("{id:int}")]
+    public Task<ActionResult<TransactionDto>> Get(int id, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult<int>> Create([FromBody] TransactionWriteDto request, CancellationToken ct)
+    {
+        var id = await mediator.SendAsync<CreateTransactionCommand, int>(new CreateTransactionCommand(request), ct);
+        return CreatedAtAction(nameof(Get), new { id }, id);
+    }
+    
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> Update(int id, [FromBody] TransactionWriteDto request, CancellationToken ct)
+    {
+        await mediator.SendAsync(new UpdateTransactionCommand(id, request), ct);
+        return NoContent();
+    }
+    
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTransaction(int id, CancellationToken ct)
     {

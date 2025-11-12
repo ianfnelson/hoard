@@ -195,7 +195,6 @@ public class ReferenceDataSeeder
                 CategoryId = TransactionLegCategory.Fee, 
                 Name = "FX Conversion Charge"
             },
-
             new TransactionLegSubcategory
             {
                 Id = TransactionLegSubcategory.StampDuty, 
