@@ -3,6 +3,7 @@ namespace Hoard.Core.Domain;
 public partial class Instrument : Entity<int>
 {
     public required string Name { get; set; }
+    public string? Class { get; set; }
     
     public int InstrumentTypeId { get; set; }
     public InstrumentType InstrumentType { get; set; } = null!;
@@ -18,6 +19,7 @@ public partial class Instrument : Entity<int>
     
     public string? TickerApi { get; set; }
     public required string Ticker { get; set; }
+    public string? Isin { get; set; }
     public bool EnablePriceUpdates  { get; set; }
     public bool IsActive { get; set; } = true;
     
