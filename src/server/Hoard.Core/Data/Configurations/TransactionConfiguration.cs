@@ -16,6 +16,9 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .HasColumnType("datetime2(3)")
             .HasDefaultValueSql("SYSUTCDATETIME()");
 
+        builder.Property(e => e.ContractNoteReference)
+            .HasMaxLength(20);
+
         builder.HasOne(t => t.Account)
             .WithMany()
             .HasForeignKey(t => t.AccountId)

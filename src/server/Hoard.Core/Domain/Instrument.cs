@@ -3,7 +3,6 @@ namespace Hoard.Core.Domain;
 public partial class Instrument : Entity<int>
 {
     public required string Name { get; set; }
-    public string? Class { get; set; }
     
     public int InstrumentTypeId { get; set; }
     public InstrumentType InstrumentType { get; set; } = null!;
