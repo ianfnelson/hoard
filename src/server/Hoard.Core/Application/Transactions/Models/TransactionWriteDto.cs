@@ -4,7 +4,7 @@ public class TransactionWriteDto
 {
     public int? AccountId { get; set; }
     public int? CategoryId { get; set; }
-    public int? NonCashSubcategoryId { get; set; }
+    public int? SubcategoryId { get; set; }
     public int? InstrumentId { get; set; }
     public DateOnly? Date { get; set; }
     public string? Notes { get; set; }
@@ -12,10 +12,10 @@ public class TransactionWriteDto
     
     public string? ContractNoteReference { get; set; }
     
-    public decimal? DealingChargeGbp { get; set; }
-    public decimal? FxChargeGbp { get; set; }
-    public decimal? StampDutyGbp { get; set; }
-    public decimal? PtmLevyGbp { get; set; }
+    public decimal? DealingCharge { get; set; }
+    public decimal? FxCharge { get; set; }
+    public decimal? StampDuty { get; set; }
+    public decimal? PtmLevy { get; set; }
     
-    public decimal? ValueGbp { get; set; }
+    public decimal? Value { get; set; }
 }

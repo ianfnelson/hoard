@@ -7,17 +7,16 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddHoardApplication(this IServiceCollection services)
     {
-        services.AddScoped<IMediator, Mediator>();
-        
-        services.AddScoped<ITransactionFactory, TransactionFactory>();
-        
-        AddCommandAndQueryHandlers(services);
+        AddMapping(services);
+        AddMediator(services);
         
         return services;
     }
 
-    private static IServiceCollection AddCommandAndQueryHandlers(IServiceCollection services)
+    private static IServiceCollection AddMediator(IServiceCollection services)
     {
+        services.AddScoped<IMediator, Mediator>();
+        
         services.Scan(s => s
             .FromAssemblyOf<ICommand>()
             .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
@@ -32,6 +31,19 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped(typeof(ICommandHandler<>), typeof(TriggerCommandHandler<>));
 
+        return services;
+    }
+
+    private static IServiceCollection AddMapping(IServiceCollection services)
+    {
+        services.Scan(scan => scan
+            .FromAssemblyOf<MapperFacade>()
+            .AddClasses(classes => classes.AssignableTo(typeof(IMapper<,>)))
+            .AsImplementedInterfaces()
+            .WithTransientLifetime()
+        );
+        services.AddSingleton<IMapper, MapperFacade>();
+        
         return services;
     }
 }

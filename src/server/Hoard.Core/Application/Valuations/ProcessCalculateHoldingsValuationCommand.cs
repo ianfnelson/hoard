@@ -33,9 +33,9 @@ public class ProcessCalculateHoldingsValuationHandler(
             return;
         }
 
-        var valuationGbp = await CalculateValuation(holding, ct);
+        var value = await CalculateValuation(holding, ct);
 
-        UpsertValuation(holding, valuationGbp);
+        UpsertValuation(holding, value);
         await context.SaveChangesAsync(ct);
 
         await bus.Publish(new HoldingValuationCalculatedEvent(correlationId, holdingId, holding.AsOfDate));
@@ -44,7 +44,7 @@ public class ProcessCalculateHoldingsValuationHandler(
     
         private async Task<decimal> CalculateValuation(Holding holding, CancellationToken ct = default)
     {
-        if (holding.InstrumentId == Instrument.CashGbpId)
+        if (holding.InstrumentId == Instrument.Cash)
         {
             return holding.Units;
         }
@@ -55,7 +55,7 @@ public class ProcessCalculateHoldingsValuationHandler(
         return Math.Round(holding.Units * price / fxRate, 2, MidpointRounding.AwayFromZero);
     }
 
-    private void UpsertValuation(Holding holding, decimal valuationGbp)
+    private void UpsertValuation(Holding holding, decimal value)
     {
         if (holding.Valuation == null)
         {
@@ -63,7 +63,7 @@ public class ProcessCalculateHoldingsValuationHandler(
             context.Add(holding.Valuation);
         }
 
-        holding.Valuation.ValuationGbp = valuationGbp;
+        holding.Valuation.Value = value;
         holding.Valuation.UpdatedUtc = DateTime.UtcNow;
     }
 
@@ -73,9 +73,9 @@ public class ProcessCalculateHoldingsValuationHandler(
         {
             Currency.Gbp => 1M,
             Currency.Gbx => 100M,
-            Currency.Usd => await GetLatestPriceForFxInstrument(Instrument.GbpUsdId, holding.AsOfDate, ct),
-            Currency.Eur => await GetLatestPriceForFxInstrument(Instrument.GbpEurId, holding.AsOfDate, ct),
-            Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpyId, holding.AsOfDate, ct),
+            Currency.Usd => await GetLatestPriceForFxInstrument(Instrument.GbpUsd, holding.AsOfDate, ct),
+            Currency.Eur => await GetLatestPriceForFxInstrument(Instrument.GbpEur, holding.AsOfDate, ct),
+            Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpy, holding.AsOfDate, ct),
             _ => throw new InvalidOperationException($"Unknown currency {holding.Instrument.QuoteCurrencyId}")
         };
     }

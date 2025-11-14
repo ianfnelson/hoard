@@ -8,4 +8,5 @@ public partial class TransactionCategory
     public const int Fee = 4;
     public const int Deposit = 5;
     public const int Withdrawal = 6;
+    public const int CorporateAction = 7;
 }

@@ -25,8 +25,7 @@ public class ReferenceDataSeeder
         await SeedAssetSubclassesAsync();
         await SeedInstrumentTypesAsync();
         await SeedTransactionCategoriesAsync();
-        await SeedTransactionLegCategoriesAsync();
-        await SeedTransactionLegSubCategoriesAsync();
+        await SeedTransactionSubcategoriesAsync();
         
         await _context.SaveChangesAsync(cancellationToken);
         
@@ -114,8 +113,8 @@ public class ReferenceDataSeeder
             new InstrumentType { Id = 3, Code = "OEIC", Name = "Open-Ended Investment Company" },
             new InstrumentType { Id = 4, Code = "IT", Name = "Investment Trust" },
             new InstrumentType { Id = 5, Code = "CASH", Name = "Cash", IsCash = true },
-            new InstrumentType { Id = 6, Code = "EXT", Name = "External Cash", IsCash = true, IsExternal = true },
-            new InstrumentType { Id = 7, Code = "FX", Name = "Foreign Exchange Pair", IsFxPair = true }
+            new InstrumentType { Id = 6, Code = "FX", Name = "Foreign Exchange Pair", IsFxPair = true },
+            new InstrumentType { Id = 7, Code = "GILT", Name = "Gilts" }
         };
         await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);
     }
@@ -129,119 +128,85 @@ public class ReferenceDataSeeder
             new TransactionCategory { Id = TransactionCategory.Income, Name = "Income" },
             new TransactionCategory { Id = TransactionCategory.Fee, Name = "Fee" },
             new TransactionCategory { Id = TransactionCategory.Deposit, Name = "Deposit" },
-            new TransactionCategory { Id = TransactionCategory.Withdrawal, Name = "Withdrawal" }
+            new TransactionCategory { Id = TransactionCategory.Withdrawal, Name = "Withdrawal" },
+            new TransactionCategory { Id = TransactionCategory.CorporateAction, Name = "Corporate Action" }
         };
         await UpsertAsync(_context.TransactionCategories, items, x => x.Id);
     }
     
-    private async Task SeedTransactionLegCategoriesAsync()
-    {
-        var items = new[] 
-        {
-            new TransactionLegCategory { Id = TransactionLegCategory.Cash, Name = "Cash" },
-            new TransactionLegCategory { Id = TransactionLegCategory.Principal, Name = "Principal" },
-            new TransactionLegCategory { Id = TransactionLegCategory.Income, Name = "Income" },
-            new TransactionLegCategory { Id = TransactionLegCategory.Fee, Name = "Fee" },
-            new TransactionLegCategory { Id = TransactionLegCategory.Tax, Name = "Tax" },
-            new TransactionLegCategory { Id = TransactionLegCategory.External, Name = "External" }
-        };
-        await UpsertAsync(_context.TransactionLegCategories, items, x => x.Id);
-    }
-    
-    private async Task SeedTransactionLegSubCategoriesAsync()
+    private async Task SeedTransactionSubcategoriesAsync()
     {
         var items = new[]
         {
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.PersonalContribution, 
-                CategoryId = TransactionLegCategory.External, 
-                Name = "Personal Contribution"
+                Id = TransactionSubcategory.PersonalContribution, 
+                Name = "Personal Contribution", 
+                TransactionCategoryId = TransactionCategory.Deposit
             },
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.EmployerContribution, 
-                CategoryId = TransactionLegCategory.External, 
-                Name = "Employer Contribution"
+                Id = TransactionSubcategory.EmployerContribution, 
+                Name = "Employer Contribution", 
+                TransactionCategoryId = TransactionCategory.Deposit
             },
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.IncomeTaxReclaim, 
-                CategoryId = TransactionLegCategory.External, 
-                Name = "Income Tax Reclaim"
+                Id = TransactionSubcategory.IncomeTaxReclaim, 
+                Name = "Income Tax Reclaim", 
+                TransactionCategoryId = TransactionCategory.Deposit
             },
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.TransferIn, 
-                CategoryId = TransactionLegCategory.External, 
-                Name = "Transfer In"
+                Id = TransactionSubcategory.TransferIn, 
+                Name = "Transfer In", 
+                TransactionCategoryId = TransactionCategory.Deposit
             },
-
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.AccountCharge, 
-                CategoryId = TransactionLegCategory.Fee, 
-                Name = "Account Charge"
+                Id = TransactionSubcategory.Interest, 
+                Name = "Interest", 
+                TransactionCategoryId = TransactionCategory.Income
             },
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.DealingCharge, 
-                CategoryId = TransactionLegCategory.Fee, 
-                Name = "Dealing Charge"
+                Id = TransactionSubcategory.LoyaltyBonus, 
+                Name = "Loyalty Bonus", 
+                TransactionCategoryId = TransactionCategory.Income
             },
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.FxConversionCharge, 
-                CategoryId = TransactionLegCategory.Fee, 
-                Name = "FX Conversion Charge"
+                Id = TransactionSubcategory.Promotion, 
+                Name = "Promotion", 
+                TransactionCategoryId = TransactionCategory.Income
             },
-            new TransactionLegSubcategory
+            new TransactionSubcategory
             {
-                Id = TransactionLegSubcategory.StampDuty, 
-                CategoryId = TransactionLegCategory.Tax, 
-                Name = "Stamp Duty"
-            },
-            new TransactionLegSubcategory
-            {
-                Id = TransactionLegSubcategory.PtmLevy, 
-                CategoryId = TransactionLegCategory.Tax, 
-                Name = "PTM Levy"
-            },
-            
-            new TransactionLegSubcategory
-            {
-                Id = TransactionLegSubcategory.Interest, 
-                CategoryId = TransactionLegCategory.Income, 
-                Name = "Interest"
-            },
-            new TransactionLegSubcategory
-            {
-                Id = TransactionLegSubcategory.LoyaltyBonus, 
-                CategoryId = TransactionLegCategory.Income, 
-                Name = "Loyalty Bonus"
+                Id = TransactionSubcategory.Dividend, 
+                Name = "Dividend / Tax Credit", 
+                TransactionCategoryId = TransactionCategory.Income
             },
         };
-        await UpsertAsync(_context.TransactionLegSubcategories, items, x => x.Id);
+        await UpsertAsync(_context.TransactionSubcategories, items, x => x.Id);
     }
     
+
+
     private async Task SeedInstrumentsAsync()
     {
         var items = new[]
         {
-            new Instrument { Id = Instrument.CashGbpId, Name = "Cash (GBP)", InstrumentTypeId = 5, 
+            new Instrument { Id = Instrument.Cash, Name = "Cash (GBP)", InstrumentTypeId = InstrumentType.Cash, 
                 BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Gbp, EnablePriceUpdates = false,
                 Ticker = "CASH", AssetSubclassId = 15},
-            new Instrument { Id = Instrument.ExternalCashGbpId, Name = "External Cash (GBP)", InstrumentTypeId = 6, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Gbp, EnablePriceUpdates = false, 
-                Ticker = "EXTERNAL", AssetSubclassId = 15 },
 
-            new Instrument { Id = Instrument.GbpUsdId, Name = "GBP/USD", InstrumentTypeId = 7, 
+            new Instrument { Id = Instrument.GbpUsd, Name = "GBP/USD", InstrumentTypeId = InstrumentType.FxPair, 
                 BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Usd, Ticker = "GBPUSD", 
                 TickerApi = "GBPUSD=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = Instrument.GbpEurId, Name = "GBP/EUR", InstrumentTypeId = 7, 
+            new Instrument { Id = Instrument.GbpEur, Name = "GBP/EUR", InstrumentTypeId = InstrumentType.FxPair, 
                 BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Eur, Ticker = "GBPEUR", 
                 TickerApi = "GBPEUR=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = Instrument.GbpJpyId, Name = "GBP/JPY", InstrumentTypeId = 7, 
+            new Instrument { Id = Instrument.GbpJpy, Name = "GBP/JPY", InstrumentTypeId = 6, 
                 BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Jpy, Ticker = "GBPJPY", 
                 TickerApi = "GBPJPY=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
         };

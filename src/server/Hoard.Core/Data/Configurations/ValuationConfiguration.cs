@@ -8,7 +8,7 @@ public class ValuationConfiguration<TValuation> : IEntityTypeConfiguration<TValu
 {
     public virtual void Configure(EntityTypeBuilder<TValuation> builder)
     {
-        builder.Property(iv => iv.ValuationGbp)
+        builder.Property(iv => iv.Value)
             .HasColumnType("decimal(18,2)");
         
         builder.Property(e => e.UpdatedUtc)
