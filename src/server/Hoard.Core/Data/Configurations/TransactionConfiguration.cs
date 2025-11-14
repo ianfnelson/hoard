@@ -11,6 +11,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.ToTable("Transaction");
 
         builder.Property(t => t.Date).IsRequired();
+        builder.Property(i => i.ContractNoteReference).HasMaxLength(20);
         
         builder.Property(e => e.CreatedUtc)
             .HasColumnType("datetime2(3)")
