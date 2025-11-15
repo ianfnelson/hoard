@@ -17,6 +17,24 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .HasColumnType("datetime2(3)")
             .HasDefaultValueSql("SYSUTCDATETIME()");
 
+        builder.Property(e => e.DealingCharge)
+            .HasColumnType("decimal(18, 2)");
+        
+        builder.Property(e => e.FxCharge)
+            .HasColumnType("decimal(18, 2)");
+        
+        builder.Property(e => e.StampDuty)
+            .HasColumnType("decimal(18, 2)");
+        
+        builder.Property(e => e.PtmLevy)
+            .HasColumnType("decimal(18, 2)");
+        
+        builder.Property(e => e.Value)
+            .HasColumnType("decimal(18, 2)");
+        
+        builder.Property(e => e.Units)
+            .HasColumnType("decimal(18, 6)");
+
         builder.Property(e => e.ContractNoteReference)
             .HasMaxLength(20);
 
