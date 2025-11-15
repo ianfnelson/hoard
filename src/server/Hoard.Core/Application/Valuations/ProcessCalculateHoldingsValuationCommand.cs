@@ -111,6 +111,6 @@ public class ProcessCalculateHoldingsValuationHandler(
             .OrderByDescending(x => x.AsOfDate)
             .FirstOrDefaultAsync(ct);
 
-        return price?.AdjustedClose ?? decimal.Zero;
+        return price?.Close ?? decimal.Zero;
     }
 }

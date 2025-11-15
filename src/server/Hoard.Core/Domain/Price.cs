@@ -10,6 +10,7 @@ public class Price : Entity<int>
     public DateOnly AsOfDate { get; set; }
     public DateTime RetrievedUtc { get; set; }
     public required string Source { get; set; }
+    public bool IsLocked { get; set; }
     
     public decimal? Open { get; set; }
     public decimal? High { get; set; }
