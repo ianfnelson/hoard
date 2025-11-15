@@ -17,12 +17,8 @@ public static class HostExtensions
 
         logger.LogInformation("Applying EF migrations...");
         await db.Database.MigrateAsync();
-
-        var env = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
-        if (!env.IsProduction())
-        {
-            logger.LogInformation("Seeding reference data...");
-            await seeder.SeedAsync();
-        }
+        
+        logger.LogInformation("Seeding reference data...");
+        await seeder.SeedAsync();
     }
 }
