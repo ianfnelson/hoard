@@ -66,9 +66,12 @@ public class ProcessRefreshPricesBatchHandler(
                 InstrumentId = instrumentId,
             };
             context.Add(price);
+            price.UpdateFrom(priceDto);
+            price.RetrievedUtc = now;
+        } else if (!price.IsLocked)
+        {
+            price.UpdateFrom(priceDto);
+            price.RetrievedUtc = now;
         }
-
-        price.UpdateFrom(priceDto);
-        price.RetrievedUtc = now;
     }
 }
