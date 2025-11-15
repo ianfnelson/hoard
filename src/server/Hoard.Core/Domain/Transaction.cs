@@ -11,6 +11,9 @@ public class Transaction : Entity<int>
     public int CategoryId { get; set; }
     public TransactionCategory Category { get; set; } = null!;
     
+    public int? SubcategoryId { get; set; }
+    public TransactionSubcategory? Subcategory { get; set; }
+    
     public DateOnly Date { get; set; }
     public string? Notes { get; set; }
     
@@ -18,5 +21,11 @@ public class Transaction : Entity<int>
     
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     
-    public ICollection<TransactionLeg> Legs { get; set; } = new List<TransactionLeg>();
+    public decimal? Units { get; set; }
+    public decimal Value { get; set; }
+    
+    public decimal? DealingCharge { get; set; }
+    public decimal? StampDuty { get; set; }
+    public decimal? PtmLevy { get; set; }
+    public decimal? FxCharge { get; set; }
 }

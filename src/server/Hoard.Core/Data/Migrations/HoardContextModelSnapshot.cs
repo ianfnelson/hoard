@@ -214,7 +214,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("datetime2(3)")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<decimal>("ValuationGbp")
+                    b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -314,9 +314,6 @@ namespace Hoard.Core.Data.Migrations
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
                     b.Property<bool>("IsCash")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsExternal")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsFxPair")
@@ -419,7 +416,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("datetime2(3)")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<decimal>("ValuationGbp")
+                    b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -555,11 +552,32 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
+                    b.Property<decimal?>("DealingCharge")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("FxCharge")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int?>("InstrumentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PtmLevy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("StampDuty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SubcategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Units")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -570,6 +588,8 @@ namespace Hoard.Core.Data.Migrations
                     b.HasIndex("Date");
 
                     b.HasIndex("InstrumentId");
+
+                    b.HasIndex("SubcategoryId");
 
                     b.ToTable("Transaction", (string)null);
                 });
@@ -595,56 +615,11 @@ namespace Hoard.Core.Data.Migrations
                     b.ToTable("TransactionCategory", (string)null);
                 });
 
-            modelBuilder.Entity("Hoard.Core.Domain.TransactionLeg", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("TransactionLegId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(3)")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<int>("InstrumentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SubcategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Units")
-                        .HasColumnType("decimal(18,6)");
-
-                    b.Property<decimal>("ValueGbp")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("InstrumentId");
-
-                    b.HasIndex("SubcategoryId");
-
-                    b.HasIndex("TransactionId");
-
-                    b.ToTable("TransactionLeg", (string)null);
-                });
-
-            modelBuilder.Entity("Hoard.Core.Domain.TransactionLegCategory", b =>
+            modelBuilder.Entity("Hoard.Core.Domain.TransactionSubcategory", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int")
-                        .HasColumnName("TransactionLegCategoryId");
+                        .HasColumnName("TransactionSubcategoryId");
 
                     b.Property<DateTime>("CreatedUtc")
                         .ValueGeneratedOnAdd()
@@ -656,35 +631,14 @@ namespace Hoard.Core.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionLegCategory", (string)null);
-                });
-
-            modelBuilder.Entity("Hoard.Core.Domain.TransactionLegSubcategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("TransactionLegSubcategoryId");
-
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("TransactionCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2(3)")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("TransactionCategoryId");
 
-                    b.ToTable("TransactionLegSubcategory", (string)null);
+                    b.ToTable("TransactionSubcategory", (string)null);
                 });
 
             modelBuilder.Entity("PortfolioAccount", b =>
@@ -860,56 +814,28 @@ namespace Hoard.Core.Data.Migrations
                         .HasForeignKey("InstrumentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Hoard.Core.Domain.TransactionSubcategory", "Subcategory")
+                        .WithMany()
+                        .HasForeignKey("SubcategoryId");
+
                     b.Navigation("Account");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Instrument");
-                });
-
-            modelBuilder.Entity("Hoard.Core.Domain.TransactionLeg", b =>
-                {
-                    b.HasOne("Hoard.Core.Domain.TransactionLegCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hoard.Core.Domain.Instrument", "Instrument")
-                        .WithMany()
-                        .HasForeignKey("InstrumentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hoard.Core.Domain.TransactionLegSubcategory", "Subcategory")
-                        .WithMany()
-                        .HasForeignKey("SubcategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Hoard.Core.Domain.Transaction", "Transaction")
-                        .WithMany("Legs")
-                        .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Category");
 
                     b.Navigation("Instrument");
 
                     b.Navigation("Subcategory");
-
-                    b.Navigation("Transaction");
                 });
 
-            modelBuilder.Entity("Hoard.Core.Domain.TransactionLegSubcategory", b =>
+            modelBuilder.Entity("Hoard.Core.Domain.TransactionSubcategory", b =>
                 {
-                    b.HasOne("Hoard.Core.Domain.TransactionLegCategory", "Category")
+                    b.HasOne("Hoard.Core.Domain.TransactionCategory", "TransactionCategory")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("TransactionCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("TransactionCategory");
                 });
 
             modelBuilder.Entity("PortfolioAccount", b =>
@@ -940,11 +866,6 @@ namespace Hoard.Core.Data.Migrations
             modelBuilder.Entity("Hoard.Core.Domain.Portfolio", b =>
                 {
                     b.Navigation("AssetTargets");
-                });
-
-            modelBuilder.Entity("Hoard.Core.Domain.Transaction", b =>
-                {
-                    b.Navigation("Legs");
                 });
 #pragma warning restore 612, 618
         }

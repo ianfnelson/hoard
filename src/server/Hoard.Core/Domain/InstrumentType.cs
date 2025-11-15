@@ -1,6 +1,6 @@
 namespace Hoard.Core.Domain;
 
-public class InstrumentType : Entity<int>
+public partial class InstrumentType : Entity<int>
 {
     public required string Code { get; set; }
     public required string Name { get; set; }
@@ -8,6 +8,5 @@ public class InstrumentType : Entity<int>
     public DateTime CreatedUtc { get; set; } = DateTime.Now;
 
     public bool IsCash { get; set; }
-    public bool IsExternal { get; set; }
     public bool IsFxPair { get; set; }
 }

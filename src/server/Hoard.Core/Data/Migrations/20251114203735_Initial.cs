@@ -16,7 +16,8 @@ namespace Hoard.Core.Data.Migrations
                 columns: table => new
                 {
                     AccountTypeId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -29,7 +30,8 @@ namespace Hoard.Core.Data.Migrations
                 {
                     AssetClassId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -41,7 +43,8 @@ namespace Hoard.Core.Data.Migrations
                 columns: table => new
                 {
                     CurrencyId = table.Column<string>(type: "char(3)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -55,8 +58,8 @@ namespace Hoard.Core.Data.Migrations
                     InstrumentTypeId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
                     IsCash = table.Column<bool>(type: "bit", nullable: false),
-                    IsExternal = table.Column<bool>(type: "bit", nullable: false),
                     IsFxPair = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -71,7 +74,8 @@ namespace Hoard.Core.Data.Migrations
                     PortfolioId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -83,23 +87,12 @@ namespace Hoard.Core.Data.Migrations
                 columns: table => new
                 {
                     TransactionCategoryId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TransactionCategory", x => x.TransactionCategoryId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TransactionLegCategory",
-                columns: table => new
-                {
-                    TransactionLegCategoryId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TransactionLegCategory", x => x.TransactionLegCategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,8 +102,9 @@ namespace Hoard.Core.Data.Migrations
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AccountTypeId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    AccountTypeId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -130,7 +124,8 @@ namespace Hoard.Core.Data.Migrations
                     AssetSubclassId = table.Column<int>(type: "int", nullable: false),
                     AssetClassId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -144,21 +139,44 @@ namespace Hoard.Core.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TransactionLegSubcategory",
+                name: "PortfolioValuation",
                 columns: table => new
                 {
-                    TransactionLegSubcategoryId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    PortfolioValuationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PortfolioId = table.Column<int>(type: "int", nullable: false),
+                    AsOfDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UpdatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TransactionLegSubcategory", x => x.TransactionLegSubcategoryId);
+                    table.PrimaryKey("PK_PortfolioValuation", x => x.PortfolioValuationId);
                     table.ForeignKey(
-                        name: "FK_TransactionLegSubcategory_TransactionLegCategory_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "TransactionLegCategory",
-                        principalColumn: "TransactionLegCategoryId",
+                        name: "FK_PortfolioValuation_Portfolio_PortfolioId",
+                        column: x => x.PortfolioId,
+                        principalTable: "Portfolio",
+                        principalColumn: "PortfolioId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TransactionSubcategory",
+                columns: table => new
+                {
+                    TransactionSubcategoryId = table.Column<int>(type: "int", nullable: false),
+                    TransactionCategoryId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionSubcategory", x => x.TransactionSubcategoryId);
+                    table.ForeignKey(
+                        name: "FK_TransactionSubcategory_TransactionCategory_TransactionCategoryId",
+                        column: x => x.TransactionCategoryId,
+                        principalTable: "TransactionCategory",
+                        principalColumn: "TransactionCategoryId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -187,48 +205,22 @@ namespace Hoard.Core.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transaction",
-                columns: table => new
-                {
-                    TransactionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transaction", x => x.TransactionId);
-                    table.ForeignKey(
-                        name: "FK_Transaction_Account_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Account",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Transaction_TransactionCategory_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "TransactionCategory",
-                        principalColumn: "TransactionCategoryId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Instrument",
                 columns: table => new
                 {
                     InstrumentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    InstrumentTypeId = table.Column<int>(type: "int", nullable: false),
-                    AssetSubclassId = table.Column<int>(type: "int", nullable: false),
+                    InstrumentTypeId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    AssetSubclassId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     BaseCurrencyId = table.Column<string>(type: "char(3)", nullable: false),
                     QuoteCurrencyId = table.Column<string>(type: "char(3)", nullable: false),
                     TickerApi = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Ticker = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Isin = table.Column<string>(type: "char(12)", nullable: true),
                     EnablePriceUpdates = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -267,7 +259,8 @@ namespace Hoard.Core.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PortfolioId = table.Column<int>(type: "int", nullable: false),
                     AssetSubclassId = table.Column<int>(type: "int", nullable: false),
-                    Target = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false)
+                    Target = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -296,7 +289,8 @@ namespace Hoard.Core.Data.Migrations
                     InstrumentId = table.Column<int>(type: "int", nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false),
                     AsOfDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Units = table.Column<decimal>(type: "decimal(18,6)", nullable: false)
+                    Units = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
+                    UpdatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
                 },
                 constraints: table =>
                 {
@@ -325,12 +319,12 @@ namespace Hoard.Core.Data.Migrations
                     AsOfDate = table.Column<DateOnly>(type: "date", nullable: false),
                     RetrievedUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Source = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Open = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    High = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    Low = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    Close = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    Volume = table.Column<long>(type: "bigint", nullable: false),
-                    AdjustedClose = table.Column<decimal>(type: "decimal(18,6)", nullable: false)
+                    Open = table.Column<decimal>(type: "decimal(18,4)", nullable: true),
+                    High = table.Column<decimal>(type: "decimal(18,4)", nullable: true),
+                    Low = table.Column<decimal>(type: "decimal(18,4)", nullable: true),
+                    Close = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    Volume = table.Column<long>(type: "bigint", nullable: true),
+                    AdjustedClose = table.Column<decimal>(type: "decimal(18,4)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -347,22 +341,22 @@ namespace Hoard.Core.Data.Migrations
                 name: "Quote",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    QuoteId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InstrumentId = table.Column<int>(type: "int", nullable: false),
                     RetrievedUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Bid = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    Ask = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    FiftyTwoWeekHigh = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    FiftyTwoWeekLow = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    RegularMarketPrice = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    RegularMarketChange = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    RegularMarketChangePercent = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    Bid = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    Ask = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    FiftyTwoWeekHigh = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    FiftyTwoWeekLow = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    RegularMarketPrice = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    RegularMarketChange = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    RegularMarketChangePercent = table.Column<decimal>(type: "decimal(9,4)", nullable: false),
                     Source = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Quote", x => x.Id);
+                    table.PrimaryKey("PK_Quote", x => x.QuoteId);
                     table.ForeignKey(
                         name: "FK_Quote_Instrument_InstrumentId",
                         column: x => x.InstrumentId,
@@ -372,45 +366,72 @@ namespace Hoard.Core.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TransactionLeg",
+                name: "Transaction",
                 columns: table => new
                 {
-                    TransactionLegId = table.Column<int>(type: "int", nullable: false)
+                    TransactionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TransactionId = table.Column<int>(type: "int", nullable: false),
-                    InstrumentId = table.Column<int>(type: "int", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    InstrumentId = table.Column<int>(type: "int", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     SubcategoryId = table.Column<int>(type: "int", nullable: true),
-                    ValueGbp = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Units = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ContractNoteReference = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    CreatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    Units = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DealingCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    StampDuty = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PtmLevy = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    FxCharge = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TransactionLeg", x => x.TransactionLegId);
+                    table.PrimaryKey("PK_Transaction", x => x.TransactionId);
                     table.ForeignKey(
-                        name: "FK_TransactionLeg_Instrument_InstrumentId",
+                        name: "FK_Transaction_Account_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Account",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transaction_Instrument_InstrumentId",
                         column: x => x.InstrumentId,
                         principalTable: "Instrument",
                         principalColumn: "InstrumentId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TransactionLeg_TransactionLegCategory_CategoryId",
+                        name: "FK_Transaction_TransactionCategory_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "TransactionLegCategory",
-                        principalColumn: "TransactionLegCategoryId",
+                        principalTable: "TransactionCategory",
+                        principalColumn: "TransactionCategoryId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TransactionLeg_TransactionLegSubcategory_SubcategoryId",
+                        name: "FK_Transaction_TransactionSubcategory_SubcategoryId",
                         column: x => x.SubcategoryId,
-                        principalTable: "TransactionLegSubcategory",
-                        principalColumn: "TransactionLegSubcategoryId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalTable: "TransactionSubcategory",
+                        principalColumn: "TransactionSubcategoryId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HoldingValuation",
+                columns: table => new
+                {
+                    HoldingValuationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    HoldingId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UpdatedUtc = table.Column<DateTime>(type: "datetime2(3)", nullable: false, defaultValueSql: "SYSUTCDATETIME()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HoldingValuation", x => x.HoldingValuationId);
                     table.ForeignKey(
-                        name: "FK_TransactionLeg_Transaction_TransactionId",
-                        column: x => x.TransactionId,
-                        principalTable: "Transaction",
-                        principalColumn: "TransactionId",
+                        name: "FK_HoldingValuation_Holding_HoldingId",
+                        column: x => x.HoldingId,
+                        principalTable: "Holding",
+                        principalColumn: "HoldingId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -448,6 +469,12 @@ namespace Hoard.Core.Data.Migrations
                 column: "InstrumentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_HoldingValuation_HoldingId",
+                table: "HoldingValuation",
+                column: "HoldingId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Instrument_AssetSubclassId",
                 table: "Instrument",
                 column: "AssetSubclassId");
@@ -461,6 +488,13 @@ namespace Hoard.Core.Data.Migrations
                 name: "IX_Instrument_InstrumentTypeId",
                 table: "Instrument",
                 column: "InstrumentTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Instrument_Isin",
+                table: "Instrument",
+                column: "Isin",
+                unique: true,
+                filter: "[Isin] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Instrument_QuoteCurrencyId",
@@ -487,6 +521,12 @@ namespace Hoard.Core.Data.Migrations
                 name: "IX_PortfolioAssetTarget_PortfolioId_AssetSubclassId",
                 table: "PortfolioAssetTarget",
                 columns: new[] { "PortfolioId", "AssetSubclassId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PortfolioValuation_PortfolioId_AsOfDate",
+                table: "PortfolioValuation",
+                columns: new[] { "PortfolioId", "AsOfDate" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -517,36 +557,26 @@ namespace Hoard.Core.Data.Migrations
                 column: "Date");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransactionLeg_CategoryId",
-                table: "TransactionLeg",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TransactionLeg_InstrumentId",
-                table: "TransactionLeg",
+                name: "IX_Transaction_InstrumentId",
+                table: "Transaction",
                 column: "InstrumentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransactionLeg_SubcategoryId",
-                table: "TransactionLeg",
+                name: "IX_Transaction_SubcategoryId",
+                table: "Transaction",
                 column: "SubcategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransactionLeg_TransactionId",
-                table: "TransactionLeg",
-                column: "TransactionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TransactionLegSubcategory_CategoryId",
-                table: "TransactionLegSubcategory",
-                column: "CategoryId");
+                name: "IX_TransactionSubcategory_TransactionCategoryId",
+                table: "TransactionSubcategory",
+                column: "TransactionCategoryId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Holding");
+                name: "HoldingValuation");
 
             migrationBuilder.DropTable(
                 name: "PortfolioAccount");
@@ -555,25 +585,37 @@ namespace Hoard.Core.Data.Migrations
                 name: "PortfolioAssetTarget");
 
             migrationBuilder.DropTable(
+                name: "PortfolioValuation");
+
+            migrationBuilder.DropTable(
                 name: "Price");
 
             migrationBuilder.DropTable(
                 name: "Quote");
 
             migrationBuilder.DropTable(
-                name: "TransactionLeg");
+                name: "Transaction");
+
+            migrationBuilder.DropTable(
+                name: "Holding");
 
             migrationBuilder.DropTable(
                 name: "Portfolio");
 
             migrationBuilder.DropTable(
+                name: "TransactionSubcategory");
+
+            migrationBuilder.DropTable(
+                name: "Account");
+
+            migrationBuilder.DropTable(
                 name: "Instrument");
 
             migrationBuilder.DropTable(
-                name: "TransactionLegSubcategory");
+                name: "TransactionCategory");
 
             migrationBuilder.DropTable(
-                name: "Transaction");
+                name: "AccountType");
 
             migrationBuilder.DropTable(
                 name: "AssetSubclass");
@@ -585,19 +627,7 @@ namespace Hoard.Core.Data.Migrations
                 name: "InstrumentType");
 
             migrationBuilder.DropTable(
-                name: "TransactionLegCategory");
-
-            migrationBuilder.DropTable(
-                name: "Account");
-
-            migrationBuilder.DropTable(
-                name: "TransactionCategory");
-
-            migrationBuilder.DropTable(
                 name: "AssetClass");
-
-            migrationBuilder.DropTable(
-                name: "AccountType");
         }
     }
 }

@@ -29,6 +29,7 @@
       <Folder Include="Integration\" />
       <Folder Include="Unit\Api\" />
       <Folder Include="Unit\Bus\" />
+      <Folder Include="Unit\Core\Application\" />
       <Folder Include="Unit\Core\Domain\" />
       <Folder Include="Unit\Scheduler\" />
     </ItemGroup>
