@@ -8,4 +8,5 @@ public partial class Currency
     public const string Eur = "EUR";
     public const string Jpy = "JPY";
     public const string Dkk = "DKK";
+    public const string Sek = "SEK";
 }
