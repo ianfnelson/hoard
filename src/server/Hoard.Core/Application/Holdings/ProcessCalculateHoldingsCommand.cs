@@ -8,7 +8,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Holdings;
 
-public record ProcessCalculateHoldingsCommand(Guid CorrelationId, DateOnly? AsOfDate) : ICommand;
+public record ProcessCalculateHoldingsCommand(Guid CorrelationId, DateOnly? AsOfDate, bool IsBackfill = false) : ICommand;
 
 public class ProcessCalculateHoldingsHandler(
     IBus bus,
@@ -24,7 +24,7 @@ public class ProcessCalculateHoldingsHandler(
 
         await CalculateHoldings(asOfDate, ct);
 
-        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate));
+        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate,  command.IsBackfill));
     }
     
     private async Task CalculateHoldings(DateOnly asOfDate, CancellationToken ct)

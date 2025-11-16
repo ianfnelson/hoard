@@ -26,6 +26,11 @@ public class ValuationEventBatcherHandler(
 
     public Task Handle(PriceRefreshedEvent m)
     {
+        if (m.IsBackfill)
+        {
+            return Task.CompletedTask;
+        }
+        
         for (var d = m.StartDate; d <= m.EndDate; d = d.AddDays(1))
         {
             buffer.Add(d);
@@ -37,6 +42,11 @@ public class ValuationEventBatcherHandler(
 
     public Task Handle(HoldingsCalculatedEvent m)
     {
+        if (m.IsBackfill)
+        {
+            return Task.CompletedTask;
+        }
+        
         buffer.Add(m.AsOfDate);
         
         logger.LogDebug("Queued valuation date from Holdings: {Date}", m.AsOfDate.ToIsoDateString());

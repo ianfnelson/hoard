@@ -3,7 +3,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record DispatchHoldingsValuationCommand(Guid CorrelationId, IReadOnlyList<int> HoldingIds)
+public record DispatchHoldingsValuationCommand(Guid CorrelationId, IReadOnlyList<int> HoldingIds, bool IsBackfill)
     : ICommand;
     
 public class DispatchHoldingsValuationHandler(IBus bus) 
@@ -13,7 +13,7 @@ public class DispatchHoldingsValuationHandler(IBus bus)
     {
         foreach (var holdingId in command.HoldingIds)
         {
-            await bus.SendLocal(new CalculateHoldingValuationBusCommand(command.CorrelationId, holdingId));
+            await bus.SendLocal(new CalculateHoldingValuationBusCommand(command.CorrelationId, holdingId, command.IsBackfill));
         }
     }
 }

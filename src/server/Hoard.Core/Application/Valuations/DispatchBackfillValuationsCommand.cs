@@ -13,7 +13,7 @@ public class DispatchBackfillValuationsHandler(IBus bus)
     {
         foreach (var date in command.Dates)
         {
-            await bus.SendLocal(new StartCalculateValuationsSagaCommand(command.CorrelationId, date));
+            await bus.SendLocal(new StartCalculateValuationsSagaCommand(command.CorrelationId, date, true));
         }
     }
 }

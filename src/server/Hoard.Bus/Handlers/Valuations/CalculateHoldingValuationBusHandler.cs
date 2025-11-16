@@ -10,7 +10,7 @@ public class CalculateHoldingValuationBusHandler(IMediator mediator)
 {
     public async Task Handle(CalculateHoldingValuationBusCommand message)
     {
-        var appCommand = new ProcessCalculateHoldingsValuationCommand(message.CorrelationId, message.HoldingId);
+        var appCommand = new ProcessCalculateHoldingsValuationCommand(message.CorrelationId, message.HoldingId, message.IsBackfill);
 
         await mediator.SendAsync(appCommand);
     }

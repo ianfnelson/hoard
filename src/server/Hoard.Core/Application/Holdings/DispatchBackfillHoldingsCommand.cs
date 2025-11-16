@@ -13,7 +13,7 @@ public class DispatchBackfillHoldingsHandler(IBus bus)
     {
         foreach (var date in command.Dates)
         {
-            await bus.SendLocal(new CalculateHoldingsBusCommand(command.CorrelationId, date));
+            await bus.SendLocal(new CalculateHoldingsBusCommand(command.CorrelationId, date, true));
         }
     }
 }
