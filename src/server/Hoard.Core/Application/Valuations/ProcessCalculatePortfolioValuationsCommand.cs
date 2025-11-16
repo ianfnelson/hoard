@@ -8,7 +8,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculatePortfolioValuationsCommand(Guid CorrelationId, DateOnly AsOfDate)
+public record ProcessCalculatePortfolioValuationsCommand(Guid CorrelationId, DateOnly AsOfDate, bool IsBackfill)
 : ICommand;
 
 public class ProcessCalculatePortfolioValuationsHandler(
@@ -21,7 +21,7 @@ public class ProcessCalculatePortfolioValuationsHandler(
     {
         await CalculatePortfolioValuations(command.AsOfDate, ct);
         
-        await bus.Publish(new ValuationsCalculatedEvent(command.CorrelationId, command.AsOfDate));
+        await bus.Publish(new ValuationsCalculatedEvent(command.CorrelationId, command.AsOfDate, command.IsBackfill));
     }
     
     private async Task CalculatePortfolioValuations(DateOnly asOfDate, CancellationToken ct = default)

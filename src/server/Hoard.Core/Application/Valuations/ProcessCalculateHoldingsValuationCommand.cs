@@ -7,7 +7,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculateHoldingsValuationCommand(Guid CorrelationId, int HoldingId)
+public record ProcessCalculateHoldingsValuationCommand(Guid CorrelationId, int HoldingId, bool IsBackfill)
     : ICommand;
 
 public class ProcessCalculateHoldingsValuationHandler(
@@ -18,7 +18,7 @@ public class ProcessCalculateHoldingsValuationHandler(
 {
     public async Task HandleAsync(ProcessCalculateHoldingsValuationCommand command, CancellationToken ct = default)
     {
-        var (correlationId, holdingId) = command;
+        var (correlationId, holdingId, isBackfill) = command;
 
         var holding = await context.Holdings
             .Include(x => x.Instrument)
@@ -38,7 +38,7 @@ public class ProcessCalculateHoldingsValuationHandler(
         UpsertValuation(holding, value);
         await context.SaveChangesAsync(ct);
 
-        await bus.Publish(new HoldingValuationCalculatedEvent(correlationId, holdingId, holding.AsOfDate));
+        await bus.Publish(new HoldingValuationCalculatedEvent(correlationId, holdingId, holding.AsOfDate, isBackfill));
         logger.LogInformation("Valuation calculated for Holding {HoldingId}", holdingId);
     }
     

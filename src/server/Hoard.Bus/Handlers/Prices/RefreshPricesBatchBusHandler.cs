@@ -13,7 +13,8 @@ public class RefreshPricesBatchBusHandler(IMediator mediator) : IHandleMessages<
             message.CorrelationId,
             message.InstrumentId,
             message.StartDate,
-            message.EndDate
+            message.EndDate,
+            message.IsBackfill
         );
 
         await mediator.SendAsync(appCommand);

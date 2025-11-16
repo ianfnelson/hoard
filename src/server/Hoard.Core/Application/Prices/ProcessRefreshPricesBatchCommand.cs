@@ -12,7 +12,8 @@ public record ProcessRefreshPricesBatchCommand(
     Guid CorrelationId,
     int InstrumentId,
     DateOnly StartDate,
-    DateOnly EndDate) : ICommand;
+    DateOnly EndDate,
+    bool IsBackfill = false) : ICommand;
 
 public class ProcessRefreshPricesBatchHandler(
     IBus bus,
@@ -47,7 +48,7 @@ public class ProcessRefreshPricesBatchHandler(
         
         await context.SaveChangesAsync(ct);
         
-        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, instrument.Id, command.StartDate, command.EndDate, now));
+        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, instrument.Id, command.StartDate, command.EndDate, now, command.IsBackfill));
         logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
 
     }
