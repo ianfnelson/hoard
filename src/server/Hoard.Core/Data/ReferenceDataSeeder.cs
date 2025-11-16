@@ -59,7 +59,8 @@ public class ReferenceDataSeeder
             new Currency { Id = Currency.Usd, Name = "US Dollar" },
             new Currency { Id = Currency.Eur, Name = "Euro" },
             new Currency { Id = Currency.Jpy, Name = "Japanese Yen" },
-            new Currency { Id = Currency.Dkk, Name = "Danish Krone" }
+            new Currency { Id = Currency.Dkk, Name = "Danish Krone" },
+            new Currency { Id = Currency.Sek, Name = "Swedish Krona" },
         };
 
         await UpsertAsync(_context.Currencies, items, x => x.Id);
@@ -231,6 +232,9 @@ public class ReferenceDataSeeder
             new Instrument { Id = Instrument.GbpDkk, Name = "GBP/DKK", InstrumentTypeId = 6, 
                 BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Dkk, Ticker = "GBPDKK", 
                 TickerApi = "GBPDKK=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
+            new Instrument { Id = Instrument.GbpSek, Name = "GBP/SEK", InstrumentTypeId = 6, 
+                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Sek, Ticker = "GBPSEK", 
+                TickerApi = "GBPSEK=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
         };
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
