@@ -76,6 +76,8 @@ public class ProcessCalculateHoldingsValuationHandler(
             Currency.Usd => await GetLatestPriceForFxInstrument(Instrument.GbpUsd, holding.AsOfDate, ct),
             Currency.Eur => await GetLatestPriceForFxInstrument(Instrument.GbpEur, holding.AsOfDate, ct),
             Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpy, holding.AsOfDate, ct),
+            Currency.Dkk => await GetLatestPriceForFxInstrument(Instrument.GbpDkk, holding.AsOfDate, ct),
+            Currency.Sek => await GetLatestPriceForFxInstrument(Instrument.GbpSek, holding.AsOfDate, ct),
             _ => throw new InvalidOperationException($"Unknown currency {holding.Instrument.QuoteCurrencyId}")
         };
     }
