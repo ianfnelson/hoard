@@ -23,7 +23,7 @@ public class DispatchBackfillPricesHandler(IBus bus)
         {
             await bus.DeferLocal(delay, 
                 new RefreshPricesBatchBusCommand(command.CorrelationId, instrumentId, dateRange.StartDate, dateRange.EndDate, true));
-            delay+=TimeSpan.FromSeconds(5);
+            delay+=TimeSpan.FromSeconds(2);
         }   
     }
     
