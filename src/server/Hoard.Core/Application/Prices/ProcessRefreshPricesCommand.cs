@@ -22,7 +22,7 @@ public class ProcessRefreshPricesHandler(IBus bus, HoardContext context)
         foreach (var instrumentId in instrumentIds)
         {
             await bus.Defer(delay, new RefreshPricesBatchBusCommand(command.CorrelationId, instrumentId, asOfDate, asOfDate));
-            delay+=TimeSpan.FromSeconds(5);
+            delay+=TimeSpan.FromSeconds(2);
         }
     }
     
