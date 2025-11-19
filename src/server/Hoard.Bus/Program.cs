@@ -42,9 +42,14 @@ await using (var scope = app.Services.CreateAsyncScope())
 {
     var bus = scope.ServiceProvider.GetRequiredService<IBus>();
     await bus.Subscribe<HoldingsCalculatedEvent>();
+    
+    await bus.Subscribe<PriceChangedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
-    await bus.Subscribe<QuoteRefreshedEvent>();
+    
+    await bus.Subscribe<QuoteChangedEvent>();
+    
     await bus.Subscribe<HoldingValuationCalculatedEvent>();
+    await bus.Subscribe<ValuationsCalculatedEvent>();
 }
 
 await app.RunAsync();

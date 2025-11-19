@@ -1,8 +1,7 @@
 namespace Hoard.Messages.Prices;
 
-public record PriceRefreshedEvent(
+public record PriceChangedEvent(
     Guid CorrelationId, 
     int InstrumentId, 
-    DateOnly StartDate, 
-    DateOnly EndDate, 
+    DateOnly AsOfDate, 
     DateTime RetrievedUtc);

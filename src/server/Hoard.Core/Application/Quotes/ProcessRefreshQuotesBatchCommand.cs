@@ -41,7 +41,7 @@ public class ProcessRefreshQuotesBatchHandler(
 
         foreach (var instrument in changed)
         {
-            await bus.Publish(new QuoteRefreshedEvent(command.CorrelationId, instrument.Id, now));
+            await bus.Publish(new QuoteChangedEvent(command.CorrelationId, instrument.Id, now));
             logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
         }
     }
@@ -63,22 +63,21 @@ public class ProcessRefreshQuotesBatchHandler(
                 context.Add(instrument.Quote);
             }
 
-            var priceChanged = HasMeaningfulChange(instrument.Quote!, dto);
+            var hasNotableChange = HasNotableChange(instrument.Quote!, dto);
 
             instrument.Quote.UpdateFrom(dto);
             instrument.Quote.RetrievedUtc = now;
 
-            if (priceChanged)
+            if (hasNotableChange)
+            {
                 changed.Add(instrument);
+            }
         }
     }
 
-    private static bool HasMeaningfulChange(Quote quote, QuoteDto dto)
+    private static bool HasNotableChange(Quote quote, QuoteDto dto)
     {
-        return quote.RegularMarketPrice != dto.RegularMarketPrice
-               || quote.Bid != dto.Bid
-               || quote.Ask != dto.Ask
-               || quote.RegularMarketChange != dto.RegularMarketChange;
+        return quote.RegularMarketPrice != dto.RegularMarketPrice;
     }
 
     private async Task<Dictionary<string, Instrument>> GetInstrumentsToBeQuoted(ProcessRefreshQuotesBatchCommand command, CancellationToken ct = default)
