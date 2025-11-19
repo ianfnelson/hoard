@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Transactions;
 
-public record TransactionDeletedEvent(int Id, DateOnly Date);
+public record TransactionDeletedEvent(Guid CorrelationId, int Id, DateOnly Date);

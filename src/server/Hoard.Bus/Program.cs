@@ -25,9 +25,6 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 builder.Services.AddSingleton<IValuationTriggerBuffer, ValuationTriggerBuffer>();
 builder.Services.AddHostedService<ValuationTriggerFlusher>();
 
-builder.Services.AddSingleton<IHoldingTriggerBuffer, HoldingTriggerBuffer>();
-builder.Services.AddHostedService<HoldingTriggerFlusher>();
-
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
@@ -42,6 +39,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 {
     var bus = scope.ServiceProvider.GetRequiredService<IBus>();
     await bus.Subscribe<HoldingsCalculatedEvent>();
+    await bus.Subscribe<HoldingChangedEvent>();
     
     await bus.Subscribe<PriceChangedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
