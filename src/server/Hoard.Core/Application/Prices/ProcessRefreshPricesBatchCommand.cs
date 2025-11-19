@@ -40,39 +40,58 @@ public class ProcessRefreshPricesBatchHandler(
         
         var prices = await priceService.GetPricesAsync(instrument.TickerApi!, command.StartDate, command.EndDate, ct);
         var now = DateTime.UtcNow;
-        
-        foreach (var price in prices)
-        {
-            await UpsertPrice(instrument.Id, price, now, ct);
-        }
+
+        var changed = new List<DateOnly>();
+        await UpsertPrices(instrument.Id, prices, now, changed, ct);
         
         await context.SaveChangesAsync(ct);
-        
-        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, instrument.Id, command.StartDate, command.EndDate, now, command.IsBackfill));
-        logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
 
-    }
-    
-    private async Task UpsertPrice(int instrumentId, PriceDto priceDto, DateTime now, CancellationToken ct = default)
-    {        
-        var price = await context.Prices
-            .FirstOrDefaultAsync(x => x.InstrumentId == instrumentId && x.AsOfDate == priceDto.Date, ct);
-
-        if (price == null)
+        if (!command.IsBackfill)
         {
-            price = new Price
+            foreach (var date in changed)
             {
-                Source = priceDto.Source, 
-                AsOfDate = priceDto.Date,
-                InstrumentId = instrumentId,
-            };
-            context.Add(price);
-            price.UpdateFrom(priceDto);
-            price.RetrievedUtc = now;
-        } else if (!price.IsLocked)
-        {
-            price.UpdateFrom(priceDto);
-            price.RetrievedUtc = now;
+                await bus.Publish(new PriceChangedEvent(command.CorrelationId, instrument.Id, date, now));
+            }
         }
+        
+        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, instrument.Id, command.StartDate, command.EndDate, now));
+        logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
+    }
+
+    private async Task UpsertPrices(int instrumentId, IReadOnlyList<PriceDto> priceDtos, DateTime now,
+        List<DateOnly> changed, CancellationToken ct = default)
+    {
+        foreach (var priceDto in priceDtos)
+        {
+            var price = await context.Prices
+                .FirstOrDefaultAsync(x => x.InstrumentId == instrumentId && x.AsOfDate == priceDto.Date, ct);
+
+            if (price == null)
+            {
+                price = new Price
+                {
+                    Source = priceDto.Source,
+                    AsOfDate = priceDto.Date,
+                    InstrumentId = instrumentId,
+                };
+                context.Add(price);
+            }
+            
+            if (!price.IsLocked)
+            {
+                if (HasNotableChange(price, priceDto))
+                {
+                    changed.Add(priceDto.Date);
+                }
+
+                price.UpdateFrom(priceDto);
+                price.RetrievedUtc = now;
+            }
+        }
+    }
+
+    private static bool HasNotableChange(Price price, PriceDto dto)
+    {
+        return price.Close != dto.Close;
     }
 }

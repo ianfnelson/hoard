@@ -11,11 +11,11 @@ public class ValuationEventBatcherHandler(
     IValuationTriggerBuffer buffer,
     ILogger<ValuationEventBatcherHandler> logger)
     :
-        IHandleMessages<QuoteRefreshedEvent>,
-        IHandleMessages<PriceRefreshedEvent>,
+        IHandleMessages<QuoteChangedEvent>,
+        IHandleMessages<PriceChangedEvent>,
         IHandleMessages<HoldingsCalculatedEvent>
 {
-    public Task Handle(QuoteRefreshedEvent m)
+    public Task Handle(QuoteChangedEvent m)
     {
         var date = DateOnly.FromDateTime(m.RetrievedUtc.ToLocalTime());
         buffer.Add(date);
@@ -24,19 +24,11 @@ public class ValuationEventBatcherHandler(
         return Task.CompletedTask;
     }
 
-    public Task Handle(PriceRefreshedEvent m)
+    public Task Handle(PriceChangedEvent m)
     {
-        if (m.IsBackfill)
-        {
-            return Task.CompletedTask;
-        }
+        buffer.Add(m.AsOfDate);
         
-        for (var d = m.StartDate; d <= m.EndDate; d = d.AddDays(1))
-        {
-            buffer.Add(d);
-        }
-        
-        logger.LogDebug("Queued valuation dates from Price range {Start}..{End}", m.StartDate.ToIsoDateString(), m.EndDate.ToIsoDateString());
+        logger.LogDebug("Queued valuation date from Price: {Date}", m.AsOfDate.ToIsoDateString());
         return Task.CompletedTask;
     }
 
