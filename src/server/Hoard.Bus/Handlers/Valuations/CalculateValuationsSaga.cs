@@ -3,12 +3,13 @@ using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
 namespace Hoard.Bus.Handlers.Valuations;
 
-public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IMediator mediator)
+public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IMediator mediator, IBus bus)
     :
         Saga<CalculateValuationsSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
@@ -58,8 +59,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         Data.PendingHoldings.Remove(holdingId);
         if (Data.PendingHoldings.Count == 0)
         {
-            await mediator.SendAsync(
-                new ProcessCalculatePortfolioValuationsCommand(correlationId, asOfDate, isBackfill));
+            await bus.Publish(new ValuationsCalculatedEvent(correlationId, asOfDate, isBackfill));
             
             logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();

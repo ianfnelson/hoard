@@ -44,7 +44,6 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<HoldingsCalculatedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
     await bus.Subscribe<QuoteRefreshedEvent>();
-    await bus.Subscribe<ValuationsCalculatedEvent>();
     await bus.Subscribe<HoldingValuationCalculatedEvent>();
 }
 
