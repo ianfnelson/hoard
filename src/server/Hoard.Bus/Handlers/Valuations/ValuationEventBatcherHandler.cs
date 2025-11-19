@@ -13,7 +13,7 @@ public class ValuationEventBatcherHandler(
     :
         IHandleMessages<QuoteChangedEvent>,
         IHandleMessages<PriceChangedEvent>,
-        IHandleMessages<HoldingsCalculatedEvent>
+        IHandleMessages<HoldingChangedEvent>
 {
     public Task Handle(QuoteChangedEvent m)
     {
@@ -32,13 +32,8 @@ public class ValuationEventBatcherHandler(
         return Task.CompletedTask;
     }
 
-    public Task Handle(HoldingsCalculatedEvent m)
+    public Task Handle(HoldingChangedEvent m)
     {
-        if (m.IsBackfill)
-        {
-            return Task.CompletedTask;
-        }
-        
         buffer.Add(m.AsOfDate);
         
         logger.LogDebug("Queued valuation date from Holdings: {Date}", m.AsOfDate.ToIsoDateString());

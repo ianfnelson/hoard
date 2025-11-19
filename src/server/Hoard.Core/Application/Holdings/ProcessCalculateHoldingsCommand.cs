@@ -1,7 +1,7 @@
 using Hoard.Core.Data;
+using Hoard.Core.Domain;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Holdings;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -22,34 +22,112 @@ public class ProcessCalculateHoldingsHandler(
         
         logger.LogInformation("Starting holdings calculation for {Date}", asOfDate.ToIsoDateString());
 
-        await CalculateHoldings(asOfDate, ct);
+        var changedInstruments = new HashSet<int>();
+        
+        await CalculateHoldings(asOfDate, changedInstruments, ct);
 
-        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate,  command.IsBackfill));
+        if (!command.IsBackfill)
+        {
+            foreach (var instrument in changedInstruments)
+            {
+                await bus.Publish(new HoldingChangedEvent(command.CorrelationId, asOfDate, instrument));
+            }
+        }
+        
+        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate));
+    }
+
+    private async Task CalculateHoldings(DateOnly asOfDate, HashSet<int> changedInstruments, CancellationToken ct)
+    {
+        var accounts = await context.Accounts
+            .Select(a => a.Id)
+            .ToListAsync(ct);
+
+        foreach (var accountId in accounts)
+        {
+            await CalculateAccountHoldings(accountId, asOfDate, changedInstruments);
+        }
     }
     
-    private async Task CalculateHoldings(DateOnly asOfDate, CancellationToken ct)
+    private async Task CalculateAccountHoldings(
+        int accountId,
+        DateOnly asOf,
+        HashSet<int> changedInstrumentIds)
     {
-        try
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
+        // 1. Load all transactions for account up to date
+        var transactions = await context.Transactions
+            .Where(t => t.AccountId == accountId && t.Date <= asOf)
+            .ToListAsync();
 
-            var parameters = new[]
+        // 2. Build snapshot of holdings
+        var snapshot = BuildSnapshot(transactions);
+
+        // 3. Load existing holdings
+        var existing = await context.Holdings
+            .Where(h => h.AccountId == accountId && h.AsOfDate == asOf)
+            .ToListAsync();
+
+        var existingMap = existing.ToDictionary(h => h.InstrumentId);
+
+        // 4. Insert or update holdings
+        foreach (var s in snapshot)
+        {
+            if (!existingMap.TryGetValue(s.InstrumentId, out var row))
             {
-                new SqlParameter("@AsOfDate", asOfDate.ToDateTime(TimeOnly.MinValue))
-            };
-                
-            var result = await context.Database.ExecuteSqlRawAsync("EXEC CalculateHoldings @AsOfDate", parameters, ct);
+                // NEW
+                context.Holdings.Add(new Holding
+                {
+                    AccountId = accountId,
+                    InstrumentId = s.InstrumentId,
+                    AsOfDate = asOf,
+                    Units = s.Units,
+                    UpdatedUtc = DateTime.UtcNow
+                });
 
-            sw.Stop();
-
-            logger.LogInformation(
-                "Holdings calculated for {Date} ({Count} rows affected) in {Elapsed} ms",
-                asOfDate.ToIsoDateString(), result, sw.ElapsedMilliseconds);
+                changedInstrumentIds.Add(s.InstrumentId);
+            }
+            else if (row.Units != s.Units)
+            {
+                // CHANGED
+                row.Units = s.Units;
+                row.UpdatedUtc = DateTime.UtcNow;
+                changedInstrumentIds.Add(s.InstrumentId);
+            }
         }
-        catch (Exception ex)
+
+        // 5. Delete obsolete holdings
+        var snapshotIds = snapshot.Select(x => x.InstrumentId).ToHashSet();
+        var obsolete = existing.Where(e => !snapshotIds.Contains(e.InstrumentId));
+
+        foreach (var dead in obsolete)
         {
-            logger.LogError(ex, "Failed to calculate holdings for {Date}", asOfDate.ToIsoDateString());
-            throw;
+            context.Holdings.Remove(dead);
+            changedInstrumentIds.Add(dead.InstrumentId);
         }
+
+        await context.SaveChangesAsync();
     }
+    
+    private static List<HoldingSnapshot> BuildSnapshot(List<Transaction> transactions)
+    {
+        var snapshots =
+            transactions.Where(t => t.CategoryId is 1 or 2 or 7)
+                .GroupBy(t => t.InstrumentId)
+                .Select(g => new HoldingSnapshot(
+                    g.Key!.Value,
+                    g.Sum(t => t.CategoryId == 2 ? -t.Units!.Value : t.Units!.Value)))
+                .Where(s => s.Units != decimal.Zero)
+                .ToList();
+
+        // Cash
+        var cashUnits = transactions.Sum(t => t.Value);
+        if (cashUnits != decimal.Zero)
+        {
+            snapshots.Add(new HoldingSnapshot(Instrument.Cash, cashUnits));
+        }
+
+        return snapshots;
+    }
+
+    private sealed record HoldingSnapshot(int InstrumentId, decimal Units);
 }
