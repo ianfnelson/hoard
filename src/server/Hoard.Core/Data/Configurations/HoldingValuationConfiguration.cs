@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class HoldingValuationConfiguration : ValuationConfiguration<HoldingValuation>
+public class HoldingValuationConfiguration : IEntityTypeConfiguration<HoldingValuation>
 {
-    public override void Configure(EntityTypeBuilder<HoldingValuation> builder)
+    public void Configure(EntityTypeBuilder<HoldingValuation> builder)
     {
         builder.ToTable("HoldingValuation");
 
@@ -17,6 +17,11 @@ public class HoldingValuationConfiguration : ValuationConfiguration<HoldingValua
             .HasForeignKey<HoldingValuation>(hv => hv.HoldingId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        base.Configure(builder);
+        builder.Property(iv => iv.Value)
+            .HasColumnType("decimal(18,2)");
+        
+        builder.Property(e => e.UpdatedUtc)
+            .HasColumnType("datetime2(3)")
+            .HasDefaultValueSql("SYSUTCDATETIME()");
     }
 }
