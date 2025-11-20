@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class PortfolioAssetTargetConfiguration : IEntityTypeConfiguration<PortfolioAssetTarget>
+public class TargetAllocationConfiguration : IEntityTypeConfiguration<TargetAllocation>
 {
-    public void Configure(EntityTypeBuilder<PortfolioAssetTarget> builder)
+    public void Configure(EntityTypeBuilder<TargetAllocation> builder)
     {
-        builder.ToTable("PortfolioAssetTarget", x => 
+        builder.ToTable("TargetAllocation", x => 
             x.HasCheckConstraint("CK_Target_0_100", "[Target] BETWEEN 0 AND 100"));
 
         builder.HasIndex(t => new { t.PortfolioId, t.AssetSubclassId }).IsUnique();

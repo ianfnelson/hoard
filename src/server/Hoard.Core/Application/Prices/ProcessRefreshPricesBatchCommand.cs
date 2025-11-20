@@ -25,7 +25,9 @@ public class ProcessRefreshPricesBatchHandler(
     public async Task HandleAsync(ProcessRefreshPricesBatchCommand command, CancellationToken ct = default)
     {
         var instrument = await context.Instruments
-            .FindAsync(new object?[]{command.InstrumentId}, cancellationToken: ct);
+            .Include(i => i.InstrumentType)
+            .FirstOrDefaultAsync(c => c.Id == command.InstrumentId, ct);
+        
         if (instrument == null)
         {
             logger.LogWarning("Received RefreshPricesBatchCommand with unknown Instrument {InstrumentId}", command.InstrumentId);
@@ -46,11 +48,11 @@ public class ProcessRefreshPricesBatchHandler(
         
         await context.SaveChangesAsync(ct);
 
-        if (!command.IsBackfill)
+        if (!command.IsBackfill && instrument.InstrumentType is { IsCash: false, IsFxPair: false })
         {
             foreach (var date in changed)
             {
-                await bus.Publish(new PriceChangedEvent(command.CorrelationId, instrument.Id, date, now));
+                await bus.Publish(new StockPriceChangedEvent(command.CorrelationId, instrument.Id, date, now));
             }
         }
         

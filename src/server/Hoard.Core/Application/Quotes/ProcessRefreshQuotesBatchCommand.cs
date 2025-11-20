@@ -41,8 +41,11 @@ public class ProcessRefreshQuotesBatchHandler(
 
         foreach (var instrument in changed)
         {
-            await bus.Publish(new QuoteChangedEvent(command.CorrelationId, instrument.Id, now));
-            logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
+            if (instrument.InstrumentType is { IsCash: false, IsFxPair: false })
+            {
+                await bus.Publish(new StockQuoteChangedEvent(command.CorrelationId, instrument.Id, now));
+                logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
+            }
         }
     }
     
@@ -84,6 +87,7 @@ public class ProcessRefreshQuotesBatchHandler(
     {
         var instruments = await context.Instruments
             .Include(x => x.Quote)
+            .Include(x => x.InstrumentType)
             .Where(x => command.InstrumentIds.Contains(x.Id))
             .Where(x => x.EnablePriceUpdates)
             .Where(x => x.TickerApi != null)

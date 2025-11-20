@@ -1,6 +1,6 @@
 namespace Hoard.Core.Domain;
 
-public class HoldingValuation : Entity<int>
+public class Valuation : Entity<int>
 {
     public int HoldingId { get; set; }
     public Holding Holding { get; set; } = null!;

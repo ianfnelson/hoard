@@ -7,7 +7,7 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Holdings;
 
-public class CalculateHoldingsHandler(IMediator mediator) 
+public class CalculateHoldingsBusHandler(IMediator mediator) 
     : IHandleMessages<CalculateHoldingsBusCommand>,
         IHandleMessages<TransactionCreatedEvent>,
         IHandleMessages<TransactionDeletedEvent>,

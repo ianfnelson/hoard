@@ -13,7 +13,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
     :
         Saga<CalculateValuationsSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
-        IHandleMessages<HoldingValuationCalculatedEvent>
+        IHandleMessages<ValuationsCalculatedEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
     {
@@ -21,7 +21,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
 
-        cfg.Correlate<HoldingValuationCalculatedEvent>(
+        cfg.Correlate<ValuationsCalculatedEvent>(
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
     }
@@ -35,8 +35,8 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         var asOfDate = nullableAsOfDate.OrToday();
         Data.AsOfDate = asOfDate;
 
-        var holdingIds = await mediator.QueryAsync<GetHoldingsForValuationQuery, IReadOnlyList<int>>(
-            new GetHoldingsForValuationQuery(asOfDate));
+        var holdingIds = await mediator.QueryAsync<GetInstrumentsForValuationQuery, IReadOnlyList<int>>(
+            new GetInstrumentsForValuationQuery(asOfDate));
         
         if (holdingIds.Count == 0)
         {
@@ -49,17 +49,17 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
 
         Data.PendingHoldings = holdingIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchHoldingsValuationCommand(correlationId, holdingIds, isBackfill));
+        await mediator.SendAsync(new DispatchValuationsCommand(correlationId, holdingIds, asOfDate, isBackfill));
     }
 
-    public async Task Handle(HoldingValuationCalculatedEvent message)
+    public async Task Handle(ValuationsCalculatedEvent message)
     {
         var (correlationId, holdingId, asOfDate, isBackfill) = message;
         
         Data.PendingHoldings.Remove(holdingId);
         if (Data.PendingHoldings.Count == 0)
         {
-            await bus.Publish(new ValuationsCalculatedEvent(correlationId, asOfDate, isBackfill));
+            await bus.Publish(new ValuationsCalculatedForDateEvent(correlationId, asOfDate, isBackfill));
             
             logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();

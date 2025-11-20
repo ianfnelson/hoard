@@ -22,9 +22,6 @@ var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDataba
 var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                     ?? "amqp://guest:guest@localhost/";
 
-builder.Services.AddSingleton<IValuationTriggerBuffer, ValuationTriggerBuffer>();
-builder.Services.AddHostedService<ValuationTriggerFlusher>();
-
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging()
@@ -41,13 +38,13 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<HoldingsCalculatedEvent>();
     await bus.Subscribe<HoldingChangedEvent>();
     
-    await bus.Subscribe<PriceChangedEvent>();
+    await bus.Subscribe<StockPriceChangedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
     
-    await bus.Subscribe<QuoteChangedEvent>();
+    await bus.Subscribe<StockQuoteChangedEvent>();
     
-    await bus.Subscribe<HoldingValuationCalculatedEvent>();
     await bus.Subscribe<ValuationsCalculatedEvent>();
+    await bus.Subscribe<ValuationsCalculatedForDateEvent>();
 }
 
 await app.RunAsync();

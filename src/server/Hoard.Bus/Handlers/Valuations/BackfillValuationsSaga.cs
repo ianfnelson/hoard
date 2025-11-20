@@ -14,12 +14,12 @@ public class BackfillValuationsSaga(
     :
         Saga<BackfillValuationsSagaData>,
         IAmInitiatedBy<StartBackfillValuationsSagaCommand>,
-        IHandleMessages<ValuationsCalculatedEvent>
+        IHandleMessages<ValuationsCalculatedForDateEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<BackfillValuationsSagaData> cfg)
     {
         cfg.Correlate<StartBackfillValuationsSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
-        cfg.Correlate<ValuationsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<ValuationsCalculatedForDateEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
     
     public async Task Handle(StartBackfillValuationsSagaCommand message)
@@ -38,7 +38,7 @@ public class BackfillValuationsSaga(
         await mediator.SendAsync(new DispatchBackfillValuationsCommand(correlationId, dates));
     }
     
-    public Task Handle(ValuationsCalculatedEvent message)
+    public Task Handle(ValuationsCalculatedForDateEvent message)
     {
         Data.PendingDates.Remove(message.AsOfDate);
         if (Data.PendingDates.Count == 0)
