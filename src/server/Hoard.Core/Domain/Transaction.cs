@@ -28,4 +28,28 @@ public class Transaction : Entity<int>
     public decimal? StampDuty { get; set; }
     public decimal? PtmLevy { get; set; }
     public decimal? FxCharge { get; set; }
+    
+    public Cashflow? ToCashflow()
+    {
+        return CategoryId switch
+        {
+            TransactionCategory.Buy           => Create(),
+            TransactionCategory.Sell          => Create(),
+            TransactionCategory.Income        => InstrumentId == null ? null : Create(),
+            TransactionCategory.Deposit       => Create(),
+            TransactionCategory.Withdrawal    => Create(),
+            TransactionCategory.CorporateAction 
+                => Value != 0 ? Create() : null,
+            _                                 => null
+        };
+
+        Cashflow Create() => new()
+        {
+            AccountId     = AccountId,
+            TransactionId = Id,
+            InstrumentId  = InstrumentId,
+            Date          = Date,
+            Value         = Value
+        };
+    }
 }

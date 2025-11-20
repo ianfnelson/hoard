@@ -11,6 +11,7 @@ public class HoardContext : DbContext
     public DbSet<AccountType> AccountTypes => Set<AccountType>();
     public DbSet<AssetClass> AssetClasses => Set<AssetClass>();
     public DbSet<AssetSubclass> AssetSubclasses => Set<AssetSubclass>();
+    public DbSet<Cashflow> Cashflows => Set<Cashflow>();
     public DbSet<Currency> Currencies => Set<Currency>();
     public DbSet<Holding> Holdings => Set<Holding>();
     public DbSet<Instrument> Instruments => Set<Instrument>();
