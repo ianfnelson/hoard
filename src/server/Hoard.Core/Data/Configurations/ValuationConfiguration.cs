@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class HoldingValuationConfiguration : IEntityTypeConfiguration<HoldingValuation>
+public class ValuationConfiguration : IEntityTypeConfiguration<Valuation>
 {
-    public void Configure(EntityTypeBuilder<HoldingValuation> builder)
+    public void Configure(EntityTypeBuilder<Valuation> builder)
     {
-        builder.ToTable("HoldingValuation");
+        builder.ToTable("Valuation");
 
         builder.HasIndex(hv => hv.HoldingId).IsUnique();
         
         builder.HasOne(hv => hv.Holding)
             .WithOne(h => h.Valuation)
-            .HasForeignKey<HoldingValuation>(hv => hv.HoldingId)
+            .HasForeignKey<Valuation>(hv => hv.HoldingId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.Property(iv => iv.Value)

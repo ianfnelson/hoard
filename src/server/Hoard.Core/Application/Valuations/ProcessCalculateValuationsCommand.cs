@@ -7,42 +7,58 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculateHoldingsValuationCommand(Guid CorrelationId, int HoldingId, bool IsBackfill)
+public record ProcessCalculateValuationsCommand(Guid CorrelationId, int InstrumentId, DateOnly AsOfDate, bool IsBackfill = false)
     : ICommand;
 
 public class ProcessCalculateHoldingsValuationHandler(
     IBus bus,
     ILogger<ProcessCalculateHoldingsValuationHandler> logger,
     HoardContext context)
-    : ICommandHandler<ProcessCalculateHoldingsValuationCommand>
+    : ICommandHandler<ProcessCalculateValuationsCommand>
 {
-    public async Task HandleAsync(ProcessCalculateHoldingsValuationCommand command, CancellationToken ct = default)
+    public async Task HandleAsync(ProcessCalculateValuationsCommand command, CancellationToken ct = default)
     {
-        var (correlationId, holdingId, isBackfill) = command;
+        var (correlationId, instrumentId, asOfDate, isBackfill) = command;
 
-        var holding = await context.Holdings
-            .Include(x => x.Instrument)
-            .Include(x => x.Valuation)
-            .Include(x => x.Instrument.Quote)
-            .Where(x => x.Id == holdingId)
-            .FirstOrDefaultAsync(cancellationToken: ct);
+        var holdings = await context.Holdings
+            .Include(h => h.Instrument)
+            .Include(h => h.Valuation)
+            .Include(h => h.Instrument.Quote)
+            .Where(h => h.InstrumentId == instrumentId)
+            .Where(h => h.AsOfDate == asOfDate)
+            .ToListAsync(ct);
 
-        if (holding == null)
+        if (holdings.Count == 0)
         {
-            logger.LogWarning("Received CalculateHoldingValuationCommand with unknown Holding {HoldingId}", holdingId);
             return;
         }
 
-        var value = await CalculateValuation(holding, ct);
+        var changed = await CalculateValuations(holdings, ct);
 
-        UpsertValuation(holding, value);
+        if (changed && !isBackfill)
+        {
+            await bus.Publish(new ValuationChangedEvent(correlationId, instrumentId, asOfDate));
+        }
+        
         await context.SaveChangesAsync(ct);
 
-        await bus.Publish(new HoldingValuationCalculatedEvent(correlationId, holdingId, holding.AsOfDate, isBackfill));
-        logger.LogInformation("Valuation calculated for Holding {HoldingId}", holdingId);
+        await bus.Publish(new ValuationsCalculatedEvent(correlationId, instrumentId, asOfDate, isBackfill));
+        logger.LogInformation("Valuations calculated for Instrument {InstrumentId}", instrumentId);
+    }
+
+    private async Task<bool> CalculateValuations(List<Holding> holdings, CancellationToken ct = default)
+    {
+        var anyChanged = false;
+        foreach (var holding in holdings)
+        {
+            var value = await CalculateValuation(holding, ct);
+            var changed = UpsertValuation(holding, value);
+            anyChanged = anyChanged || changed;
+        }
+        return anyChanged;
     }
     
-        private async Task<decimal> CalculateValuation(Holding holding, CancellationToken ct = default)
+    private async Task<decimal> CalculateValuation(Holding holding, CancellationToken ct = default)
     {
         if (holding.InstrumentId == Instrument.Cash)
         {
@@ -55,16 +71,23 @@ public class ProcessCalculateHoldingsValuationHandler(
         return Math.Round(holding.Units * price / fxRate, 2, MidpointRounding.AwayFromZero);
     }
 
-    private void UpsertValuation(Holding holding, decimal value)
+    private bool UpsertValuation(Holding holding, decimal value)
     {
         if (holding.Valuation == null)
         {
-            holding.Valuation = new HoldingValuation { HoldingId = holding.Id };
+            holding.Valuation = new Valuation { HoldingId = holding.Id, Value = value};
             context.Add(holding.Valuation);
+            return true;
         }
 
-        holding.Valuation.Value = value;
-        holding.Valuation.UpdatedUtc = DateTime.UtcNow;
+        if (holding.Valuation.Value != value)
+        {
+            holding.Valuation.Value = value;
+            holding.Valuation.UpdatedUtc = DateTime.UtcNow;
+            return true;
+        }
+
+        return false;
     }
 
     private async Task<decimal> GetFxRate(Holding holding, CancellationToken ct = default)

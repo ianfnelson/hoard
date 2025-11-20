@@ -1,6 +1,6 @@
 namespace Hoard.Core.Domain;
 
-public class PortfolioAssetTarget : Entity<int>
+public class TargetAllocation : Entity<int>
 {
     public int PortfolioId { get; set; }
     public Portfolio Portfolio { get; set; } = null!;

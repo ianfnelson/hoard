@@ -13,5 +13,5 @@ public class Holding : Entity<int>
     
     public DateTime UpdatedUtc { get; set; }
     
-    public HoldingValuation? Valuation { get; set; }
+    public Valuation? Valuation { get; set; }
 }
