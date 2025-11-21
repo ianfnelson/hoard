@@ -81,6 +81,8 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
     {
         var result = new List<Position>();
 
+        var maxDate = holdings.Max(h => h.AsOfDate);
+        
         var byInstrument = holdings
             .GroupBy(h => h.InstrumentId)
             .ToList();
@@ -92,7 +94,6 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
             DateOnly? openDate = null;
 
             var rows = g.OrderBy(x => x.AsOfDate).ToList();
-            var maxDate = holdings.Max(h => h.AsOfDate);
 
             for (int i = 0; i < rows.Count; i++)
             {
@@ -127,6 +128,19 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
                     open = false;
                     openDate = null;
                 }
+            }
+            
+            var last = rows[^1];
+
+            if (open && openDate is not null && last.AsOfDate == maxDate)
+            {
+                result.Add(new Position
+                {
+                    PortfolioId = portfolioId,
+                    InstrumentId = instrumentId,
+                    OpenDate = openDate.Value,
+                    CloseDate = null
+                });
             }
         }
 
