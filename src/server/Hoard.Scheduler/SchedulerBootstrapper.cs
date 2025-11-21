@@ -71,7 +71,7 @@ public class SchedulerBootstrapper : IHostedService
     private void RegisterCalculateValuations()
     {
         _recurring.AddOrUpdate(
-            "refresh-prices",
+            "calculate-valuations",
             () => TriggerCalculateValuationsCommand(),
             "15 23 * * 1-5" // weekdays 23:15
         );
