@@ -92,17 +92,19 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
             DateOnly? openDate = null;
 
             var rows = g.OrderBy(x => x.AsOfDate).ToList();
+            var maxDate = holdings.Max(h => h.AsOfDate);
 
             for (int i = 0; i < rows.Count; i++)
             {
                 var current = rows[i];
                 var currentUnits = current.Units;
 
-                // Look-ahead
                 var isLast = i == rows.Count - 1;
                 var nextUnits = isLast ? 0 : rows[i + 1].Units;
                 DateOnly? nextDate = isLast ? null : rows[i + 1].AsOfDate;
                 var hasGap = nextDate != null && nextDate.Value > current.AsOfDate.AddDays(1);
+
+                bool isToday = current.AsOfDate == maxDate;
 
                 // Open stint
                 if (!open && currentUnits > 0)
@@ -111,8 +113,8 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
                     openDate = current.AsOfDate;
                 }
 
-                // Close stint if units end OR a date gap implies zero units
-                if (open && (nextUnits == 0 || hasGap))
+                // Close stint only if (not today) AND (units zero OR a gap)
+                if (open && !isToday && (nextUnits == 0 || hasGap))
                 {
                     result.Add(new Position
                     {
