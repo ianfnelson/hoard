@@ -1,5 +1,5 @@
 using Hoard.Core.Application;
-using Hoard.Core.Application.Cashflow;
+using Hoard.Core.Application.Cashflows;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
