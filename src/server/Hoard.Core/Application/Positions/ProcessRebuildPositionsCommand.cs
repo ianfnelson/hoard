@@ -97,15 +97,22 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
             {
                 var current = rows[i];
                 var currentUnits = current.Units;
-                var nextUnits = i == rows.Count - 1 ? 0 : rows[i + 1].Units;
 
+                // Look-ahead
+                var isLast = i == rows.Count - 1;
+                var nextUnits = isLast ? 0 : rows[i + 1].Units;
+                DateOnly? nextDate = isLast ? null : rows[i + 1].AsOfDate;
+                var hasGap = nextDate != null && nextDate.Value > current.AsOfDate.AddDays(1);
+
+                // Open stint
                 if (!open && currentUnits > 0)
                 {
                     open = true;
                     openDate = current.AsOfDate;
                 }
 
-                if (open && nextUnits == 0)
+                // Close stint if units end OR a date gap implies zero units
+                if (open && (nextUnits == 0 || hasGap))
                 {
                     result.Add(new Position
                     {
