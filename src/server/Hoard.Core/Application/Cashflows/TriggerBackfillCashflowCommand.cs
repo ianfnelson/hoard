@@ -1,6 +1,6 @@
 using Hoard.Messages.Cashflow;
 
-namespace Hoard.Core.Application.Cashflow;
+namespace Hoard.Core.Application.Cashflows;
 
 public record TriggerBackfillCashflowCommand(Guid CorrelationId) : ITriggerCommand
 {
