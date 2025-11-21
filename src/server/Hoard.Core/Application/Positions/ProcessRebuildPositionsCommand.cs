@@ -91,39 +91,33 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
             bool open = false;
             DateOnly? openDate = null;
 
-            foreach (var row in g)
-            {
-                var units = row.Units;
+            var rows = g.OrderBy(x => x.AsOfDate).ToList();
 
-                if (!open && units > 0)
+            for (int i = 0; i < rows.Count; i++)
+            {
+                var current = rows[i];
+                var currentUnits = current.Units;
+                var nextUnits = i == rows.Count - 1 ? 0 : rows[i + 1].Units;
+
+                if (!open && currentUnits > 0)
                 {
                     open = true;
-                    openDate = row.AsOfDate;
+                    openDate = current.AsOfDate;
                 }
-                else if (open && units == 0)
+
+                if (open && nextUnits == 0)
                 {
                     result.Add(new Position
                     {
                         PortfolioId = portfolioId,
                         InstrumentId = instrumentId,
                         OpenDate = openDate!.Value,
-                        CloseDate = row.AsOfDate
+                        CloseDate = current.AsOfDate
                     });
 
                     open = false;
                     openDate = null;
                 }
-            }
-
-            if (open)
-            {
-                result.Add(new Position
-                {
-                    PortfolioId = portfolioId,
-                    InstrumentId = instrumentId,
-                    OpenDate = openDate!.Value,
-                    CloseDate = null
-                });
             }
         }
 
