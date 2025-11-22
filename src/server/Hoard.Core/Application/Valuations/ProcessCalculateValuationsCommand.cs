@@ -42,7 +42,11 @@ public class ProcessCalculateHoldingsValuationHandler(
         
         await context.SaveChangesAsync(ct);
 
-        await bus.Publish(new ValuationsCalculatedEvent(correlationId, instrumentId, asOfDate, isBackfill));
+        if (!isBackfill)
+        {
+            await bus.Publish(new ValuationsCalculatedEvent(correlationId, instrumentId, asOfDate, isBackfill));
+        }
+
         logger.LogInformation("Valuations calculated for Instrument {InstrumentId}", instrumentId);
     }
 
