@@ -32,9 +32,9 @@ public class ProcessCalculateHoldingsHandler(
             {
                 await bus.Publish(new HoldingChangedEvent(command.CorrelationId, asOfDate, instrument));
             }
+            
+            await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate));
         }
-        
-        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate));
     }
 
     private async Task CalculateHoldings(DateOnly asOfDate, HashSet<int> changedInstruments, CancellationToken ct)
