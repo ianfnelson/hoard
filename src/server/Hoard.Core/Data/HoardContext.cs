@@ -28,6 +28,9 @@ public class HoardContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        modelBuilder.Entity<PerformanceCumulative>()
+            .UseTpcMappingStrategy();
+        
         foreach (var entity in modelBuilder.Model.GetEntityTypes())
         {
             var idProp = entity.FindProperty("Id");
