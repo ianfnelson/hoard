@@ -154,21 +154,34 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
         
         var growth = 1.0 + (double)returnPercentage.Value / 100.0;
         
+        // total wipeout or pathological negative return?
+        if (growth <= 0.0)
+        {
+            return -100m;
+        }
+
         var days = endDate.DayNumber - startDate.DayNumber;
         var years = days / 365.25;
-        
+
+        if (years <= 0.0)
+        {
+            return null;
+        }
+
         var annualisedGrowth = Math.Pow(growth, 1.0 / years);
         var annualisedReturn = (annualisedGrowth - 1.0) * 100.0;
 
         const double upperCap = 10000.0;
         const double lowerCap = -100.0;
 
-        annualisedReturn = annualisedReturn switch
+        if (double.IsNaN(annualisedReturn) || double.IsInfinity(annualisedReturn) || annualisedReturn > upperCap)
         {
-            > upperCap => upperCap,
-            < lowerCap => lowerCap,
-            _ => annualisedReturn
-        };
+            annualisedReturn = upperCap;
+        }
+        else if (annualisedReturn < lowerCap)
+        {
+            annualisedReturn = lowerCap;
+        }
 
         return (decimal)annualisedReturn;
     }
