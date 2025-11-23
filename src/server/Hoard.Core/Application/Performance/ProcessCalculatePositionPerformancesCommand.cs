@@ -152,19 +152,25 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
             return null;
         }
         
-        var growth = 1M + (returnPercentage.Value / 100M);
+        var growth = 1.0 + (double)returnPercentage.Value / 100.0;
         
         var days = endDate.DayNumber - startDate.DayNumber;
-        var years = days / 365.25M;
-
-        if (years <= 0)
-        {
-            return null;
-        }
+        var years = days / 365.25;
         
-        var annualisedGrowth = (decimal)Math.Pow((double)growth, 1.0 / (double)years);
+        var annualisedGrowth = Math.Pow(growth, 1.0 / years);
+        var annualisedReturn = (annualisedGrowth - 1.0) * 100.0;
 
-        return (annualisedGrowth - 1M) * 100M;
+        const double upperCap = 10000.0;
+        const double lowerCap = -100.0;
+
+        annualisedReturn = annualisedReturn switch
+        {
+            > upperCap => upperCap,
+            < lowerCap => lowerCap,
+            _ => annualisedReturn
+        };
+
+        return (decimal)annualisedReturn;
     }
 
     private static decimal? GetUnitsForDate(DateOnly date, Dictionary<DateOnly, Holding[]> holdings, int[] accountIds)
