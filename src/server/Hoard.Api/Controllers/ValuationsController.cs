@@ -11,7 +11,7 @@ public class ValuationsController(IMediator mediator, ILogger<ValuationsControll
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> BackfillHoldingsAsync([FromBody] BackfillValuationsRequest model)
+    public async Task<IActionResult> BackfillValuationsAsync([FromBody] BackfillValuationsRequest model)
     {
         logger.LogInformation("Received request to backfill valuations.");
         
