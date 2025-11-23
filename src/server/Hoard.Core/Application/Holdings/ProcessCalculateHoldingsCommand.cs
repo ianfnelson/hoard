@@ -32,9 +32,8 @@ public class ProcessCalculateHoldingsHandler(
             {
                 await bus.Publish(new HoldingChangedEvent(command.CorrelationId, asOfDate, instrument));
             }
-            
-            await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate));
         }
+        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate, command.IsBackfill));
     }
 
     private async Task CalculateHoldings(DateOnly asOfDate, HashSet<int> changedInstruments, CancellationToken ct)
@@ -57,16 +56,20 @@ public class ProcessCalculateHoldingsHandler(
         // 1. Load all transactions for account up to date
         var transactions = await context.Transactions
             .Where(t => t.AccountId == accountId && t.Date <= asOf)
+            .AsNoTracking()
             .ToListAsync();
 
         // 2. Build snapshot of holdings
-        var snapshot = BuildSnapshot(transactions);
+        var snapshot = BuildSnapshot(transactions)
+            .OrderBy(s => s.InstrumentId).ToList();
 
         // 3. Load existing holdings
         var existing = await context.Holdings
             .Where(h => h.AccountId == accountId && h.AsOfDate == asOf)
+            .OrderBy(h => h.InstrumentId)
+            .AsNoTracking()
             .ToListAsync();
-
+        
         var existingMap = existing.ToDictionary(h => h.InstrumentId);
 
         // 4. Insert or update holdings
@@ -97,7 +100,10 @@ public class ProcessCalculateHoldingsHandler(
 
         // 5. Delete obsolete holdings
         var snapshotIds = snapshot.Select(x => x.InstrumentId).ToHashSet();
-        var obsolete = existing.Where(e => !snapshotIds.Contains(e.InstrumentId));
+        var obsolete = existing
+            .Where(e => !snapshotIds.Contains(e.InstrumentId))
+            .OrderBy(e => e.InstrumentId)
+            .ToList();
 
         foreach (var dead in obsolete)
         {

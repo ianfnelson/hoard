@@ -19,8 +19,11 @@ public class RebuildPositionsBusHandler(IMediator mediator)
 
     public async Task Handle(HoldingsCalculatedEvent message)
     {
-        var appCommand = new ProcessRebuildPositionsCommand(message.CorrelationId);
-        
-        await mediator.SendAsync(appCommand);
+        if (!message.IsBackfill)
+        {
+            var appCommand = new ProcessRebuildPositionsCommand(message.CorrelationId);
+
+            await mediator.SendAsync(appCommand);
+        }
     }
 }

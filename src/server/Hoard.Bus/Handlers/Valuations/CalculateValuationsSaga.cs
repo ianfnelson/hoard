@@ -28,7 +28,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
 
     public async Task Handle(StartCalculateValuationsSagaCommand message)
     {
-        var (correlationId, nullableAsOfDate, isBackfill) = message;
+        var (correlationId, instrumentId, nullableAsOfDate, isBackfill) = message;
         
         Data.CorrelationId = correlationId;
 
@@ -36,7 +36,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         Data.AsOfDate = asOfDate;
 
         var holdingIds = await mediator.QueryAsync<GetInstrumentsForValuationQuery, IReadOnlyList<int>>(
-            new GetInstrumentsForValuationQuery(asOfDate));
+            new GetInstrumentsForValuationQuery(asOfDate, instrumentId));
         
         if (holdingIds.Count == 0)
         {

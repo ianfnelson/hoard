@@ -11,7 +11,6 @@ public class HoardContext : DbContext
     public DbSet<AccountType> AccountTypes => Set<AccountType>();
     public DbSet<AssetClass> AssetClasses => Set<AssetClass>();
     public DbSet<AssetSubclass> AssetSubclasses => Set<AssetSubclass>();
-    public DbSet<Cashflow> Cashflows => Set<Cashflow>();
     public DbSet<Currency> Currencies => Set<Currency>();
     public DbSet<Holding> Holdings => Set<Holding>();
     public DbSet<Instrument> Instruments => Set<Instrument>();
@@ -19,6 +18,7 @@ public class HoardContext : DbContext
     public DbSet<Portfolio> Portfolios => Set<Portfolio>();
     public DbSet<TargetAllocation> PortfolioAssetTargets => Set<TargetAllocation>();
     public DbSet<Position> Positions => Set<Position>();
+    public DbSet<PositionPerformanceCumulative> PositionPerformancesCumulative => Set<PositionPerformanceCumulative>();
     public DbSet<Price> Prices => Set<Price>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<TransactionCategory> TransactionCategories => Set<TransactionCategory>();

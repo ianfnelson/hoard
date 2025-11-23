@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"StartDate\": \"2023-01-01\"   // Optional start date of range - defaults to earliest trade\n    ,\"EndDate\": \"2023-12-31\"    // Optional end date of range - default to today\n}",
+							"raw": "{\n    //\"StartDate\": \"2025-11-06\"   // Optional start date of range - defaults to earliest trade\n    //,\"EndDate\": \"2025-11-06\"    // Optional end date of range - default to today\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -49,7 +49,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"AsOfDate\": \"2025-11-04\"    // Optional date - defaults to today\n}",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-24\"    // Optional date - defaults to today\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -72,10 +72,10 @@
 			]
 		},
 		{
-			"name": "Prices",
+			"name": "Positions",
 			"item": [
 				{
-					"name": "Fetch Prices",
+					"name": "Rebuild Positions",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -84,7 +84,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"AsOfDate\": \"2025-11-03\"    // Optional date - defaults to today\n}",
+							"raw": "{}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -92,13 +92,78 @@
 							}
 						},
 						"url": {
-							"raw": "{{BaseUrl}}api/prices/fetch",
+							"raw": "{{BaseUrl}}api/positions/rebuild",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"positions",
+								"rebuild"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Prices",
+			"item": [
+				{
+					"name": "Backfill Prices",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    //\"InstrumentId\": 486            // Optional instrument ID\n    //\"StartDate\": \"2000-02-07\",    // Optional start date of range\n    //\"EndDate\": \"2025-11-17\"       // Optional end date of range\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/prices/backfill",
 							"host": [
 								"{{BaseUrl}}api"
 							],
 							"path": [
 								"prices",
-								"fetch"
+								"backfill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Prices",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-19\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/prices/refresh",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"prices",
+								"refresh"
 							]
 						}
 					},
@@ -134,6 +199,245 @@
 							"path": [
 								"quotes",
 								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Valuations",
+			"item": [
+				{
+					"name": "Backfill Valuations",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"InstrumentId\": 440,          // Optional instrument ID to value - defaults to all\n    \"StartDate\": \"2025-11-05\"   // Optional start date of range - defaults to earliest trade\n    ,\"EndDate\": \"2025-11-22\"    // Optional end date of range - default to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/valuations/backfill",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"valuations",
+								"backfill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Valuations",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    //\"AsOfDate\": \"2025-11-19\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/valuations/calculate",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"valuations",
+								"calculate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ContractNoteReference\": \"More than twe\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/transactions",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Transaction",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/transactions/59",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"transactions",
+								"59"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/transactions/",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Transaction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/transactions",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/transactions/61",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"transactions",
+								"61"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performances",
+			"item": [
+				{
+					"name": "Backfill Performances",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"InstrumentId\": 440\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/performances/backfill",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"performances",
+								"backfill"
 							]
 						}
 					},
