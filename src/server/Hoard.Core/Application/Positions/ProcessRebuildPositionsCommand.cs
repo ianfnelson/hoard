@@ -122,7 +122,7 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
                         PortfolioId = portfolioId,
                         InstrumentId = instrumentId,
                         OpenDate = openDate!.Value,
-                        CloseDate = current.AsOfDate
+                        CloseDate = current.AsOfDate.AddDays(1)
                     });
 
                     open = false;
