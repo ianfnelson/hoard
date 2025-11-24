@@ -9,8 +9,7 @@ internal static class TransactionExtensions
     {
         return transactions
             .Where(t => 
-                t.CategoryId == TransactionCategory.Deposit || 
-                t.CategoryId == TransactionCategory.Withdrawal)
+                t.CategoryId is TransactionCategory.Deposit or TransactionCategory.Withdrawal)
             .Select(t => new CashflowRecord(t.Date, t.Value, null, t.CategoryId))
             .ToList();
     }
@@ -19,9 +18,7 @@ internal static class TransactionExtensions
     {
         return transactions
             .Where(t => 
-                t.CategoryId == TransactionCategory.Buy || 
-                t.CategoryId == TransactionCategory.Sell ||
-                (t.CategoryId == TransactionCategory.CorporateAction && t.Value!=decimal.Zero))
+                t.CategoryId is TransactionCategory.Buy or TransactionCategory.Sell or TransactionCategory.CorporateAction)
             .Select(t => new CashflowRecord(t.Date, -t.Value, t.Units, t.CategoryId))
             .ToList();
     }
