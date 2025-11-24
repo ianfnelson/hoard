@@ -52,15 +52,22 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
             .Where(t => t.Date >= position.OpenDate && (!position.CloseDate.HasValue || t.Date <= position.CloseDate))
             .ToList();
         
+        perf.Income = transactionsForPosition
+            .Where(x => x.CategoryId == TransactionCategory.Income)
+            .Sum(x => x.Value);
+        
         var cashflows = transactionsForPosition.ToPositionCashflows();
+        var (costBasis,realisedGain) = CostBasisCalculator.Calculate(cashflows);
 
+        perf.CostBasis = costBasis;
+        perf.RealisedGain = realisedGain;
+        
         if (position.CloseDate.HasValue)
         {
             perf.Units = decimal.Zero;
             perf.Value = decimal.Zero;
             perf.PreviousValue = decimal.Zero;
             perf.ValueChange = decimal.Zero;
-            perf.CostBasis = decimal.Zero;
             perf.UnrealisedGain = decimal.Zero;
         }
         else
@@ -69,17 +76,8 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
             perf.Value = GetValueForDate(today, holdings, accountIds) ?? decimal.Zero;
             perf.PreviousValue = GetValueForDate(previousDay, holdings, accountIds) ?? decimal.Zero;
             perf.ValueChange = perf.Value - perf.PreviousValue;
-            
-            var (costBasis,realisedGain) = CostBasisCalculator.Calculate(cashflows);
-        
-            perf.CostBasis = costBasis;
-            perf.RealisedGain = realisedGain;
             perf.UnrealisedGain = perf.Value - perf.CostBasis;
         }
-
-        perf.Income = transactionsForPosition
-            .Where(x => x.CategoryId == TransactionCategory.Income)
-            .Sum(x => x.Value);
         
         perf.Return1D = CalculateReturn(position, holdings, accountIds, transactionsForPosition, previousDay, today);
         perf.Return1W = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddDays(-7), today);
@@ -94,7 +92,7 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
         
         perf.AnnualisedReturn = CalculateAnnualisedReturn(perf.ReturnAllTime, position.OpenDate, position.CloseDate ?? today);
 
-        perf.PortfolioWeightPercent = 0;
+        perf.PortfolioWeightPercent = 0;    // TODO
             
         perf.UpdatedUtc = DateTime.UtcNow;
             
@@ -121,7 +119,7 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
     {
         var exposureEnd = position.CloseDate ?? endDate;
         
-        var effectiveStart = position.OpenDate > startDate ? position.OpenDate.AddDays(-1) : startDate;
+        var effectiveStart = position.OpenDate >= startDate ? position.OpenDate.AddDays(-1) : startDate;
         var effectiveEnd = exposureEnd < endDate ? exposureEnd : endDate;
 
         if (effectiveStart >= effectiveEnd)
