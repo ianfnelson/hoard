@@ -1,18 +1,17 @@
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Domain.Extensions;
-using Hoard.Core.Extensions;
-using Hoard.Core.Services;
+using Hoard.Messages.Performances;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 
 namespace Hoard.Core.Application.Performance;
 
 public record ProcessCalculatePositionPerformancesCommand(Guid CorrelationId, int InstrumentId, bool IsBackfill = false) : ICommand;
 
-public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculatePositionPerformancesHandler> logger, HoardContext context)
+public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculatePositionPerformancesHandler> logger, HoardContext context, IBus bus)
 : ICommandHandler<ProcessCalculatePositionPerformancesCommand>
 {
     public async Task HandleAsync(ProcessCalculatePositionPerformancesCommand command, CancellationToken ct = default)
@@ -29,6 +28,8 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
         {
             await UpsertPerformanceCumulative(position, transactions, holdings, ct);
         }
+
+        await bus.Publish(new PositionPerformancesCalculatedEvent(correlationId, instrumentId));
     }
 
     private async Task UpsertPerformanceCumulative(
