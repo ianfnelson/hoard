@@ -73,8 +73,8 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
         perf.Return3Y = CalculateReturn(ctx, today.AddYears(-3), today);
         perf.Return5Y = CalculateReturn(ctx, today.AddYears(-5), today);
         perf.ReturnYtd = CalculateReturn(ctx, new DateOnly(today.Year-1,12,31), today);
-        
-        perf.ReturnAllTime = CalculateReturn(ctx, position.OpenDate.AddDays(-1), position.CloseDate ?? today);
+
+        perf.ReturnAllTime = MoneyWeightedReturnCalculator.Calculate(perf.Value, t);
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, ctx.Position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
     }
 
