@@ -1,4 +1,5 @@
 using Hoard.Core.Data;
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
@@ -22,7 +23,7 @@ public class DeleteTransactionHandler(HoardContext context, IBus bus)
         await bus.Publish(new TransactionDeletedEvent(command.CorrelationId, command.TransactionId, transactionDate));
     }
 
-    private async Task<Domain.Transaction> GetExistingTransaction(int id, CancellationToken ct = default)
+    private async Task<Transaction> GetExistingTransaction(int id, CancellationToken ct = default)
     {
         var tx = await context.Transactions
             .SingleOrDefaultAsync(t => t.Id == id, ct);

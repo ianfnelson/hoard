@@ -1,5 +1,8 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
+using Hoard.Core.Domain.Calculators;
+using Hoard.Core.Domain.Entities;
+using Hoard.Core.Domain.Extensions;
 using Hoard.Core.Extensions;
 using Hoard.Core.Services;
 using Microsoft.EntityFrameworkCore;

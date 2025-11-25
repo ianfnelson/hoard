@@ -1,6 +1,7 @@
 using Hoard.Core.Application.Transactions.Models;
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages.Transactions;
 using Rebus.Bus;
 
