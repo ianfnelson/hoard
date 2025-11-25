@@ -32,78 +32,128 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
         await bus.Publish(new PositionPerformancesCalculatedEvent(correlationId, instrumentId));
     }
 
+    private sealed record PositionContext(
+        Position Position,
+        int[] AccountIds,
+        Dictionary<DateOnly, Holding[]> Holdings,
+        List<Transaction> Transactions,
+        DateOnly Today,
+        DateOnly PreviousTradingDay
+        );
+    
     private async Task UpsertPerformanceCumulative(
         Position position, 
         List<Transaction> transactions, 
         Dictionary<DateOnly, Holding[]> holdings,
         CancellationToken ct)
     {
-        var perf = await context.PositionPerformancesCumulative
-            .FirstOrDefaultAsync(x => x.PositionId == position.Id, ct);
+        var perf = await LoadOrCreate(position, ct);
 
-        if (perf is null)
-        {
-            perf = new PositionPerformanceCumulative{ PositionId = position.Id};
-            context.PositionPerformancesCumulative.Add(perf);
-        }
-
-        var today = DateOnlyHelper.TodayLocal();
-        var previousDay = PreviousTradingDay(today);
-        var accountIds = position.Portfolio.Accounts.Select(x => x.Id).ToArray();
+        var contextData = BuildPositionContext(position, transactions, holdings);
         
-        var transactionsForPosition = transactions
-            .Where(t => accountIds.Contains(t.AccountId))
-            .Where(t => t.Date >= position.OpenDate && (!position.CloseDate.HasValue || t.Date <= position.CloseDate))
-            .ToList();
-        
-        perf.Income = transactionsForPosition
-            .Where(x => x.CategoryId == TransactionCategory.Income)
-            .Sum(x => x.Value);
-        
-        var cashflows = transactionsForPosition.ToPositionCashflows();
-        var (costBasis,realisedGain) = CostBasisCalculator.Calculate(cashflows);
-
-        perf.CostBasis = costBasis;
-        perf.RealisedGain = realisedGain;
-        
-        if (position.CloseDate.HasValue)
-        {
-            perf.Units = decimal.Zero;
-            perf.Value = decimal.Zero;
-            perf.PreviousValue = decimal.Zero;
-            perf.ValueChange = decimal.Zero;
-            perf.UnrealisedGain = decimal.Zero;
-        }
-        else
-        {
-            perf.Units = GetUnitsForDate(today, holdings, accountIds) ?? decimal.Zero;
-            perf.Value = GetValueForDate(today, holdings, accountIds) ?? decimal.Zero;
-            perf.PreviousValue = GetValueForDate(previousDay, holdings, accountIds) ?? decimal.Zero;
-            perf.ValueChange = perf.Value - perf.PreviousValue;
-            perf.UnrealisedGain = perf.Value - perf.CostBasis;
-        }
-        
-        perf.Return1D = CalculateReturn(position, holdings, accountIds, transactionsForPosition, previousDay, today);
-        perf.Return1W = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddDays(-7), today);
-        perf.Return1M = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddMonths(-1), today);
-        perf.Return3M = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddMonths(-3), today);
-        perf.Return6M = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddMonths(-6), today);
-        perf.Return1Y = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddYears(-1), today);
-        perf.Return3Y = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddYears(-3), today);
-        perf.Return5Y = CalculateReturn(position, holdings, accountIds, transactionsForPosition, today.AddYears(-5), today);
-        perf.ReturnYtd = CalculateReturn(position, holdings, accountIds, transactionsForPosition, new DateOnly(today.Year-1,12,31), today);
-        perf.ReturnAllTime = CalculateReturn(position, holdings, accountIds, transactionsForPosition, position.OpenDate.AddDays(-1), position.CloseDate ?? today);
-        
-        perf.AnnualisedReturn = CalculateAnnualisedReturn(perf.ReturnAllTime, position.OpenDate, position.CloseDate ?? today);
-
-        perf.PortfolioWeightPercent = 0;    // TODO
+        CalculateStaticMetrics(perf, contextData);
+        CalculateCumulativeReturns(perf, contextData);
+        CalculatePortfolioWeight(perf, contextData);
             
         perf.UpdatedUtc = DateTime.UtcNow;
             
         await context.SaveChangesAsync(ct);
     }
 
-    private static DateOnly PreviousTradingDay(DateOnly today)
+    private static void CalculateCumulativeReturns(PositionPerformanceCumulative perf, PositionContext ctx)
+    {
+        var (position, a, h, t, today, previousDay) = ctx;
+        
+        perf.Return1D = CalculateReturn(ctx, previousDay, today);
+        perf.Return1W = CalculateReturn(ctx, today.AddDays(-7), today);
+        perf.Return1M = CalculateReturn(ctx, today.AddMonths(-1), today);
+        perf.Return3M = CalculateReturn(ctx, today.AddMonths(-3), today);
+        perf.Return6M = CalculateReturn(ctx, today.AddMonths(-6), today);
+        perf.Return1Y = CalculateReturn(ctx, today.AddYears(-1), today);
+        perf.Return3Y = CalculateReturn(ctx, today.AddYears(-3), today);
+        perf.Return5Y = CalculateReturn(ctx, today.AddYears(-5), today);
+        perf.ReturnYtd = CalculateReturn(ctx, new DateOnly(today.Year-1,12,31), today);
+        
+        perf.ReturnAllTime = CalculateReturn(ctx, position.OpenDate.AddDays(-1), position.CloseDate ?? today);
+        perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, ctx.Position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
+    }
+
+    private static void CalculatePortfolioWeight(PositionPerformanceCumulative perf, PositionContext contextData)
+    {
+        // TODO
+        perf.PortfolioWeightPercent = 0;
+    }
+
+    private async Task<PositionPerformanceCumulative> LoadOrCreate(Position position, CancellationToken ct)
+    {
+        var perf = await context.PositionPerformancesCumulative
+            .FirstOrDefaultAsync(x => x.PositionId == position.Id, ct);
+
+        if (perf is null)
+        {
+            perf = new PositionPerformanceCumulative { PositionId = position.Id };
+            context.PositionPerformancesCumulative.Add(perf);
+        }
+
+        return perf;
+    }
+
+    private static PositionContext BuildPositionContext(
+        Position position,
+        List<Transaction> allTransactions,
+        Dictionary<DateOnly, Holding[]> holdings)
+    {
+        var today = DateOnlyHelper.TodayLocal();
+        var previousDay = GetPreviousTradingDay(today);
+        var accountIds = position.Portfolio.Accounts.Select(a => a.Id).ToArray();
+
+        var transactionsForPosition = allTransactions
+            .Where(t => accountIds.Contains(t.AccountId))
+            .Where(t => t.Date >= position.OpenDate &&
+                        (!position.CloseDate.HasValue || t.Date <= position.CloseDate))
+            .ToList();
+
+        return new PositionContext(
+            position,
+            accountIds,
+            holdings,
+            transactionsForPosition,
+            today,
+            previousDay);
+    }
+
+    private static void CalculateStaticMetrics(PositionPerformanceCumulative perf, PositionContext ctx)
+    {
+        perf.Income = ctx.Transactions
+            .Where(x => x.CategoryId == TransactionCategory.Income)
+            .Sum(x => x.Value);
+        
+        var cashflows = ctx.Transactions.ToPositionCashflows();
+        var (costBasis,realisedGain) = CostBasisCalculator.Calculate(cashflows);
+
+        perf.CostBasis = costBasis;
+        perf.RealisedGain = realisedGain;
+        
+        if (ctx.Position.CloseDate.HasValue)
+        {
+            perf.Units = 0;
+            perf.Value = 0;
+            perf.PreviousValue = 0;
+            perf.ValueChange = 0;
+            perf.UnrealisedGain = 0;
+            return;
+        }
+        
+        perf.Units = GetUnitsForDate(ctx.Today, ctx.Holdings, ctx.AccountIds) ?? decimal.Zero;
+        perf.Value = GetValueForDate(ctx.Today, ctx.Holdings, ctx.AccountIds) ?? decimal.Zero;
+        
+        perf.PreviousValue = GetValueForDate(ctx.PreviousTradingDay, ctx.Holdings, ctx.AccountIds) ?? decimal.Zero;
+        perf.ValueChange = perf.Value - perf.PreviousValue;
+        
+        perf.UnrealisedGain = perf.Value - perf.CostBasis;
+    }
+    
+    private static DateOnly GetPreviousTradingDay(DateOnly today)
     {
         return today.DayOfWeek switch
         {
@@ -114,22 +164,27 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
     }
 
     private static decimal? CalculateReturn(
-        Position position, 
-        Dictionary<DateOnly, Holding[]> holdings, 
-        int[] accountIds, 
-        List<Transaction> transactions, 
+        PositionContext ctx,
         DateOnly startDate, 
         DateOnly endDate)
     {
-        var exposureEnd = position.CloseDate ?? endDate;
+        var (position, accountIds, holdings, transactions, _, _) = ctx;
         
-        var effectiveStart = position.OpenDate >= startDate ? position.OpenDate.AddDays(-1) : startDate;
-        var effectiveEnd = exposureEnd < endDate ? exposureEnd : endDate;
-
-        if (effectiveStart >= effectiveEnd)
+        // Determine overlap between requested range and the position's actual lifetime
+        var overlapStart = startDate >= position.OpenDate ? startDate : position.OpenDate;
+        var overlapEnd = position.CloseDate.HasValue && position.CloseDate.Value < endDate
+            ? position.CloseDate.Value
+            : endDate;
+        
+        // If there is no overlap, no return can be computed
+        if (overlapStart > overlapEnd)
         {
             return null;
         }
+        
+        // Modified Dietz requires valuation from the day before exposure begins
+        var effectiveStart = overlapStart.AddDays(-1);
+        var effectiveEnd = overlapEnd;
 
         var valueStart = GetValueForDate(effectiveStart, holdings, accountIds) ?? 0M;
         var valueEnd = GetValueForDate(effectiveEnd, holdings, accountIds) ?? 0M;
@@ -145,47 +200,6 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
             effectiveStart, 
             effectiveEnd, 
             transactions.ToPositionCashflows());
-    }
-
-    private static decimal? CalculateAnnualisedReturn(decimal? returnPercentage, DateOnly startDate, DateOnly endDate)
-    {
-        if (!returnPercentage.HasValue)
-        {
-            return null;
-        }
-        
-        var growth = 1.0 + (double)returnPercentage.Value / 100.0;
-        
-        // total wipeout or pathological negative return?
-        if (growth <= 0.0)
-        {
-            return -100m;
-        }
-
-        var days = endDate.DayNumber - startDate.DayNumber;
-        var years = days / 365.25;
-
-        if (years <= 0.0)
-        {
-            return null;
-        }
-
-        var annualisedGrowth = Math.Pow(growth, 1.0 / years);
-        var annualisedReturn = (annualisedGrowth - 1.0) * 100.0;
-
-        const double upperCap = 10000.0;
-        const double lowerCap = -100.0;
-
-        if (double.IsNaN(annualisedReturn) || double.IsInfinity(annualisedReturn) || annualisedReturn > upperCap)
-        {
-            annualisedReturn = upperCap;
-        }
-        else if (annualisedReturn < lowerCap)
-        {
-            annualisedReturn = lowerCap;
-        }
-
-        return (decimal)annualisedReturn;
     }
 
     private static decimal? GetUnitsForDate(DateOnly date, Dictionary<DateOnly, Holding[]> holdings, int[] accountIds)
