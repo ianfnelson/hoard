@@ -1,4 +1,5 @@
 using Hoard.Core.Domain;
+using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Core.Data;

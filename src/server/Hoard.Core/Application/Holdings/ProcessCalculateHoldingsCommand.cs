@@ -1,5 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
+using Hoard.Core.Domain.Entities;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Holdings;
 using Microsoft.EntityFrameworkCore;
