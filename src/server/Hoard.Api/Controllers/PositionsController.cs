@@ -9,14 +9,14 @@ namespace Hoard.Api.Controllers;
 [Produces("application/json")]
 public class PositionsController(IMediator mediator, ILogger<PositionsController> logger) : ControllerBase
 {
-    [HttpPost("rebuild")]
+    [HttpPost("calculate")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> RebuildPositionsAsync()
+    public async Task<IActionResult> CalculatePositionsAsync()
     {
-        logger.LogInformation("Received request to rebuild positions.");
+        logger.LogInformation("Received request to calculate positions.");
 
-        await mediator.SendAsync(new TriggerRebuildPositionsCommand(Guid.NewGuid()));
+        await mediator.SendAsync(new TriggerCalculatePositionsCommand(Guid.NewGuid()));
 
-        return Accepted(new { message = "Rebuild positions triggered." });
+        return Accepted(new { message = "Calculate positions triggered." });
     }
 }

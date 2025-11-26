@@ -6,13 +6,13 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Handlers.Positions;
 
-public class RebuildPositionsBusHandler(IMediator mediator)
-    : IHandleMessages<RebuildPositionsBusCommand>,
+public class CalculatePositionsBusHandler(IMediator mediator)
+    : IHandleMessages<CalculatePositionsBusCommand>,
         IHandleMessages<HoldingsCalculatedEvent>
 {
-    public async Task Handle(RebuildPositionsBusCommand message)
+    public async Task Handle(CalculatePositionsBusCommand message)
     {
-        var appCommand = new ProcessRebuildPositionsCommand(message.CorrelationId);
+        var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId);
         
         await mediator.SendAsync(appCommand);
     }
@@ -21,7 +21,7 @@ public class RebuildPositionsBusHandler(IMediator mediator)
     {
         if (!message.IsBackfill)
         {
-            var appCommand = new ProcessRebuildPositionsCommand(message.CorrelationId);
+            var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId);
 
             await mediator.SendAsync(appCommand);
         }
