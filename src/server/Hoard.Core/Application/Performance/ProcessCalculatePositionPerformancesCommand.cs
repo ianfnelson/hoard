@@ -170,20 +170,31 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
     {
         var (position, accountIds, holdings, transactions, _, _) = ctx;
         
-        // Determine overlap between requested range and the position's actual lifetime
-        var overlapStart = startDate >= position.OpenDate ? startDate : position.OpenDate;
-        var overlapEnd = position.CloseDate.HasValue && position.CloseDate.Value < endDate
-            ? position.CloseDate.Value
-            : endDate;
-        
-        // If there is no overlap, no return can be computed
-        if (overlapStart > overlapEnd)
-        {
+        // If the position is closed, we simply do not calculate returns.
+        if (position.CloseDate.HasValue)
             return null;
+
+        // Position is open. Define the window as:
+        //   * start = max(requested start, position.OpenDate)
+        //   * end   = endDate (which for cumulative periods will be today)
+        var positionStart = position.OpenDate;
+        var overlapStart = startDate > positionStart ? startDate : positionStart;
+        var overlapEnd   = endDate; // always today for cumulative
+
+        // If the overlap is inverted (e.g. start after end), no return.
+        if (overlapStart > overlapEnd)
+            return null;
+
+        // Modified Dietz adjustment:
+        // If the position was not yet held on the requested start date,
+        // shift back one day to get valuation-before-exposure.
+        var effectiveStart = overlapStart;
+
+        if (startDate < positionStart)
+        {
+            effectiveStart = positionStart.AddDays(-1);
         }
-        
-        // Modified Dietz requires valuation from the day before exposure begins
-        var effectiveStart = overlapStart.AddDays(-1);
+
         var effectiveEnd = overlapEnd;
 
         var valueStart = GetValueForDate(effectiveStart, holdings, accountIds) ?? 0M;
