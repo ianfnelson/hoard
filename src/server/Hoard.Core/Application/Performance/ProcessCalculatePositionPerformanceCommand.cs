@@ -2,23 +2,23 @@ using Hoard.Core.Data;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Domain.Extensions;
-using Hoard.Messages.Performances;
+using Hoard.Messages.Performance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
 
 namespace Hoard.Core.Application.Performance;
 
-public record ProcessCalculatePositionPerformancesCommand(Guid CorrelationId, int InstrumentId, bool IsBackfill = false) : ICommand;
+public record ProcessCalculatePositionPerformanceCommand(Guid CorrelationId, int InstrumentId, bool IsBackfill = false) : ICommand;
 
-public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculatePositionPerformancesHandler> logger, HoardContext context, IBus bus)
-: ICommandHandler<ProcessCalculatePositionPerformancesCommand>
+public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculatePositionPerformanceHandler> logger, HoardContext context, IBus bus)
+: ICommandHandler<ProcessCalculatePositionPerformanceCommand>
 {
-    public async Task HandleAsync(ProcessCalculatePositionPerformancesCommand command, CancellationToken ct = default)
+    public async Task HandleAsync(ProcessCalculatePositionPerformanceCommand command, CancellationToken ct = default)
     {
         var (correlationId, instrumentId, isBackfill) = command;
         
-        logger.LogInformation("Calculating Position Performances for Instrument {InstrumentId}", instrumentId);
+        logger.LogInformation("Calculating Position Performance for Instrument {InstrumentId}", instrumentId);
         
         var positions = await GetPositions(instrumentId, ct);
         var transactions = await GetTransactions(instrumentId, ct);
@@ -29,7 +29,7 @@ public class ProcessCalculatePositionPerformancesHandler(ILogger<ProcessCalculat
             await UpsertPerformanceCumulative(position, transactions, holdings, ct);
         }
 
-        await bus.Publish(new PositionPerformancesCalculatedEvent(correlationId, instrumentId));
+        await bus.Publish(new PositionPerformanceCalculatedEvent(correlationId, instrumentId));
     }
 
     private sealed record PositionContext(

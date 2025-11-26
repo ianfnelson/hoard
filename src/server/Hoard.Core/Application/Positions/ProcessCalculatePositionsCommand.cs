@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Positions;
 
-public record ProcessRebuildPositionsCommand(Guid CorrelationId) : ICommand;
+public record ProcessCalculatePositionsCommand(Guid CorrelationId) : ICommand;
 
-public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandler> logger, HoardContext context)
-    : ICommandHandler<ProcessRebuildPositionsCommand>
+public class ProcessCalculatePositionsHandler(ILogger<ProcessCalculatePositionsHandler> logger, HoardContext context)
+    : ICommandHandler<ProcessCalculatePositionsCommand>
 {
-    public async Task HandleAsync(ProcessRebuildPositionsCommand command, CancellationToken ct = default)
+    public async Task HandleAsync(ProcessCalculatePositionsCommand command, CancellationToken ct = default)
     {
-        logger.LogInformation("Rebuilding positions");
+        logger.LogInformation("Calculating positions");
         
         var portfolios = await context.Portfolios
             .Include(p => p.Accounts)
@@ -22,13 +22,13 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
 
         foreach (var portfolio in portfolios)
         {
-            await RebuildPositionsForPortfolioAsync(portfolio, ct);
+            await CalculatePositionsForPortfolioAsync(portfolio, ct);
         }
     }
     
-    private async Task RebuildPositionsForPortfolioAsync( Portfolio portfolio, CancellationToken ct = default)
+    private async Task CalculatePositionsForPortfolioAsync( Portfolio portfolio, CancellationToken ct = default)
     {
-        logger.LogInformation("Rebuilding positions for portfolio {PortfolioId}", portfolio.Id);
+        logger.LogInformation("Calculating positions for portfolio {PortfolioId}", portfolio.Id);
 
         // 1. Figure out which accounts are in this portfolio
         var accountIds = portfolio.Accounts.Select(a => a.Id).ToList();
@@ -67,12 +67,12 @@ public class ProcessRebuildPositionsHandler(ILogger<ProcessRebuildPositionsHandl
             await tx.CommitAsync(ct);
 
             logger.LogInformation(
-                "Rebuilt {Count} positions for portfolio {PortfolioId}",
+                "Calculated {Count} positions for portfolio {PortfolioId}",
                 positionsToInsert.Count, portfolio.Id);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error rebuilding positions for portfolio {PortfolioId}", portfolio.Id);
+            logger.LogError(ex, "Error calculating positions for portfolio {PortfolioId}", portfolio.Id);
             await tx.RollbackAsync(ct);
             throw;
         }
