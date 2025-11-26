@@ -4,5 +4,5 @@ namespace Hoard.Core.Application.Positions;
 
 public record TriggerCalculatePositionsCommand(Guid CorrelationId) : ITriggerCommand
 { 
-    public object ToBusCommand() => new CalculatePositionsBusCommand(CorrelationId);
+    public object ToBusCommand() => new CalculatePositionsBusCommand(CorrelationId, false);
 }

@@ -12,7 +12,7 @@ public class CalculatePositionsBusHandler(IMediator mediator)
 {
     public async Task Handle(CalculatePositionsBusCommand message)
     {
-        var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId);
+        var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId, message.SuppressCascade);
         
         await mediator.SendAsync(appCommand);
     }
@@ -21,7 +21,7 @@ public class CalculatePositionsBusHandler(IMediator mediator)
     {
         if (!message.IsBackfill)
         {
-            var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId);
+            var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId, false);
 
             await mediator.SendAsync(appCommand);
         }

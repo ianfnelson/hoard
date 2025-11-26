@@ -1,6 +1,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
 using Hoard.Messages.Performance;
+using Hoard.Messages.Positions;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
 using Rebus.Sagas;
@@ -11,20 +12,30 @@ public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerfo
 :
     Saga<CalculatePerformanceSagaData>,
     IAmInitiatedBy<StartCalculatePerformanceSagaCommand>,
+    IAmInitiatedBy<PositionsCalculatedEvent>,
     IHandleMessages<PositionPerformanceCalculatedEvent>,
     IHandleMessages<PortfolioPerformanceCalculatedEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<CalculatePerformanceSagaData> config)
     {
+        config.Correlate<PositionsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<StartCalculatePerformanceSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<PositionPerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<PortfolioPerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
 
+    public async Task Handle(PositionsCalculatedEvent message)
+    {
+        await Start(message.CorrelationId, null);
+    }
+    
     public async Task Handle(StartCalculatePerformanceSagaCommand message)
     {
-        var (correlationId, instrumentId) = message;
-        
+        await Start(message.CorrelationId, message.InstrumentId);
+    }
+
+    private async Task Start(Guid correlationId, int? instrumentId)
+    {
         Data.CorrelationId = correlationId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForPerformanceQuery, IReadOnlyList<int>>(
