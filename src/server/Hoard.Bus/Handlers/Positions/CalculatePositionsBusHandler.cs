@@ -7,23 +7,12 @@ using Rebus.Handlers;
 namespace Hoard.Bus.Handlers.Positions;
 
 public class CalculatePositionsBusHandler(IMediator mediator)
-    : IHandleMessages<CalculatePositionsBusCommand>,
-        IHandleMessages<HoldingsCalculatedEvent>
+    : IHandleMessages<CalculatePositionsBusCommand>
 {
     public async Task Handle(CalculatePositionsBusCommand message)
     {
         var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId, message.SuppressCascade);
         
         await mediator.SendAsync(appCommand);
-    }
-
-    public async Task Handle(HoldingsCalculatedEvent message)
-    {
-        if (!message.IsBackfill)
-        {
-            var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId, false);
-
-            await mediator.SendAsync(appCommand);
-        }
     }
 }

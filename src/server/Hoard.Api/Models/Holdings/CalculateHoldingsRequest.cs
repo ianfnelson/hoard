@@ -1,4 +1,5 @@
 using Hoard.Core.Application.Holdings;
+using Hoard.Messages;
 
 namespace Hoard.Api.Models.Holdings;
 
@@ -8,6 +9,6 @@ public class CalculateHoldingsRequest
 
     public TriggerCalculateHoldingsCommand ToCommand()
     {
-        return new TriggerCalculateHoldingsCommand(Guid.NewGuid(), AsOfDate);
+        return new TriggerCalculateHoldingsCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, AsOfDate);
     }
 }

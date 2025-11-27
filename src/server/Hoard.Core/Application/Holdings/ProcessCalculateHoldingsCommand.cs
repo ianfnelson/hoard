@@ -1,7 +1,7 @@
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Extensions;
+using Hoard.Messages;
 using Hoard.Messages.Holdings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,7 +9,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Holdings;
 
-public record ProcessCalculateHoldingsCommand(Guid CorrelationId, DateOnly? AsOfDate, bool IsBackfill = false) : ICommand;
+public record ProcessCalculateHoldingsCommand(Guid CorrelationId, PipelineMode PipelineMode, DateOnly? AsOfDate) : ICommand;
 
 public class ProcessCalculateHoldingsHandler(
     IBus bus,
@@ -26,15 +26,12 @@ public class ProcessCalculateHoldingsHandler(
         var changedInstruments = new HashSet<int>();
         
         await CalculateHoldings(asOfDate, changedInstruments, ct);
-
-        if (!command.IsBackfill)
+        
+        foreach (var instrument in changedInstruments)
         {
-            foreach (var instrument in changedInstruments)
-            {
-                await bus.Publish(new HoldingChangedEvent(command.CorrelationId, asOfDate, instrument));
-            }
+            await bus.Publish(new HoldingChangedEvent(command.CorrelationId, command.PipelineMode, asOfDate, instrument));
         }
-        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, asOfDate, command.IsBackfill));
+        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, command.PipelineMode, asOfDate));
     }
 
     private async Task CalculateHoldings(DateOnly asOfDate, HashSet<int> changedInstruments, CancellationToken ct)
