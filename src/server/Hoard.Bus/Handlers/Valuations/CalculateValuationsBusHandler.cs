@@ -9,7 +9,7 @@ namespace Hoard.Bus.Handlers.Valuations;
 
 public class CalculateValuationsBusHandler(IMediator mediator) 
     : IHandleMessages<CalculateValuationsBusCommand>,
-        IHandleMessages<StockQuoteChangedEvent>,
+        
         IHandleMessages<HoldingChangedEvent>
 
 {
@@ -20,13 +20,7 @@ public class CalculateValuationsBusHandler(IMediator mediator)
         await mediator.SendAsync(appCommand);
     }
 
-    public async Task Handle(StockQuoteChangedEvent message)
-    {
-        var date = DateOnly.FromDateTime(message.RetrievedUtc.ToLocalTime());
-        var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.InstrumentId, date);
-        
-        await mediator.SendAsync(appCommand);
-    }
+    
 
     public async Task Handle(HoldingChangedEvent message)
     {
