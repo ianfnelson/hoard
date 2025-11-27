@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Quotes;
 
-public record RefreshQuotesBusCommand(Guid CorrelationId);
+public record RefreshQuotesBusCommand(Guid CorrelationId, PipelineMode PipelineMode);
