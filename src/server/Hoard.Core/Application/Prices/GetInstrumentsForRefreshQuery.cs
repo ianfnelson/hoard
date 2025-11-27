@@ -4,12 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Prices;
 
-public record GetInstrumentsForBackfillQuery(int? InstrumentId) : IQuery<IReadOnlyList<int>>;
+public record GetInstrumentsForRefreshQuery(int? InstrumentId) : IQuery<IReadOnlyList<int>>;
 
-public class GetInstrumentsForBackfillHandler(HoardContext context, ILogger<GetInstrumentsForBackfillHandler> logger)
-    : IQueryHandler<GetInstrumentsForBackfillQuery, IReadOnlyList<int>>
+public class GetInstrumentsForRefreshHandler(HoardContext context, ILogger<GetInstrumentsForRefreshHandler> logger)
+    : IQueryHandler<GetInstrumentsForRefreshQuery, IReadOnlyList<int>>
 {
-    public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForBackfillQuery query, CancellationToken ct = default)
+    public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForRefreshQuery query, CancellationToken ct = default)
     {
         if (!query.InstrumentId.HasValue)
         {
