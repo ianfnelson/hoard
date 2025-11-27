@@ -1,5 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Messages;
 using Hoard.Messages.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Positions;
 
-public record ProcessCalculatePositionsCommand(Guid CorrelationId, bool SuppressCascade) : ICommand;
+public record ProcessCalculatePositionsCommand(Guid CorrelationId, PipelineMode PipelineMode) : ICommand;
 
 public class ProcessCalculatePositionsHandler(
     ILogger<ProcessCalculatePositionsHandler> logger, HoardContext context, IBus bus)
@@ -27,7 +28,7 @@ public class ProcessCalculatePositionsHandler(
             await CalculatePositionsForPortfolioAsync(portfolio, ct);
         }
         
-        await bus.Publish(new PositionsCalculatedEvent(command.CorrelationId, command.SuppressCascade));
+        await bus.Publish(new PositionsCalculatedEvent(command.CorrelationId, command.PipelineMode));
     }
     
     private async Task CalculatePositionsForPortfolioAsync( Portfolio portfolio, CancellationToken ct = default)
