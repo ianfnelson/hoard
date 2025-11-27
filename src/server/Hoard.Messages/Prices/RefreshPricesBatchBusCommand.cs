@@ -1,8 +1,8 @@
 namespace Hoard.Messages.Prices;
 
 public record RefreshPricesBatchBusCommand(
-    Guid CorrelationId, 
+    Guid CorrelationId,
+    PipelineMode PipelineMode,
     int InstrumentId, 
     DateOnly StartDate, 
-    DateOnly EndDate, 
-    bool IsBackfill = false);
+    DateOnly EndDate);

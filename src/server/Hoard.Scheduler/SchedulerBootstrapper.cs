@@ -5,6 +5,7 @@ using Hoard.Core.Application.Holdings;
 using Hoard.Core.Application.Prices;
 using Hoard.Core.Application.Quotes;
 using Hoard.Core.Application.Valuations;
+using Hoard.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -108,7 +109,13 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Triggering Refresh Prices");
 
-        var command = new TriggerRefreshPricesCommand(Guid.NewGuid(), DateOnlyHelper.TodayLocal());
+        var today = DateOnlyHelper.TodayLocal();
+        
+        var command = new TriggerRefreshPricesCommand(
+            Guid.NewGuid(), 
+            PipelineMode.NightPreMidnight, 
+            null, 
+            today, today);
         
         await _mediator.SendAsync(command);
     }

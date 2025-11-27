@@ -1,7 +1,7 @@
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Services;
+using Hoard.Messages;
 using Hoard.Messages.Prices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,10 +11,10 @@ namespace Hoard.Core.Application.Prices;
 
 public record ProcessRefreshPricesBatchCommand(
     Guid CorrelationId,
+    PipelineMode PipelineMode,
     int InstrumentId,
     DateOnly StartDate,
-    DateOnly EndDate,
-    bool IsBackfill = false) : ICommand;
+    DateOnly EndDate) : ICommand;
 
 public class ProcessRefreshPricesBatchHandler(
     IBus bus,
@@ -48,16 +48,13 @@ public class ProcessRefreshPricesBatchHandler(
         await UpsertPrices(instrument.Id, prices, now, changed, ct);
         
         await context.SaveChangesAsync(ct);
-
-        if (!command.IsBackfill && instrument.InstrumentType is { IsCash: false, IsFxPair: false })
+        
+        foreach (var date in changed)
         {
-            foreach (var date in changed)
-            {
-                await bus.Publish(new StockPriceChangedEvent(command.CorrelationId, instrument.Id, date, now));
-            }
+            await bus.Publish(new PriceChangedEvent(command.CorrelationId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, date, now));
         }
         
-        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, instrument.Id, command.StartDate, command.EndDate, now));
+        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, command.StartDate, command.EndDate, now));
         logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
     }
 
