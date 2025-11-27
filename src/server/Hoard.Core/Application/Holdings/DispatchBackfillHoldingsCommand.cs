@@ -1,9 +1,10 @@
+using Hoard.Messages;
 using Hoard.Messages.Holdings;
 using Rebus.Bus;
 
 namespace Hoard.Core.Application.Holdings;
 
-public record DispatchBackfillHoldingsCommand(Guid CorrelationId, IReadOnlyList<DateOnly> Dates)
+public record DispatchBackfillHoldingsCommand(Guid CorrelationId, PipelineMode PipelineMode, IReadOnlyList<DateOnly> Dates)
     : ICommand;
 
 public class DispatchBackfillHoldingsHandler(IBus bus)
@@ -13,7 +14,7 @@ public class DispatchBackfillHoldingsHandler(IBus bus)
     {
         foreach (var date in command.Dates)
         {
-            await bus.SendLocal(new CalculateHoldingsBusCommand(command.CorrelationId, date, true));
+            await bus.SendLocal(new CalculateHoldingsBusCommand(command.CorrelationId, command.PipelineMode, date));
         }
     }
 }

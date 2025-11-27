@@ -1,12 +1,13 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Messages;
 using Hoard.Messages.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record DeleteTransactionCommand(Guid CorrelationId, int TransactionId) : ICommand;
+public record DeleteTransactionCommand(Guid CorrelationId, PipelineMode PipelineMode, int TransactionId) : ICommand;
 
 public class DeleteTransactionHandler(HoardContext context, IBus bus) 
     : ICommandHandler<DeleteTransactionCommand>
@@ -20,7 +21,7 @@ public class DeleteTransactionHandler(HoardContext context, IBus bus)
         context.Transactions.Remove(tx);
         await context.SaveChangesAsync(ct);
         
-        await bus.Publish(new TransactionDeletedEvent(command.CorrelationId, command.TransactionId, transactionDate));
+        await bus.Publish(new TransactionDeletedEvent(command.CorrelationId, command.PipelineMode, command.TransactionId, transactionDate));
     }
 
     private async Task<Transaction> GetExistingTransaction(int id, CancellationToken ct = default)

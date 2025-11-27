@@ -89,7 +89,10 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Triggering Calculate Holdings");
 
-        var command = new TriggerCalculateHoldingsCommand( Guid.NewGuid(), DateOnlyHelper.TodayLocal());
+        var command = new TriggerCalculateHoldingsCommand( 
+            Guid.NewGuid(), 
+            PipelineMode.NightPreMidnight,
+            DateOnlyHelper.TodayLocal());
         
         await _mediator.SendAsync(command);
     }

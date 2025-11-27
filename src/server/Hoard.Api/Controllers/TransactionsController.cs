@@ -1,6 +1,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Transactions;
 using Hoard.Core.Application.Transactions.Models;
+using Hoard.Messages;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -19,14 +20,14 @@ public class TransactionsController(IMediator mediator, ILogger<TransactionsCont
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] TransactionWriteDto request, CancellationToken ct)
     {
-        var id = await mediator.SendAsync<CreateTransactionCommand, int>(new CreateTransactionCommand(Guid.NewGuid(), request), ct);
+        var id = await mediator.SendAsync<CreateTransactionCommand, int>(new CreateTransactionCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, request), ct);
         return CreatedAtAction(nameof(Get), new { id }, id);
     }
     
     [HttpPut("{id:int}")]
     public async Task<ActionResult> Update(int id, [FromBody] TransactionWriteDto request, CancellationToken ct)
     {
-        await mediator.SendAsync(new UpdateTransactionCommand(Guid.NewGuid(), id, request), ct);
+        await mediator.SendAsync(new UpdateTransactionCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, id, request), ct);
         return NoContent();
     }
     
@@ -35,7 +36,7 @@ public class TransactionsController(IMediator mediator, ILogger<TransactionsCont
     {
         logger.LogInformation("Received request to delete transaction {id}.", id);
         
-        var command = new DeleteTransactionCommand(Guid.NewGuid(), id);
+        var command = new DeleteTransactionCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, id);
         await mediator.SendAsync(command, ct);
         return NoContent();  // 204
     }

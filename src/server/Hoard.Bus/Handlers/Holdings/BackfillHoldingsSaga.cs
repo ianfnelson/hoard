@@ -24,7 +24,7 @@ public class BackfillHoldingsSaga(
 
     public async Task Handle(StartBackfillHoldingsSagaCommand message)
     {
-        var (correlationId, startDate, endDate) = message;
+        var (correlationId, pipelineMode, startDate, endDate) = message;
         
         Data.CorrelationId = correlationId;
         
@@ -35,7 +35,7 @@ public class BackfillHoldingsSaga(
         
         Data.PendingDates = dates.ToHashSet();
         
-        await mediator.SendAsync(new DispatchBackfillHoldingsCommand(correlationId, dates));
+        await mediator.SendAsync(new DispatchBackfillHoldingsCommand(correlationId, pipelineMode, dates));
     }
     
     public Task Handle(HoldingsCalculatedEvent message)
