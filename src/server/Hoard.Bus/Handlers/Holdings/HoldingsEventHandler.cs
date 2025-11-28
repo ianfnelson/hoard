@@ -23,7 +23,7 @@ public class HoldingsEventHandler(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.InstrumentId, message.AsOfDate);
+            var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
         
             await mediator.SendAsync(appCommand);
         }
