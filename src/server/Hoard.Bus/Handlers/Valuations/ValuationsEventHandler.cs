@@ -25,7 +25,7 @@ public class ValuationsEventHandler(IMediator mediator)
         {
             var appCommand =
                 new ProcessCalculatePositionPerformanceCommand(message.CorrelationId, message.InstrumentId,
-                    false);
+                    message.PipelineMode);
 
             await mediator.SendAsync(appCommand);
         }

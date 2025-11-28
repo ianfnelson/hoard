@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Performance;
 
-public record PositionPerformanceCalculatedEvent(Guid CorrelationId, int InstrumentId);
+public record PositionPerformanceCalculatedEvent(Guid CorrelationId, int InstrumentId, PipelineMode PipelineMode);

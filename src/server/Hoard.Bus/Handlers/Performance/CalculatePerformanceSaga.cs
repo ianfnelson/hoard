@@ -23,11 +23,8 @@ public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerfo
     
     public async Task Handle(StartCalculatePerformanceSagaCommand message)
     {
-        await Start(message.CorrelationId, message.InstrumentId);
-    }
-
-    private async Task Start(Guid correlationId, int? instrumentId)
-    {
+        var (correlationId, instrumentId, pipelineMode) = message;
+        
         Data.CorrelationId = correlationId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForPerformanceQuery, IReadOnlyList<int>>(
@@ -37,7 +34,7 @@ public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerfo
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchCalculatePositionPerformanceCommand(correlationId, instrumentIds));
+        await mediator.SendAsync(new DispatchCalculatePositionPerformanceCommand(correlationId, instrumentIds, pipelineMode));
     }
 
     public async Task Handle(PositionPerformanceCalculatedEvent message)
@@ -47,8 +44,8 @@ public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerfo
         {
             logger.LogInformation("All position performance calculated");
         }
-
-        await mediator.SendAsync(new ProcessCalculatePortfolioPerformanceCommand(message.CorrelationId));
+        
+        await mediator.SendAsync(new ProcessCalculatePortfolioPerformanceCommand(message.CorrelationId, 1, message.PipelineMode));
     }
 
     public Task Handle(PortfolioPerformanceCalculatedEvent message)
