@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Valuations;
 
-public record ValuationChangedEvent(Guid CorrelationId, int InstrumentId, DateOnly AsOfDate);
+public record ValuationChangedEvent(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate);

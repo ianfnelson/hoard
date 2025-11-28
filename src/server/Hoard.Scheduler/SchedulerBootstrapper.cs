@@ -128,7 +128,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Triggering Calculate Valuations");
 
-        var command = new TriggerCalculateValuationsCommand(Guid.NewGuid(), DateOnlyHelper.TodayLocal());
+        var command = new TriggerCalculateValuationsCommand(Guid.NewGuid(), PipelineMode.NightPreMidnight, DateOnlyHelper.TodayLocal());
         
         await _mediator.SendAsync(command);
     }

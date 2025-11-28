@@ -1,6 +1,7 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
+using Hoard.Messages;
 using Hoard.Messages.Valuations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculateValuationsCommand(Guid CorrelationId, int InstrumentId, DateOnly AsOfDate, bool IsBackfill = false)
+public record ProcessCalculateValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
     : ICommand;
 
 public class ProcessCalculateHoldingsValuationHandler(
@@ -19,7 +20,7 @@ public class ProcessCalculateHoldingsValuationHandler(
 {
     public async Task HandleAsync(ProcessCalculateValuationsCommand command, CancellationToken ct = default)
     {
-        var (correlationId, instrumentId, asOfDate, isBackfill) = command;
+        var (correlationId, pipelineMode, instrumentId, asOfDate) = command;
 
         var holdings = await context.Holdings
             .Include(h => h.Instrument)
@@ -36,14 +37,14 @@ public class ProcessCalculateHoldingsValuationHandler(
 
         var changed = await CalculateValuations(holdings, ct);
 
-        if (changed && !isBackfill)
+        if (changed)
         {
-            await bus.Publish(new ValuationChangedEvent(correlationId, instrumentId, asOfDate));
+            await bus.Publish(new ValuationChangedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
         }
         
         await context.SaveChangesAsync(ct);
         
-        await bus.Publish(new ValuationsCalculatedEvent(correlationId, instrumentId, asOfDate, isBackfill));
+        await bus.Publish(new ValuationsCalculatedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
 
         logger.LogInformation("Valuations calculated for Instrument {InstrumentId}", instrumentId);
     }

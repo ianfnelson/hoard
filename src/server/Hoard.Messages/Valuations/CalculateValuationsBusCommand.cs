@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Valuations;
 
-public record CalculateValuationsBusCommand(Guid CorrelationId, int InstrumentId, DateOnly AsOfDate, bool IsBackfill);
+public record CalculateValuationsBusCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate);

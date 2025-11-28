@@ -28,7 +28,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
 
     public async Task Handle(StartCalculateValuationsSagaCommand message)
     {
-        var (correlationId, instrumentId, nullableAsOfDate, isBackfill) = message;
+        var (correlationId, pipelineMode, instrumentId, nullableAsOfDate) = message;
         
         Data.CorrelationId = correlationId;
 
@@ -49,17 +49,17 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
 
         Data.PendingHoldings = holdingIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchValuationsCommand(correlationId, holdingIds, asOfDate, isBackfill));
+        await mediator.SendAsync(new DispatchValuationsCommand(correlationId, pipelineMode, holdingIds, asOfDate));
     }
 
     public async Task Handle(ValuationsCalculatedEvent message)
     {
-        var (correlationId, holdingId, asOfDate, isBackfill) = message;
+        var (correlationId, pipelineMode, holdingId, asOfDate) = message;
         
         Data.PendingHoldings.Remove(holdingId);
         if (Data.PendingHoldings.Count == 0)
         {
-            await bus.Publish(new ValuationsCalculatedForDateEvent(correlationId, asOfDate, isBackfill));
+            await bus.Publish(new ValuationsCalculatedForDateEvent(correlationId, pipelineMode, asOfDate));
             
             logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();

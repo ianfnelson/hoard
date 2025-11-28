@@ -34,7 +34,7 @@ public class QuotesEventHandler(IMediator mediator) :
         }
         
         var date = DateOnly.FromDateTime(message.RetrievedUtc.ToLocalTime());
-        var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.InstrumentId, date);
+        var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, date);
         
         await mediator.SendAsync(appCommand);
     }
