@@ -171,46 +171,31 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
     {
         var (position, accountIds, holdings, transactions, _, _) = ctx;
         
-        // If the position is closed, we simply do not calculate returns.
+        // No returns for closed positions
         if (position.CloseDate.HasValue)
-            return null;
-
-        // Position is open. Define the window as:
-        //   * start = max(requested start, position.OpenDate)
-        //   * end   = endDate (which for cumulative periods will be today)
-        var positionStart = position.OpenDate;
-        var overlapStart = startDate > positionStart ? startDate : positionStart;
-        var overlapEnd   = endDate; // always today for cumulative
-
-        // If the overlap is inverted (e.g. start after end), no return.
-        if (overlapStart > overlapEnd)
-            return null;
-
-        // Modified Dietz adjustment:
-        // If the position was not yet held on the requested start date,
-        // shift back one day to get valuation-before-exposure.
-        var effectiveStart = overlapStart;
-
-        if (startDate < positionStart)
         {
-            effectiveStart = positionStart.AddDays(-1);
+            return null;
+        }
+        
+        // No returns for positions that were not open the day after start date
+        if (position.OpenDate > startDate.AddDays(1))
+        {
+            return null;
         }
 
-        var effectiveEnd = overlapEnd;
-
-        var valueStart = GetValueForDate(effectiveStart, holdings, accountIds) ?? 0M;
-        var valueEnd = GetValueForDate(effectiveEnd, holdings, accountIds) ?? 0M;
+        var valueStart = GetValueForDate(startDate, holdings, accountIds) ?? 0M;
+        var valueEnd = GetValueForDate(endDate, holdings, accountIds) ?? 0M;
         
         var incomeValue = transactions
-            .Where(x => x.Date > effectiveStart && x.Date <= effectiveEnd)
+            .Where(x => x.Date > startDate && x.Date <= endDate)
             .Where(x => x.CategoryId == TransactionCategory.Income).Sum(x => x.Value);
         
         return ModifiedDietzCalculator.Calculate(
             valueStart, 
             valueEnd, 
             incomeValue, 
-            effectiveStart, 
-            effectiveEnd, 
+            startDate, 
+            endDate, 
             transactions.ToPositionCashflows());
     }
 
