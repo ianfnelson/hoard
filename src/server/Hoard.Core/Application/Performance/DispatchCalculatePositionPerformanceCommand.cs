@@ -1,9 +1,10 @@
+using Hoard.Messages;
 using Hoard.Messages.Performance;
 using Rebus.Bus;
 
 namespace Hoard.Core.Application.Performance;
 
-public record DispatchCalculatePositionPerformanceCommand(Guid CorrelationId, IReadOnlyList<int> InstrumentIds)
+public record DispatchCalculatePositionPerformanceCommand(Guid CorrelationId, IReadOnlyList<int> InstrumentIds, PipelineMode PipelineMode)
     : ICommand;
 
 public class DispatchCalculatePositionPerformanceHandler(IBus bus)
@@ -13,7 +14,7 @@ public class DispatchCalculatePositionPerformanceHandler(IBus bus)
     {
         foreach (var instrumentId in command.InstrumentIds)
         {
-            await bus.SendLocal(new CalculatePositionPerformanceBusCommand(command.CorrelationId, instrumentId, true));
+            await bus.SendLocal(new CalculatePositionPerformanceBusCommand(command.CorrelationId, instrumentId, command.PipelineMode));
         }
     }
 }
