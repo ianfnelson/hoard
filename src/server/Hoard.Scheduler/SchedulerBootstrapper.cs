@@ -91,8 +91,7 @@ public class SchedulerBootstrapper : IHostedService
 
         var command = new TriggerCalculateHoldingsCommand( 
             Guid.NewGuid(), 
-            PipelineMode.NightPreMidnight,
-            DateOnlyHelper.TodayLocal());
+            DateOnlyHelper.TodayLocal(), PipelineMode.NightPreMidnight);
         
         await _mediator.SendAsync(command);
     }
@@ -116,9 +115,9 @@ public class SchedulerBootstrapper : IHostedService
         
         var command = new TriggerRefreshPricesCommand(
             Guid.NewGuid(), 
-            PipelineMode.NightPreMidnight, 
-            null, 
-            today, today);
+            null,
+            today,
+            PipelineMode.NightPreMidnight);
         
         await _mediator.SendAsync(command);
     }
@@ -128,7 +127,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Triggering Calculate Valuations");
 
-        var command = new TriggerCalculateValuationsCommand(Guid.NewGuid(), PipelineMode.NightPreMidnight, DateOnlyHelper.TodayLocal());
+        var command = new TriggerCalculateValuationsCommand(Guid.NewGuid(), DateOnlyHelper.TodayLocal(), PipelineMode.NightPreMidnight);
         
         await _mediator.SendAsync(command);
     }

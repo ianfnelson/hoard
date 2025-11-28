@@ -1,6 +1,5 @@
 using Hoard.Core.Application.Transactions.Models;
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Transactions;
@@ -8,7 +7,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record CreateTransactionCommand(Guid CorrelationId, PipelineMode PipelineMode, TransactionWriteDto Dto) : ICommand<int>;
+public record CreateTransactionCommand(Guid CorrelationId, TransactionWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand<int>;
 
 public class CreateTransactionHandler(IBus bus, IMapper mapper, HoardContext context)
     : ICommandHandler<CreateTransactionCommand, int>

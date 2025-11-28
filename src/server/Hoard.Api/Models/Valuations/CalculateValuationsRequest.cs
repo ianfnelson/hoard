@@ -9,6 +9,6 @@ public class CalculateValuationsRequest
 
     public TriggerCalculateValuationsCommand ToCommand()
     {
-        return new TriggerCalculateValuationsCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, AsOfDate);
+        return new TriggerCalculateValuationsCommand(Guid.NewGuid(), AsOfDate);
     }
 }

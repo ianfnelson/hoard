@@ -13,6 +13,6 @@ public class BackfillValuationsRequest
     
     public TriggerBackfillValuationsCommand ToCommand()
     {
-        return new TriggerBackfillValuationsCommand(Guid.NewGuid(), PipelineMode.Backfill, InstrumentId, StartDate, EndDate);
+        return new TriggerBackfillValuationsCommand(Guid.NewGuid(), InstrumentId, StartDate, EndDate);
     }
 }
