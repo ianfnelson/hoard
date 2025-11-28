@@ -7,7 +7,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record DeleteTransactionCommand(Guid CorrelationId, PipelineMode PipelineMode, int TransactionId) : ICommand;
+public record DeleteTransactionCommand(Guid CorrelationId, int TransactionId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
 public class DeleteTransactionHandler(HoardContext context, IBus bus) 
     : ICommandHandler<DeleteTransactionCommand>

@@ -1,6 +1,5 @@
 using Hoard.Core.Application.Transactions.Models;
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Transactions;
@@ -8,7 +7,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record UpdateTransactionCommand(Guid CorrelationId, PipelineMode PipelineMode, int TransactionId, TransactionWriteDto Dto) : ICommand;
+public record UpdateTransactionCommand(Guid CorrelationId, int TransactionId, TransactionWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
 public class UpdateTransactionHandler(
     HoardContext context,
@@ -18,7 +17,7 @@ public class UpdateTransactionHandler(
 {
     public async Task HandleAsync(UpdateTransactionCommand command, CancellationToken ct = default)
     {
-        var (correlationId, pipelineMode, transactionId, dto) = command;
+        var (correlationId, transactionId, dto, pipelineMode) = command;
         
         // TODO - validate the DTO
 

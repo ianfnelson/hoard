@@ -1,6 +1,5 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Positions;
-using Hoard.Messages;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -16,7 +15,7 @@ public class PositionsController(IMediator mediator, ILogger<PositionsController
     {
         logger.LogInformation("Received request to calculate positions.");
 
-        await mediator.SendAsync(new TriggerCalculatePositionsCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive));
+        await mediator.SendAsync(new TriggerCalculatePositionsCommand(Guid.NewGuid()));
 
         return Accepted(new { message = "Calculate positions triggered." });
     }

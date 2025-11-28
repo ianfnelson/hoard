@@ -1,6 +1,5 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Quotes;
-using Hoard.Messages;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -16,7 +15,7 @@ public class QuotesController(IMediator mediator, ILogger<QuotesController> logg
     {
         logger.LogInformation("Received request to refresh quotes.");
 
-        await mediator.SendAsync(new TriggerRefreshQuotesCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive));
+        await mediator.SendAsync(new TriggerRefreshQuotesCommand(Guid.NewGuid()));
         
         return Accepted(new { message = "Quote refresh triggered." });
     }
