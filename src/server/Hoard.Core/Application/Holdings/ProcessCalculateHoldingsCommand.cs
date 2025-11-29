@@ -65,7 +65,6 @@ public class ProcessCalculateHoldingsHandler(
         var existing = await context.Holdings
             .Where(h => h.AccountId == accountId && h.AsOfDate == asOf)
             .OrderBy(h => h.InstrumentId)
-            .AsNoTracking()
             .ToListAsync();
         
         var existingMap = existing.ToDictionary(h => h.InstrumentId);
