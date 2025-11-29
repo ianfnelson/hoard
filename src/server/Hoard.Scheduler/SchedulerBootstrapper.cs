@@ -51,7 +51,7 @@ public class SchedulerBootstrapper : IHostedService
     private void RegisterNightlyPreMidnight()
     {
         _recurring.AddOrUpdate(
-            "refresh-prices",
+            "nightly-pre-midnight",
             () => TriggerNightlyPreMidnightCommand(),
             "45 17,22 * * 1-5" // weekdays at 17:45 and 22:45
         );
@@ -60,7 +60,7 @@ public class SchedulerBootstrapper : IHostedService
     private void RegisterNightlyPostMidnight()
     {
         _recurring.AddOrUpdate(
-            "refresh-prices",
+            "nightly-post-midnight",
             () => TriggerNightlyPostMidnightCommand(),
             "1 0 * * *" // daily at 00:01
         );

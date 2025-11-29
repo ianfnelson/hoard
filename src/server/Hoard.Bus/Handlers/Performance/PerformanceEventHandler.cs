@@ -21,7 +21,7 @@ public class PerformanceEventHandler(IMediator mediator)
     public async Task Handle(CalculatePortfolioPerformanceBusCommand message)
     {
         var appCommand =
-            new ProcessCalculatePositionPerformanceCommand(message.CorrelationId, message.PortfolioId,
+            new ProcessCalculatePortfolioPerformanceCommand(message.CorrelationId, message.PortfolioId,
                 message.PipelineMode);
 
         await mediator.SendAsync(appCommand);
