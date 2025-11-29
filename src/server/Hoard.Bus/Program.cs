@@ -4,6 +4,8 @@ using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
 using Hoard.Messages.Holdings;
+using Hoard.Messages.Performance;
+using Hoard.Messages.Positions;
 using Hoard.Messages.Prices;
 using Hoard.Messages.Quotes;
 using Hoard.Messages.Valuations;
@@ -38,14 +40,20 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<HoldingsCalculatedEvent>();
     await bus.Subscribe<HoldingChangedEvent>();
     
+    await bus.Subscribe<PositionPerformanceCalculatedEvent>();
+    await bus.Subscribe<PortfolioPerformanceCalculatedEvent>();
+    await bus.Subscribe<PerformanceCalculatedEvent>();
+    
     await bus.Subscribe<PriceChangedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
-    //await bus.Subscribe<PricesRefreshedEvent>();
+    await bus.Subscribe<PricesRefreshedEvent>();
+    
+    await bus.Subscribe<PositionsCalculatedEvent>();
     
     await bus.Subscribe<QuoteChangedEvent>();
     
+    await bus.Subscribe<ValuationsCalculatedForHoldingEvent>();
     await bus.Subscribe<ValuationsCalculatedEvent>();
-    await bus.Subscribe<ValuationsCalculatedForDateEvent>();
     await bus.Subscribe<ValuationChangedEvent>();
 }
 
