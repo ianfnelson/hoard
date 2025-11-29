@@ -13,7 +13,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
     :
         Saga<CalculateValuationsSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
-        IHandleMessages<ValuationsCalculatedEvent>
+        IHandleMessages<ValuationsCalculatedForHoldingEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
     {
@@ -21,7 +21,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
 
-        cfg.Correlate<ValuationsCalculatedEvent>(
+        cfg.Correlate<ValuationsCalculatedForHoldingEvent>(
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
     }
@@ -52,14 +52,14 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         await mediator.SendAsync(new DispatchValuationsCommand(correlationId, pipelineMode, holdingIds, asOfDate));
     }
 
-    public async Task Handle(ValuationsCalculatedEvent message)
+    public async Task Handle(ValuationsCalculatedForHoldingEvent message)
     {
         var (correlationId, pipelineMode, holdingId, asOfDate) = message;
         
         Data.PendingHoldings.Remove(holdingId);
         if (Data.PendingHoldings.Count == 0)
         {
-            await bus.Publish(new ValuationsCalculatedForDateEvent(correlationId, pipelineMode, asOfDate));
+            await bus.Publish(new ValuationsCalculatedEvent(correlationId, pipelineMode, asOfDate));
             
             logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();

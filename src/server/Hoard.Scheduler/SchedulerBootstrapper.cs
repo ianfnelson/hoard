@@ -1,10 +1,8 @@
 using Hangfire;
 using Hoard.Core;
 using Hoard.Core.Application;
-using Hoard.Core.Application.Holdings;
-using Hoard.Core.Application.Prices;
+using Hoard.Core.Application.Chrono;
 using Hoard.Core.Application.Quotes;
-using Hoard.Core.Application.Valuations;
 using Hoard.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -34,21 +32,11 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Registering Hoard Scheduler jobs...");
 
-        RegisterCalculateHoldings();
+        RegisterNightlyPreMidnight();
+        RegisterNightlyPostMidnight();
         RegisterRefreshQuotes();
-        RegisterRefreshPrices();
-        RegisterCalculateValuations();
         
         return Task.CompletedTask;
-    }
-
-    private void RegisterCalculateHoldings()
-    {
-        _recurring.AddOrUpdate(
-            "calculate-holdings",
-            () => TriggerCalculateHoldingsCommand(),
-            "0 2 * * *" // nightly at 2am
-        );
     }
     
     private void RegisterRefreshQuotes()
@@ -60,21 +48,21 @@ public class SchedulerBootstrapper : IHostedService
         );
     }
 
-    private void RegisterRefreshPrices()
+    private void RegisterNightlyPreMidnight()
     {
         _recurring.AddOrUpdate(
             "refresh-prices",
-            () => TriggerRefreshPricesCommand(),
-            "45 17,21,22 * * 1-5" // weekdays at 17:45, 21:45, 22:45
+            () => TriggerNightlyPreMidnightCommand(),
+            "45 17,22 * * 1-5" // weekdays at 17:45 and 22:45
         );
     }
     
-    private void RegisterCalculateValuations()
+    private void RegisterNightlyPostMidnight()
     {
         _recurring.AddOrUpdate(
-            "calculate-valuations",
-            () => TriggerCalculateValuationsCommand(),
-            "15 23 * * 1-5" // weekdays 23:15
+            "refresh-prices",
+            () => TriggerNightlyPostMidnightCommand(),
+            "1 0 * * *" // daily at 00:01
         );
     }
     
@@ -84,50 +72,37 @@ public class SchedulerBootstrapper : IHostedService
         return Task.CompletedTask;
     }
 
-    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task TriggerCalculateHoldingsCommand()
-    {
-        _logger.LogInformation("Triggering Calculate Holdings");
-
-        var command = new TriggerCalculateHoldingsCommand( 
-            Guid.NewGuid(), 
-            DateOnlyHelper.TodayLocal(), PipelineMode.NightPreMidnight);
-        
-        await _mediator.SendAsync(command);
-    }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
     public async Task TriggerRefreshQuotesCommand()
     {
         _logger.LogInformation("Triggering Refresh Quotes");
 
-        var command = new TriggerRefreshQuotesCommand(Guid.NewGuid(), PipelineMode.NightPreMidnight);
+        var command = new TriggerRefreshQuotesCommand(Guid.NewGuid(), PipelineMode.NightlyPreMidnight);
 
         await _mediator.SendAsync(command);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task TriggerRefreshPricesCommand()
+    public async Task TriggerNightlyPreMidnightCommand()
     {
-        _logger.LogInformation("Triggering Refresh Prices");
+        _logger.LogInformation("Triggering Nightly Pre Midnight");
 
         var today = DateOnlyHelper.TodayLocal();
         
-        var command = new TriggerRefreshPricesCommand(
-            Guid.NewGuid(), 
-            null,
-            today,
-            PipelineMode.NightPreMidnight);
+        var command = new TriggerNightlyPreMidnightRunCommand(Guid.NewGuid(), today);
         
         await _mediator.SendAsync(command);
     }
     
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task TriggerCalculateValuationsCommand()
+    public async Task TriggerNightlyPostMidnightCommand()
     {
-        _logger.LogInformation("Triggering Calculate Valuations");
+        _logger.LogInformation("Triggering Nightly Post Midnight");
 
-        var command = new TriggerCalculateValuationsCommand(Guid.NewGuid(), DateOnlyHelper.TodayLocal(), PipelineMode.NightPreMidnight);
+        var today = DateOnlyHelper.TodayLocal();
+        
+        var command = new TriggerNightlyPostMidnightRunCommand(Guid.NewGuid(), today);
         
         await _mediator.SendAsync(command);
     }

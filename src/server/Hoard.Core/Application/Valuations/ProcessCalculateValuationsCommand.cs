@@ -44,7 +44,7 @@ public class ProcessCalculateHoldingsValuationHandler(
         
         await context.SaveChangesAsync(ct);
         
-        await bus.Publish(new ValuationsCalculatedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+        await bus.Publish(new ValuationsCalculatedForHoldingEvent(correlationId, pipelineMode, instrumentId, asOfDate));
 
         logger.LogInformation("Valuations calculated for Instrument {InstrumentId}", instrumentId);
     }

@@ -1,13 +1,15 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
 using Hoard.Messages.Performance;
+using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
 namespace Hoard.Bus.Handlers.Performance;
 
-public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerformanceSaga> logger)
+public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<CalculatePerformanceSaga> logger)
 :
     Saga<CalculatePerformanceSagaData>,
     IAmInitiatedBy<StartCalculatePerformanceSagaCommand>,
@@ -30,7 +32,7 @@ public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerfo
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForPerformanceQuery, IReadOnlyList<int>>(
             new GetInstrumentsForPerformanceQuery(instrumentId));
         
-        logger.LogInformation("Starting performance recomputation for {InstrumentIdsCount} instruments", instrumentIds.Count);
+        logger.LogInformation("Starting position performance calculation for {InstrumentIdsCount} instruments", instrumentIds.Count);
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
@@ -44,21 +46,36 @@ public class CalculatePerformanceSaga(IMediator mediator, ILogger<CalculatePerfo
         {
             logger.LogInformation("All position performance calculated");
         }
+
+        var portfolioIds =
+            await mediator.QueryAsync<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>(
+                new GetPortfoliosForPerformanceQuery());
         
-        await mediator.SendAsync(new ProcessCalculatePortfolioPerformanceCommand(message.CorrelationId, 1, message.PipelineMode));
+        logger.LogInformation("Starting portfolio performance calculation for {PortfolioIdsCount} portfolios", portfolioIds.Count);
+        
+        Data.PendingPortfolios = portfolioIds.ToHashSet();
+        
+        await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(message.CorrelationId, portfolioIds, message.PipelineMode));
     }
 
-    public Task Handle(PortfolioPerformanceCalculatedEvent message)
+    public async Task Handle(PortfolioPerformanceCalculatedEvent message)
     {
-        logger.LogInformation("Portfolio performance calculated");
+        Data.PendingPortfolios.Remove(message.PortfolioId);
+        if (Data.PendingPortfolios.Count == 0)
+        {
+            logger.LogInformation("All portfolio performance calculated");
+        }
+        
+        logger.LogInformation("Calculate performance saga {CorrelationId} complete", Data.CorrelationId);
         MarkAsComplete();
         
-        return Task.CompletedTask;
+        await bus.Publish(new PerformanceCalculatedEvent(Data.CorrelationId, message.PipelineMode));
     }
 }
 
 public class CalculatePerformanceSagaData : SagaData
 {
     public Guid CorrelationId { get; set; }
-    public HashSet<int> PendingInstruments { get; set; } = new();
+    public HashSet<int> PendingInstruments { get; set; } = [];
+    public HashSet<int> PendingPortfolios { get; set; } = [];
 }
