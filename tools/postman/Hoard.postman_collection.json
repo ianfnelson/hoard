@@ -7,6 +7,71 @@
 	},
 	"item": [
 		{
+			"name": "Chrono",
+			"item": [
+				{
+					"name": "Nightly Pre-Midnight",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/chrono/trigger-nightly-pre-midnight",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"chrono",
+								"trigger-nightly-pre-midnight"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Nightly Post-Midnight",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/chrono/trigger-nightly-post-midnight",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"chrono",
+								"trigger-nightly-post-midnight"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Holdings",
 			"item": [
 				{
@@ -19,7 +84,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    //\"StartDate\": \"2025-11-06\"   // Optional start date of range - defaults to earliest trade\n    //,\"EndDate\": \"2025-11-06\"    // Optional end date of range - default to today\n}",
+							"raw": "{\n    \"StartDate\": \"2025-11-01\"   // Optional start date of range - defaults to earliest trade\n    ,\"EndDate\": \"2025-11-29\"    // Optional end date of range - default to today\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -49,7 +114,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"AsOfDate\": \"2025-11-24\"    // Optional date - defaults to today\n}",
+							"raw": "{\n    \"AsOfDate\": \"2025-11-27\"    // Optional date - defaults to today\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -72,10 +137,45 @@
 			]
 		},
 		{
+			"name": "Performance",
+			"item": [
+				{
+					"name": "Calculate Performance",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/performance/calculate",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"performance",
+								"calculate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Positions",
 			"item": [
 				{
-					"name": "Rebuild Positions",
+					"name": "Calculate Positions",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -92,13 +192,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{BaseUrl}}api/positions/rebuild",
+							"raw": "{{BaseUrl}}api/positions/calculate",
 							"host": [
 								"{{BaseUrl}}api"
 							],
 							"path": [
 								"positions",
-								"rebuild"
+								"calculate"
 							]
 						}
 					},
@@ -199,71 +299,6 @@
 							"path": [
 								"quotes",
 								"refresh"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Valuations",
-			"item": [
-				{
-					"name": "Backfill Valuations",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"InstrumentId\": 440,          // Optional instrument ID to value - defaults to all\n    \"StartDate\": \"2025-11-05\"   // Optional start date of range - defaults to earliest trade\n    ,\"EndDate\": \"2025-11-22\"    // Optional end date of range - default to today\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}api/valuations/backfill",
-							"host": [
-								"{{BaseUrl}}api"
-							],
-							"path": [
-								"valuations",
-								"backfill"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Calculate Valuations",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    //\"AsOfDate\": \"2025-11-19\"    // Optional date - defaults to today\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}api/valuations/calculate",
-							"host": [
-								"{{BaseUrl}}api"
-							],
-							"path": [
-								"valuations",
-								"calculate"
 							]
 						}
 					},
@@ -411,10 +446,10 @@
 			]
 		},
 		{
-			"name": "Performances",
+			"name": "Valuations",
 			"item": [
 				{
-					"name": "Backfill Performances",
+					"name": "Backfill Valuations",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -423,7 +458,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"InstrumentId\": 440\n}",
+							"raw": "{\n    \"InstrumentId\": 440,          // Optional instrument ID to value - defaults to all\n    \"StartDate\": \"2025-11-05\"   // Optional start date of range - defaults to earliest trade\n    ,\"EndDate\": \"2025-11-22\"    // Optional end date of range - default to today\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -431,13 +466,43 @@
 							}
 						},
 						"url": {
-							"raw": "{{BaseUrl}}api/performances/backfill",
+							"raw": "{{BaseUrl}}api/valuations/backfill",
 							"host": [
 								"{{BaseUrl}}api"
 							],
 							"path": [
-								"performances",
+								"valuations",
 								"backfill"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Valuations",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    //\"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}api/valuations/calculate",
+							"host": [
+								"{{BaseUrl}}api"
+							],
+							"path": [
+								"valuations",
+								"calculate"
 							]
 						}
 					},
