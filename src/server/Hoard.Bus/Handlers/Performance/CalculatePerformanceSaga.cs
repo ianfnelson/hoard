@@ -45,17 +45,17 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
         if (Data.PendingInstruments.Count == 0)
         {
             logger.LogInformation("All position performance calculated");
+            
+            var portfolioIds =
+                await mediator.QueryAsync<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>(
+                    new GetPortfoliosForPerformanceQuery());
+        
+            logger.LogInformation("Starting portfolio performance calculation for {PortfolioIdsCount} portfolios", portfolioIds.Count);
+        
+            Data.PendingPortfolios = portfolioIds.ToHashSet();
+        
+            await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(message.CorrelationId, portfolioIds, message.PipelineMode));
         }
-
-        var portfolioIds =
-            await mediator.QueryAsync<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>(
-                new GetPortfoliosForPerformanceQuery());
-        
-        logger.LogInformation("Starting portfolio performance calculation for {PortfolioIdsCount} portfolios", portfolioIds.Count);
-        
-        Data.PendingPortfolios = portfolioIds.ToHashSet();
-        
-        await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(message.CorrelationId, portfolioIds, message.PipelineMode));
     }
 
     public async Task Handle(PortfolioPerformanceCalculatedEvent message)
@@ -64,12 +64,12 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
         if (Data.PendingPortfolios.Count == 0)
         {
             logger.LogInformation("All portfolio performance calculated");
+            
+            logger.LogInformation("Calculate performance saga {CorrelationId} complete", Data.CorrelationId);
+            MarkAsComplete();
+        
+            await bus.Publish(new PerformanceCalculatedEvent(Data.CorrelationId, message.PipelineMode));
         }
-        
-        logger.LogInformation("Calculate performance saga {CorrelationId} complete", Data.CorrelationId);
-        MarkAsComplete();
-        
-        await bus.Publish(new PerformanceCalculatedEvent(Data.CorrelationId, message.PipelineMode));
     }
 }
 

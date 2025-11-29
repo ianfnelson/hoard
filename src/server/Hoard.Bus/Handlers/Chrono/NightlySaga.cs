@@ -3,6 +3,7 @@ using Hoard.Core.Application.Holdings;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Positions;
 using Hoard.Core.Application.Prices;
+using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Chrono;
@@ -50,10 +51,12 @@ public class NightlySaga(IMediator mediator, ILogger<NightlySaga> logger)
         logger.LogInformation("NightlyRun {CorrelationId}: Starting {PipelineMode} for {AsOfDate}", 
             correlationId, pipelineMode, asOfDate.ToIsoDateString());
         
+        logger.LogInformation("NightlyRun {CorrelationId}: Dispatching Holdings", Data.CorrelationId);
         await mediator.SendAsync(new TriggerCalculateHoldingsCommand(correlationId, asOfDate, pipelineMode));
 
         if (pipelineMode == PipelineMode.NightlyPreMidnight)
         {
+            logger.LogInformation("NightlyRun {CorrelationId}: Dispatching Prices", Data.CorrelationId);
             await mediator.SendAsync(new TriggerRefreshPricesCommand(correlationId, null, asOfDate, pipelineMode));
         }
     }
@@ -68,7 +71,7 @@ public class NightlySaga(IMediator mediator, ILogger<NightlySaga> logger)
             !Data.ValuationsCalculated)
         {
             logger.LogInformation("NightlyRun {CorrelationId}: Dispatching Valuations (prices now available)", Data.CorrelationId);
-            await mediator.SendAsync(new TriggerCalculateHoldingsCommand(Data.CorrelationId, Data.AsOfDate, Data.PipelineMode));
+            await mediator.SendAsync(new TriggerCalculateValuationsCommand(Data.CorrelationId, Data.AsOfDate, Data.PipelineMode));
         }
     }
 
@@ -80,7 +83,7 @@ public class NightlySaga(IMediator mediator, ILogger<NightlySaga> logger)
         if (!Data.PositionsCalculated)
         {
             logger.LogInformation("NightlyRun {CorrelationId}: Dispatching Positions", Data.CorrelationId);
-            await mediator.SendAsync(new TriggerCalculateHoldingsCommand(Data.CorrelationId, Data.AsOfDate, Data.PipelineMode));
+            await mediator.SendAsync(new TriggerCalculatePositionsCommand(Data.CorrelationId, Data.PipelineMode));
         }
     }
 
@@ -98,7 +101,7 @@ public class NightlySaga(IMediator mediator, ILogger<NightlySaga> logger)
             !Data.ValuationsCalculated)
         {
             logger.LogInformation("NightlyRun {CorrelationId}: Dispatching Valuations", Data.CorrelationId);
-            await mediator.SendAsync(new TriggerCalculatePositionsCommand(Data.CorrelationId, Data.PipelineMode));
+            await mediator.SendAsync(new TriggerCalculateValuationsCommand(Data.CorrelationId, Data.AsOfDate, Data.PipelineMode));
         }
     }
 

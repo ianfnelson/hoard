@@ -47,9 +47,8 @@ public class RefreshPricesSaga(
         {
             logger.LogInformation("Price refresh saga {CorrelationId} complete", Data.CorrelationId);
             MarkAsComplete();
+            await bus.Publish(new PricesRefreshedEvent(Data.CorrelationId, Data.PipelineMode));
         }
-
-        await bus.Publish(new PricesRefreshedEvent(Data.CorrelationId, Data.PipelineMode));
     }
 }
 
