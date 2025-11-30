@@ -4,6 +4,5 @@ public enum PipelineMode
 {
     Backfill,
     DaytimeReactive,
-    NightlyPreMidnight,
-    NightlyPostMidnight
+    CloseOfDay
 }

@@ -10,7 +10,7 @@
 			"name": "Chrono",
 			"item": [
 				{
-					"name": "Nightly Pre-Midnight",
+					"name": "Close Of Day",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
+							"raw": "{\n    //\"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -27,43 +27,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{BaseUrl}}api/chrono/trigger-nightly-pre-midnight",
+							"raw": "{{BaseUrl}}api/chrono/trigger-close-of-day",
 							"host": [
 								"{{BaseUrl}}api"
 							],
 							"path": [
 								"chrono",
-								"trigger-nightly-pre-midnight"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Nightly Post-Midnight",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}api/chrono/trigger-nightly-post-midnight",
-							"host": [
-								"{{BaseUrl}}api"
-							],
-							"path": [
-								"chrono",
-								"trigger-nightly-post-midnight"
+								"trigger-close-of-day"
 							]
 						}
 					},

@@ -39,6 +39,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     var bus = scope.ServiceProvider.GetRequiredService<IBus>();
     await bus.Subscribe<HoldingsCalculatedEvent>();
     await bus.Subscribe<HoldingChangedEvent>();
+    await bus.Subscribe<HoldingsBackfilledEvent>();
     
     await bus.Subscribe<PositionPerformanceCalculatedEvent>();
     await bus.Subscribe<PortfolioPerformanceCalculatedEvent>();
@@ -55,6 +56,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<ValuationsCalculatedForHoldingEvent>();
     await bus.Subscribe<ValuationsCalculatedEvent>();
     await bus.Subscribe<ValuationChangedEvent>();
+    await bus.Subscribe<ValuationsBackfilledEvent>();
 }
 
 await app.RunAsync();
