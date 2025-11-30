@@ -1,8 +1,10 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
+using Hoard.Messages;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
@@ -10,6 +12,7 @@ namespace Hoard.Bus.Handlers.Valuations;
 
 public class BackfillValuationsSaga(
     IMediator mediator,
+    IBus bus,
     ILogger<BackfillValuationsSaga> logger)
     :
         Saga<BackfillValuationsSagaData>,
@@ -38,21 +41,25 @@ public class BackfillValuationsSaga(
         await mediator.SendAsync(new DispatchBackfillValuationsCommand(correlationId, pipelineMode, instrumentId, dates));
     }
     
-    public Task Handle(ValuationsCalculatedEvent message)
+    public async Task Handle(ValuationsCalculatedEvent message)
     {
         Data.PendingDates.Remove(message.AsOfDate);
         if (Data.PendingDates.Count == 0)
         {
             logger.LogInformation("All valuations recomputed. Done!");
             MarkAsComplete();
+            await bus.Publish(new ValuationsBackfilledEvent(
+                Data.CorrelationId, Data.PipelineMode, Data.InstrumentId, Data.StartDate, Data.EndDate));
         }
-
-        return Task.CompletedTask;
     }
 }
 
 public class BackfillValuationsSagaData : SagaData
 {
     public Guid CorrelationId { get; set; }
+    public PipelineMode PipelineMode { get; set; }
+    public int? InstrumentId { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
     public HashSet<DateOnly> PendingDates { get; set; } = new();
 }

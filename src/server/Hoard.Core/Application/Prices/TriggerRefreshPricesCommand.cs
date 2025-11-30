@@ -6,9 +6,10 @@ namespace Hoard.Core.Application.Prices;
 public record TriggerRefreshPricesCommand(
     Guid CorrelationId,
     int? InstrumentId,
-    DateOnly? AsOfDate,
+    DateOnly? StartDate,
+    DateOnly? EndDate,
     PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
 {
     public object ToBusCommand() => new StartRefreshPricesSagaCommand(
-        CorrelationId, PipelineMode, InstrumentId, AsOfDate, AsOfDate);
+        CorrelationId, PipelineMode, InstrumentId, StartDate, EndDate);
 }

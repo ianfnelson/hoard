@@ -1,6 +1,6 @@
 namespace Hoard.Messages.Chrono;
 
-public record StartNightlySagaCommand(
+public record StartCloseOfDaySagaCommand(
     Guid CorrelationId,
     DateOnly? AsOfDate,
     PipelineMode PipelineMode

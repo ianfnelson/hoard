@@ -3,7 +3,6 @@ using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Chrono;
 using Hoard.Core.Application.Quotes;
-using Hoard.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -32,8 +31,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Registering Hoard Scheduler jobs...");
 
-        RegisterNightlyPreMidnight();
-        RegisterNightlyPostMidnight();
+        RegisterCloseOfDay();
         RegisterRefreshQuotes();
         
         return Task.CompletedTask;
@@ -48,21 +46,12 @@ public class SchedulerBootstrapper : IHostedService
         );
     }
 
-    private void RegisterNightlyPreMidnight()
+    private void RegisterCloseOfDay()
     {
         _recurring.AddOrUpdate(
-            "nightly-pre-midnight",
-            () => TriggerNightlyPreMidnightCommand(),
-            "45 17,22 * * 1-5" // weekdays at 17:45 and 22:45
-        );
-    }
-    
-    private void RegisterNightlyPostMidnight()
-    {
-        _recurring.AddOrUpdate(
-            "nightly-post-midnight",
-            () => TriggerNightlyPostMidnightCommand(),
-            "1 0 * * *" // daily at 00:01
+            "close-of-day",
+            () => TriggerCloseOfDayCommand(),
+            "0 18 * * *" // daily at 18:00
         );
     }
     
@@ -78,31 +67,19 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Triggering Refresh Quotes");
 
-        var command = new TriggerRefreshQuotesCommand(Guid.NewGuid(), PipelineMode.NightlyPreMidnight);
+        var command = new TriggerRefreshQuotesCommand(Guid.NewGuid());
 
         await _mediator.SendAsync(command);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task TriggerNightlyPreMidnightCommand()
+    public async Task TriggerCloseOfDayCommand()
     {
-        _logger.LogInformation("Triggering Nightly Pre Midnight");
+        _logger.LogInformation("Triggering Close Of Day");
 
         var today = DateOnlyHelper.TodayLocal();
         
-        var command = new TriggerNightlyPreMidnightRunCommand(Guid.NewGuid(), today);
-        
-        await _mediator.SendAsync(command);
-    }
-    
-    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
-    public async Task TriggerNightlyPostMidnightCommand()
-    {
-        _logger.LogInformation("Triggering Nightly Post Midnight");
-
-        var today = DateOnlyHelper.TodayLocal();
-        
-        var command = new TriggerNightlyPostMidnightRunCommand(Guid.NewGuid(), today);
+        var command = new TriggerCloseOfDayRunCommand(Guid.NewGuid(), today);
         
         await _mediator.SendAsync(command);
     }
