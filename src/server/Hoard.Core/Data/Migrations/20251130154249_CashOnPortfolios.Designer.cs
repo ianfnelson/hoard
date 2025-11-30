@@ -4,6 +4,7 @@ using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hoard.Core.Data.Migrations
 {
     [DbContext(typeof(HoardContext))]
-    partial class HoardContextModelSnapshot : ModelSnapshot
+    [Migration("20251130154249_CashOnPortfolios")]
+    partial class CashOnPortfolios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -909,7 +912,7 @@ namespace Hoard.Core.Data.Migrations
             modelBuilder.Entity("Hoard.Core.Domain.Entities.PortfolioPerformanceCumulative", b =>
                 {
                     b.HasOne("Hoard.Core.Domain.Entities.Portfolio", "Portfolio")
-                        .WithOne("Performance")
+                        .WithOne()
                         .HasForeignKey("Hoard.Core.Domain.Entities.PortfolioPerformanceCumulative", "PortfolioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -939,7 +942,7 @@ namespace Hoard.Core.Data.Migrations
             modelBuilder.Entity("Hoard.Core.Domain.Entities.PositionPerformanceCumulative", b =>
                 {
                     b.HasOne("Hoard.Core.Domain.Entities.Position", "Position")
-                        .WithOne("Performance")
+                        .WithOne()
                         .HasForeignKey("Hoard.Core.Domain.Entities.PositionPerformanceCumulative", "PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1070,13 +1073,6 @@ namespace Hoard.Core.Data.Migrations
             modelBuilder.Entity("Hoard.Core.Domain.Entities.Portfolio", b =>
                 {
                     b.Navigation("AssetTargets");
-
-                    b.Navigation("Performance");
-                });
-
-            modelBuilder.Entity("Hoard.Core.Domain.Entities.Position", b =>
-                {
-                    b.Navigation("Performance");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,3 @@
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,11 +17,17 @@ public class PortfolioPerformanceCumulativeConfiguration
         
         base.Configure(builder);
 
+        builder.Property(p => p.CashValue)
+            .HasColumnType("decimal(18,2)");
+        
+        builder.Property(p => p.CashWeightPercent)
+            .HasColumnType("decimal(9,4)");
+        
         builder.Property(p => p.PortfolioId)
             .ValueGeneratedNever();
 
         builder.HasOne(p => p.Portfolio)
-            .WithOne()
+            .WithOne(p => p.Performance)
             .HasForeignKey<PortfolioPerformanceCumulative>(p => p.PortfolioId);
     }
 }

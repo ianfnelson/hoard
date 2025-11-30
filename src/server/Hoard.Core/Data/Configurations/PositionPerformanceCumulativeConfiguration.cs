@@ -1,4 +1,3 @@
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,7 +17,7 @@ public class PositionPerformanceCumulativeConfiguration
         base.Configure(builder);
 
         builder.HasOne(p => p.Position)
-            .WithOne()
+            .WithOne(p => p.Performance)
             .HasForeignKey<PositionPerformanceCumulative>(p => p.PositionId);
 
         builder.Property(p => p.CostBasis)
