@@ -30,12 +30,10 @@ public class QuotesEventHandler(IMediator mediator) :
     {
         if (message is { PipelineMode: PipelineMode.DaytimeReactive, IsFxPair: false })
         {
-            return;
+            var date = DateOnly.FromDateTime(message.RetrievedUtc.ToLocalTime());
+            var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, date);
+        
+            await mediator.SendAsync(appCommand);
         }
-        
-        var date = DateOnly.FromDateTime(message.RetrievedUtc.ToLocalTime());
-        var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, date);
-        
-        await mediator.SendAsync(appCommand);
     }
 }
