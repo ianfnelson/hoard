@@ -81,9 +81,10 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
 
     private static void CalculatePortfolioWeight(PositionPerformanceCumulative perf, PositionContext contextData)
     {
-        var portfolioValue = contextData.Position.Portfolio.Performance?.Value ?? decimal.Zero;
-            
-        perf.PortfolioWeightPercent = portfolioValue == decimal.Zero ? decimal.Zero : 100.0M * perf.Value / portfolioValue;
+        perf.PortfolioWeightPercent = decimal.Zero;
+        // var portfolioValue = contextData.Position.Portfolio.Performance?.Value ?? decimal.Zero;
+        //     
+        // perf.PortfolioWeightPercent = portfolioValue == decimal.Zero ? decimal.Zero : 100.0M * perf.Value / portfolioValue;
     }
 
     private async Task<PositionPerformanceCumulative> LoadOrCreate(Position position, CancellationToken ct)
@@ -227,7 +228,6 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             .Where(p => p.InstrumentId == instrumentId)
             .Include(p => p.Portfolio)
             .Include(p => p.Portfolio.Accounts)
-            .Include(p => p.Portfolio.Performance)
             .AsNoTracking()
             .ToListAsync(ct);
         
