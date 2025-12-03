@@ -9,17 +9,17 @@ using Rebus.Handlers;
 namespace Hoard.Bus.Handlers.Valuations;
 
 public class ValuationsEventHandler(IMediator mediator) 
-    : IHandleMessages<CalculateValuationsBusCommand>,
-        IHandleMessages<ValuationChangedEvent>
+    : IHandleMessages<CalculateHoldingValuationsBusCommand>,
+        IHandleMessages<HoldingValuationChangedEvent>
 {
-    public async Task Handle(CalculateValuationsBusCommand message)
+    public async Task Handle(CalculateHoldingValuationsBusCommand message)
     {
-        var appCommand = new ProcessCalculateValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
+        var appCommand = new ProcessCalculateHoldingValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
 
         await mediator.SendAsync(appCommand);
     }
     
-    public async Task Handle(ValuationChangedEvent message)
+    public async Task Handle(HoldingValuationChangedEvent message)
     {
         if (message.AsOfDate == DateOnlyHelper.TodayLocal() && message.PipelineMode == PipelineMode.DaytimeReactive)
         {

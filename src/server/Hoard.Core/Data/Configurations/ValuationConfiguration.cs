@@ -1,23 +1,14 @@
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class ValuationConfiguration : IEntityTypeConfiguration<Valuation>
+public abstract class ValuationConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
+    where TEntity : Valuation
 {
-    public void Configure(EntityTypeBuilder<Valuation> builder)
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        builder.ToTable("Valuation");
-
-        builder.HasIndex(hv => hv.HoldingId).IsUnique();
-        
-        builder.HasOne(hv => hv.Holding)
-            .WithOne(h => h.Valuation)
-            .HasForeignKey<Valuation>(hv => hv.HoldingId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
         builder.Property(iv => iv.Value)
             .HasColumnType("decimal(18,2)");
         

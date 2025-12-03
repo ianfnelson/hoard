@@ -27,7 +27,7 @@ public class PortfolioPerformanceCumulativeConfiguration
             .ValueGeneratedNever();
 
         builder.HasOne(p => p.Portfolio)
-            .WithOne(p => p.Performance)
+            .WithOne()
             .HasForeignKey<PortfolioPerformanceCumulative>(p => p.PortfolioId);
     }
 }
