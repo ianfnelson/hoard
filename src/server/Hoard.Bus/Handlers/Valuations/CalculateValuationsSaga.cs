@@ -1,6 +1,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
+using Hoard.Messages;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -13,7 +14,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
     :
         Saga<CalculateValuationsSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
-        IHandleMessages<ValuationsCalculatedForHoldingEvent>
+        IHandleMessages<HoldingValuationCalculatedEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
     {
@@ -21,7 +22,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
 
-        cfg.Correlate<ValuationsCalculatedForHoldingEvent>(
+        cfg.Correlate<HoldingValuationCalculatedEvent>(
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
     }
@@ -31,45 +32,50 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         var (correlationId, pipelineMode, instrumentId, nullableAsOfDate) = message;
         
         Data.CorrelationId = correlationId;
+        Data.PipelineMode = pipelineMode;
 
         var asOfDate = nullableAsOfDate.OrToday();
         Data.AsOfDate = asOfDate;
 
-        var holdingIds = await mediator.QueryAsync<GetInstrumentsForValuationQuery, IReadOnlyList<int>>(
+        var instrumentIds = await mediator.QueryAsync<GetInstrumentsForValuationQuery, IReadOnlyList<int>>(
             new GetInstrumentsForValuationQuery(asOfDate, instrumentId));
         
-        if (holdingIds.Count == 0)
+        logger.LogInformation("Started calculate valuations saga {CorrelationKey} for {Count} holdings",
+            Data.CorrelationKey, instrumentIds.Count);
+        
+        if (instrumentIds.Count == 0)
         {
             MarkAsComplete();
             return;
         }
-
-        logger.LogInformation("Started calculate valuations saga {CorrelationKey} for {Count} holdings",
-            Data.CorrelationKey, holdingIds.Count);
-
-        Data.PendingHoldings = holdingIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchValuationsCommand(correlationId, pipelineMode, holdingIds, asOfDate));
+        Data.PendingHoldings = instrumentIds.ToHashSet();
+        
+        await mediator.SendAsync(new DispatchHoldingsValuationsCommand(correlationId, pipelineMode, instrumentIds, asOfDate));
     }
 
-    public async Task Handle(ValuationsCalculatedForHoldingEvent message)
+    public async Task Handle(HoldingValuationCalculatedEvent message)
     {
-        var (correlationId, pipelineMode, holdingId, asOfDate) = message;
-        
-        Data.PendingHoldings.Remove(holdingId);
+        Data.PendingHoldings.Remove(message.InstrumentId);
         if (Data.PendingHoldings.Count == 0)
         {
-            await bus.Publish(new ValuationsCalculatedEvent(correlationId, pipelineMode, asOfDate));
-            
-            logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
-            MarkAsComplete();
+            await CompleteSaga();
         }
+    }
+
+    private async Task CompleteSaga()
+    {
+        await bus.Publish(new ValuationsCalculatedEvent());
+            
+        logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
+        MarkAsComplete();
     }
 }
 
 public class CalculateValuationsSagaData : SagaData
 {
     public Guid CorrelationId { get; set; }
+    public PipelineMode PipelineMode { get; set; }
     public DateOnly AsOfDate { get; set; }
     
     public string CorrelationKey => $"{CorrelationId:N}:{AsOfDate}";

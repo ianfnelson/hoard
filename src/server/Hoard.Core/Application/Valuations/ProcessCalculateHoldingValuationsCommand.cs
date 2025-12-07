@@ -1,5 +1,4 @@
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
@@ -9,16 +8,16 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculateValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
+public record ProcessCalculateHoldingValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
     : ICommand;
 
 public class ProcessCalculateHoldingsValuationHandler(
     IBus bus,
     ILogger<ProcessCalculateHoldingsValuationHandler> logger,
     HoardContext context)
-    : ICommandHandler<ProcessCalculateValuationsCommand>
+    : ICommandHandler<ProcessCalculateHoldingValuationsCommand>
 {
-    public async Task HandleAsync(ProcessCalculateValuationsCommand command, CancellationToken ct = default)
+    public async Task HandleAsync(ProcessCalculateHoldingValuationsCommand command, CancellationToken ct = default)
     {
         var (correlationId, pipelineMode, instrumentId, asOfDate) = command;
 
@@ -39,12 +38,12 @@ public class ProcessCalculateHoldingsValuationHandler(
 
         if (changed)
         {
-            await bus.Publish(new ValuationChangedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+            await bus.Publish(new HoldingValuationChangedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
         }
         
         await context.SaveChangesAsync(ct);
         
-        await bus.Publish(new ValuationsCalculatedForHoldingEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+        await bus.Publish(new HoldingValuationCalculatedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
 
         logger.LogInformation("Valuations calculated for Instrument {InstrumentId}", instrumentId);
     }
@@ -78,7 +77,7 @@ public class ProcessCalculateHoldingsValuationHandler(
     {
         if (holding.Valuation == null)
         {
-            holding.Valuation = new Valuation { HoldingId = holding.Id, Value = value};
+            holding.Valuation = new HoldingValuation { HoldingId = holding.Id, Value = value};
             context.Add(holding.Valuation);
             return true;
         }

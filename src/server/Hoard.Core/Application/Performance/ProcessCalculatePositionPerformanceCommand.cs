@@ -219,7 +219,6 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             .Where(p => p.InstrumentId == instrumentId)
             .Include(p => p.Portfolio)
             .Include(p => p.Portfolio.Accounts)
-            .Include(p => p.Portfolio.Performance)
             .AsNoTracking()
             .ToListAsync(ct);
         
