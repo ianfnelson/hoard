@@ -54,7 +54,6 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         
         CalculateStaticMetrics(perf, contextData);
         CalculateCumulativeReturns(perf, contextData);
-        CalculatePortfolioWeight(perf, contextData);
             
         perf.UpdatedUtc = DateTime.UtcNow;
             
@@ -77,13 +76,6 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
 
         perf.ReturnAllTime = MoneyWeightedReturnCalculator.Calculate(perf.Value, t);
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, ctx.Position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
-    }
-
-    private static void CalculatePortfolioWeight(PositionPerformanceCumulative perf, PositionContext contextData)
-    {
-        var portfolioValue = contextData.Position.Portfolio.Performance?.Value ?? decimal.Zero;
-            
-        perf.PortfolioWeightPercent = portfolioValue == decimal.Zero ? decimal.Zero : 100.0M * perf.Value / portfolioValue;
     }
 
     private async Task<PositionPerformanceCumulative> LoadOrCreate(Position position, CancellationToken ct)
