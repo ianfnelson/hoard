@@ -25,8 +25,5 @@ public class PositionPerformanceCumulativeConfiguration
 
         builder.Property(p => p.Units)
             .HasColumnType("decimal(18,6)");
-
-        builder.Property(p => p.PortfolioWeightPercent)
-            .HasColumnType("decimal(9,4)");
     }
 }

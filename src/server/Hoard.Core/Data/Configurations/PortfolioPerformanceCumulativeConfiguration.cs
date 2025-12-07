@@ -20,9 +20,6 @@ public class PortfolioPerformanceCumulativeConfiguration
         builder.Property(p => p.CashValue)
             .HasColumnType("decimal(18,2)");
         
-        builder.Property(p => p.CashWeightPercent)
-            .HasColumnType("decimal(9,4)");
-        
         builder.Property(p => p.PortfolioId)
             .ValueGeneratedNever();
 

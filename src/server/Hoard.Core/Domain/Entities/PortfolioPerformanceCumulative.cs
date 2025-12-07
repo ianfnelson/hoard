@@ -6,5 +6,4 @@ public class PortfolioPerformanceCumulative : PerformanceCumulative
     public Portfolio Portfolio { get; set; } = null!;
     
     public decimal CashValue { get; set; }
-    public decimal CashWeightPercent { get; set; }
 }
