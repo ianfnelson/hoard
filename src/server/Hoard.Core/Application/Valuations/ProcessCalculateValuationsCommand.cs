@@ -1,5 +1,4 @@
 using Hoard.Core.Data;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
@@ -78,7 +77,7 @@ public class ProcessCalculateHoldingsValuationHandler(
     {
         if (holding.Valuation == null)
         {
-            holding.Valuation = new Valuation { HoldingId = holding.Id, Value = value};
+            holding.Valuation = new HoldingValuation { HoldingId = holding.Id, Value = value};
             context.Add(holding.Valuation);
             return true;
         }
