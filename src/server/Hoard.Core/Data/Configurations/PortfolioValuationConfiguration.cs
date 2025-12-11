@@ -8,6 +8,8 @@ public class PortfolioValuationConfiguration : ValuationConfiguration<PortfolioV
 {
     public override void Configure(EntityTypeBuilder<PortfolioValuation> builder)
     {
+        base.Configure(builder);
+        
         builder.ToTable("PortfolioValuation");
 
         builder.HasKey(p => p.Id);

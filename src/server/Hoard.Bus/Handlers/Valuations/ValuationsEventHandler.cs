@@ -3,6 +3,7 @@ using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Valuations;
 using Hoard.Messages;
+using Hoard.Messages.Holdings;
 using Hoard.Messages.Valuations;
 using Rebus.Handlers;
 
@@ -10,7 +11,8 @@ namespace Hoard.Bus.Handlers.Valuations;
 
 public class ValuationsEventHandler(IMediator mediator) 
     : IHandleMessages<CalculateHoldingValuationsBusCommand>,
-        IHandleMessages<HoldingValuationsChangedEvent>
+        IHandleMessages<HoldingValuationsChangedEvent>,
+        IHandleMessages<CalculatePortfolioValuationBusCommand>
 {
     public async Task Handle(CalculateHoldingValuationsBusCommand message)
     {
