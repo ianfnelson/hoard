@@ -75,7 +75,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         perf.ReturnYtd = CalculateReturn(ctx, new DateOnly(today.Year-1,12,31), today);
 
         perf.ReturnAllTime = MoneyWeightedReturnCalculator.Calculate(perf.Value, t);
-        perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, ctx.Position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
+        perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
     }
 
     private async Task<PositionPerformanceCumulative> LoadOrCreate(Position position, CancellationToken ct)
@@ -118,17 +118,19 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
 
     private static void CalculateStaticMetrics(PositionPerformanceCumulative perf, PositionContext ctx)
     {
-        perf.Income = ctx.Transactions
+        var (position, a, h, t, today, previousDay) = ctx;
+        
+        perf.Income = t
             .Where(x => x.CategoryId == TransactionCategory.Income)
             .Sum(x => x.Value);
         
-        var cashflows = ctx.Transactions.ToPositionCashflows();
+        var cashflows = t.ToPositionCashflows();
         var (costBasis,realisedGain) = CostBasisCalculator.Calculate(cashflows);
 
         perf.CostBasis = costBasis;
         perf.RealisedGain = realisedGain;
         
-        if (ctx.Position.CloseDate.HasValue)
+        if (position.CloseDate.HasValue)
         {
             perf.Units = 0;
             perf.Value = 0;
@@ -138,10 +140,10 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             return;
         }
         
-        perf.Units = GetUnitsForDate(ctx.Today, ctx.Holdings, ctx.AccountIds) ?? decimal.Zero;
-        perf.Value = GetValueForDate(ctx.Today, ctx.Holdings, ctx.AccountIds) ?? decimal.Zero;
+        perf.Units = GetUnitsForDate(today, h, a) ?? decimal.Zero;
+        perf.Value = GetValueForDate(today, h, a) ?? decimal.Zero;
         
-        perf.PreviousValue = GetValueForDate(ctx.PreviousTradingDay, ctx.Holdings, ctx.AccountIds) ?? decimal.Zero;
+        perf.PreviousValue = GetValueForDate(previousDay, h, a) ?? decimal.Zero;
         perf.ValueChange = perf.Value - perf.PreviousValue;
         
         perf.UnrealisedGain = perf.Value - perf.CostBasis;
@@ -219,7 +221,6 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             .Where(p => p.InstrumentId == instrumentId)
             .Include(p => p.Portfolio)
             .Include(p => p.Portfolio.Accounts)
-            .Include(p => p.Portfolio.Performance)
             .AsNoTracking()
             .ToListAsync(ct);
         
