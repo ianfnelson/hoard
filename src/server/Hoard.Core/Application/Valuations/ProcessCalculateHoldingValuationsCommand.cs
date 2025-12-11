@@ -1,5 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
 using Microsoft.EntityFrameworkCore;
@@ -8,16 +9,16 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculateValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
+public record ProcessCalculateHoldingValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
     : ICommand;
 
 public class ProcessCalculateHoldingsValuationHandler(
     IBus bus,
     ILogger<ProcessCalculateHoldingsValuationHandler> logger,
     HoardContext context)
-    : ICommandHandler<ProcessCalculateValuationsCommand>
+    : ICommandHandler<ProcessCalculateHoldingValuationsCommand>
 {
-    public async Task HandleAsync(ProcessCalculateValuationsCommand command, CancellationToken ct = default)
+    public async Task HandleAsync(ProcessCalculateHoldingValuationsCommand command, CancellationToken ct = default)
     {
         var (correlationId, pipelineMode, instrumentId, asOfDate) = command;
 
@@ -34,18 +35,17 @@ public class ProcessCalculateHoldingsValuationHandler(
             return;
         }
 
-        var changed = await CalculateValuations(holdings, ct);
-
-        if (changed)
+        var anyChanged = await CalculateValuations(holdings, ct);
+        
+        if (anyChanged)
         {
-            await bus.Publish(new ValuationChangedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+            await context.SaveChangesAsync(ct);
+            await bus.Publish(new HoldingValuationsChangedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
         }
         
-        await context.SaveChangesAsync(ct);
-        
-        await bus.Publish(new ValuationsCalculatedForHoldingEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+        await bus.Publish(new HoldingValuationsCalculatedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
 
-        logger.LogInformation("Valuations calculated for Instrument {InstrumentId}", instrumentId);
+        logger.LogInformation("Valuations calculated for Instrument {InstrumentId}, AsOfDate {AsOfDate}", instrumentId, asOfDate.ToIsoDateString());
     }
 
     private async Task<bool> CalculateValuations(List<Holding> holdings, CancellationToken ct = default)

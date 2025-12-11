@@ -31,7 +31,7 @@ public class ProcessCalculatePositionsHandler(
         await bus.Publish(new PositionsCalculatedEvent(command.CorrelationId, command.PipelineMode));
     }
     
-    private async Task CalculatePositionsForPortfolioAsync( Portfolio portfolio, CancellationToken ct = default)
+    private async Task CalculatePositionsForPortfolioAsync(Portfolio portfolio, CancellationToken ct = default)
     {
         logger.LogInformation("Calculating positions for portfolio {PortfolioId}", portfolio.Id);
 

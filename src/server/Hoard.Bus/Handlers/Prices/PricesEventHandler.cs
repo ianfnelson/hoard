@@ -29,7 +29,7 @@ public class PricesEventHandler(IMediator mediator) :
         if (message is { PipelineMode: PipelineMode.DaytimeReactive, IsFxPair: false })
         {
             var appCommand =
-                new ProcessCalculateValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
+                new ProcessCalculateHoldingValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
 
             await mediator.SendAsync(appCommand);
         }

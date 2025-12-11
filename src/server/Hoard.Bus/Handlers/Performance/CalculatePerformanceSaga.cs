@@ -1,7 +1,6 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
 using Hoard.Messages.Performance;
-using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
 using Rebus.Handlers;
