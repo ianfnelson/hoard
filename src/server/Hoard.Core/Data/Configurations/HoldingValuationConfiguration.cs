@@ -8,6 +8,8 @@ public class HoldingValuationConfiguration : ValuationConfiguration<HoldingValua
 {
     public override void Configure(EntityTypeBuilder<HoldingValuation> builder)
     {
+        base.Configure(builder);
+        
         builder.ToTable("HoldingValuation");
 
         builder.HasKey(p => p.Id);

@@ -1,4 +1,3 @@
-using Hoard.Core.Application.Performance;
 using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,10 +5,10 @@ namespace Hoard.Core.Application.Valuations;
 
 public record GetPortfoliosForValuationQuery : IQuery<IReadOnlyList<int>>;
 
-public class GetPortfoliosForPerformanceHandler(HoardContext context)
-    : IQueryHandler<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>
+public class GetPortfoliosForValuationHandler(HoardContext context)
+    : IQueryHandler<GetPortfoliosForValuationQuery, IReadOnlyList<int>>
 {
-    public async Task<IReadOnlyList<int>> HandleAsync(GetPortfoliosForPerformanceQuery query, CancellationToken ct = default)
+    public async Task<IReadOnlyList<int>> HandleAsync(GetPortfoliosForValuationQuery query, CancellationToken ct = default)
     {
         return await context.Portfolios
             .Where(x => x.IsActive)

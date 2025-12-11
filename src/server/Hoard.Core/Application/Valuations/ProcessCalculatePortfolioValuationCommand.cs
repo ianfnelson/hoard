@@ -1,5 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
 using Microsoft.EntityFrameworkCore;
@@ -27,12 +28,12 @@ public class ProcessCalculatePortfolioValuationHandler(
         if (changed)
         {
             await context.SaveChangesAsync(ct);
-            await bus.Publish(new PortfolioValuationChangedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
+            //await bus.Publish(new PortfolioValuationChangedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
         }
 
         await bus.Publish(new PortfolioValuationCalculatedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
         
-        logger.LogInformation("Portfolio calculated for Portfolio {PortfolioId}, AsOfDate {AsOfDate}", portfolioId, asOfDate.ToShortDateString());
+        logger.LogInformation("Portfolio calculated for Portfolio {PortfolioId}, AsOfDate {AsOfDate}", portfolioId, asOfDate.ToIsoDateString());
     }
 
     private async Task<bool> UpsertValuation(int portfolioId, DateOnly asOfDate, decimal value, CancellationToken ct)
