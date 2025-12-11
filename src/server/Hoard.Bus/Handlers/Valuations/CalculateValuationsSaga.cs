@@ -13,7 +13,8 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
     :
         Saga<CalculateValuationsSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
-        IHandleMessages<ValuationsCalculatedForHoldingEvent>
+        IHandleMessages<HoldingValuationsCalculatedEvent>,
+        IHandleMessages<PortfolioValuationCalculatedEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
     {
@@ -21,7 +22,11 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
 
-        cfg.Correlate<ValuationsCalculatedForHoldingEvent>(
+        cfg.Correlate<HoldingValuationsCalculatedEvent>(
+            m => $"{m.CorrelationId:N}:{m.AsOfDate}",
+            d => d.CorrelationKey);
+        
+        cfg.Correlate<PortfolioValuationCalculatedEvent>(
             m => $"{m.CorrelationId:N}:{m.AsOfDate}",
             d => d.CorrelationKey);
     }
@@ -35,34 +40,57 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         var asOfDate = nullableAsOfDate.OrToday();
         Data.AsOfDate = asOfDate;
 
-        var holdingIds = await mediator.QueryAsync<GetInstrumentsForValuationQuery, IReadOnlyList<int>>(
-            new GetInstrumentsForValuationQuery(asOfDate, instrumentId));
+        var instrumentIds = await mediator.QueryAsync<GetInstrumentsForHoldingValuationsQuery, IReadOnlyList<int>>(
+            new GetInstrumentsForHoldingValuationsQuery(asOfDate, instrumentId));
         
-        if (holdingIds.Count == 0)
+        if (instrumentIds.Count == 0)
         {
             MarkAsComplete();
             return;
         }
 
-        logger.LogInformation("Started calculate valuations saga {CorrelationKey} for {Count} holdings",
-            Data.CorrelationKey, holdingIds.Count);
+        logger.LogInformation("Started calculate valuations saga {CorrelationKey} for {Count} instruments",
+            Data.CorrelationKey, instrumentIds.Count);
 
-        Data.PendingHoldings = holdingIds.ToHashSet();
+        Data.PendingInstruments = instrumentIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchValuationsCommand(correlationId, pipelineMode, holdingIds, asOfDate));
+        await mediator.SendAsync(new DispatchCalculateHoldingValuationsCommand(correlationId, pipelineMode, instrumentIds, asOfDate));
     }
 
-    public async Task Handle(ValuationsCalculatedForHoldingEvent message)
+    public async Task Handle(HoldingValuationsCalculatedEvent message)
     {
         var (correlationId, pipelineMode, holdingId, asOfDate) = message;
         
-        Data.PendingHoldings.Remove(holdingId);
-        if (Data.PendingHoldings.Count == 0)
+        Data.PendingInstruments.Remove(holdingId);
+        if (Data.PendingInstruments.Count == 0)
         {
-            await bus.Publish(new ValuationsCalculatedEvent(correlationId, pipelineMode, asOfDate));
+            logger.LogInformation("All holding valuations calculated");
+            
+            var portfolioIds = 
+                await mediator.QueryAsync<GetPortfoliosForValuationQuery, IReadOnlyList<int>> (
+                    new GetPortfoliosForValuationQuery());
+            
+            logger.LogInformation("Starting portfolio valuation calculations for {PortfolioIdsCount} portfolios", portfolioIds.Count);
+            
+            Data.PendingPortfolios = portfolioIds.ToHashSet();
+            
+            await mediator.SendAsync(new DispatchCalculatePortfolioValuationCommand(correlationId, pipelineMode, portfolioIds, asOfDate));
+        }
+    }
+
+    public async Task Handle(PortfolioValuationCalculatedEvent message)
+    {
+        var (correlationId, pipelineMode, portfolioId, asOfDate) = message;
+        
+        Data.PendingPortfolios.Remove(portfolioId);
+        if (Data.PendingPortfolios.Count == 0)
+        {
+            logger.LogInformation("All portfolio valuations calculated");
             
             logger.LogInformation("Calculate valuations saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();
+            
+            await bus.Publish(new ValuationsCalculatedEvent(correlationId, pipelineMode, asOfDate));
         }
     }
 }
@@ -73,5 +101,6 @@ public class CalculateValuationsSagaData : SagaData
     public DateOnly AsOfDate { get; set; }
     
     public string CorrelationKey => $"{CorrelationId:N}:{AsOfDate}";
-    public HashSet<int> PendingHoldings { get; set; } = new();
+    public HashSet<int> PendingInstruments { get; set; } = new();
+    public HashSet<int> PendingPortfolios { get; set; } = new();
 }

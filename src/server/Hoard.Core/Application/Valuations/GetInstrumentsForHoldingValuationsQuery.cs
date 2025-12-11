@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record GetInstrumentsForValuationQuery(DateOnly AsOfDate, int? InstrumentId)
+public record GetInstrumentsForHoldingValuationsQuery(DateOnly AsOfDate, int? InstrumentId)
     : IQuery<IReadOnlyList<int>>;
 
 public class GetInstrumentsForValuationHandler(HoardContext context, ILogger<GetInstrumentsForRefreshHandler> logger)
-    : IQueryHandler<GetInstrumentsForValuationQuery, IReadOnlyList<int>>
+    : IQueryHandler<GetInstrumentsForHoldingValuationsQuery, IReadOnlyList<int>>
 {
-    public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForValuationQuery query, CancellationToken ct = default)
+    public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForHoldingValuationsQuery query, CancellationToken ct = default)
     {
         if (!query.InstrumentId.HasValue)
         {
