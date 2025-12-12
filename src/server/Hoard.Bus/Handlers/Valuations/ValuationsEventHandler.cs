@@ -30,13 +30,22 @@ public class ValuationsEventHandler(IMediator mediator)
     
     public async Task Handle(HoldingValuationsChangedEvent message)
     {
-        if (message.AsOfDate == DateOnlyHelper.TodayLocal() && message.PipelineMode == PipelineMode.DaytimeReactive)
+        if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand =
-                new ProcessCalculatePositionPerformanceCommand(message.CorrelationId, message.InstrumentId,
-                    message.PipelineMode);
+            if (message.AsOfDate == DateOnlyHelper.TodayLocal())
+            {
+                var positionPerformanceAppCommand =
+                    new ProcessCalculatePositionPerformanceCommand(message.CorrelationId, message.InstrumentId,
+                        message.PipelineMode);
 
-            await mediator.SendAsync(appCommand);
+                await mediator.SendAsync(positionPerformanceAppCommand); 
+            }
+
+            var portfolioIds = 
+                await mediator.QueryAsync<GetPortfoliosForValuationQuery, IReadOnlyList<int>> (
+                    new GetPortfoliosForValuationQuery());
+            
+            await mediator.SendAsync(new DispatchCalculatePortfolioValuationCommand(message.CorrelationId, message.PipelineMode, portfolioIds, message.AsOfDate));
         }
     }
 }

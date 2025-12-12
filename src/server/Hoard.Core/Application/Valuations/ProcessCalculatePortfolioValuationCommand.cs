@@ -28,7 +28,7 @@ public class ProcessCalculatePortfolioValuationHandler(
         if (changed)
         {
             await context.SaveChangesAsync(ct);
-            //await bus.Publish(new PortfolioValuationChangedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
+            await bus.Publish(new PortfolioValuationChangedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
         }
 
         await bus.Publish(new PortfolioValuationCalculatedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
