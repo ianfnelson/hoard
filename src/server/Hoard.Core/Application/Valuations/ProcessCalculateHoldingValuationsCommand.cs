@@ -123,9 +123,9 @@ public class ProcessCalculateHoldingsValuationHandler(
 
     private async Task<decimal> GetLatestPriceForInstrument(Instrument instrument, DateOnly asOfDate, CancellationToken ct = default)
     {
-        // If we are valuing a holding for today before 22;00, use the quote if there is one.
+        // If we are valuing a holding for today before 18:00, use the quote if there is one.
         if (asOfDate == DateOnlyHelper.TodayLocal() 
-            && DateTime.Now.TimeOfDay < new TimeSpan(22,0,0)
+            && DateTime.Now.TimeOfDay < new TimeSpan(18,0,0)
             && instrument.Quote != null)
         {
             return instrument.Quote.RegularMarketPrice;
