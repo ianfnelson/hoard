@@ -16,7 +16,8 @@ builder.Services
     .AddHoardLogging()
     .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.api")
     .AddHoardServices()
-    .AddHoardApplication();
+    .AddHoardApplication()
+    .Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -27,6 +28,11 @@ await app.ApplyMigrationsAndSeedAsync();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "v1");
+    });
 }
 
 app.UseHttpsRedirection();
