@@ -27,7 +27,6 @@ await app.ApplyMigrationsAndSeedAsync();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapSwaggerUI();
 }
 
 app.UseHttpsRedirection();
