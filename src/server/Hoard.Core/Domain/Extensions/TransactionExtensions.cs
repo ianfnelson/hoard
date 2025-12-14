@@ -1,6 +1,5 @@
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Domain.Entities;
-using Hoard.Core.Services;
 
 namespace Hoard.Core.Domain.Extensions;
 

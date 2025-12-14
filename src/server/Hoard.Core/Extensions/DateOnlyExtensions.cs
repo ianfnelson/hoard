@@ -14,4 +14,14 @@ public static class DateOnlyExtensions
 
     public static string ToIsoDateString(this DateOnly date)
         => date.ToString("yyyy-MM-dd");
+        
+    public static DateOnly PreviousTradingDay(this DateOnly date)
+    {
+        return date.DayOfWeek switch
+        {
+            DayOfWeek.Saturday => date.AddDays(-2),
+            DayOfWeek.Sunday => date.AddDays(-3),
+            _ => date.AddDays(-1)
+        };
+    }
 }
