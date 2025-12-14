@@ -1,17 +1,204 @@
+using Hoard.Core.Data;
+using Hoard.Core.Domain.Calculators;
+using Hoard.Core.Domain.Entities;
+using Hoard.Core.Domain.Extensions;
+using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Performance;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rebus.Bus;
+using PortfolioValuation = Hoard.Core.Domain.Entities.PortfolioValuation;
 
 namespace Hoard.Core.Application.Performance;
 
 public record ProcessCalculatePortfolioPerformanceCommand(Guid CorrelationId, int PortfolioId, PipelineMode PipelineMode) : ICommand;
 
-public class ProcessCalculatePortfolioPerformanceHandler(
+public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculatePortfolioPerformanceHandler> logger, HoardContext context,
     IBus bus) : ICommandHandler<ProcessCalculatePortfolioPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePortfolioPerformanceCommand command, CancellationToken ct = default)
     {
         var (correlationId, portfolioId, pipelineMode) = command;
+        
+        logger.LogInformation("Calculating Portfolio Performance for Portfolio {PortfolioId}", portfolioId);
+        
+        var portfolio = await GetPortfolio(portfolioId, ct);
+        var transactions = await GetTransactions(portfolio, ct);
+        var positionPerformances = await GetPositionPerformances(portfolio, ct);
+        var valuations = await GetValuations(portfolio, ct);
+ 
+        await UpsertPerformanceCumulative(portfolio, transactions, positionPerformances, valuations, ct);
+        
         await bus.Publish(new PortfolioPerformanceCalculatedEvent(correlationId, portfolioId, pipelineMode));
+    }
+
+    private async Task<decimal> GetCash(Portfolio portfolio, DateOnly asOfDate, CancellationToken ct)
+    {
+        var cash = await context.HoldingValuations
+            .AsNoTracking()
+            .Where(x => portfolio.Accounts.Select(x => x.Id).Contains(x.Holding.AccountId))
+            .Where(x => x.Holding.InstrumentId == Instrument.Cash)
+            .Where(x => x.Holding.AsOfDate == asOfDate)
+            .SumAsync(x => x.Value, ct);
+
+        return cash;
+    }
+
+    private async Task<List<Transaction>> GetTransactions(Portfolio portfolio, CancellationToken ct)
+    {
+        var transactions = await context.Transactions
+            .AsNoTracking()
+            .Where(x => portfolio.Accounts.Select(x => x.Id).Contains(x.AccountId))
+            .Where(x => new []{TransactionCategory.Deposit, TransactionCategory.Withdrawal}.Contains(x.CategoryId))
+            .ToListAsync(ct);
+        
+        return transactions;
+    }
+
+    private async Task<List<PositionPerformanceCumulative>> GetPositionPerformances(Portfolio portfolio, CancellationToken ct)
+    {
+        var positionPerformances = await context.PositionPerformancesCumulative
+            .Where (x => x.Position.PortfolioId == portfolio.Id)
+            .AsNoTracking()
+            .ToListAsync(ct);
+        
+        return positionPerformances;
+    }
+
+    private async Task<Dictionary<DateOnly, PortfolioValuation>> GetValuations(Portfolio portfolio, CancellationToken ct)
+    {
+        var valuations = await context.PortfolioValuations
+            .Where(x => x.PortfolioId == portfolio.Id)
+            .AsNoTracking()
+            .ToListAsync(ct);
+        
+        return valuations.GroupBy(x => x.AsOfDate)
+            .ToDictionary(g => g.Key, g => g.First());
+    }
+    
+    private async Task<Portfolio> GetPortfolio(int portfolioId, CancellationToken ct)
+    {
+        var portfolio = await context.Portfolios
+            .Include(x => x.Accounts)
+            .Where(p => p.Id == portfolioId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ct);
+
+        return portfolio ?? throw new InvalidOperationException($"No Portfolio found with Id {portfolioId}");
+    }
+
+    private async Task UpsertPerformanceCumulative(
+        Portfolio portfolio,
+        List<Transaction> transactions,
+        List<PositionPerformanceCumulative> positionPerformances,
+        Dictionary<DateOnly, PortfolioValuation> valuations,
+        CancellationToken ct)
+    {
+        var perf = await LoadOrCreate(portfolio, ct);
+
+        var contextData = BuildPortfolioContext(portfolio, transactions, valuations, positionPerformances);
+
+        await CalculateStaticMetrics(perf, contextData, ct);
+        CalculateCumulativeReturns(perf, contextData);
+        
+        perf.UpdatedUtc = DateTime.UtcNow;
+        
+        await context.SaveChangesAsync(ct);
+    }
+
+    private async Task CalculateStaticMetrics(PortfolioPerformanceCumulative perf, PortfolioContext ctx, CancellationToken ct)
+    {
+        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
+
+        perf.Value = GetValueForDate(today, valuations) ?? decimal.Zero;
+        perf.PreviousValue = GetValueForDate(previousDay, valuations) ?? decimal.Zero;
+        perf.ValueChange = perf.Value - perf.PreviousValue;
+        
+        perf.UnrealisedGain = positionPerformances.Sum(x => x.UnrealisedGain);
+        perf.RealisedGain = positionPerformances.Sum(x => x.RealisedGain);
+        perf.Income = positionPerformances.Sum(x => x.Income);
+
+        perf.CashValue = await GetCash(portfolio, today, ct);
+    }
+
+    private static void CalculateCumulativeReturns(PortfolioPerformanceCumulative perf, PortfolioContext ctx)
+    {
+        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
+        
+        perf.Return1D = CalculateReturn(ctx, previousDay, today);
+        perf.Return1W = CalculateReturn(ctx, today.AddDays(-7), today);
+        perf.Return1M = CalculateReturn(ctx, today.AddMonths(-1), today);
+        perf.Return3M = CalculateReturn(ctx, today.AddMonths(-3), today);
+        perf.Return6M = CalculateReturn(ctx, today.AddMonths(-6), today);
+        perf.Return1Y = CalculateReturn(ctx, today.AddYears(-1), today);
+        perf.Return3Y = CalculateReturn(ctx, today.AddYears(-3), today);
+        perf.Return5Y = CalculateReturn(ctx, today.AddYears(-5), today);
+        perf.ReturnYtd = CalculateReturn(ctx, new DateOnly(today.Year-1,12,31), today);
+        
+        var startDate = transactions.Select(x => x.Date).Min();
+        
+        //perf.ReturnAllTime = MoneyWeightedReturnCalculator.Calculate(perf.Value, transactions);
+        //perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, startDate, today);
+    }
+    
+    private static decimal? CalculateReturn(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
+    {
+        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
+
+        var valueStart = GetValueForDate(startDate, valuations) ?? 0M;
+        var valueEnd = GetValueForDate(endDate, valuations) ?? 0M;
+        
+        var incomeValue = transactions
+            .Where(x => x.Date > startDate && x.Date <= endDate)
+            .Where(x => x.CategoryId == TransactionCategory.Income).Sum(x => x.Value);
+        
+        return ModifiedDietzCalculator.Calculate(
+            valueStart, valueEnd, incomeValue, startDate, endDate, transactions.ToPortfolioCashflows());
+    }
+
+    private static decimal? GetValueForDate(DateOnly previousDay, Dictionary<DateOnly, PortfolioValuation> valuations)
+    {
+        if (!valuations.TryGetValue(previousDay, out var valuation))
+        {
+            return null;
+        }
+        
+        return valuation.Value;
+    }
+
+    private static PortfolioContext BuildPortfolioContext(
+        Portfolio portfolio,
+        List<Transaction> transactions,
+        Dictionary<DateOnly, PortfolioValuation> valuations,
+        List<PositionPerformanceCumulative> positionPerformances)
+    {
+        var today = DateOnlyHelper.TodayLocal();
+        var previousDay = today.PreviousTradingDay();
+        
+        return new PortfolioContext(
+            portfolio, transactions, valuations, positionPerformances, today, previousDay);
+    }
+    
+    private sealed record PortfolioContext(
+        Portfolio Portfolio,
+        List<Transaction> Transactions,
+        Dictionary<DateOnly, PortfolioValuation> Valuations,
+        List<PositionPerformanceCumulative> PositionPerformances,
+        DateOnly Today,
+        DateOnly PreviousTradingDay);
+    
+    private async Task<PortfolioPerformanceCumulative> LoadOrCreate(Portfolio portfolio, CancellationToken ct)
+    {
+        var perf = await context.PortfolioPerformancesCumulative
+            .FirstOrDefaultAsync(x => x.PortfolioId == portfolio.Id, ct);
+
+        if (perf is null)
+        {
+            perf = new PortfolioPerformanceCumulative{ PortfolioId =  portfolio.Id };
+            context.PortfolioPerformancesCumulative.Add(perf);
+        }
+
+        return perf;
     }
 }

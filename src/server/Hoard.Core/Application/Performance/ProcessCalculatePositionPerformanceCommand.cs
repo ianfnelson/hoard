@@ -2,6 +2,7 @@ using Hoard.Core.Data;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Domain.Extensions;
+using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Performance;
 using Microsoft.EntityFrameworkCore;
@@ -98,7 +99,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         Dictionary<DateOnly, Holding[]> holdings)
     {
         var today = DateOnlyHelper.TodayLocal();
-        var previousDay = GetPreviousTradingDay(today);
+        var previousDay = today.PreviousTradingDay();
         var accountIds = position.Portfolio.Accounts.Select(a => a.Id).ToArray();
 
         var transactionsForPosition = allTransactions
@@ -107,13 +108,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
                         (!position.CloseDate.HasValue || t.Date <= position.CloseDate))
             .ToList();
 
-        return new PositionContext(
-            position,
-            accountIds,
-            holdings,
-            transactionsForPosition,
-            today,
-            previousDay);
+        return new PositionContext(position, accountIds, holdings, transactionsForPosition, today, previousDay);
     }
 
     private static void CalculateStaticMetrics(PositionPerformanceCumulative perf, PositionContext ctx)
@@ -148,21 +143,8 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         
         perf.UnrealisedGain = perf.Value - perf.CostBasis;
     }
-    
-    private static DateOnly GetPreviousTradingDay(DateOnly today)
-    {
-        return today.DayOfWeek switch
-        {
-            DayOfWeek.Saturday => today.AddDays(-2),
-            DayOfWeek.Sunday => today.AddDays(-3),
-            _ => today.AddDays(-1)
-        };
-    }
 
-    private static decimal? CalculateReturn(
-        PositionContext ctx,
-        DateOnly startDate, 
-        DateOnly endDate)
+    private static decimal? CalculateReturn(PositionContext ctx, DateOnly startDate, DateOnly endDate)
     {
         var (position, accountIds, holdings, transactions, _, _) = ctx;
         
@@ -186,12 +168,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             .Where(x => x.CategoryId == TransactionCategory.Income).Sum(x => x.Value);
         
         return ModifiedDietzCalculator.Calculate(
-            valueStart, 
-            valueEnd, 
-            incomeValue, 
-            startDate, 
-            endDate, 
-            transactions.ToPositionCashflows());
+            valueStart, valueEnd, incomeValue, startDate, endDate, transactions.ToPositionCashflows());
     }
 
     private static decimal? GetUnitsForDate(DateOnly date, Dictionary<DateOnly, Holding[]> holdings, int[] accountIds)
