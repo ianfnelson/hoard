@@ -1,7 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Domain.Entities;
-using Hoard.Core.Domain.Extensions;
 using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Performance;
@@ -65,17 +64,17 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
     {
         var (position, a, h, t, today, previousDay) = ctx;
         
-        perf.Return1D = CalculateReturn(ctx, previousDay, today);
-        perf.Return1W = CalculateReturn(ctx, today.AddDays(-7), today);
-        perf.Return1M = CalculateReturn(ctx, today.AddMonths(-1), today);
-        perf.Return3M = CalculateReturn(ctx, today.AddMonths(-3), today);
-        perf.Return6M = CalculateReturn(ctx, today.AddMonths(-6), today);
-        perf.Return1Y = CalculateReturn(ctx, today.AddYears(-1), today);
-        perf.Return3Y = CalculateReturn(ctx, today.AddYears(-3), today);
-        perf.Return5Y = CalculateReturn(ctx, today.AddYears(-5), today);
-        perf.ReturnYtd = CalculateReturn(ctx, new DateOnly(today.Year-1,12,31), today);
+        perf.Return1D = CalculatePeriodReturn(ctx, previousDay, today);
+        perf.Return1W = CalculatePeriodReturn(ctx, today.AddDays(-7), today);
+        perf.Return1M = CalculatePeriodReturn(ctx, today.AddMonths(-1), today);
+        perf.Return3M = CalculatePeriodReturn(ctx, today.AddMonths(-3), today);
+        perf.Return6M = CalculatePeriodReturn(ctx, today.AddMonths(-6), today);
+        perf.Return1Y = CalculatePeriodReturn(ctx, today.AddYears(-1), today);
+        perf.Return3Y = CalculatePeriodReturn(ctx, today.AddYears(-3), today);
+        perf.Return5Y = CalculatePeriodReturn(ctx, today.AddYears(-5), today);
+        perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
 
-        perf.ReturnAllTime = MoneyWeightedReturnCalculator.Calculate(perf.Value, t);
+        perf.ReturnAllTime = SimpleReturnCalculator.CalculateForPosition(decimal.Zero, perf.Value, t);
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
     }
 
@@ -119,8 +118,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             .Where(x => x.CategoryId == TransactionCategory.Income)
             .Sum(x => x.Value);
         
-        var cashflows = t.ToPositionCashflows();
-        var (costBasis,realisedGain) = CostBasisCalculator.Calculate(cashflows);
+        var (costBasis,realisedGain) = CostBasisCalculator.Calculate(t);
 
         perf.CostBasis = costBasis;
         perf.RealisedGain = realisedGain;
@@ -144,7 +142,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         perf.UnrealisedGain = perf.Value - perf.CostBasis;
     }
 
-    private static decimal? CalculateReturn(PositionContext ctx, DateOnly startDate, DateOnly endDate)
+    private static decimal? CalculatePeriodReturn(PositionContext ctx, DateOnly startDate, DateOnly endDate)
     {
         var (position, accountIds, holdings, transactions, _, _) = ctx;
         
@@ -163,12 +161,9 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         var valueStart = GetValueForDate(startDate, holdings, accountIds) ?? 0M;
         var valueEnd = GetValueForDate(endDate, holdings, accountIds) ?? 0M;
         
-        var incomeValue = transactions
-            .Where(x => x.Date > startDate && x.Date <= endDate)
-            .Where(x => x.CategoryId == TransactionCategory.Income).Sum(x => x.Value);
+        var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
         
-        return ModifiedDietzCalculator.Calculate(
-            valueStart, valueEnd, incomeValue, startDate, endDate, transactions.ToPositionCashflows());
+        return SimpleReturnCalculator.CalculateForPosition(valueStart, valueEnd, periodTransactions);
     }
 
     private static decimal? GetUnitsForDate(DateOnly date, Dictionary<DateOnly, Holding[]> holdings, int[] accountIds)

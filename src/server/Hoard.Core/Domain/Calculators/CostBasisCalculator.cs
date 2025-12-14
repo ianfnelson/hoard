@@ -5,27 +5,27 @@ namespace Hoard.Core.Domain.Calculators;
 public static class CostBasisCalculator
 {
     public static (decimal CostBasis, decimal RealisedGain) Calculate(
-        IEnumerable<CashflowRecord> flows)
+        IEnumerable<Transaction> transactions)
     {
         var totalUnits = decimal.Zero;
         var totalCost = decimal.Zero;
         var realisedGain = decimal.Zero;
 
-        foreach (var f in flows.OrderBy(x => x.Date))
+        foreach (var f in transactions.OrderBy(x => x.Date))
         {
             switch (f.CategoryId)
             {
                 case TransactionCategory.Buy:
                 {
                     totalUnits += f.Units!.Value;
-                    totalCost  += f.Amount;
+                    totalCost  -= f.Value;
                     break;
                 }
 
                 case TransactionCategory.Sell:
                 {
                     var unitsSold = f.Units!.Value;
-                    var saleProceeds = -f.Amount;
+                    var saleProceeds = f.Value;
 
                     if (totalUnits <= 0)
                     {
@@ -51,7 +51,7 @@ public static class CostBasisCalculator
                 case TransactionCategory.CorporateAction:
                 {
                     totalUnits += f.Units!.Value;
-                    totalCost  += f.Amount;
+                    totalCost  -= f.Value;
                     break;
                 }
             }
