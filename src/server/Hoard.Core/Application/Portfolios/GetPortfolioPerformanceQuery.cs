@@ -34,6 +34,7 @@ public class GetPortfolioPerformanceHandler(HoardContext context, ILogger<GetPor
                     Return1Y = ppc.Return1Y,
                     Return3Y = ppc.Return3Y,
                     Return5Y = ppc.Return5Y,
+                    Return10Y = ppc.Return10Y,
                     ReturnYtd = ppc.ReturnYtd,
                     ReturnAllTime = ppc.ReturnAllTime,
                     AnnualisedReturn = ppc.AnnualisedReturn,
