@@ -208,6 +208,26 @@
           "response": []
         },
         {
+          "name": "Portfolio Instrument Types",
+          "id": "020b5092-5604-4924-b312-d5583bc6ca14",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}api/portfolios/3/instrument-types",
+              "host": [
+                "{{BaseUrl}}api"
+              ],
+              "path": [
+                "portfolios",
+                "3",
+                "instrument-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Portfolio Latest Valuation",
           "id": "63937bbd-3faa-4771-96bb-ce01ba324bd1",
           "request": {
@@ -235,7 +255,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios/3/valuations?from=2025-01-01&to=2025-12-14",
+              "raw": "{{BaseUrl}}api/portfolios/3/valuations?from=2005-01-01&to=2025-12-14",
               "host": [
                 "{{BaseUrl}}api"
               ],
@@ -247,7 +267,7 @@
               "query": [
                 {
                   "key": "from",
-                  "value": "2025-01-01"
+                  "value": "2005-01-01"
                 },
                 {
                   "key": "to",

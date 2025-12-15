@@ -8,7 +8,7 @@ namespace Hoard.Core.Application.Portfolios;
 public record GetPortfolioPerformanceQuery(int PortfolioId) : IQuery<PortfolioPerformanceDto?>;
 
 public class GetPortfolioPerformanceHandler(HoardContext context, ILogger<GetPortfolioPerformanceHandler> logger)
-    :IQueryHandler<GetPortfolioPerformanceQuery, PortfolioPerformanceDto?>
+    : IQueryHandler<GetPortfolioPerformanceQuery, PortfolioPerformanceDto?>
 {
     public async Task<PortfolioPerformanceDto?> HandleAsync(GetPortfolioPerformanceQuery query, CancellationToken ct = default)
     {

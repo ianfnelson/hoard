@@ -70,8 +70,18 @@ public class PortfoliosController(IMediator mediator, ILogger<PortfoliosControll
     {
         var query = new GetPortfolioValuationsQuery(id, from, to);
         
-        var dto = await mediator.QueryAsync<GetPortfolioValuationsQuery, List<PortfolioValuationSummaryDto>>(query, ct);
+        var dtos = await mediator.QueryAsync<GetPortfolioValuationsQuery, List<PortfolioValuationSummaryDto>>(query, ct);
 
-        return new OkObjectResult(dto);
+        return new OkObjectResult(dtos);
+    }
+
+    [HttpGet("{id:int}/instrument-types")]
+    public async Task<ActionResult<List<PortfolioInstrumentTypeDto>>> GetInstrumentTypes(int id, CancellationToken ct)
+    {
+        var query = new GetPortfolioInstrumentTypesQuery(id);
+        
+        var dtos = await mediator.QueryAsync<GetPortfolioInstrumentTypesQuery, List<PortfolioInstrumentTypeDto>>(query, ct);
+        
+        return new OkObjectResult(dtos);
     }
 }
