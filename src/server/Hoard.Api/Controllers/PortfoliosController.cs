@@ -36,7 +36,7 @@ public class PortfoliosController(IMediator mediator, ILogger<PortfoliosControll
     }
     
     [HttpGet("{id:int}/performance")]
-    public async Task<ActionResult<PortfolioSummaryDto>> GetPerformance(int id, CancellationToken ct)
+    public async Task<ActionResult<PortfolioPerformanceDto>> GetPerformance(int id, CancellationToken ct)
     {
         var query = new GetPortfolioPerformanceQuery(id);
         
