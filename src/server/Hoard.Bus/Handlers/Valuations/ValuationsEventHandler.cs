@@ -3,7 +3,6 @@ using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Valuations;
 using Hoard.Messages;
-using Hoard.Messages.Holdings;
 using Hoard.Messages.Valuations;
 using Rebus.Handlers;
 
@@ -40,12 +39,6 @@ public class ValuationsEventHandler(IMediator mediator)
 
                 await mediator.SendAsync(positionPerformanceAppCommand); 
             }
-
-            var portfolioIds = 
-                await mediator.QueryAsync<GetPortfoliosForValuationQuery, IReadOnlyList<int>> (
-                    new GetPortfoliosForValuationQuery());
-            
-            await mediator.SendAsync(new DispatchCalculatePortfolioValuationCommand(message.CorrelationId, message.PipelineMode, portfolioIds, message.AsOfDate));
         }
     }
 }
