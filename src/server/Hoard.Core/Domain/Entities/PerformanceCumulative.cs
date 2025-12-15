@@ -22,6 +22,7 @@ public abstract class
     public decimal? Return1Y { get; set; }
     public decimal? Return3Y { get; set; }
     public decimal? Return5Y { get; set; }
+    public decimal? Return10Y { get; set; }
     public decimal? ReturnYtd { get; set; }
     public decimal? ReturnAllTime { get; set; }
     public decimal? AnnualisedReturn { get; set; }

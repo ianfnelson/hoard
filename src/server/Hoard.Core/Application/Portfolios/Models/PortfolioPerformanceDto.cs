@@ -27,6 +27,7 @@ public class PortfolioCumulativePerformanceDto
     public decimal? Return1Y { get; init; }
     public decimal? Return3Y { get; init; }
     public decimal? Return5Y { get; init; }
+    public decimal? Return10Y { get; init; }
     public decimal? ReturnYtd { get; init; }
     public decimal? ReturnAllTime { get; init; }
     public decimal? AnnualisedReturn { get; init; }

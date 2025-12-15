@@ -133,6 +133,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         perf.Return1Y = CalculatePeriodReturn(ctx, today.AddYears(-1), today);
         perf.Return3Y = CalculatePeriodReturn(ctx, today.AddYears(-3), today);
         perf.Return5Y = CalculatePeriodReturn(ctx, today.AddYears(-5), today);
+        perf.Return10Y = CalculatePeriodReturn(ctx, today.AddYears(-10), today);
         perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
         
         var startDate = transactions.Select(x => x.Date).Min();
