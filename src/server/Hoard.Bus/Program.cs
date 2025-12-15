@@ -58,6 +58,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<HoldingValuationsChangedEvent>();
     await bus.Subscribe<PortfolioValuationCalculatedEvent>();
     await bus.Subscribe<PortfolioValuationChangedEvent>();
+    await bus.Subscribe<PortfolioValuationsInvalidatedEvent>();
     await bus.Subscribe<ValuationsCalculatedEvent>();
     await bus.Subscribe<ValuationsBackfilledEvent>();
 }
