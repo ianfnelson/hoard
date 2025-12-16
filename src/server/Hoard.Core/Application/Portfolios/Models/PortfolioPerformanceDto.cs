@@ -2,11 +2,6 @@ namespace Hoard.Core.Application.Portfolios.Models;
 
 public class PortfolioPerformanceDto
 {
-    public required PortfolioCumulativePerformanceDto Cumulative { get; init; }
-}
-
-public class PortfolioCumulativePerformanceDto
-{
     // Snapshot values
     public decimal Value { get; init; }
     public decimal CashValue { get; init; }

@@ -27,7 +27,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         var positionPerformances = await GetPositionPerformances(portfolio, ct);
         var valuations = await GetValuations(portfolio, ct);
  
-        await UpsertPerformanceCumulative(portfolio, transactions, positionPerformances, valuations, ct);
+        await UpsertPerformance(portfolio, transactions, positionPerformances, valuations, ct);
         
         await bus.Publish(new PortfolioPerformanceCalculatedEvent(correlationId, portfolioId, pipelineMode));
     }
@@ -55,9 +55,9 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         return transactions;
     }
 
-    private async Task<List<PositionPerformanceCumulative>> GetPositionPerformances(Portfolio portfolio, CancellationToken ct)
+    private async Task<List<PositionPerformance>> GetPositionPerformances(Portfolio portfolio, CancellationToken ct)
     {
-        var positionPerformances = await context.PositionPerformancesCumulative
+        var positionPerformances = await context.PositionPerformances
             .Where (x => x.Position.PortfolioId == portfolio.Id)
             .AsNoTracking()
             .ToListAsync(ct);
@@ -87,10 +87,10 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         return portfolio ?? throw new InvalidOperationException($"No Portfolio found with Id {portfolioId}");
     }
 
-    private async Task UpsertPerformanceCumulative(
+    private async Task UpsertPerformance(
         Portfolio portfolio,
         List<Transaction> transactions,
-        List<PositionPerformanceCumulative> positionPerformances,
+        List<PositionPerformance> positionPerformances,
         Dictionary<DateOnly, PortfolioValuation> valuations,
         CancellationToken ct)
     {
@@ -99,14 +99,14 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         var contextData = BuildPortfolioContext(portfolio, transactions, valuations, positionPerformances);
 
         await CalculateStaticMetrics(perf, contextData, ct);
-        CalculateCumulativeReturns(perf, contextData);
+        CalculateReturns(perf, contextData);
         
         perf.UpdatedUtc = DateTime.UtcNow;
         
         await context.SaveChangesAsync(ct);
     }
 
-    private async Task CalculateStaticMetrics(PortfolioPerformanceCumulative perf, PortfolioContext ctx, CancellationToken ct)
+    private async Task CalculateStaticMetrics(PortfolioPerformance perf, PortfolioContext ctx, CancellationToken ct)
     {
         var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
 
@@ -121,7 +121,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         perf.CashValue = await GetCash(portfolio, today, ct);
     }
 
-    private static void CalculateCumulativeReturns(PortfolioPerformanceCumulative perf, PortfolioContext ctx)
+    private static void CalculateReturns(PortfolioPerformance perf, PortfolioContext ctx)
     {
         var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
         
@@ -168,7 +168,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         Portfolio portfolio,
         List<Transaction> transactions,
         Dictionary<DateOnly, PortfolioValuation> valuations,
-        List<PositionPerformanceCumulative> positionPerformances)
+        List<PositionPerformance> positionPerformances)
     {
         var today = DateOnlyHelper.TodayLocal();
         var previousDay = today.PreviousTradingDay();
@@ -181,19 +181,19 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         Portfolio Portfolio,
         List<Transaction> Transactions,
         Dictionary<DateOnly, PortfolioValuation> Valuations,
-        List<PositionPerformanceCumulative> PositionPerformances,
+        List<PositionPerformance> PositionPerformances,
         DateOnly Today,
         DateOnly PreviousTradingDay);
     
-    private async Task<PortfolioPerformanceCumulative> LoadOrCreate(Portfolio portfolio, CancellationToken ct)
+    private async Task<PortfolioPerformance> LoadOrCreate(Portfolio portfolio, CancellationToken ct)
     {
-        var perf = await context.PortfolioPerformancesCumulative
+        var perf = await context.PortfolioPerformances
             .FirstOrDefaultAsync(x => x.PortfolioId == portfolio.Id, ct);
 
         if (perf is null)
         {
-            perf = new PortfolioPerformanceCumulative{ PortfolioId =  portfolio.Id };
-            context.PortfolioPerformancesCumulative.Add(perf);
+            perf = new PortfolioPerformance{ PortfolioId =  portfolio.Id };
+            context.PortfolioPerformances.Add(perf);
         }
 
         return perf;

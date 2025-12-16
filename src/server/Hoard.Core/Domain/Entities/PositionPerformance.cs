@@ -1,6 +1,6 @@
 namespace Hoard.Core.Domain.Entities;
 
-public class PositionPerformanceCumulative : PerformanceCumulative
+public class PositionPerformance : Performance
 {
     public int PositionId { get; set; }
     public Position Position { get; set; } = null!;

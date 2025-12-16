@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class PortfolioPerformanceCumulativeConfiguration 
-    : PerformanceCumulativeConfiguration<PortfolioPerformanceCumulative>
+public class PortfolioPerformanceConfiguration 
+    : PerformanceConfiguration<PortfolioPerformance>
 {
-    public override void Configure(EntityTypeBuilder<PortfolioPerformanceCumulative> builder)
+    public override void Configure(EntityTypeBuilder<PortfolioPerformance> builder)
     {
-        builder.ToTable("PortfolioPerformanceCumulative");
+        builder.ToTable("PortfolioPerformance");
 
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id)
-            .HasColumnName("PortfolioPerformanceCumulativeId");
+            .HasColumnName("PortfolioPerformanceId");
         
         base.Configure(builder);
 
@@ -25,6 +25,6 @@ public class PortfolioPerformanceCumulativeConfiguration
 
         builder.HasOne(p => p.Portfolio)
             .WithOne()
-            .HasForeignKey<PortfolioPerformanceCumulative>(p => p.PortfolioId);
+            .HasForeignKey<PortfolioPerformance>(p => p.PortfolioId);
     }
 }
