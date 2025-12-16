@@ -1,7 +1,7 @@
 namespace Hoard.Core.Domain.Entities;
 
 public abstract class 
-    PerformanceCumulative : Entity<int>
+    Performance : Entity<int>
 {
     // Valuation snapshot
     public decimal Value { get; set; }

@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public abstract class PerformanceCumulativeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
-    where TEntity : PerformanceCumulative
+public abstract class PerformanceConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
+    where TEntity : Performance
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {

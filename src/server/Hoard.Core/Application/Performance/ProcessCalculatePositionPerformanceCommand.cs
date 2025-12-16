@@ -27,7 +27,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
 
         foreach (var position in positions)
         {
-            await UpsertPerformanceCumulative(position, transactions, holdings, ct);
+            await UpsertPerformance(position, transactions, holdings, ct);
         }
 
         await bus.Publish(new PositionPerformanceCalculatedEvent(correlationId, instrumentId, pipelineMode));
@@ -42,7 +42,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         DateOnly PreviousTradingDay
         );
     
-    private async Task UpsertPerformanceCumulative(
+    private async Task UpsertPerformance(
         Position position, 
         List<Transaction> transactions, 
         Dictionary<DateOnly, Holding[]> holdings,
@@ -53,14 +53,14 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         var contextData = BuildPositionContext(position, transactions, holdings);
         
         CalculateStaticMetrics(perf, contextData);
-        CalculateCumulativeReturns(perf, contextData);
+        CalculateReturns(perf, contextData);
             
         perf.UpdatedUtc = DateTime.UtcNow;
             
         await context.SaveChangesAsync(ct);
     }
 
-    private static void CalculateCumulativeReturns(PositionPerformanceCumulative perf, PositionContext ctx)
+    private static void CalculateReturns(PositionPerformance perf, PositionContext ctx)
     {
         var (position, a, h, t, today, previousDay) = ctx;
         
@@ -79,15 +79,15 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
     }
 
-    private async Task<PositionPerformanceCumulative> LoadOrCreate(Position position, CancellationToken ct)
+    private async Task<PositionPerformance> LoadOrCreate(Position position, CancellationToken ct)
     {
-        var perf = await context.PositionPerformancesCumulative
+        var perf = await context.PositionPerformances
             .FirstOrDefaultAsync(x => x.PositionId == position.Id, ct);
 
         if (perf is null)
         {
-            perf = new PositionPerformanceCumulative { PositionId = position.Id };
-            context.PositionPerformancesCumulative.Add(perf);
+            perf = new PositionPerformance { PositionId = position.Id };
+            context.PositionPerformances.Add(perf);
         }
 
         return perf;
@@ -111,7 +111,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         return new PositionContext(position, accountIds, holdings, transactionsForPosition, today, previousDay);
     }
 
-    private static void CalculateStaticMetrics(PositionPerformanceCumulative perf, PositionContext ctx)
+    private static void CalculateStaticMetrics(PositionPerformance perf, PositionContext ctx)
     {
         var (position, a, h, t, today, previousDay) = ctx;
         

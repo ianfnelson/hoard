@@ -4,21 +4,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class PositionPerformanceCumulativeConfiguration 
-    : PerformanceCumulativeConfiguration<PositionPerformanceCumulative>
+public class PositionPerformanceConfiguration 
+    : PerformanceConfiguration<PositionPerformance>
 {
-    public override void Configure(EntityTypeBuilder<PositionPerformanceCumulative> builder)
+    public override void Configure(EntityTypeBuilder<PositionPerformance> builder)
     {
-        builder.ToTable("PositionPerformanceCumulative");
+        builder.ToTable("PositionPerformance");
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id)
-            .HasColumnName("PortfolioPerformanceCumulativeId");
+            .HasColumnName("PositionPerformanceId");
         
         base.Configure(builder);
 
         builder.HasOne(p => p.Position)
             .WithOne()
-            .HasForeignKey<PositionPerformanceCumulative>(p => p.PositionId);
+            .HasForeignKey<PositionPerformance>(p => p.PositionId);
 
         builder.Property(p => p.CostBasis)
             .HasColumnType("decimal(18,2)");
