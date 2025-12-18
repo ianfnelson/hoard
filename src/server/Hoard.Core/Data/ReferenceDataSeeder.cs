@@ -188,19 +188,11 @@ public class ReferenceDataSeeder
                 Id = TransactionSubcategory.Dividend, 
                 Name = "Dividend / Tax Credit", 
                 TransactionCategoryId = TransactionCategory.Income
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.Adjustment, 
-                Name = "Rights Issue, Stock Split, Return of Capital etc", 
-                TransactionCategoryId = TransactionCategory.CorporateAction
-            },
+            }
         };
         await UpsertAsync(_context.TransactionSubcategories, items, x => x.Id);
     }
     
-
-
     private async Task SeedInstrumentsAsync()
     {
         var items = new[]
