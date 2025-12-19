@@ -39,6 +39,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         config.Correlate<PricesRefreshedEvent>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<ValuationsBackfilledEvent>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<PerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<SnapshotsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
     }
 
     public async Task Handle(StartCloseOfDaySagaCommand message)
