@@ -90,12 +90,12 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
             .Sum(x => x.Value);
     }
 
-    private void CalculateValuationMetrics(PortfolioSnapshot snapshot, Dictionary<DateOnly, PortfolioValuation> valuations)
+    private static void CalculateValuationMetrics(PortfolioSnapshot snapshot, Dictionary<DateOnly, PortfolioValuation> valuations)
     {
         var earliestDate = valuations.Keys.Min();
-        snapshot.StartValue = valuations[earliestDate].Value;
-        
         var latestDate = valuations.Keys.Max();
+        
+        snapshot.StartValue = earliestDate.Year == latestDate.Year ? decimal.Zero : valuations[earliestDate].Value;
         snapshot.EndValue = valuations[latestDate].Value;
         
         snapshot.ValueChange = snapshot.EndValue - snapshot.StartValue;
