@@ -1,5 +1,4 @@
 using Hoard.Core.Application.Valuations;
-using Hoard.Messages;
 
 namespace Hoard.Api.Models.Valuations;
 

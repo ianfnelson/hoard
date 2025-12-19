@@ -4,8 +4,11 @@ using Hoard.Messages.Valuations;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record DispatchBackfillValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int? InstrumentId, IReadOnlyList<DateOnly> Dates)
-    : ICommand;
+public record DispatchBackfillValuationsCommand(
+    Guid CorrelationId,
+    PipelineMode PipelineMode,
+    int? InstrumentId,
+    IReadOnlyList<DateOnly> Dates) : ICommand;
 
 public class DispatchBackfillValuationsHandler(IBus bus)
     : ICommandHandler<DispatchBackfillValuationsCommand>

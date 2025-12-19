@@ -32,9 +32,4 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\Quotes\" />
-      <Folder Include="Models\Transactions\" />
-    </ItemGroup>
-
 </Project>
