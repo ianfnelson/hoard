@@ -53,7 +53,7 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
 
     public async Task Handle(SnapshotCalculatedEvent message)
     {
-        var (correlationId, pipelineMode, portfolioId, year) = message;
+        var (correlationId, pipelineMode, year, portfolioId) = message;
 
         Data.PendingPortfolios.Remove(portfolioId);
 
