@@ -1,6 +1,7 @@
 using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
+using Hoard.Core.Application.Snapshots;
 using Hoard.Core.Application.Valuations;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
@@ -11,7 +12,8 @@ namespace Hoard.Bus.Handlers.Valuations;
 public class ValuationsEventHandler(IMediator mediator) 
     : IHandleMessages<CalculateHoldingValuationsBusCommand>,
         IHandleMessages<HoldingValuationsChangedEvent>,
-        IHandleMessages<CalculatePortfolioValuationBusCommand>
+        IHandleMessages<CalculatePortfolioValuationBusCommand>,
+        IHandleMessages<PortfolioValuationChangedEvent>
 {
     public async Task Handle(CalculateHoldingValuationsBusCommand message)
     {
@@ -38,6 +40,24 @@ public class ValuationsEventHandler(IMediator mediator)
                         message.PipelineMode);
 
                 await mediator.SendAsync(positionPerformanceAppCommand); 
+            }
+        }
+    }
+    
+    public async Task Handle(PortfolioValuationChangedEvent message)
+    {
+        if (message.PipelineMode == PipelineMode.DaytimeReactive)
+        {
+            var impactedYears = new List<int> { message.AsOfDate.Year };
+            if (message.AsOfDate is { Month: 12, Day: 31 })
+            {
+                impactedYears.Add(message.AsOfDate.Year + 1);
+            }
+
+            foreach (var year in impactedYears)
+            {
+                var appCommand = new ProcessCalculateSnapshotCommand(message.CorrelationId, message.PipelineMode, message.PortfolioId, year);
+                await mediator.SendAsync(appCommand);
             }
         }
     }

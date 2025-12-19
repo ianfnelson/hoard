@@ -36,6 +36,7 @@ public abstract class PerformanceConfiguration<TEntity> : IEntityTypeConfigurati
         builder.Property(p => p.Return1Y).HasColumnType("decimal(18,4)");
         builder.Property(p => p.Return3Y).HasColumnType("decimal(18,4)");
         builder.Property(p => p.Return5Y).HasColumnType("decimal(18,4)");
+        builder.Property(p => p.Return10Y).HasColumnType("decimal(18,2)");
         builder.Property(p => p.ReturnYtd).HasColumnType("decimal(18,4)");
         builder.Property(p => p.ReturnAllTime).HasColumnType("decimal(18,4)");
         builder.Property(p => p.AnnualisedReturn).HasColumnType("decimal(18,4)");

@@ -36,7 +36,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
     {
         var cash = await context.HoldingValuations
             .AsNoTracking()
-            .Where(x => portfolio.Accounts.Select(x => x.Id).Contains(x.Holding.AccountId))
+            .Where(x => portfolio.Accounts.Select(x1 => x1.Id).Contains(x.Holding.AccountId))
             .Where(x => x.Holding.InstrumentId == Instrument.Cash)
             .Where(x => x.Holding.AsOfDate == asOfDate)
             .SumAsync(x => x.Value, ct);
@@ -48,7 +48,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
     {
         var transactions = await context.Transactions
             .AsNoTracking()
-            .Where(x => portfolio.Accounts.Select(x => x.Id).Contains(x.AccountId))
+            .Where(x => portfolio.Accounts.Select(x1 => x1.Id).Contains(x.AccountId))
             .Where(x => new []{TransactionCategory.Deposit, TransactionCategory.Withdrawal, TransactionCategory.CorporateAction}.Contains(x.CategoryId))
             .ToListAsync(ct);
         
@@ -108,7 +108,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
     private async Task CalculateStaticMetrics(PortfolioPerformance perf, PortfolioContext ctx, CancellationToken ct)
     {
-        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
+        var (portfolio, _, valuations, positionPerformances, today, previousDay) = ctx;
 
         perf.Value = GetValueForDate(today, valuations) ?? decimal.Zero;
         perf.PreviousValue = GetValueForDate(previousDay, valuations) ?? decimal.Zero;
@@ -123,7 +123,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
     private static void CalculateReturns(PortfolioPerformance perf, PortfolioContext ctx)
     {
-        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
+        var (_, transactions, _, _, today, previousDay) = ctx;
         
         perf.Return1D = CalculatePeriodReturn(ctx, previousDay, today);
         perf.Return1W = CalculatePeriodReturn(ctx, today.AddDays(-7), today);
@@ -144,7 +144,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
     
     private static decimal? CalculatePeriodReturn(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
     {
-        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
+        var (_, transactions, valuations, _, _, _) = ctx;
 
         var valueStart = GetValueForDate(startDate, valuations) ?? 0M;
         var valueEnd = GetValueForDate(endDate, valuations) ?? 0M;

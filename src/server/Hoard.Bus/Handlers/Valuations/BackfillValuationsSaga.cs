@@ -30,11 +30,16 @@ public class BackfillValuationsSaga(
         var (correlationId, pipelineMode, instrumentId, startDate, endDate) = message;
         
         Data.CorrelationId = correlationId;
+        Data.PipelineMode = pipelineMode;
+        Data.InstrumentId = instrumentId;
         
         var dates = await mediator.QueryAsync<GetDatesForBackfillQuery, IReadOnlyList<DateOnly>>(
             new GetDatesForBackfillQuery(startDate, endDate));
+
+        Data.StartDate = dates.Min();
+        Data.EndDate = dates.Max();
         
-        logger.LogInformation("Starting valuations recomputation {Start} → {End}", dates.Min().ToIsoDateString(), dates.Max().ToIsoDateString());
+        logger.LogInformation("Starting valuations recomputation {Start} → {End}", Data.StartDate.ToIsoDateString(), Data.EndDate.ToIsoDateString());
 
         Data.PendingDates = dates.ToHashSet();
 

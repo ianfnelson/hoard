@@ -424,6 +424,74 @@
       "id": "415097ce-a1d9-4685-8c50-0e0bc81b4d17"
     },
     {
+      "name": "Snapshots",
+      "item": [
+        {
+          "name": "Backfill Snapshots",
+          "id": "8746da66-12a2-4e28-91aa-f5ca2c6a4f8f",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"StartYear\": 2020,\n    \"EndYear\": 2025,\n    \"PortfolioId\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}api/snapshots/backfill",
+              "host": [
+                "{{BaseUrl}}api"
+              ],
+              "path": [
+                "snapshots",
+                "backfill"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Snapshots",
+          "id": "837514a0-ed8b-4c46-928e-55b45279ffb9",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"Year\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}api/snapshots/calculate",
+              "host": [
+                "{{BaseUrl}}api"
+              ],
+              "path": [
+                "snapshots",
+                "calculate"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "e04e80c9-f339-4862-b17b-97a8bfe05994"
+    },
+    {
       "name": "Transactions",
       "item": [
         {

@@ -1,5 +1,4 @@
-﻿using Hoard.Bus.Handlers.Holdings;
-using Hoard.Bus.Handlers.Valuations;
+﻿using Hoard.Bus.Handlers.Valuations;
 using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
@@ -8,6 +7,7 @@ using Hoard.Messages.Performance;
 using Hoard.Messages.Positions;
 using Hoard.Messages.Prices;
 using Hoard.Messages.Quotes;
+using Hoard.Messages.Snapshots;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +61,9 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<PortfolioValuationsInvalidatedEvent>();
     await bus.Subscribe<ValuationsCalculatedEvent>();
     await bus.Subscribe<ValuationsBackfilledEvent>();
+    
+    await bus.Subscribe<SnapshotCalculatedEvent>();
+    await bus.Subscribe<SnapshotsCalculatedEvent>();
 }
 
 await app.RunAsync();

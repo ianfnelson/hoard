@@ -24,7 +24,7 @@ public class GetInstrumentsForValuationHandler(HoardContext context, ILogger<Get
         
         var id = query.InstrumentId.Value;
         
-        var exists = await context.Instruments.AnyAsync(x => x.Id == id, cancellationToken: ct);
+        var exists = await context.Instruments.AnyAsync(x => x.Id == id, ct);
         if (!exists)
         {
             logger.LogWarning("Instrument with id {InstrumentId} not found", id);

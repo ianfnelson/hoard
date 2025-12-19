@@ -3,6 +3,7 @@ using Hoard.Core.Application.Holdings;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Positions;
 using Hoard.Core.Application.Prices;
+using Hoard.Core.Application.Snapshots;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages;
@@ -11,6 +12,7 @@ using Hoard.Messages.Holdings;
 using Hoard.Messages.Performance;
 using Hoard.Messages.Positions;
 using Hoard.Messages.Prices;
+using Hoard.Messages.Snapshots;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
@@ -25,7 +27,8 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
     IHandleMessages<HoldingsBackfilledEvent>,
     IHandleMessages<PositionsCalculatedEvent>,
     IHandleMessages<ValuationsBackfilledEvent>,
-    IHandleMessages<PerformanceCalculatedEvent>
+    IHandleMessages<PerformanceCalculatedEvent>,
+    IHandleMessages<SnapshotsCalculatedEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<CloseOfDaySagaData> config)
     {
@@ -105,17 +108,42 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         
         logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Performance", Data.CorrelationId);
         await mediator.SendAsync(new TriggerCalculatePerformanceCommand(Data.CorrelationId, null, Data.PipelineMode));
+        
+        logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Snapshots", Data.CorrelationId);
+        await mediator.SendAsync(new TriggerCalculateSnapshotsCommand(Data.CorrelationId, Data.Today.Year, Data.PipelineMode));
     }
 
     public Task Handle(PerformanceCalculatedEvent message)
     {
+        Data.PerformanceCalculated = true;
         logger.LogInformation("CloseOfDay {CorrelationId}: Performance calculated.", Data.CorrelationId);
-        MarkAsComplete();
-        
-        logger.LogInformation("CloseOfDay {CorrelationId}: Completed {PipelineMode} for {AsOfDate}", 
-            Data.CorrelationId, Data.PipelineMode, Data.Today.ToIsoDateString());
+
+        if (Data.SnapshotsCalculated)
+        {
+            CompleteSaga();
+        }
         
         return Task.CompletedTask;
+    }
+    
+    public Task Handle(SnapshotsCalculatedEvent message)
+    {
+        Data.SnapshotsCalculated = true;
+        logger.LogInformation("CloseOfDay {CorrelationId}: Snapshots calculated.", Data.CorrelationId);
+
+        if (Data.PerformanceCalculated)
+        {
+            CompleteSaga();
+        }
+        
+        return Task.CompletedTask;
+    }
+    
+    private void CompleteSaga()
+    {
+        MarkAsComplete();
+        logger.LogInformation("CloseOfDay {CorrelationId}: Completed {PipelineMode} for {AsOfDate}", 
+            Data.CorrelationId, Data.PipelineMode, Data.Today.ToIsoDateString());
     }
 }
 
@@ -131,4 +159,6 @@ public class CloseOfDaySagaData : SagaData
     public bool PositionsCalculated { get; set; }
     public bool PricesRefreshed { get; set; }
     public bool ValuationsCalculated { get; set; }
+    public bool SnapshotsCalculated { get; set; }
+    public bool PerformanceCalculated { get; set; }
 }
