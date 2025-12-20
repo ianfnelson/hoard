@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("operations/[controller]")]
+[Tags("Operations")]
 [Produces("application/json")]
 public class ChronoController(IMediator mediator, ILogger<ChronoController> logger) : ControllerBase
 {

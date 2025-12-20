@@ -39,6 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Application\Performance\Models\" />
       <Folder Include="Data\Migrations\" />
     </ItemGroup>
 

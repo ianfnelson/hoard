@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioValuationQuery(int PortfolioId) : IQuery<PortfolioValuationDto?>;
+public record GetPortfolioValuationQuery(int PortfolioId) : IQuery<PortfolioValuationDetailDto?>;
 
 public class GetPortfolioValuationHandler(HoardContext context, ILogger<GetPortfolioValuationQuery> logger)
-    : IQueryHandler<GetPortfolioValuationQuery, PortfolioValuationDto?>
+    : IQueryHandler<GetPortfolioValuationQuery, PortfolioValuationDetailDto?>
 {
-    public async Task<PortfolioValuationDto?> HandleAsync(GetPortfolioValuationQuery query, CancellationToken ct = default)
+    public async Task<PortfolioValuationDetailDto?> HandleAsync(GetPortfolioValuationQuery query, CancellationToken ct = default)
     {
         var today = DateOnlyHelper.TodayLocal();
 
@@ -18,7 +18,7 @@ public class GetPortfolioValuationHandler(HoardContext context, ILogger<GetPortf
             .AsNoTracking()
             .Where(pv => pv.AsOfDate <= today)
             .Where(pv => pv.PortfolioId == query.PortfolioId)
-            .Select(pv => new PortfolioValuationDto
+            .Select(pv => new PortfolioValuationDetailDto
             {
                 AsOfDate = pv.AsOfDate,
                 UpdatedUtc = pv.UpdatedUtc,

@@ -255,23 +255,24 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios/3/valuations?from=2005-01-01&to=2025-12-14",
+              "raw": "{{BaseUrl}}portfolios/3/valuations?from=2005-01-01&to=2025-12-14",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "portfolios",
                 "3",
                 "valuations"
               ],
               "query": [
                 {
                   "key": "from",
-                  "value": "2005-01-01"
+                  "value": "2005-01-01",
+                  "uuid": "803d21d6-e67c-4d5a-a2b7-dab519c3f9ef"
                 },
                 {
                   "key": "to",
-                  "value": "2025-12-14"
+                  "value": "2025-12-14",
+                  "uuid": "cf22951b-c3fa-44f2-b3be-7b7964ac42af"
                 }
               ]
             }

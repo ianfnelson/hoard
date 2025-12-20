@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("operations/holdings/")]
+[Tags("Operations")]
 [Produces("application/json")]
-public class HoldingsController(IMediator mediator, ILogger<HoldingsController> logger) : ControllerBase
+public class HoldingsOperationsController(IMediator mediator, ILogger<HoldingsOperationsController> logger) : ControllerBase
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]

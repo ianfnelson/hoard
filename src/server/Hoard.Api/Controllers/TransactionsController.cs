@@ -6,15 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("transactions/")]
 [Produces("application/json")]
+[Tags("Transactions")]
 public class TransactionsController(IMediator mediator, ILogger<TransactionsController> logger) : ControllerBase
 {
     [HttpGet("{id:int}")]
-    public Task<ActionResult<TransactionDto>> Get(int id, CancellationToken ct)
+    public Task<ActionResult<TransactionDetailDto>> Get(int id, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
+    
+    // TODO - add paginated endpoint for returning many transactions
     
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] TransactionWriteDto request, CancellationToken ct)
@@ -31,7 +34,7 @@ public class TransactionsController(IMediator mediator, ILogger<TransactionsCont
     }
     
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteTransaction(int id, CancellationToken ct)
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         logger.LogInformation("Received request to delete transaction {id}.", id);
         
