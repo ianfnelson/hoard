@@ -33,7 +33,7 @@ public class HoldingsEventHandler(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand = TriggerCalculatePositionsCommand.Create(message.PipelineMode);
+            var appCommand = new TriggerCalculatePositionsCommand(message.PipelineMode);
             await mediator.SendAsync(appCommand);
         }
     }
