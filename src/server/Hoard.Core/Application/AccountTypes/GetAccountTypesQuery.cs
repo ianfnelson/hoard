@@ -17,7 +17,9 @@ public class GetAccountTypesHandler(HoardContext context)
                 Id = at.Id,
                 Name = at.Name,
                 CreatedUtc = at.CreatedUtc,
-            }).ToListAsync(ct);
+            })
+            .OrderBy(at => at.Name)
+            .ToListAsync(ct);
 
         return dtos;
     }

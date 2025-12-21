@@ -753,6 +753,43 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Currencies",
+          "id": "d6f13166-5571-430d-9ea1-281ffd0856de",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/currencies",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "currencies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Currency",
+          "id": "be4b1dc5-cabe-424a-9929-bea1a84e0092",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/currencies/GBP",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "currencies",
+                "GBP"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "id": "5d660ec9-a032-4ccf-8380-79280b765f6e"
