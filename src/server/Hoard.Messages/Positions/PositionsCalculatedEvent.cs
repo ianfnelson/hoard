@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Positions;
 
-public record PositionsCalculatedEvent(Guid CorrelationId, PipelineMode PipelineMode);
+public record PositionsCalculatedEvent(Guid PositionsRunId, PipelineMode PipelineMode);
