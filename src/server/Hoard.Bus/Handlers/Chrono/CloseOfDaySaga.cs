@@ -85,7 +85,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         {
             logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Positions", Data.CorrelationId);
             
-            var positionsCommand = TriggerCalculatePositionsCommand.Create(Data.PipelineMode);
+            var positionsCommand = new TriggerCalculatePositionsCommand(Data.PipelineMode);
             Data.PositionsRunId = positionsCommand.PositionsRunId;
             
             await mediator.SendAsync(positionsCommand);
