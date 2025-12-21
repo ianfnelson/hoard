@@ -14,24 +14,24 @@ public class QuotesEventHandler(IMediator mediator) :
 {
     public async Task Handle(RefreshQuotesBusCommand message)
     {
-        var applicationCommand = new ProcessRefreshQuotesCommand(message.CorrelationId, message.PipelineMode);
+        var applicationCommand = new ProcessRefreshQuotesCommand();
         
         await mediator.SendAsync(applicationCommand);
     }
     
     public async Task Handle(RefreshQuotesBatchBusCommand message)
     {
-        var appCommand = new ProcessRefreshQuotesBatchCommand(message.CorrelationId, message.PipelineMode, message.InstrumentIds);
+        var appCommand = new ProcessRefreshQuotesBatchCommand(message.InstrumentIds);
         
         await mediator.SendAsync(appCommand);
     }
     
     public async Task Handle(QuoteChangedEvent message)
     {
-        if (message is { PipelineMode: PipelineMode.DaytimeReactive, IsFxPair: false })
+        if (!message.IsFxPair)
         {
             var date = DateOnly.FromDateTime(message.RetrievedUtc.ToLocalTime());
-            var appCommand = new ProcessCalculateHoldingValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, date);
+            var appCommand = new ProcessCalculateHoldingValuationsCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, message.InstrumentId, date);
         
             await mediator.SendAsync(appCommand);
         }

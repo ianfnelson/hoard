@@ -1,14 +1,12 @@
 using Hoard.Core.Data;
 using Hoard.Core.Extensions;
-using Hoard.Messages;
 using Hoard.Messages.Quotes;
 using Microsoft.EntityFrameworkCore;
 using Rebus.Bus;
 
 namespace Hoard.Core.Application.Quotes;
 
-public record ProcessRefreshQuotesCommand(Guid CorrelationId,
-    PipelineMode PipelineMode) : ICommand;
+public record ProcessRefreshQuotesCommand : ICommand;
 
 public class ProcessRefreshQuotesHandler(
     IBus bus, HoardContext context)
@@ -27,7 +25,7 @@ public class ProcessRefreshQuotesHandler(
         
         foreach (var batch in instruments.BatchesOf(BatchSize))
         {
-            await bus.Defer(delay, new RefreshQuotesBatchBusCommand(command.CorrelationId, command.PipelineMode, batch));
+            await bus.Defer(delay, new RefreshQuotesBatchBusCommand(batch));
             delay+=TimeSpan.FromSeconds(1);
         }
     }

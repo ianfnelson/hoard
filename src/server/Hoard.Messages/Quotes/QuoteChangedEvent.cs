@@ -1,8 +1,3 @@
 namespace Hoard.Messages.Quotes;
 
-public record QuoteChangedEvent(
-    Guid CorrelationId, 
-    PipelineMode PipelineMode, 
-    int InstrumentId, 
-    bool IsFxPair,
-    DateTime RetrievedUtc);
+public record QuoteChangedEvent(int InstrumentId, bool IsFxPair, DateTime RetrievedUtc);
