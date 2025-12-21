@@ -16,7 +16,7 @@ namespace Hoard.Api.Controllers;
 public class PortfoliosController(IMediator mediator, ILogger<PortfoliosController> logger)
 {
     [HttpGet]
-    public async Task<ActionResult<List<PortfolioSummaryDto>>> Get(CancellationToken ct)
+    public async Task<ActionResult<List<PortfolioSummaryDto>>> GetList(CancellationToken ct)
     {
         var query = new GetPortfoliosQuery();
         
