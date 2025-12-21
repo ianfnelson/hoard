@@ -12,6 +12,7 @@ namespace Hoard.Api.Controllers;
 public class AccountTypesController(IMediator mediator)
 {
     [HttpGet]
+    [ProducesResponseType(typeof(List<AccountTypeDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<AccountTypeDto>>> GetList(CancellationToken ct)
     {
         var query = new GetAccountTypesQuery();
@@ -22,6 +23,8 @@ public class AccountTypesController(IMediator mediator)
     }
     
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(AccountTypeDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AccountTypeDto>> Get(int id, CancellationToken ct)
     {
         var query = new GetAccountTypeQuery(id);
