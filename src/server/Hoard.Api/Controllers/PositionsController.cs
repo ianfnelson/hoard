@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("positions/")]
 [Tags("Positions")]
 [Produces("application/json")]
-public class PositionsController(IMediator mediator, ILogger<PositionsController> logger)
+public class PositionsController(IMediator mediator)
 {
     [HttpGet("{id:int}")]
     public async Task<ActionResult<PositionDetailDto>> Get(int id, CancellationToken ct)

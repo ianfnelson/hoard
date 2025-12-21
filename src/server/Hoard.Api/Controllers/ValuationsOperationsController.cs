@@ -8,14 +8,12 @@ namespace Hoard.Api.Controllers;
 [Route("operations/valuations/")]
 [Produces("application/json")]
 [Tags("Operations")]
-public class ValuationsOperationsController(IMediator mediator, ILogger<ValuationsOperationsController> logger) : ControllerBase
+public class ValuationsOperationsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillValuationsAsync([FromBody] BackfillValuationsRequest model)
     {
-        logger.LogInformation("Received request to backfill valuations.");
-        
         await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Backfill valuations triggered." });
@@ -25,8 +23,6 @@ public class ValuationsOperationsController(IMediator mediator, ILogger<Valuatio
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> CalculateValuationsAsync([FromBody] CalculateValuationsRequest model)
     {
-        logger.LogInformation("Received request to calculate valuations.");
-
         await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Calculate valuations triggered." });
