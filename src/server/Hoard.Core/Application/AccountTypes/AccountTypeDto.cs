@@ -1,9 +1,8 @@
-namespace Hoard.Core.Application.Portfolios.Models;
+namespace Hoard.Core.Application.AccountTypes;
 
-public class PortfolioSummaryDto
+public class AccountTypeDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
-    public bool IsActive { get; set; }
     public DateTime CreatedUtc { get; set; }
 }

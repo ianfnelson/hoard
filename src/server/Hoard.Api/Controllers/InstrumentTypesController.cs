@@ -1,5 +1,5 @@
 using Hoard.Core.Application;
-using Hoard.Core.Application.InstrumentTypes.Models;
+using Hoard.Core.Application.InstrumentTypes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;

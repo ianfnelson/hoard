@@ -1,6 +1,5 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Positions;
-using Hoard.Core.Application.Positions.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;

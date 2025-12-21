@@ -1,5 +1,5 @@
 using Hoard.Core.Application;
-using Hoard.Core.Application.Currencies.Models;
+using Hoard.Core.Application.Currencies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;

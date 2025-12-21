@@ -1,4 +1,4 @@
-namespace Hoard.Core.Application.Portfolios.Models;
+namespace Hoard.Core.Application.Portfolios;
 
 public class PortfolioValuationSummaryDto
 {

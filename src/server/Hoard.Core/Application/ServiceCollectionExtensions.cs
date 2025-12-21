@@ -1,4 +1,3 @@
-using Hoard.Core.Application.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoard.Core.Application;

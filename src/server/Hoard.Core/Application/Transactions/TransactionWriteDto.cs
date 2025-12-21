@@ -1,4 +1,4 @@
-namespace Hoard.Core.Application.Transactions.Models;
+namespace Hoard.Core.Application.Transactions;
 
 public class TransactionWriteDto
 {

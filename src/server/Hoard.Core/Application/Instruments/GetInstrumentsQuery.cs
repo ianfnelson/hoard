@@ -1,5 +1,3 @@
-using Hoard.Core.Application.Instruments.Models;
-
 namespace Hoard.Core.Application.Instruments;
 
 public sealed class GetInstrumentsQuery
