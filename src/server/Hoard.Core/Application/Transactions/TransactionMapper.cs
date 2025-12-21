@@ -1,5 +1,3 @@
-using Hoard.Core.Application.Transactions.Models;
-using Hoard.Core.Domain;
 using Hoard.Core.Domain.Entities;
 
 namespace Hoard.Core.Application.Transactions;

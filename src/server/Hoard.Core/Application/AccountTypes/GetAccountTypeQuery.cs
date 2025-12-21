@@ -1,4 +1,3 @@
-using Hoard.Core.Application.AccountTypes.Models;
 using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

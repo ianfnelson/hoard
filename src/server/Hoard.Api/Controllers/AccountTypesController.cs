@@ -1,6 +1,5 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.AccountTypes;
-using Hoard.Core.Application.AccountTypes.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;

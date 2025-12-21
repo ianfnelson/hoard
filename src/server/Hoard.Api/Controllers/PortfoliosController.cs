@@ -1,10 +1,9 @@
 using Hoard.Api.Models;
 using Hoard.Core.Application;
-using Hoard.Core.Application.Accounts.Models;
+using Hoard.Core.Application.Accounts;
 using Hoard.Core.Application.Portfolios;
-using Hoard.Core.Application.Portfolios.Models;
-using Hoard.Core.Application.Positions.Models;
-using Hoard.Core.Application.Snapshots.Models;
+using Hoard.Core.Application.Positions;
+using Hoard.Core.Application.Snapshots;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;

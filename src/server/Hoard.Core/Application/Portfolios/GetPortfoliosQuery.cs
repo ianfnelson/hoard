@@ -1,4 +1,3 @@
-using Hoard.Core.Application.Portfolios.Models;
 using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,6 +1,4 @@
-using Hoard.Core.Application.Portfolios.Models;
 using Hoard.Core.Data;
-using Hoard.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

@@ -1,5 +1,5 @@
 using Hoard.Core.Application;
-using Hoard.Core.Application.AssetSubclasses.Models;
+using Hoard.Core.Application.AssetSubclasses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
