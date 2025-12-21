@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddHoardLogging(IConfiguration config)
+        public IServiceCollection AddHoardLogging(string applicationInsightsConnectionString)
         {
             services.AddLogging(cfg =>
             {
@@ -39,8 +39,7 @@ public static class ServiceCollectionExtensions
                 cfg.AddApplicationInsights(
                     configureTelemetryConfiguration: tc =>
                     {
-                        tc.ConnectionString =
-                            config["ApplicationInsights:ConnectionString"];
+                        tc.ConnectionString = applicationInsightsConnectionString;
                     },
                     configureApplicationInsightsLoggerOptions: _ => { });
             });
