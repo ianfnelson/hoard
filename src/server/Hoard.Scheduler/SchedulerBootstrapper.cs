@@ -72,7 +72,7 @@ public class SchedulerBootstrapper : IHostedService
         
         _logger.LogInformation("Triggering Refresh Quotes");
 
-        var command = new TriggerRefreshQuotesCommand(Guid.NewGuid());
+        var command = new TriggerRefreshQuotesCommand();
 
         await _mediator.SendAsync(command);
     }

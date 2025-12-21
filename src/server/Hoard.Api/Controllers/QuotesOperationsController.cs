@@ -14,7 +14,7 @@ public class QuotesOperationsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshQuotesAsync()
     {
-        await mediator.SendAsync(new TriggerRefreshQuotesCommand(Guid.NewGuid()));
+        await mediator.SendAsync(new TriggerRefreshQuotesCommand());
         
         return Accepted(new { message = "Quote refresh triggered." });
     }

@@ -1,7 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Services;
-using Hoard.Messages;
 using Hoard.Messages.Quotes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,10 +8,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Quotes;
 
-public record ProcessRefreshQuotesBatchCommand(
-    Guid CorrelationId, 
-    PipelineMode PipelineMode,
-    IReadOnlyList<int> InstrumentIds)
+public record ProcessRefreshQuotesBatchCommand(IReadOnlyList<int> InstrumentIds)
     : ICommand;
 
 public class ProcessRefreshQuotesBatchHandler(
@@ -45,9 +41,7 @@ public class ProcessRefreshQuotesBatchHandler(
 
         foreach (var instrument in changed)
         {
-            await bus.Publish(new QuoteChangedEvent(
-                command.CorrelationId, command.PipelineMode, instrument.Id, 
-                instrument.InstrumentType.IsFxPair, now));
+            await bus.Publish(new QuoteChangedEvent(instrument.Id, instrument.InstrumentType.IsFxPair, now));
             logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
         }
     }
