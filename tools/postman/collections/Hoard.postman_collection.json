@@ -687,9 +687,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}references/account-types",
+              "raw": "{{BaseUrl}}reference/account-types",
               "host": [
-                "{{BaseUrl}}references"
+                "{{BaseUrl}}reference"
               ],
               "path": [
                 "account-types"
@@ -705,13 +705,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}reference/account-types/1",
+              "raw": "{{BaseUrl}}reference/account-types/2",
               "host": [
                 "{{BaseUrl}}reference"
               ],
               "path": [
                 "account-types",
-                "1"
+                "2"
               ]
             }
           },

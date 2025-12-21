@@ -11,12 +11,19 @@ var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDataba
 var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                              ?? "amqp://guest:guest@localhost/";
 
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
+});
+
+
 builder.Services
     .AddHoardData(sqlConnectionString)
-    .AddHoardLogging()
+    .AddHoardLogging(builder.Configuration)
     .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.api")
     .AddHoardServices()
     .AddHoardApplication()
+    .AddTelemetryInitializer("hoard.api")
     .Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 builder.Services.AddControllers();

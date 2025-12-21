@@ -1,6 +1,9 @@
+using System.Net.Sockets;
 using Hoard.Core.Data;
 using Hoard.Messages.Holdings;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rebus.Config;
@@ -14,67 +17,86 @@ namespace Hoard.Core.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHoardData(this IServiceCollection services, string sqlConnStr)
+    extension(IServiceCollection services)
     {
-        services.AddDbContext<HoardContext>(options => options.UseSqlServer(sqlConnStr));
-        services.AddTransient<ReferenceDataSeeder>();
-        return services;
-    }
-
-    public static IServiceCollection AddHoardLogging(this IServiceCollection services)
-    {
-        services.AddLogging(cfg =>
+        public IServiceCollection AddHoardData(string sqlConnStr)
         {
-            cfg.ClearProviders();
-            cfg.AddSimpleConsole(o =>
+            services.AddDbContext<HoardContext>(options => options.UseSqlServer(sqlConnStr));
+            services.AddTransient<ReferenceDataSeeder>();
+            return services;
+        }
+
+        public IServiceCollection AddHoardLogging(IConfiguration config)
+        {
+            services.AddLogging(cfg =>
             {
-                o.SingleLine = true;
-                o.TimestampFormat = "HH:mm:ss ";
+                cfg.ClearProviders();
+                cfg.AddSimpleConsole(o =>
+                {
+                    o.SingleLine = true;
+                    o.TimestampFormat = "HH:mm:ss ";
+                });
+                cfg.AddApplicationInsights(
+                    configureTelemetryConfiguration: tc =>
+                    {
+                        tc.ConnectionString =
+                            config["ApplicationInsights:ConnectionString"];
+                    },
+                    configureApplicationInsightsLoggerOptions: _ => { });
             });
-        });
-        return services;
-    }
+            return services;
+        }
 
-    public static IServiceCollection AddHoardRebus(
-        this IServiceCollection services, 
-        string rabbitConnectionString, 
-        bool sendOnly, 
-        string connectionName)
-    {
-        services.AddRebus(configure =>
+        public IServiceCollection AddHoardRebus(string rabbitConnectionString, 
+            bool sendOnly, 
+            string connectionName)
         {
-            var config = sendOnly ?
-                configure.Transport(t => t
-                    .UseRabbitMqAsOneWayClient(rabbitConnectionString)
-                    .ClientConnectionName(connectionName)) :
-                configure.Transport(t => t
-                    .UseRabbitMq(rabbitConnectionString, "hoard.bus")
-                    .ClientConnectionName(connectionName));
-            
-            if (!sendOnly)
+            services.AddRebus(configure =>
             {
-                config.Sagas(x =>
+                var config = sendOnly ?
+                    configure.Transport(t => t
+                        .UseRabbitMqAsOneWayClient(rabbitConnectionString)
+                        .ClientConnectionName(connectionName)) :
+                    configure.Transport(t => t
+                        .UseRabbitMq(rabbitConnectionString, "hoard.bus")
+                        .ClientConnectionName(connectionName));
+            
+                if (!sendOnly)
                 {
-                    x.StoreInMemory();
-                    x.EnforceExclusiveAccess();
-                });
-                config.Timeouts(x => x.StoreInMemory());
+                    config.Sagas(x =>
+                    {
+                        x.StoreInMemory();
+                        x.EnforceExclusiveAccess();
+                    });
+                    config.Timeouts(x => x.StoreInMemory());
                 
-                config.Options(o =>
-                {
-                    o.SetMaxParallelism(32);
-                    o.SetNumberOfWorkers(8);
+                    config.Options(o =>
+                    {
+                        o.SetMaxParallelism(32);
+                        o.SetNumberOfWorkers(8);
 
-                    o.RetryStrategy(
-                        "hoard.error",
-                        maxDeliveryAttempts: 5, 
-                        secondLevelRetriesEnabled: true);
-                });
-            }
+                        o.RetryStrategy(
+                            "hoard.error",
+                            maxDeliveryAttempts: 5, 
+                            secondLevelRetriesEnabled: true);
+                    });
+                }
 
-            config.Routing(r => r.TypeBased().MapAssemblyOf<CalculateHoldingsBusCommand>("hoard.bus"));
-            return config;
-        });
-        return services;
+                config.Routing(r => r.TypeBased().MapAssemblyOf<CalculateHoldingsBusCommand>("hoard.bus"));
+                return config;
+            });
+            return services;
+        }
+
+        public IServiceCollection AddTelemetryInitializer(string roleName)
+        {
+            services.AddSingleton<ITelemetryInitializer>(sp =>
+            {
+                var initializer = new RoleNameInitializer(roleName);
+                return initializer;
+            });
+        
+            return services;
+        }
     }
 }
