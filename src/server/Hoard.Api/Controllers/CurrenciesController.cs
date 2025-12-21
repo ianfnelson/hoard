@@ -11,16 +11,30 @@ namespace Hoard.Api.Controllers;
 public class CurrenciesController(IMediator mediator)
 {
     [HttpGet]
+    [ProducesResponseType(typeof(List<CurrencyDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<CurrencyDto>>> GetList(CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var query = new GetCurrenciesQuery();
+        
+        var dtos = await mediator.QueryAsync<GetCurrenciesQuery, List<CurrencyDto>>(query, ct);
+        
+        return new OkObjectResult(dtos);
     }
     
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<CurrencyDto>> Get(int id, CancellationToken ct)
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(CurrencyDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CurrencyDto>> Get(string id, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var query = new GetCurrencyQuery(id);
+        
+        var dto = await mediator.QueryAsync<GetCurrencyQuery, CurrencyDto?>(query, ct);
+
+        if (dto == null)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(dto);
     }
 }
