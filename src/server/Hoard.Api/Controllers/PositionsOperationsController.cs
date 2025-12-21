@@ -14,7 +14,9 @@ public class PositionsOperationsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> CalculatePositionsAsync()
     {
-        await mediator.SendAsync(new TriggerCalculatePositionsCommand(Guid.NewGuid()));
+        var command = TriggerCalculatePositionsCommand.Create();
+        
+        await mediator.SendAsync(command);
 
         return Accepted(new { message = "Calculate positions triggered." });
     }

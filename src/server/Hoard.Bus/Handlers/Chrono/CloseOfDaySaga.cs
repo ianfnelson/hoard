@@ -35,7 +35,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         config.Correlate<StartCloseOfDaySagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
 
         config.Correlate<HoldingsBackfilledEvent>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<PositionsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<PositionsCalculatedEvent>(m => m.PositionsRunId, d => d.PositionsRunId);
         config.Correlate<PricesRefreshedEvent>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<ValuationsBackfilledEvent>(m => m.CorrelationId, d => d.CorrelationId);
         config.Correlate<PerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
@@ -84,7 +84,11 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         if (!Data.PositionsCalculated)
         {
             logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Positions", Data.CorrelationId);
-            await mediator.SendAsync(new TriggerCalculatePositionsCommand(Data.CorrelationId, Data.PipelineMode));
+            
+            var positionsCommand = TriggerCalculatePositionsCommand.Create(Data.PipelineMode);
+            Data.PositionsRunId = positionsCommand.PositionsRunId;
+            
+            await mediator.SendAsync(positionsCommand);
         }
     }
 
@@ -151,6 +155,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
 public class CloseOfDaySagaData : SagaData
 {
     public Guid CorrelationId { get; set; }
+    public Guid PositionsRunId { get; set; }
     public DateOnly RebuildStartDate { get; set; }
     public DateOnly Today { get; set; }
     public DateOnly Tomorrow { get; set; }

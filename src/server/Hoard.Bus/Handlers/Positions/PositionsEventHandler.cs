@@ -10,7 +10,7 @@ public class PositionsEventHandler(IMediator mediator)
 {
     public async Task Handle(CalculatePositionsBusCommand message)
     {
-        var appCommand = new ProcessCalculatePositionsCommand(message.CorrelationId, message.PipelineMode);
+        var appCommand = new ProcessCalculatePositionsCommand(message.PositionsRunId, message.PipelineMode);
         
         await mediator.SendAsync(appCommand);
     }

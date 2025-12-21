@@ -8,7 +8,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Positions;
 
-public record ProcessCalculatePositionsCommand(Guid CorrelationId, PipelineMode PipelineMode) : ICommand;
+public record ProcessCalculatePositionsCommand(Guid PositionsRunId, PipelineMode PipelineMode) : ICommand;
 
 public class ProcessCalculatePositionsHandler(
     ILogger<ProcessCalculatePositionsHandler> logger, HoardContext context, IBus bus)
@@ -28,7 +28,7 @@ public class ProcessCalculatePositionsHandler(
             await CalculatePositionsForPortfolioAsync(portfolio, ct);
         }
         
-        await bus.Publish(new PositionsCalculatedEvent(command.CorrelationId, command.PipelineMode));
+        await bus.Publish(new PositionsCalculatedEvent(command.PositionsRunId, command.PipelineMode));
     }
     
     private async Task CalculatePositionsForPortfolioAsync(Portfolio portfolio, CancellationToken ct = default)
