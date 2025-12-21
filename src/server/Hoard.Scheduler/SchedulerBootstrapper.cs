@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Hangfire;
 using Hoard.Core;
 using Hoard.Core.Application;
@@ -14,6 +15,8 @@ public class SchedulerBootstrapper : IHostedService
     private readonly IRecurringJobManager _recurring;
     private readonly IMediator _mediator;
     private readonly ILogger<SchedulerBootstrapper> _logger;
+    
+    private static readonly ActivitySource ActivitySource = new("hoard.scheduler");
 
     public SchedulerBootstrapper(
         IBackgroundJobClient jobs,
@@ -65,6 +68,8 @@ public class SchedulerBootstrapper : IHostedService
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
     public async Task TriggerRefreshQuotesCommand()
     {
+        using var activity = ActivitySource .StartActivity();
+        
         _logger.LogInformation("Triggering Refresh Quotes");
 
         var command = new TriggerRefreshQuotesCommand(Guid.NewGuid());
@@ -75,6 +80,8 @@ public class SchedulerBootstrapper : IHostedService
     // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
     public async Task TriggerCloseOfDayCommand()
     {
+        using var activity = ActivitySource.StartActivity();
+        
         _logger.LogInformation("Triggering Close Of Day");
 
         var today = DateOnlyHelper.TodayLocal();
