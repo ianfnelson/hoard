@@ -1,6 +1,6 @@
 namespace Hoard.Core.Application.Portfolios.Models;
 
-public class PortfolioDto
+public class PortfolioDetailDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

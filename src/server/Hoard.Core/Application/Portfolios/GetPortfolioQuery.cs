@@ -6,17 +6,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioQuery(int PortfolioId) : IQuery<PortfolioDto?>;
+public record GetPortfolioQuery(int PortfolioId) : IQuery<PortfolioDetailDto?>;
 
 public class GetPortfolioHandler(HoardContext context, ILogger<GetPortfolioHandler> logger)
-    : IQueryHandler<GetPortfolioQuery, PortfolioDto?>
+    : IQueryHandler<GetPortfolioQuery, PortfolioDetailDto?>
 {
-    public async Task<PortfolioDto?> HandleAsync(GetPortfolioQuery query, CancellationToken ct = default)
+    public async Task<PortfolioDetailDto?> HandleAsync(GetPortfolioQuery query, CancellationToken ct = default)
     {
         var dto = await context.Portfolios
             .AsNoTracking()
             .Where(p => p.Id == query.PortfolioId)
-            .Select(p => new PortfolioDto
+            .Select(p => new PortfolioDetailDto
             {
                 Id = p.Id,
                 Name = p.Name,

@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("operations/quotes/")]
 [Produces("application/json")]
-public class QuotesController(IMediator mediator, ILogger<QuotesController> logger) : ControllerBase
+[Tags("Operations")]
+public class QuotesOperationsController(IMediator mediator, ILogger<QuotesOperationsController> logger) : ControllerBase
 {
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]

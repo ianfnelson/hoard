@@ -1,6 +1,6 @@
 namespace Hoard.Core.Application.Portfolios.Models;
 
-public class PortfolioValuationDto
+public class PortfolioValuationDetailDto
 {
     public decimal Value { get; init; }
     public DateOnly AsOfDate { get; init; }

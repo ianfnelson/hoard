@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("operations/performance/")]
+[Tags("Operations")]
 [Produces("application/json")]
-public class PerformanceController(IMediator mediator, ILogger<PerformanceController> logger) : ControllerBase
+public class PerformanceOperationsController(IMediator mediator, ILogger<PerformanceOperationsController> logger) : ControllerBase
 {
     [HttpPost("calculate")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]

@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("operations/snapshots/")]
 [Produces("application/json")]
-public class SnapshotsController(IMediator mediator, ILogger<SnapshotsController> logger) : ControllerBase
+[Tags("Operations")]
+public class SnapshotsOperationsController(IMediator mediator, ILogger<SnapshotsOperationsController> logger) : ControllerBase
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]

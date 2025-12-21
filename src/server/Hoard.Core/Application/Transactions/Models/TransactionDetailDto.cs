@@ -1,6 +1,6 @@
 namespace Hoard.Core.Application.Transactions.Models;
 
-public class TransactionDto
+public class TransactionDetailDto
 {
     
 }
