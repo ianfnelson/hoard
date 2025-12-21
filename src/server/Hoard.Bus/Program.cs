@@ -24,13 +24,19 @@ var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDataba
 var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                     ?? "amqp://guest:guest@localhost/";
 
+builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
+});
+
 builder.Services
     .AddHoardData(sqlConnectionString)
-    .AddHoardLogging()
+    .AddHoardLogging(builder.Configuration)
     .AutoRegisterHandlersFromAssemblyOf<CalculateValuationsSaga>()
     .AddHoardRebus(rabbitConnectionString, sendOnly: false, "hoard.bus")
     .AddHoardServices()
-    .AddHoardApplication();
+    .AddHoardApplication()
+    .AddTelemetryInitializer("hoard.bus");
 
 var app = builder.Build();
 

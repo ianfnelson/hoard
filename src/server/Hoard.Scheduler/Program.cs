@@ -15,10 +15,16 @@ var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDataba
 var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                     ?? "amqp://guest:guest@localhost/";
 
+builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
+});
+
 builder.Services
-    .AddHoardLogging()
+    .AddHoardLogging(builder.Configuration)
     .AddHoardApplication()
-    .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.scheduler");
+    .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.scheduler")
+    .AddTelemetryInitializer("hoard.scheduler");
 
 builder.Services.AddHangfire(config =>
 {
