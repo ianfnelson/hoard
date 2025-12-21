@@ -716,6 +716,43 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Asset Clases",
+          "id": "ca5022cb-70de-4aec-9551-383b78869c07",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/asset-classes",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "asset-classes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Asset Class",
+          "id": "3e1ae5de-b053-426e-a092-b929d6c0926e",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/asset-classes/2",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "asset-classes",
+                "2"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "id": "5d660ec9-a032-4ccf-8380-79280b765f6e"
