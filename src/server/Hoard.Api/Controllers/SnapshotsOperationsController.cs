@@ -8,14 +8,12 @@ namespace Hoard.Api.Controllers;
 [Route("operations/snapshots/")]
 [Produces("application/json")]
 [Tags("Operations")]
-public class SnapshotsOperationsController(IMediator mediator, ILogger<SnapshotsOperationsController> logger) : ControllerBase
+public class SnapshotsOperationsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillSnapshotsAsync([FromBody] BackfillSnapshotsRequest model)
     {
-        logger.LogInformation("Received request to backfill snapshots.");
-        
         await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Backfill snapshots triggered." });
@@ -25,8 +23,6 @@ public class SnapshotsOperationsController(IMediator mediator, ILogger<Snapshots
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> CalculateSnapshotsAsync([FromBody] CalculateSnapshotsRequest model)
     {
-        logger.LogInformation("Received request to calculate snapshots.");
-
         await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Calculate snapshots triggered." });

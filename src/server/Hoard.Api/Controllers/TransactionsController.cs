@@ -9,7 +9,7 @@ namespace Hoard.Api.Controllers;
 [Route("transactions/")]
 [Produces("application/json")]
 [Tags("Transactions")]
-public class TransactionsController(IMediator mediator, ILogger<TransactionsController> logger) : ControllerBase
+public class TransactionsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{id:int}")]
     public Task<ActionResult<TransactionDetailDto>> Get(int id, CancellationToken ct)
@@ -36,8 +36,6 @@ public class TransactionsController(IMediator mediator, ILogger<TransactionsCont
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        logger.LogInformation("Received request to delete transaction {id}.", id);
-        
         var command = new DeleteTransactionCommand(Guid.NewGuid(), id);
         await mediator.SendAsync(command, ct);
         return NoContent();  // 204

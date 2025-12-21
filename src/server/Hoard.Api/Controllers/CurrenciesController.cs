@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("reference/[controller]")]
+[Route("reference/currencies/")]
 [Tags("Reference")]
 [Produces("application/json")]
-public class CurrenciesController(IMediator mediator, ILogger<CurrenciesController> logger)
+public class CurrenciesController(IMediator mediator)
 {
     [HttpGet]
     public async Task<ActionResult<List<CurrencyDto>>> GetList(CancellationToken ct)

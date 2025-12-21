@@ -8,14 +8,12 @@ namespace Hoard.Api.Controllers;
 [Route("operations/quotes/")]
 [Produces("application/json")]
 [Tags("Operations")]
-public class QuotesOperationsController(IMediator mediator, ILogger<QuotesOperationsController> logger) : ControllerBase
+public class QuotesOperationsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshQuotesAsync()
     {
-        logger.LogInformation("Received request to refresh quotes.");
-
         await mediator.SendAsync(new TriggerRefreshQuotesCommand(Guid.NewGuid()));
         
         return Accepted(new { message = "Quote refresh triggered." });

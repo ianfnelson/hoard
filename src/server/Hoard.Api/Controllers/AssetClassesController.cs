@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("reference/[controller]")]
+[Route("reference/asset-classes/")]
 [Tags("Reference")]
 [Produces("application/json")]
-public class AssetClassesController(IMediator mediator, ILogger<AssetClassesController> logger)
+public class AssetClassesController(IMediator mediator)
 {
     [HttpGet]
     public async Task<ActionResult<List<AssetClassDto>>> GetList(CancellationToken ct)

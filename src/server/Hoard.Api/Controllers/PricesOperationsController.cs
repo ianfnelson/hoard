@@ -8,14 +8,12 @@ namespace Hoard.Api.Controllers;
 [Route("operations/prices/")]
 [Produces("application/json")]
 [Tags("Operations")]
-public class PricesOperationsController(IMediator mediator, ILogger<PricesOperationsController> logger) : ControllerBase
+public class PricesOperationsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> BackfillPricesAsync([FromBody] BackfillPricesRequest model)
     {
-        logger.LogInformation("Received request to backfill prices.");
-        
         await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Prices backfill triggered." });
@@ -25,8 +23,6 @@ public class PricesOperationsController(IMediator mediator, ILogger<PricesOperat
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> RefreshPricesAsync([FromBody] RefreshPricesRequest model)
     {
-        logger.LogInformation("Received request to refresh prices.");
-
         await mediator.SendAsync(model.ToCommand());
         
         return Accepted(new { message = "Prices refresh triggered." });

@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("portfolios/")]
 [Tags("Portfolios")]
 [Produces("application/json")]
-public class PortfoliosController(IMediator mediator, ILogger<PortfoliosController> logger)
+public class PortfoliosController(IMediator mediator)
 {
     [HttpGet]
     public async Task<ActionResult<List<PortfolioSummaryDto>>> GetList(CancellationToken ct)
