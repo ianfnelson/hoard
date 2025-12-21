@@ -27,12 +27,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/chrono/trigger-close-of-day",
+              "raw": "{{BaseUrl}}chrono/trigger-close-of-day",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}chrono"
               ],
               "path": [
-                "chrono",
                 "trigger-close-of-day"
               ]
             }
@@ -64,12 +63,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/holdings/backfill",
+              "raw": "{{BaseUrl}}holdings/backfill",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}holdings"
               ],
               "path": [
-                "holdings",
                 "backfill"
               ]
             }
@@ -95,12 +93,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/holdings/calculate",
+              "raw": "{{BaseUrl}}holdings/calculate",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}holdings"
               ],
               "path": [
-                "holdings",
                 "calculate"
               ]
             }
@@ -132,12 +129,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/performance/calculate",
+              "raw": "{{BaseUrl}}performance/calculate",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}performance"
               ],
               "path": [
-                "performance",
                 "calculate"
               ]
             }
@@ -157,12 +153,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios",
+              "raw": "{{BaseUrl}}portfolios",
               "host": [
-                "{{BaseUrl}}api"
-              ],
-              "path": [
-                "portfolios"
+                "{{BaseUrl}}portfolios"
               ]
             }
           },
@@ -175,12 +168,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios/3",
+              "raw": "{{BaseUrl}}portfolios/3",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "portfolios",
                 "3"
               ]
             }
@@ -194,12 +186,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios/3/performance",
+              "raw": "{{BaseUrl}}portfolios/3/performance",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "portfolios",
                 "3",
                 "performance"
               ]
@@ -214,12 +205,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios/3/instrument-types",
+              "raw": "{{BaseUrl}}portfolios/3/instrument-types",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "portfolios",
                 "3",
                 "instrument-types"
               ]
@@ -234,12 +224,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}api/portfolios/3/valuation/latest",
+              "raw": "{{BaseUrl}}portfolios/3/valuation/latest",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "portfolios",
                 "3",
                 "valuation",
                 "latest"
@@ -304,12 +293,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/positions/calculate",
+              "raw": "{{BaseUrl}}positions/calculate",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}positions"
               ],
               "path": [
-                "positions",
                 "calculate"
               ]
             }
@@ -341,12 +329,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/prices/backfill",
+              "raw": "{{BaseUrl}}prices/backfill",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}prices"
               ],
               "path": [
-                "prices",
                 "backfill"
               ]
             }
@@ -372,12 +359,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/prices/refresh",
+              "raw": "{{BaseUrl}}prices/refresh",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}prices"
               ],
               "path": [
-                "prices",
                 "refresh"
               ]
             }
@@ -409,12 +395,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/quotes/refresh",
+              "raw": "{{BaseUrl}}quotes/refresh",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}quotes"
               ],
               "path": [
-                "quotes",
                 "refresh"
               ]
             }
@@ -446,12 +431,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/snapshots/backfill",
+              "raw": "{{BaseUrl}}snapshots/backfill",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}snapshots"
               ],
               "path": [
-                "snapshots",
                 "backfill"
               ]
             }
@@ -477,12 +461,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/snapshots/calculate",
+              "raw": "{{BaseUrl}}snapshots/calculate",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}snapshots"
               ],
               "path": [
-                "snapshots",
                 "calculate"
               ]
             }
@@ -514,12 +497,9 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/transactions",
+              "raw": "{{BaseUrl}}transactions",
               "host": [
-                "{{BaseUrl}}api"
-              ],
-              "path": [
-                "transactions"
+                "{{BaseUrl}}transactions"
               ]
             }
           },
@@ -542,12 +522,11 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{BaseUrl}}api/transactions/59",
+              "raw": "{{BaseUrl}}transactions/59",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}transactions"
               ],
               "path": [
-                "transactions",
                 "59"
               ]
             }
@@ -571,12 +550,11 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{BaseUrl}}api/transactions/",
+              "raw": "{{BaseUrl}}transactions/",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}transactions"
               ],
               "path": [
-                "transactions",
                 ""
               ]
             }
@@ -597,12 +575,9 @@
               "raw": "{}"
             },
             "url": {
-              "raw": "{{BaseUrl}}api/transactions",
+              "raw": "{{BaseUrl}}transactions",
               "host": [
-                "{{BaseUrl}}api"
-              ],
-              "path": [
-                "transactions"
+                "{{BaseUrl}}transactions"
               ]
             }
           },
@@ -622,12 +597,11 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{BaseUrl}}api/transactions/61",
+              "raw": "{{BaseUrl}}transactions/61",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}transactions"
               ],
               "path": [
-                "transactions",
                 "61"
               ]
             }
@@ -659,12 +633,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/valuations/backfill",
+              "raw": "{{BaseUrl}}valuations/backfill",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}valuations"
               ],
               "path": [
-                "valuations",
                 "backfill"
               ]
             }
@@ -690,12 +663,11 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}api/valuations/calculate",
+              "raw": "{{BaseUrl}}valuations/calculate",
               "host": [
-                "{{BaseUrl}}api"
+                "{{BaseUrl}}valuations"
               ],
               "path": [
-                "valuations",
                 "calculate"
               ]
             }
@@ -704,6 +676,49 @@
         }
       ],
       "id": "69dae104-1939-48f0-a9f8-cc8495154029"
+    },
+    {
+      "name": "Reference",
+      "item": [
+        {
+          "name": "Account Types",
+          "id": "7a64399e-0dfd-4561-9c5f-7865a13b4bd5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}references/account-types",
+              "host": [
+                "{{BaseUrl}}references"
+              ],
+              "path": [
+                "account-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Account Type",
+          "id": "7966457e-8b77-4e8d-87e9-11b2abbf1be0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/account-types/1",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "account-types",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "5d660ec9-a032-4ccf-8380-79280b765f6e"
     }
   ]
 }
