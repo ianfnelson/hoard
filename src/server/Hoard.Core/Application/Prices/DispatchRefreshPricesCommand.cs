@@ -5,7 +5,7 @@ using Rebus.Bus;
 namespace Hoard.Core.Application.Prices;
 
 public record DispatchRefreshPricesCommand(
-    Guid CorrelationId,
+    Guid PricesRunId,
     PipelineMode PipelineMode,
     IReadOnlyList<int> InstrumentIds,
     DateOnly? StartDate,
@@ -24,7 +24,7 @@ public class DispatchRefreshPricesHandler(IBus bus)
         foreach (var instrumentId in command.InstrumentIds)
         {
             await bus.DeferLocal(delay, 
-                new RefreshPricesBatchBusCommand(command.CorrelationId, command.PipelineMode, instrumentId, dateRange.StartDate, dateRange.EndDate));
+                new RefreshPricesBatchBusCommand(command.PricesRunId, command.PipelineMode, instrumentId, dateRange.StartDate, dateRange.EndDate));
             delay+=TimeSpan.FromSeconds(2);
         }   
     }

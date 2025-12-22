@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Valuations;
 
-public record CalculateHoldingValuationsBusCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate);
+public record CalculateHoldingValuationsBusCommand(Guid ValuationsRunId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate);

@@ -14,7 +14,7 @@ public class PricesEventHandler(IMediator mediator) :
     public async Task Handle(RefreshPricesBatchBusCommand message)
     {
         var appCommand = new ProcessRefreshPricesBatchCommand(
-            message.CorrelationId,
+            message.PricesRunId,
             message.PipelineMode,
             message.InstrumentId,
             message.StartDate,
@@ -29,7 +29,7 @@ public class PricesEventHandler(IMediator mediator) :
         if (message is { PipelineMode: PipelineMode.DaytimeReactive, IsFxPair: false })
         {
             var appCommand =
-                new ProcessCalculateHoldingValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
+                new ProcessCalculateHoldingValuationsCommand(Guid.NewGuid(), message.PipelineMode, message.InstrumentId, message.AsOfDate);
 
             await mediator.SendAsync(appCommand);
         }

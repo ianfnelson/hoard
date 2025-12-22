@@ -19,25 +19,25 @@ public class RefreshPricesSaga(
 {
     protected override void CorrelateMessages(ICorrelationConfig<RefreshPricesSagaData> cfg)
     {
-        cfg.Correlate<StartRefreshPricesSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
-        cfg.Correlate<PriceRefreshedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<StartRefreshPricesSagaCommand>(m => m.PricesRunId, d => d.PricesRunId);
+        cfg.Correlate<PriceRefreshedEvent>(m => m.PricesRunId, d => d.PricesRunId);
     }
 
     public async Task Handle(StartRefreshPricesSagaCommand message)
     {
-        var (correlationId, pipelineMode, instrumentId, startDate, endDate) = message;
+        var (pricesRunId, pipelineMode, instrumentId, startDate, endDate) = message;
         
-        Data.CorrelationId = correlationId;
+        Data.PricesRunId = pricesRunId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForRefreshQuery, IReadOnlyList<int>>(
             new GetInstrumentsForRefreshQuery(instrumentId));
 
-        logger.LogInformation("Started refresh prices saga {CorrelationId} for {Count} instruments",
-            Data.CorrelationId, instrumentIds.Count);
+        logger.LogInformation("Started refresh prices saga {PricesRunId} for {Count} instruments",
+            Data.PricesRunId, instrumentIds.Count);
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchRefreshPricesCommand(correlationId, pipelineMode, instrumentIds, startDate, endDate));
+        await mediator.SendAsync(new DispatchRefreshPricesCommand(pricesRunId, pipelineMode, instrumentIds, startDate, endDate));
     }
     
     public async Task Handle(PriceRefreshedEvent message)
@@ -45,16 +45,16 @@ public class RefreshPricesSaga(
         Data.PendingInstruments.Remove(message.InstrumentId);
         if (Data.PendingInstruments.Count == 0)
         {
-            logger.LogInformation("Price refresh saga {CorrelationId} complete", Data.CorrelationId);
+            logger.LogInformation("Price refresh saga {PricesRunId} complete", Data.PricesRunId);
             MarkAsComplete();
-            await bus.Publish(new PricesRefreshedEvent(Data.CorrelationId, Data.PipelineMode));
+            await bus.Publish(new PricesRefreshedEvent(Data.PricesRunId, Data.PipelineMode));
         }
     }
 }
 
 public class RefreshPricesSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid PricesRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }
     public HashSet<int> PendingInstruments { get; set; } = new();
 }

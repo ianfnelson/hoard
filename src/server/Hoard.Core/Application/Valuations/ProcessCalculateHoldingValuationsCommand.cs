@@ -9,7 +9,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculateHoldingValuationsCommand(Guid CorrelationId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
+public record ProcessCalculateHoldingValuationsCommand(Guid ValuationsRunId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
     : ICommand;
 
 public class ProcessCalculateHoldingsValuationHandler(
@@ -20,7 +20,7 @@ public class ProcessCalculateHoldingsValuationHandler(
 {
     public async Task HandleAsync(ProcessCalculateHoldingValuationsCommand command, CancellationToken ct = default)
     {
-        var (correlationId, pipelineMode, instrumentId, asOfDate) = command;
+        var (valuationsRunId, pipelineMode, instrumentId, asOfDate) = command;
 
         var holdings = await context.Holdings
             .Include(h => h.Instrument)
@@ -40,10 +40,10 @@ public class ProcessCalculateHoldingsValuationHandler(
         if (anyChanged)
         {
             await context.SaveChangesAsync(ct);
-            await bus.Publish(new HoldingValuationsChangedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+            await bus.Publish(new HoldingValuationsChangedEvent(valuationsRunId, pipelineMode, instrumentId, asOfDate));
         }
         
-        await bus.Publish(new HoldingValuationsCalculatedEvent(correlationId, pipelineMode, instrumentId, asOfDate));
+        await bus.Publish(new HoldingValuationsCalculatedEvent(valuationsRunId, pipelineMode, instrumentId, asOfDate));
 
         logger.LogInformation("Valuations calculated for Instrument {InstrumentId}, AsOfDate {AsOfDate}", instrumentId, asOfDate.ToIsoDateString());
     }

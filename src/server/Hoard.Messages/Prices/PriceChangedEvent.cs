@@ -1,7 +1,7 @@
 namespace Hoard.Messages.Prices;
 
 public record PriceChangedEvent(
-    Guid CorrelationId, 
+    Guid PricesRunId, 
     PipelineMode PipelineMode,
     int InstrumentId,
     bool IsFxPair,

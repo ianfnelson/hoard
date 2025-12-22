@@ -7,7 +7,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record DeleteTransactionCommand(Guid CorrelationId, int TransactionId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
+public record DeleteTransactionCommand(int TransactionId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
 public class DeleteTransactionHandler(HoardContext context, IBus bus) 
     : ICommandHandler<DeleteTransactionCommand>
@@ -21,7 +21,7 @@ public class DeleteTransactionHandler(HoardContext context, IBus bus)
         context.Transactions.Remove(tx);
         await context.SaveChangesAsync(ct);
         
-        await bus.Publish(new TransactionDeletedEvent(command.CorrelationId, command.PipelineMode, command.TransactionId, transactionDate));
+        await bus.Publish(new TransactionDeletedEvent(command.PipelineMode, command.TransactionId, transactionDate));
     }
 
     private async Task<Transaction> GetExistingTransaction(int id, CancellationToken ct = default)

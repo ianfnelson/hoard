@@ -17,8 +17,8 @@ public class PortfolioPerformanceRecalculationSaga(IBus bus, IMediator mediator)
     
     protected override void CorrelateMessages(ICorrelationConfig<PortfolioPerformanceRecalculationSagaData> config)
     {
-        config.Correlate<PortfolioPerformancesInvalidatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<RecalculatePortfolioPerformancesTimeout>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<PortfolioPerformancesInvalidatedEvent>(_ => DebounceScopes.PortfolioPerformances, d => d.Scope);
+        config.Correlate<RecalculatePortfolioPerformancesTimeout>(_ => DebounceScopes.PortfolioPerformances, d => d.Scope);
     }
 
     public async Task Handle(PortfolioPerformancesInvalidatedEvent message)
@@ -32,7 +32,7 @@ public class PortfolioPerformanceRecalculationSaga(IBus bus, IMediator mediator)
 
         await bus.DeferLocal(
             DebounceDelay,
-            new RecalculatePortfolioPerformancesTimeout(message.CorrelationId, message.PipelineMode));
+            new RecalculatePortfolioPerformancesTimeout(message.PipelineMode));
     }
 
     public async Task Handle(RecalculatePortfolioPerformancesTimeout message)
@@ -41,14 +41,18 @@ public class PortfolioPerformanceRecalculationSaga(IBus bus, IMediator mediator)
             await mediator.QueryAsync<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>(
                 new GetPortfoliosForPerformanceQuery());
         
-        await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(message.CorrelationId, portfolioIds, message.PipelineMode));
+        await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(Guid.NewGuid(), portfolioIds, message.PipelineMode));
+        
+        Data.IsScheduled = false;
+        
+        MarkAsComplete();
     }
 }
 
 public class PortfolioPerformanceRecalculationSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public string Scope { get; set; } = DebounceScopes.PortfolioPerformances;
     public bool IsScheduled { get; set; }
 }
 
-public record RecalculatePortfolioPerformancesTimeout(Guid CorrelationId, PipelineMode PipelineMode);
+public record RecalculatePortfolioPerformancesTimeout(PipelineMode PipelineMode);

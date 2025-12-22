@@ -10,7 +10,7 @@ using Rebus.Bus;
 namespace Hoard.Core.Application.Prices;
 
 public record ProcessRefreshPricesBatchCommand(
-    Guid CorrelationId,
+    Guid PricesRunId,
     PipelineMode PipelineMode,
     int InstrumentId,
     DateOnly StartDate,
@@ -51,10 +51,10 @@ public class ProcessRefreshPricesBatchHandler(
         
         foreach (var date in changed)
         {
-            await bus.Publish(new PriceChangedEvent(command.CorrelationId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, date, now));
+            await bus.Publish(new PriceChangedEvent(command.PricesRunId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, date, now));
         }
         
-        await bus.Publish(new PriceRefreshedEvent(command.CorrelationId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, command.StartDate, command.EndDate, now));
+        await bus.Publish(new PriceRefreshedEvent(command.PricesRunId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, command.StartDate, command.EndDate, now));
         logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
     }
 

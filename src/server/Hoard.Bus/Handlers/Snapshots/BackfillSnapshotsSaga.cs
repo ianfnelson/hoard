@@ -18,15 +18,15 @@ public class BackfillSnapshotsSaga(
 {
     protected override void CorrelateMessages(ICorrelationConfig<BackfillSnapshotsSagaData> config)
     {
-        config.Correlate<StartBackfillSnapshotsSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<SnapshotsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<StartBackfillSnapshotsSagaCommand>(m => m.SnapshotsRunId, d => d.SnapshotsRunId);
+        config.Correlate<SnapshotsCalculatedEvent>(m => m.SnapshotsRunId, d => d.SnapshotsRunId);
     }
 
     public async Task Handle(StartBackfillSnapshotsSagaCommand message)
     {
-        var (correlationId, pipelineMode, portfolioId, startYear, endYear) = message;
+        var (snapshotsRunId, pipelineMode, portfolioId, startYear, endYear) = message;
 
-        Data.CorrelationId = correlationId;
+        Data.SnapshotsRunId = snapshotsRunId;
         Data.PipelineMode = pipelineMode;
         Data.PortfolioId = portfolioId;
 
@@ -40,7 +40,7 @@ public class BackfillSnapshotsSaga(
 
         Data.PendingYears = years.ToHashSet();
         
-        await mediator.SendAsync(new DispatchBackfillSnapshotsCommand(correlationId, pipelineMode, portfolioId, years));
+        await mediator.SendAsync(new DispatchBackfillSnapshotsCommand(snapshotsRunId, pipelineMode, portfolioId, years));
     }
 
     public Task Handle(SnapshotsCalculatedEvent message)
@@ -58,7 +58,7 @@ public class BackfillSnapshotsSaga(
 
 public class BackfillSnapshotsSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid SnapshotsRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }
     public int? PortfolioId { get; set; }
     public int StartYear { get; set; }

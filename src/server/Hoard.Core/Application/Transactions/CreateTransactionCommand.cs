@@ -6,7 +6,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record CreateTransactionCommand(Guid CorrelationId, TransactionWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand<int>;
+public record CreateTransactionCommand(TransactionWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand<int>;
 
 public class CreateTransactionHandler(IBus bus, IMapper mapper, HoardContext context)
     : ICommandHandler<CreateTransactionCommand, int>
@@ -21,7 +21,7 @@ public class CreateTransactionHandler(IBus bus, IMapper mapper, HoardContext con
 
         await context.SaveChangesAsync(ct);
 
-        await bus.Publish(new TransactionCreatedEvent(command.CorrelationId, command.PipelineMode, tx.Id, tx.Date));
+        await bus.Publish(new TransactionCreatedEvent(command.PipelineMode, tx.Id, tx.Date));
 
         return tx.Id;
     }

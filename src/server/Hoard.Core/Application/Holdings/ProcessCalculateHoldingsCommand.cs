@@ -9,7 +9,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Holdings;
 
-public record ProcessCalculateHoldingsCommand(Guid CorrelationId, PipelineMode PipelineMode, DateOnly? AsOfDate) : ICommand;
+public record ProcessCalculateHoldingsCommand(Guid HoldingsRunId, PipelineMode PipelineMode, DateOnly? AsOfDate) : ICommand;
 
 public class ProcessCalculateHoldingsHandler(
     IBus bus,
@@ -29,9 +29,9 @@ public class ProcessCalculateHoldingsHandler(
         
         foreach (var instrument in changedInstruments)
         {
-            await bus.Publish(new HoldingChangedEvent(command.CorrelationId, command.PipelineMode, asOfDate, instrument));
+            await bus.Publish(new HoldingChangedEvent(command.HoldingsRunId, command.PipelineMode, asOfDate, instrument));
         }
-        await bus.Publish(new HoldingsCalculatedEvent(command.CorrelationId, command.PipelineMode, asOfDate));
+        await bus.Publish(new HoldingsCalculatedEvent(command.HoldingsRunId, command.PipelineMode, asOfDate));
     }
 
     private async Task CalculateHoldings(DateOnly asOfDate, HashSet<int> changedInstruments, CancellationToken ct)

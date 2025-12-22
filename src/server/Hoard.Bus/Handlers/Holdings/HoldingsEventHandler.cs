@@ -15,7 +15,7 @@ public class HoldingsEventHandler(IMediator mediator)
 {
     public async Task Handle(CalculateHoldingsBusCommand message)
     {
-        var appCommand = new ProcessCalculateHoldingsCommand(message.CorrelationId, message.PipelineMode, message.AsOfDate);
+        var appCommand = new ProcessCalculateHoldingsCommand(message.HoldingsRunId, message.PipelineMode, message.AsOfDate);
         await mediator.SendAsync(appCommand);
     }
     
@@ -23,7 +23,7 @@ public class HoldingsEventHandler(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand = new ProcessCalculateHoldingValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
+            var appCommand = new ProcessCalculateHoldingValuationsCommand(message.HoldingsRunId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
         
             await mediator.SendAsync(appCommand);
         }
@@ -33,7 +33,7 @@ public class HoldingsEventHandler(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand = new TriggerCalculatePositionsCommand(message.PipelineMode);
+            var appCommand = new ProcessCalculatePositionsCommand(Guid.NewGuid(), message.PipelineMode);
             await mediator.SendAsync(appCommand);
         }
     }

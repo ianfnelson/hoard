@@ -3,8 +3,9 @@ using Hoard.Messages.Holdings;
 
 namespace Hoard.Core.Application.Holdings;
 
-public record TriggerBackfillHoldingsCommand(Guid CorrelationId, DateOnly? StartDate, DateOnly? EndDate, PipelineMode PipelineMode = PipelineMode.Backfill)
+public sealed record TriggerBackfillHoldingsCommand(DateOnly? StartDate, DateOnly? EndDate, PipelineMode PipelineMode = PipelineMode.Backfill)
     : ITriggerCommand
 {
-    public object ToBusCommand() => new StartBackfillHoldingsSagaCommand(CorrelationId, PipelineMode, StartDate, EndDate);
+    public Guid HoldingsRunId { get; } = Guid.NewGuid();
+    public object ToBusCommand() => new StartBackfillHoldingsSagaCommand(HoldingsRunId, PipelineMode, StartDate, EndDate);
 }

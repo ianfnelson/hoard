@@ -14,26 +14,26 @@ public class TransactionsEventHandler(IMediator mediator) :
 {
     public Task Handle(TransactionCreatedEvent message)
     {
-        return CalculateHoldingsForDatesFrom(message.CorrelationId, message.PipelineMode, message.Date);
+        return CalculateHoldingsForDatesFrom(message.PipelineMode, message.Date);
     }
 
     public Task Handle(TransactionDeletedEvent message)
     {
-        return CalculateHoldingsForDatesFrom(message.CorrelationId, message.PipelineMode, message.Date);
+        return CalculateHoldingsForDatesFrom(message.PipelineMode, message.Date);
     }
 
     public Task Handle(TransactionUpdatedEvent message)
     {
-        return CalculateHoldingsForDatesFrom(message.CorrelationId, message.PipelineMode, message.Date);
+        return CalculateHoldingsForDatesFrom(message.PipelineMode, message.Date);
     }
     
-    private async Task CalculateHoldingsForDatesFrom(Guid correlationId, PipelineMode pipelineMode, DateOnly date)
+    private async Task CalculateHoldingsForDatesFrom(PipelineMode pipelineMode, DateOnly date)
     {
         var today = DateOnlyHelper.TodayLocal();
 
         for (var d = date; d <= today; d = d.AddDays(1))
         {
-            var command = new ProcessCalculateHoldingsCommand(correlationId, pipelineMode, d);
+            var command = new ProcessCalculateHoldingsCommand(Guid.NewGuid(), pipelineMode, d);
             await mediator.SendAsync(command);
         }
     }

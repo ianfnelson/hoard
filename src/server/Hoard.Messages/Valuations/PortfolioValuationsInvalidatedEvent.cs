@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Valuations;
 
-public record PortfolioValuationsInvalidatedEvent(Guid CorrelationId, PipelineMode PipelineMode, DateOnly AsOfDate);
+public record PortfolioValuationsInvalidatedEvent(PipelineMode PipelineMode, DateOnly AsOfDate);

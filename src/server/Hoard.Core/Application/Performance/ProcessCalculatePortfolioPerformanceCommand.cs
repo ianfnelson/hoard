@@ -11,14 +11,14 @@ using PortfolioValuation = Hoard.Core.Domain.Entities.PortfolioValuation;
 
 namespace Hoard.Core.Application.Performance;
 
-public record ProcessCalculatePortfolioPerformanceCommand(Guid CorrelationId, int PortfolioId, PipelineMode PipelineMode) : ICommand;
+public record ProcessCalculatePortfolioPerformanceCommand(Guid PerformanceRunId, int PortfolioId, PipelineMode PipelineMode) : ICommand;
 
 public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculatePortfolioPerformanceHandler> logger, HoardContext context,
     IBus bus) : ICommandHandler<ProcessCalculatePortfolioPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePortfolioPerformanceCommand command, CancellationToken ct = default)
     {
-        var (correlationId, portfolioId, pipelineMode) = command;
+        var (performanceRunId, portfolioId, pipelineMode) = command;
         
         logger.LogInformation("Calculating Portfolio Performance for Portfolio {PortfolioId}", portfolioId);
         
@@ -29,7 +29,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
  
         await UpsertPerformance(portfolio, transactions, positionPerformances, valuations, ct);
         
-        await bus.Publish(new PortfolioPerformanceCalculatedEvent(correlationId, portfolioId, pipelineMode));
+        await bus.Publish(new PortfolioPerformanceCalculatedEvent(performanceRunId, portfolioId, pipelineMode));
     }
 
     private async Task<decimal> GetCash(Portfolio portfolio, DateOnly asOfDate, CancellationToken ct)

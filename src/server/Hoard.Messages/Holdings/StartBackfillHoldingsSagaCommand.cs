@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Holdings;
 
-public record StartBackfillHoldingsSagaCommand(Guid CorrelationId, PipelineMode PipelineMode, DateOnly? StartDate, DateOnly? EndDate);
+public record StartBackfillHoldingsSagaCommand(Guid HoldingsRunId, PipelineMode PipelineMode, DateOnly? StartDate, DateOnly? EndDate);

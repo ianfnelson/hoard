@@ -1,5 +1,5 @@
-using Hoard.Api.Models.Performance;
 using Hoard.Core.Application;
+using Hoard.Core.Application.Performance;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -12,9 +12,9 @@ public class PerformanceOperationsController(IMediator mediator) : ControllerBas
 {
     [HttpPost("calculate")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> CalculatePerformanceAsync([FromBody] CalculatePerformanceRequest model)
+    public async Task<IActionResult> CalculatePerformanceAsync([FromBody] TriggerCalculatePerformanceCommand model)
     {
-        await mediator.SendAsync(model.ToCommand());
+        await mediator.SendAsync(model);
 
         return Accepted(new { message = "Calculate performance triggered." });
     }

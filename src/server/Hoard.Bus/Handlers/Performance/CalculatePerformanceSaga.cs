@@ -17,16 +17,16 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
 {
     protected override void CorrelateMessages(ICorrelationConfig<CalculatePerformanceSagaData> config)
     {
-        config.Correlate<StartCalculatePerformanceSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<PositionPerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<PortfolioPerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<StartCalculatePerformanceSagaCommand>(m => m.PerformanceRunId, d => d.PerformanceRunId);
+        config.Correlate<PositionPerformanceCalculatedEvent>(m => m.PerformanceRunId, d => d.PerformanceRunId);
+        config.Correlate<PortfolioPerformanceCalculatedEvent>(m => m.PerformanceRunId, d => d.PerformanceRunId);
     }
     
     public async Task Handle(StartCalculatePerformanceSagaCommand message)
     {
-        var (correlationId, instrumentId, pipelineMode) = message;
+        var (performanceRunId, instrumentId, pipelineMode) = message;
         
-        Data.CorrelationId = correlationId;
+        Data.PerformanceRunId = performanceRunId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForPerformanceQuery, IReadOnlyList<int>>(
             new GetInstrumentsForPerformanceQuery(instrumentId));
@@ -35,7 +35,7 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
         
         Data.PendingInstruments = instrumentIds.ToHashSet();
         
-        await mediator.SendAsync(new DispatchCalculatePositionPerformanceCommand(correlationId, instrumentIds, pipelineMode));
+        await mediator.SendAsync(new DispatchCalculatePositionPerformanceCommand(performanceRunId, instrumentIds, pipelineMode));
     }
 
     public async Task Handle(PositionPerformanceCalculatedEvent message)
@@ -53,7 +53,7 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
         
             Data.PendingPortfolios = portfolioIds.ToHashSet();
         
-            await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(message.CorrelationId, portfolioIds, message.PipelineMode));
+            await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(message.PerformanceRunId, portfolioIds, message.PipelineMode));
         }
     }
 
@@ -64,17 +64,17 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
         {
             logger.LogInformation("All portfolio performance calculated");
             
-            logger.LogInformation("Calculate performance saga {CorrelationId} complete", Data.CorrelationId);
+            logger.LogInformation("Calculate performance saga {PerformanceRunId} complete", Data.PerformanceRunId);
             MarkAsComplete();
         
-            await bus.Publish(new PerformanceCalculatedEvent(Data.CorrelationId, message.PipelineMode));
+            await bus.Publish(new PerformanceCalculatedEvent(Data.PerformanceRunId, message.PipelineMode));
         }
     }
 }
 
 public class CalculatePerformanceSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid PerformanceRunId { get; set; }
     public HashSet<int> PendingInstruments { get; set; } = [];
     public HashSet<int> PendingPortfolios { get; set; } = [];
 }

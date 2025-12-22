@@ -15,7 +15,7 @@ public class PortfolioPerformanceInvalidationHandler(IBus bus)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            await bus.Publish(new PortfolioPerformancesInvalidatedEvent(message.CorrelationId, message.PipelineMode));
+            await bus.Publish(new PortfolioPerformancesInvalidatedEvent(message.PipelineMode));
         }
     }
 
@@ -23,7 +23,7 @@ public class PortfolioPerformanceInvalidationHandler(IBus bus)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            await bus.Publish(new PortfolioPerformancesInvalidatedEvent(message.CorrelationId, message.PipelineMode));
+            await bus.Publish(new PortfolioPerformancesInvalidatedEvent(message.PipelineMode));
         }
     }
 }

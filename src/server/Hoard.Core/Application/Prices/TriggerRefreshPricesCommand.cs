@@ -3,13 +3,14 @@ using Hoard.Messages.Prices;
 
 namespace Hoard.Core.Application.Prices;
 
-public record TriggerRefreshPricesCommand(
-    Guid CorrelationId,
+public sealed record TriggerRefreshPricesCommand(
     int? InstrumentId,
     DateOnly? StartDate,
     DateOnly? EndDate,
     PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
 {
+    public Guid PricesRunId { get; } = Guid.NewGuid();
+    
     public object ToBusCommand() => new StartRefreshPricesSagaCommand(
-        CorrelationId, PipelineMode, InstrumentId, StartDate, EndDate);
+        PricesRunId, PipelineMode, InstrumentId, StartDate, EndDate);
 }

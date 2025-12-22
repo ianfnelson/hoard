@@ -1,7 +1,7 @@
 namespace Hoard.Messages.Prices;
 
 public record StartRefreshPricesSagaCommand(
-    Guid CorrelationId,
+    Guid PricesRunId,
     PipelineMode PipelineMode,
     int? InstrumentId,
     DateOnly? StartDate,

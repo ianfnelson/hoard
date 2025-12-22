@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Performance;
 
-public record StartCalculatePerformanceSagaCommand(Guid CorrelationId, int? InstrumentId, PipelineMode PipelineMode);
+public record StartCalculatePerformanceSagaCommand(Guid PerformanceRunId, int? InstrumentId, PipelineMode PipelineMode);

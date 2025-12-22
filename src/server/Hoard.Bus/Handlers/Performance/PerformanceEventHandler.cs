@@ -13,7 +13,7 @@ public class PerformanceEventHandler(IMediator mediator)
     public async Task Handle(CalculatePositionPerformanceBusCommand message)
     {
         var appCommand =
-            new ProcessCalculatePositionPerformanceCommand(message.CorrelationId, message.InstrumentId,
+            new ProcessCalculatePositionPerformanceCommand(message.PerformanceRunId, message.InstrumentId,
                 message.PipelineMode);
 
         await mediator.SendAsync(appCommand);
@@ -22,7 +22,7 @@ public class PerformanceEventHandler(IMediator mediator)
     public async Task Handle(CalculatePortfolioPerformanceBusCommand message)
     {
         var appCommand =
-            new ProcessCalculatePortfolioPerformanceCommand(message.CorrelationId, message.PortfolioId,
+            new ProcessCalculatePortfolioPerformanceCommand(message.PerformanceRunId, message.PortfolioId,
                 message.PipelineMode);
 
         await mediator.SendAsync(appCommand);

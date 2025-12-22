@@ -9,7 +9,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Snapshots;
 
-public record ProcessCalculateSnapshotCommand(Guid CorrelationId, PipelineMode PipelineMode, int PortfolioId, int Year)
+public record ProcessCalculateSnapshotCommand(Guid SnapshotsRunId, PipelineMode PipelineMode, int PortfolioId, int Year)
     : ICommand;
 
 public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculateSnapshotHandler> logger,
@@ -18,7 +18,7 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
 {
     public async Task HandleAsync(ProcessCalculateSnapshotCommand command, CancellationToken ct = default)
     {
-        var (correlationId, pipelineMode, portfolioId, year) = command;
+        var (snapshotsRunId, pipelineMode, portfolioId, year) = command;
         
         logger.LogInformation("Calculating Portfolio Snapshot for Portfolio {PortfolioId}, Year {Year}", portfolioId, year);
 
@@ -28,7 +28,7 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
 
         await UpsertSnapshot(portfolio, year, transactions, valuations, ct);
         
-        await bus.Publish(new SnapshotCalculatedEvent(correlationId, pipelineMode, year, portfolioId));
+        await bus.Publish(new SnapshotCalculatedEvent(snapshotsRunId, pipelineMode, year, portfolioId));
     }
 
     private async Task UpsertSnapshot(Portfolio portfolio, int year, List<Transaction> transactions, Dictionary<DateOnly, PortfolioValuation> valuations, CancellationToken ct)
