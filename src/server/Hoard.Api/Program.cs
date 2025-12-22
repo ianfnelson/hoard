@@ -21,7 +21,7 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging(applicationInsightsConnectionString)
-    .AddHoardRebus(sqlConnectionString, rabbitConnectionString, sendOnly: true, "hoard.api")
+    .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.api")
     .AddHoardServices()
     .AddHoardApplication()
     .AddTelemetryInitializer("hoard.api")
