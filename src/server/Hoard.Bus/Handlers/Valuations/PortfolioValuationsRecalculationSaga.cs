@@ -18,13 +18,13 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
     protected override void CorrelateMessages(ICorrelationConfig<PortfolioValuationsRecalculationSagaData> config)
     {
         config.Correlate<PortfolioValuationsInvalidatedEvent>(
-            m => m.AsOfDate, 
-            d => d.AsOfDate
+            m => m.AsOfDate.ToString("yyyy-MM-dd"), 
+            d => d.AsOfDate.ToString("yyyy-MM-dd")
             );
         
         config.Correlate<RecalculatePortfolioValuationsTimeout>(
-            m => m.AsOfDate, 
-            d => d.AsOfDate
+            m => m.AsOfDate.ToString("yyyy-MM-dd"), 
+            d => d.AsOfDate.ToString("yyyy-MM-dd")
         );
     }
 
