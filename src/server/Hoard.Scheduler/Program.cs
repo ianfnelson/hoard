@@ -25,7 +25,7 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
     .AddHoardApplication()
-    .AddHoardRebus(rabbitConnectionString, sendOnly: true, "hoard.scheduler")
+    .AddHoardRebus(sqlConnectionString, rabbitConnectionString, sendOnly: true, "hoard.scheduler")
     .AddTelemetryInitializer("hoard.scheduler");
 
 builder.Services.AddHangfire(config =>

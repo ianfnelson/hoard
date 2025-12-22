@@ -43,7 +43,9 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddHoardRebus(string rabbitConnectionString, 
+        public IServiceCollection AddHoardRebus(
+            string rabbitConnectionString, 
+            string sqlConnectionString,
             bool sendOnly, 
             string connectionName)
         {
@@ -61,10 +63,11 @@ public static class ServiceCollectionExtensions
                 {
                     config.Sagas(x =>
                     {
-                        x.StoreInMemory();
+                        x.StoreInSqlServer(sqlConnectionString, "__RebusSagas", "__RebusSagaIndex");
+                        
                         x.EnforceExclusiveAccess();
                     });
-                    config.Timeouts(x => x.StoreInMemory());
+                    config.Timeouts(x => x.StoreInSqlServer(sqlConnectionString, "__RebusTimeouts"));
                 
                     config.Options(o =>
                     {
