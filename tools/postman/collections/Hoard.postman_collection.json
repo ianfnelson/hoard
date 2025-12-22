@@ -6,10 +6,10 @@
   },
   "item": [
     {
-      "name": "Chrono",
+      "name": "Operations",
       "item": [
         {
-          "name": "Close Of Day",
+          "name": "Chrono :: Close Of Day",
           "id": "186bf074-e8b8-48ec-8e4d-49c82355e00d",
           "request": {
             "auth": {
@@ -38,15 +38,9 @@
             }
           },
           "response": []
-        }
-      ],
-      "id": "84b702e9-4d99-4128-9baf-1cee486f3517"
-    },
-    {
-      "name": "Holdings",
-      "item": [
+        },
         {
-          "name": "Backfill Holdings",
+          "name": "Holdings :: Backfill",
           "id": "13a16b26-9202-4fa3-86f9-292dff821a7a",
           "request": {
             "auth": {
@@ -64,11 +58,12 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}holdings/backfill",
+              "raw": "{{BaseUrl}}operations/holdings/backfill",
               "host": [
-                "{{BaseUrl}}holdings"
+                "{{BaseUrl}}operations"
               ],
               "path": [
+                "holdings",
                 "backfill"
               ]
             }
@@ -76,7 +71,7 @@
           "response": []
         },
         {
-          "name": "Calculate Holdings",
+          "name": "Holdings :: Calculate",
           "id": "e2d665da-61a9-4baf-9c9e-7e63bf051176",
           "request": {
             "auth": {
@@ -94,25 +89,51 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}holdings/calculate",
+              "raw": "{{BaseUrl}}operations/holdings/calculate",
               "host": [
-                "{{BaseUrl}}holdings"
+                "{{BaseUrl}}operations"
               ],
               "path": [
+                "holdings",
                 "calculate"
               ]
             }
           },
           "response": []
-        }
-      ],
-      "id": "a2818d54-b70a-47f4-8e17-6f5e1c854142"
-    },
-    {
-      "name": "Performance",
-      "item": [
+        },
         {
-          "name": "Calculate Performance",
+          "name": "Positions :: Calculate",
+          "id": "a63a97c0-6388-470b-bd03-96a05664e3ac",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/positions/calculate",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "positions",
+                "calculate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Performance :: Calculate",
           "id": "961552e8-3093-4a7f-b274-be7a2112a7f7",
           "request": {
             "auth": {
@@ -130,11 +151,229 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}performance/calculate",
+              "raw": "{{BaseUrl}}operations/performance/calculate",
               "host": [
-                "{{BaseUrl}}performance"
+                "{{BaseUrl}}operations"
               ],
               "path": [
+                "performance",
+                "calculate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Prices :: Backfill",
+          "id": "93e79d4b-673a-42d1-ad8f-dd1dc1d0c7a0",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    //\"InstrumentId\": 486            // Optional instrument ID\n    //\"StartDate\": \"2000-02-07\",    // Optional start date of range\n    //\"EndDate\": \"2025-11-17\"       // Optional end date of range\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/prices/backfill",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "prices",
+                "backfill"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Prices :: Refresh",
+          "id": "02563e05-879c-4476-9c1b-2e6c45f57430",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"AsOfDate\": \"2025-11-19\"    // Optional date - defaults to today\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/prices/refresh",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "prices",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Quotes :: Refresh",
+          "id": "e0e30eab-c52c-4621-b6e6-98c4b7b763e4",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/quotes/refresh",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "quotes",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Snapshots :: Backfill",
+          "id": "8746da66-12a2-4e28-91aa-f5ca2c6a4f8f",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"StartYear\": 2020,\n    \"EndYear\": 2025,\n    \"PortfolioId\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/snapshots/backfill",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "snapshots",
+                "backfill"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Snapshots :: Calculate",
+          "id": "837514a0-ed8b-4c46-928e-55b45279ffb9",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"Year\": 2025\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/snapshots/calculate",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "snapshots",
+                "calculate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Valuations :: Backfill",
+          "id": "01c8d96c-eb33-4a78-b21e-6a09f941ebff",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\n    //\"StartDate\": \"2006-01-01\"   // Optional start date of range - defaults to earliest trade\n   // ,\"EndDate\": \"2025-11-22\"    // Optional end date of range - default to today\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/valuations/backfill",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "valuations",
+                "backfill"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Valuations :: Calculate",
+          "id": "4ab82bf0-28b1-4207-b45f-988a6b5a0b11",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    //\"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/valuations/calculate",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "valuations",
                 "calculate"
               ]
             }
@@ -142,7 +381,7 @@
           "response": []
         }
       ],
-      "id": "ff04d089-b03d-4e4e-a0aa-cff1fde28145"
+      "id": "84b702e9-4d99-4128-9baf-1cee486f3517"
     },
     {
       "name": "Portfolios",
@@ -273,209 +512,121 @@
       "id": "aad0180f-6e09-4f10-8cb2-a779512b657d"
     },
     {
-      "name": "Positions",
+      "name": "Reference",
       "item": [
         {
-          "name": "Calculate Positions",
-          "id": "a63a97c0-6388-470b-bd03-96a05664e3ac",
+          "name": "Account Types",
+          "id": "7a64399e-0dfd-4561-9c5f-7865a13b4bd5",
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
+            "method": "GET",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
-              "raw": "{{BaseUrl}}operations/positions/calculate",
+              "raw": "{{BaseUrl}}reference/account-types",
               "host": [
-                "{{BaseUrl}}operations"
+                "{{BaseUrl}}reference"
               ],
               "path": [
-                "positions",
-                "calculate"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "4a4729a2-74d1-4e11-9360-7cee4c09bd44"
-    },
-    {
-      "name": "Prices",
-      "item": [
-        {
-          "name": "Backfill Prices",
-          "id": "93e79d4b-673a-42d1-ad8f-dd1dc1d0c7a0",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    //\"InstrumentId\": 486            // Optional instrument ID\n    //\"StartDate\": \"2000-02-07\",    // Optional start date of range\n    //\"EndDate\": \"2025-11-17\"       // Optional end date of range\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BaseUrl}}prices/backfill",
-              "host": [
-                "{{BaseUrl}}prices"
-              ],
-              "path": [
-                "backfill"
+                "account-types"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Refresh Prices",
-          "id": "02563e05-879c-4476-9c1b-2e6c45f57430",
+          "name": "Account Type",
+          "id": "7966457e-8b77-4e8d-87e9-11b2abbf1be0",
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
+            "method": "GET",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"AsOfDate\": \"2025-11-19\"    // Optional date - defaults to today\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
-              "raw": "{{BaseUrl}}prices/refresh",
+              "raw": "{{BaseUrl}}reference/account-types/2",
               "host": [
-                "{{BaseUrl}}prices"
+                "{{BaseUrl}}reference"
               ],
               "path": [
-                "refresh"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "95996d85-c9bc-4fa7-8c5b-60cfc2f1b275"
-    },
-    {
-      "name": "Quotes",
-      "item": [
-        {
-          "name": "Refresh Quotes",
-          "id": "e0e30eab-c52c-4621-b6e6-98c4b7b763e4",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BaseUrl}}quotes/refresh",
-              "host": [
-                "{{BaseUrl}}quotes"
-              ],
-              "path": [
-                "refresh"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "415097ce-a1d9-4685-8c50-0e0bc81b4d17"
-    },
-    {
-      "name": "Snapshots",
-      "item": [
-        {
-          "name": "Backfill Snapshots",
-          "id": "8746da66-12a2-4e28-91aa-f5ca2c6a4f8f",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"StartYear\": 2020,\n    \"EndYear\": 2025,\n    \"PortfolioId\": 3\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BaseUrl}}snapshots/backfill",
-              "host": [
-                "{{BaseUrl}}snapshots"
-              ],
-              "path": [
-                "backfill"
+                "account-types",
+                "2"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Calculate Snapshots",
-          "id": "837514a0-ed8b-4c46-928e-55b45279ffb9",
+          "name": "Asset Clases",
+          "id": "ca5022cb-70de-4aec-9551-383b78869c07",
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
+            "method": "GET",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"Year\": 2025\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
-              "raw": "{{BaseUrl}}snapshots/calculate",
+              "raw": "{{BaseUrl}}reference/asset-classes",
               "host": [
-                "{{BaseUrl}}snapshots"
+                "{{BaseUrl}}reference"
               ],
               "path": [
-                "calculate"
+                "asset-classes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Asset Class",
+          "id": "3e1ae5de-b053-426e-a092-b929d6c0926e",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/asset-classes/2",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "asset-classes",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Currencies",
+          "id": "d6f13166-5571-430d-9ea1-281ffd0856de",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/currencies",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "currencies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Currency",
+          "id": "be4b1dc5-cabe-424a-9929-bea1a84e0092",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/currencies/GBP",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "currencies",
+                "GBP"
               ]
             }
           },
           "response": []
         }
       ],
-      "id": "e04e80c9-f339-4862-b17b-97a8bfe05994"
+      "id": "5d660ec9-a032-4ccf-8380-79280b765f6e"
     },
     {
       "name": "Transactions",
@@ -612,189 +763,6 @@
         }
       ],
       "id": "c9e97c1c-6379-4d6c-b77f-3adf6f43fade"
-    },
-    {
-      "name": "Valuations",
-      "item": [
-        {
-          "name": "Backfill Valuations",
-          "id": "01c8d96c-eb33-4a78-b21e-6a09f941ebff",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n\n    //\"StartDate\": \"2006-01-01\"   // Optional start date of range - defaults to earliest trade\n   // ,\"EndDate\": \"2025-11-22\"    // Optional end date of range - default to today\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BaseUrl}}valuations/backfill",
-              "host": [
-                "{{BaseUrl}}valuations"
-              ],
-              "path": [
-                "backfill"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Calculate Valuations",
-          "id": "4ab82bf0-28b1-4207-b45f-988a6b5a0b11",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    //\"AsOfDate\": \"2025-11-26\"    // Optional date - defaults to today\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BaseUrl}}valuations/calculate",
-              "host": [
-                "{{BaseUrl}}valuations"
-              ],
-              "path": [
-                "calculate"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "69dae104-1939-48f0-a9f8-cc8495154029"
-    },
-    {
-      "name": "Reference",
-      "item": [
-        {
-          "name": "Account Types",
-          "id": "7a64399e-0dfd-4561-9c5f-7865a13b4bd5",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/account-types",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "account-types"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Account Type",
-          "id": "7966457e-8b77-4e8d-87e9-11b2abbf1be0",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/account-types/2",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "account-types",
-                "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Asset Clases",
-          "id": "ca5022cb-70de-4aec-9551-383b78869c07",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/asset-classes",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "asset-classes"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Asset Class",
-          "id": "3e1ae5de-b053-426e-a092-b929d6c0926e",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/asset-classes/2",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "asset-classes",
-                "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Currencies",
-          "id": "d6f13166-5571-430d-9ea1-281ffd0856de",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/currencies",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "currencies"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Currency",
-          "id": "be4b1dc5-cabe-424a-9929-bea1a84e0092",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/currencies/GBP",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "currencies",
-                "GBP"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "5d660ec9-a032-4ccf-8380-79280b765f6e"
     }
   ]
 }
