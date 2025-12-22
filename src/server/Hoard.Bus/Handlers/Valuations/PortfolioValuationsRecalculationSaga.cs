@@ -19,12 +19,12 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
     {
         config.Correlate<PortfolioValuationsInvalidatedEvent>(
             m => m.AsOfDate.ToString("yyyy-MM-dd"), 
-            d => d.AsOfDate.ToString("yyyy-MM-dd")
+            d => d.CorrelationKey
             );
         
         config.Correlate<RecalculatePortfolioValuationsTimeout>(
             m => m.AsOfDate.ToString("yyyy-MM-dd"), 
-            d => d.AsOfDate.ToString("yyyy-MM-dd")
+            d => d.CorrelationKey
         );
     }
 
@@ -59,6 +59,7 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
 public class PortfolioValuationsRecalculationSagaData : SagaData
 {
     public string Scope { get; set; } = DebounceScopes.PortfolioValuations;
+    public string CorrelationKey => $"{AsOfDate.ToString("yyyy-MM-dd")}";
     public DateOnly AsOfDate { get; set; }
     public bool IsScheduled { get; set; }
 }
