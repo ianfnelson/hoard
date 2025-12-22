@@ -10,5 +10,5 @@ public class TargetAllocation : Entity<int>
     
     public decimal Target { get; set; }
     
-    public DateTime CreatedUtc { get; set; } = DateTime.Now;
+    public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 }

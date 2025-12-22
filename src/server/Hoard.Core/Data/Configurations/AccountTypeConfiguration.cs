@@ -15,9 +15,5 @@ public class AccountTypeConfiguration : IEntityTypeConfiguration<AccountType>
             .ValueGeneratedNever();
         
         builder.Property(a => a.Name).IsRequired().HasMaxLength(50);
-        
-        builder.Property(e => e.CreatedUtc)
-            .HasColumnType("datetime2(3)")
-            .HasDefaultValueSql("SYSUTCDATETIME()");
     }
 }
