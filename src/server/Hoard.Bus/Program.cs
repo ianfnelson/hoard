@@ -1,4 +1,4 @@
-﻿using Hoard.Bus.Handlers.Valuations;
+﻿using Hoard.Bus.Valuations;
 using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;

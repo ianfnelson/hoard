@@ -3,7 +3,7 @@ using Hoard.Core.Application.Snapshots;
 using Hoard.Messages.Snapshots;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Snapshots;
+namespace Hoard.Bus.Snapshots;
 
 public class SnapshotsEventHandler(IMediator mediator)
     : IHandleMessages<CalculateSnapshotBusCommand>

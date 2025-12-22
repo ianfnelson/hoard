@@ -5,7 +5,7 @@ using Hoard.Messages;
 using Hoard.Messages.Quotes;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Quotes;
+namespace Hoard.Bus.Quotes;
 
 public class QuotesEventHandler(IMediator mediator) : 
     IHandleMessages<RefreshQuotesBatchBusCommand>,

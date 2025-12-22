@@ -6,17 +6,17 @@ using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Snapshots;
+namespace Hoard.Bus.Snapshots;
 
 public class BackfillSnapshotsSaga(
     IMediator mediator,
     ILogger<BackfillSnapshotsSaga> logger)
     : 
-        Saga<BackfillSnapshotsSagaData>,
+        Saga<BfSagaData>,
         IAmInitiatedBy<StartBackfillSnapshotsSagaCommand>,
         IHandleMessages<SnapshotsCalculatedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<BackfillSnapshotsSagaData> config)
+    protected override void CorrelateMessages(ICorrelationConfig<BfSagaData> config)
     {
         config.Correlate<StartBackfillSnapshotsSagaCommand>(m => m.SnapshotsRunId, d => d.SnapshotsRunId);
         config.Correlate<SnapshotsCalculatedEvent>(m => m.SnapshotsRunId, d => d.SnapshotsRunId);
@@ -56,7 +56,7 @@ public class BackfillSnapshotsSaga(
     }
 }
 
-public class BackfillSnapshotsSagaData : SagaData
+public class BfSagaData : SagaData
 {
     public Guid SnapshotsRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }

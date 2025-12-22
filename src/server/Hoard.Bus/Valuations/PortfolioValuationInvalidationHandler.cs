@@ -3,7 +3,7 @@ using Hoard.Messages.Valuations;
 using Rebus.Bus;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Valuations;
+namespace Hoard.Bus.Valuations;
 
 public class PortfolioValuationInvalidationHandler(IBus bus)
     :

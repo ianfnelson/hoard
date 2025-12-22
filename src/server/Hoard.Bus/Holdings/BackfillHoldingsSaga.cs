@@ -8,18 +8,18 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Holdings;
+namespace Hoard.Bus.Holdings;
 
 public class BackfillHoldingsSaga(
     IMediator mediator,
     IBus bus,
     ILogger<BackfillHoldingsSaga> logger)
     :
-        Saga<BackfillHoldingsSagaData>,
+        Saga<BfSagaData>,
         IAmInitiatedBy<StartBackfillHoldingsSagaCommand>,
         IHandleMessages<HoldingsCalculatedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<BackfillHoldingsSagaData> cfg)
+    protected override void CorrelateMessages(ICorrelationConfig<BfSagaData> cfg)
     {
         cfg.Correlate<StartBackfillHoldingsSagaCommand>(m => m.HoldingsRunId, d => d.HoldingsRunId);
         cfg.Correlate<HoldingsCalculatedEvent>(m => m.HoldingsRunId, d => d.HoldingsRunId);
@@ -54,7 +54,7 @@ public class BackfillHoldingsSaga(
     }
 }
 
-public class BackfillHoldingsSagaData : SagaData
+public class BfSagaData : SagaData
 {
     public Guid HoldingsRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }

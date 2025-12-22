@@ -7,16 +7,16 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Valuations;
+namespace Hoard.Bus.Valuations;
 
 public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IMediator mediator, IBus bus)
     :
-        Saga<CalculateValuationsSagaData>,
+        Saga<CvSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
         IHandleMessages<HoldingValuationsCalculatedEvent>,
         IHandleMessages<PortfolioValuationCalculatedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<CalculateValuationsSagaData> cfg)
+    protected override void CorrelateMessages(ICorrelationConfig<CvSagaData> cfg)
     {
         cfg.Correlate<StartCalculateValuationsSagaCommand>(
             m => $"{m.ValuationsRunId:N}:{m.AsOfDate}",
@@ -95,7 +95,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
     }
 }
 
-public class CalculateValuationsSagaData : SagaData
+public class CvSagaData : SagaData
 {
     public Guid ValuationsRunId { get; set; }
     public DateOnly AsOfDate { get; set; }

@@ -6,16 +6,16 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Performance;
+namespace Hoard.Bus.Performance;
 
 public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<CalculatePerformanceSaga> logger)
 :
-    Saga<CalculatePerformanceSagaData>,
+    Saga<CpSagaData>,
     IAmInitiatedBy<StartCalculatePerformanceSagaCommand>,
     IHandleMessages<PositionPerformanceCalculatedEvent>,
     IHandleMessages<PortfolioPerformanceCalculatedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<CalculatePerformanceSagaData> config)
+    protected override void CorrelateMessages(ICorrelationConfig<CpSagaData> config)
     {
         config.Correlate<StartCalculatePerformanceSagaCommand>(m => m.PerformanceRunId, d => d.PerformanceRunId);
         config.Correlate<PositionPerformanceCalculatedEvent>(m => m.PerformanceRunId, d => d.PerformanceRunId);
@@ -72,7 +72,7 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
     }
 }
 
-public class CalculatePerformanceSagaData : SagaData
+public class CpSagaData : SagaData
 {
     public Guid PerformanceRunId { get; set; }
     public HashSet<int> PendingInstruments { get; set; } = [];

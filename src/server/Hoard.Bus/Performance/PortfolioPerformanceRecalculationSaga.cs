@@ -6,16 +6,16 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Performance;
+namespace Hoard.Bus.Performance;
 
 public class PortfolioPerformanceRecalculationSaga(IBus bus, IMediator mediator) : 
-    Saga<PortfolioPerformanceRecalculationSagaData>,
+    Saga<PprSagaData>,
     IAmInitiatedBy<PortfolioPerformancesInvalidatedEvent>,
     IHandleMessages<RecalculatePortfolioPerformancesTimeout>
 {
     private static readonly TimeSpan DebounceDelay = TimeSpan.FromSeconds(5);
     
-    protected override void CorrelateMessages(ICorrelationConfig<PortfolioPerformanceRecalculationSagaData> config)
+    protected override void CorrelateMessages(ICorrelationConfig<PprSagaData> config)
     {
         config.Correlate<PortfolioPerformancesInvalidatedEvent>(_ => DebounceScopes.PortfolioPerformances, d => d.Scope);
         config.Correlate<RecalculatePortfolioPerformancesTimeout>(_ => DebounceScopes.PortfolioPerformances, d => d.Scope);
@@ -49,7 +49,7 @@ public class PortfolioPerformanceRecalculationSaga(IBus bus, IMediator mediator)
     }
 }
 
-public class PortfolioPerformanceRecalculationSagaData : SagaData
+public class PprSagaData : SagaData
 {
     public string Scope { get; set; } = DebounceScopes.PortfolioPerformances;
     public bool IsScheduled { get; set; }

@@ -7,17 +7,17 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Prices;
+namespace Hoard.Bus.Prices;
 
 public class RefreshPricesSaga(
     IMediator mediator,
     IBus bus,
     ILogger<RefreshPricesSaga> logger) :
-    Saga<RefreshPricesSagaData>,
+    Saga<RpSagaData>,
     IAmInitiatedBy<StartRefreshPricesSagaCommand>,
     IHandleMessages<PriceRefreshedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<RefreshPricesSagaData> cfg)
+    protected override void CorrelateMessages(ICorrelationConfig<RpSagaData> cfg)
     {
         cfg.Correlate<StartRefreshPricesSagaCommand>(m => m.PricesRunId, d => d.PricesRunId);
         cfg.Correlate<PriceRefreshedEvent>(m => m.PricesRunId, d => d.PricesRunId);
@@ -52,7 +52,7 @@ public class RefreshPricesSaga(
     }
 }
 
-public class RefreshPricesSagaData : SagaData
+public class RpSagaData : SagaData
 {
     public Guid PricesRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }
