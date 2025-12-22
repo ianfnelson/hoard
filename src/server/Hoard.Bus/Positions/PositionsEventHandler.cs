@@ -1,6 +1,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Positions;
+using Hoard.Messages;
 using Hoard.Messages.Positions;
 using Rebus.Handlers;
 
@@ -20,7 +21,10 @@ public class PositionsEventHandler(IMediator mediator)
 
     public async Task Handle(PositionsCalculatedEvent message)
     {
-        var appCommand = new TriggerCalculatePerformanceCommand(null, message.PipelineMode);
-        await mediator.SendAsync(appCommand);
+        if (message.PipelineMode == PipelineMode.DaytimeReactive)
+        {
+            var appCommand = new TriggerCalculatePerformanceCommand(null, message.PipelineMode);
+            await mediator.SendAsync(appCommand);
+        }
     }
 }
