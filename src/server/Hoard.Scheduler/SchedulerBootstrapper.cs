@@ -86,7 +86,7 @@ public class SchedulerBootstrapper : IHostedService
 
         var today = DateOnlyHelper.TodayLocal();
         
-        var command = new TriggerCloseOfDayRunCommand(Guid.NewGuid(), today);
+        var command = new TriggerCloseOfDayRunCommand(today);
         
         await _mediator.SendAsync(command);
     }

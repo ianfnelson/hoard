@@ -3,8 +3,10 @@ using Hoard.Messages.Snapshots;
 
 namespace Hoard.Core.Application.Snapshots;
 
-public record TriggerCalculateSnapshotsCommand(Guid CorrelationId, int? Year, PipelineMode PipelineMode = PipelineMode.DaytimeReactive)
+public sealed record TriggerCalculateSnapshotsCommand(int? Year, PipelineMode PipelineMode = PipelineMode.DaytimeReactive)
     : ITriggerCommand
 {
-    public object ToBusCommand() => new StartCalculateSnapshotsSagaCommand(CorrelationId, PipelineMode, null, Year);
+    public Guid SnapshotsRunId { get; } = Guid.NewGuid();
+    
+    public object ToBusCommand() => new StartCalculateSnapshotsSagaCommand(SnapshotsRunId, PipelineMode, null, Year);
 }

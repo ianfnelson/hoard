@@ -10,7 +10,7 @@ public class SnapshotsEventHandler(IMediator mediator)
 {
     public Task Handle(CalculateSnapshotBusCommand message)
     {
-        var appCommand = new ProcessCalculateSnapshotCommand(message.CorrelationId, message.PipelineMode,
+        var appCommand = new ProcessCalculateSnapshotCommand(message.SnapshotsRunId, message.PipelineMode,
             message.PortfolioId, message.Year);
         
         return mediator.SendAsync(appCommand);

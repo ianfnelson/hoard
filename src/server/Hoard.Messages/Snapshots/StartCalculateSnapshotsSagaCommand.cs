@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Snapshots;
 
-public record StartCalculateSnapshotsSagaCommand(Guid CorrelationId, PipelineMode PipelineMode, int? PortfolioId, int? Year);
+public record StartCalculateSnapshotsSagaCommand(Guid SnapshotsRunId, PipelineMode PipelineMode, int? PortfolioId, int? Year);

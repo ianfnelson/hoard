@@ -3,7 +3,8 @@ using Hoard.Messages.Performance;
 
 namespace Hoard.Core.Application.Performance;
 
-public record TriggerCalculatePerformanceCommand(Guid CorrelationId, int? InstrumentId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
+public sealed record TriggerCalculatePerformanceCommand(int? InstrumentId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
 {
-    public object ToBusCommand() => new StartCalculatePerformanceSagaCommand(CorrelationId, InstrumentId, PipelineMode);
+    public Guid PerformanceRunId { get; } = Guid.NewGuid();
+    public object ToBusCommand() => new StartCalculatePerformanceSagaCommand(PerformanceRunId, InstrumentId, PipelineMode);
 }

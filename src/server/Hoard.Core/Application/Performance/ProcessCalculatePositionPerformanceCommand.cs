@@ -10,14 +10,14 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Performance;
 
-public record ProcessCalculatePositionPerformanceCommand(Guid CorrelationId, int InstrumentId, PipelineMode PipelineMode) : ICommand;
+public record ProcessCalculatePositionPerformanceCommand(Guid PerformanceRunId, int InstrumentId, PipelineMode PipelineMode) : ICommand;
 
 public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculatePositionPerformanceHandler> logger, HoardContext context, IBus bus)
 : ICommandHandler<ProcessCalculatePositionPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePositionPerformanceCommand command, CancellationToken ct = default)
     {
-        var (correlationId, instrumentId, pipelineMode) = command;
+        var (performanceRunId, instrumentId, pipelineMode) = command;
         
         logger.LogInformation("Calculating Position Performance for Instrument {InstrumentId}", instrumentId);
         
@@ -30,7 +30,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             await UpsertPerformance(position, transactions, holdings, ct);
         }
 
-        await bus.Publish(new PositionPerformanceCalculatedEvent(correlationId, instrumentId, pipelineMode));
+        await bus.Publish(new PositionPerformanceCalculatedEvent(performanceRunId, instrumentId, pipelineMode));
     }
 
     private sealed record PositionContext(

@@ -14,20 +14,17 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
     IHandleMessages<RecalculatePortfolioValuationsTimeout>
 {
     private static readonly TimeSpan DebounceDelay = TimeSpan.FromSeconds(3);
-
-    private static string BuildCorrelationKey(Guid correlationId, DateOnly asOfDate)
-        => $"{correlationId:N}:{asOfDate:yyyyMMdd}";
     
     protected override void CorrelateMessages(ICorrelationConfig<PortfolioValuationsRecalculationSagaData> config)
     {
         config.Correlate<PortfolioValuationsInvalidatedEvent>(
-            m => BuildCorrelationKey(m.CorrelationId, m.AsOfDate), 
-            d => d.CorrelationKey
+            m => m.AsOfDate, 
+            d => d.AsOfDate
             );
         
         config.Correlate<RecalculatePortfolioValuationsTimeout>(
-            m => BuildCorrelationKey(m.CorrelationId, m.AsOfDate), 
-            d => d.CorrelationKey
+            m => m.AsOfDate, 
+            d => d.AsOfDate
         );
     }
 
@@ -39,13 +36,11 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
         }
         
         Data.IsScheduled = true;
-        Data.CorrelationId = message.CorrelationId;
         Data.AsOfDate = message.AsOfDate;
-        Data.CorrelationKey = BuildCorrelationKey(message.CorrelationId, message.AsOfDate);
 
         await bus.DeferLocal(
             DebounceDelay,
-            new RecalculatePortfolioValuationsTimeout(message.CorrelationId, message.PipelineMode, message.AsOfDate));
+            new RecalculatePortfolioValuationsTimeout(message.PipelineMode, message.AsOfDate));
     }
 
     public async Task Handle(RecalculatePortfolioValuationsTimeout message)
@@ -54,16 +49,18 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
             await mediator.QueryAsync<GetPortfoliosForValuationQuery, IReadOnlyList<int>> (
                 new GetPortfoliosForValuationQuery());
             
-        await mediator.SendAsync(new DispatchCalculatePortfolioValuationCommand(message.CorrelationId, message.PipelineMode, portfolioIds, message.AsOfDate));
+        await mediator.SendAsync(new DispatchCalculatePortfolioValuationCommand(Guid.NewGuid(), message.PipelineMode, portfolioIds, message.AsOfDate));
+        
+        Data.IsScheduled = false;
+        MarkAsComplete();
     }
 }
 
 public class PortfolioValuationsRecalculationSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public string Scope { get; set; } = DebounceScopes.PortfolioValuations;
     public DateOnly AsOfDate { get; set; }
-    public string CorrelationKey { get; set; } = null!;
     public bool IsScheduled { get; set; }
 }
 
-public record RecalculatePortfolioValuationsTimeout(Guid CorrelationId, PipelineMode PipelineMode, DateOnly AsOfDate);
+public record RecalculatePortfolioValuationsTimeout(PipelineMode PipelineMode, DateOnly AsOfDate);

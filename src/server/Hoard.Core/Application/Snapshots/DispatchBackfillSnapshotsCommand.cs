@@ -5,7 +5,7 @@ using Rebus.Bus;
 namespace Hoard.Core.Application.Snapshots;
 
 public record DispatchBackfillSnapshotsCommand(
-    Guid CorrelationId,
+    Guid SnapshotsRunId,
     PipelineMode PipelineMode,
     int? PortfolioId,
     IReadOnlyList<int> Years)
@@ -18,7 +18,7 @@ public class DispatchBackfillSnapshotsHandler(IBus bus)
     {
         foreach (var year in command.Years)
         {
-            await bus.SendLocal(new StartCalculateSnapshotsSagaCommand(command.CorrelationId, command.PipelineMode,
+            await bus.SendLocal(new StartCalculateSnapshotsSagaCommand(command.SnapshotsRunId, command.PipelineMode,
                 command.PortfolioId, year));
         }
     }

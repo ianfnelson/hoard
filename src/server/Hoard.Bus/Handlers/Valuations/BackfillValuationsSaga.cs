@@ -21,15 +21,15 @@ public class BackfillValuationsSaga(
 {
     protected override void CorrelateMessages(ICorrelationConfig<BackfillValuationsSagaData> cfg)
     {
-        cfg.Correlate<StartBackfillValuationsSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
-        cfg.Correlate<ValuationsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<StartBackfillValuationsSagaCommand>(m => m.ValuationsRunId, d => d.ValuationsRunId);
+        cfg.Correlate<ValuationsCalculatedEvent>(m => m.ValuationsRunId, d => d.ValuationsRunId);
     }
     
     public async Task Handle(StartBackfillValuationsSagaCommand message)
     {
-        var (correlationId, pipelineMode, instrumentId, startDate, endDate) = message;
+        var (valuationsRunId, pipelineMode, instrumentId, startDate, endDate) = message;
         
-        Data.CorrelationId = correlationId;
+        Data.ValuationsRunId = valuationsRunId;
         Data.PipelineMode = pipelineMode;
         Data.InstrumentId = instrumentId;
         
@@ -43,7 +43,7 @@ public class BackfillValuationsSaga(
 
         Data.PendingDates = dates.ToHashSet();
 
-        await mediator.SendAsync(new DispatchBackfillValuationsCommand(correlationId, pipelineMode, instrumentId, dates));
+        await mediator.SendAsync(new DispatchBackfillValuationsCommand(valuationsRunId, pipelineMode, instrumentId, dates));
     }
     
     public async Task Handle(ValuationsCalculatedEvent message)
@@ -54,14 +54,14 @@ public class BackfillValuationsSaga(
             logger.LogInformation("All valuations recomputed. Done!");
             MarkAsComplete();
             await bus.Publish(new ValuationsBackfilledEvent(
-                Data.CorrelationId, Data.PipelineMode, Data.InstrumentId, Data.StartDate, Data.EndDate));
+                Data.ValuationsRunId, Data.PipelineMode, Data.InstrumentId, Data.StartDate, Data.EndDate));
         }
     }
 }
 
 public class BackfillValuationsSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid ValuationsRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }
     public int? InstrumentId { get; set; }
     public DateOnly StartDate { get; set; }

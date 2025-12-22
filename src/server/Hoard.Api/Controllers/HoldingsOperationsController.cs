@@ -1,5 +1,5 @@
-using Hoard.Api.Models.Holdings;
 using Hoard.Core.Application;
+using Hoard.Core.Application.Holdings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -12,18 +12,18 @@ public class HoldingsOperationsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("backfill")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> BackfillHoldingsAsync([FromBody] BackfillHoldingsRequest model)
+    public async Task<IActionResult> BackfillHoldingsAsync([FromBody] TriggerBackfillHoldingsCommand model)
     {
-        await mediator.SendAsync(model.ToCommand());
+        await mediator.SendAsync(model);
         
         return Accepted(new { message = "Backfill holdings triggered." });
     }
     
     [HttpPost("calculate")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> CalculateHoldingsAsync([FromBody] CalculateHoldingsRequest model)
+    public async Task<IActionResult> CalculateHoldingsAsync([FromBody] TriggerCalculateHoldingsCommand model)
     {
-        await mediator.SendAsync(model.ToCommand());
+        await mediator.SendAsync(model);
         
         return Accepted(new { message = "Calculate holdings triggered." });
     }

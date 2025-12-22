@@ -5,7 +5,7 @@ using Hoard.Messages.Valuations;
 namespace Hoard.Core.Application.Valuations;
 
 public record DispatchBackfillValuationsCommand(
-    Guid CorrelationId,
+    Guid ValuationsRunId,
     PipelineMode PipelineMode,
     int? InstrumentId,
     IReadOnlyList<DateOnly> Dates) : ICommand;
@@ -17,7 +17,7 @@ public class DispatchBackfillValuationsHandler(IBus bus)
     {
         foreach (var date in command.Dates)
         {
-            await bus.SendLocal(new StartCalculateValuationsSagaCommand(command.CorrelationId, command.PipelineMode, command.InstrumentId, date));
+            await bus.SendLocal(new StartCalculateValuationsSagaCommand(command.ValuationsRunId, command.PipelineMode, command.InstrumentId, date));
         }
     }
 }

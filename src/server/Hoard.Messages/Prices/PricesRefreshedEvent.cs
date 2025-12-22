@@ -1,5 +1,5 @@
 namespace Hoard.Messages.Prices;
 
 public record PricesRefreshedEvent(
-    Guid CorrelationId,
+    Guid PricesRunId,
     PipelineMode PipelineMode);

@@ -9,7 +9,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Valuations;
 
-public record ProcessCalculatePortfolioValuationCommand(Guid CorrelationId, PipelineMode PipelineMode, int PortfolioId, DateOnly AsOfDate)
+public record ProcessCalculatePortfolioValuationCommand(Guid ValuationsRunId, PipelineMode PipelineMode, int PortfolioId, DateOnly AsOfDate)
 : ICommand;
 
 public class ProcessCalculatePortfolioValuationHandler(
@@ -20,7 +20,7 @@ public class ProcessCalculatePortfolioValuationHandler(
 {
     public async Task HandleAsync(ProcessCalculatePortfolioValuationCommand command, CancellationToken ct = default)
     {
-        var (correlationId, pipelineMode, portfolioId, asOfDate) = command;
+        var (valuationsRunId, pipelineMode, portfolioId, asOfDate) = command;
         
         var value = await CalculateValuation(portfolioId, asOfDate, ct);
         var changed = await UpsertValuation(portfolioId, asOfDate, value, ct);
@@ -28,10 +28,10 @@ public class ProcessCalculatePortfolioValuationHandler(
         if (changed)
         {
             await context.SaveChangesAsync(ct);
-            await bus.Publish(new PortfolioValuationChangedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
+            await bus.Publish(new PortfolioValuationChangedEvent(valuationsRunId, pipelineMode, portfolioId, asOfDate));
         }
 
-        await bus.Publish(new PortfolioValuationCalculatedEvent(correlationId, pipelineMode, portfolioId, asOfDate));
+        await bus.Publish(new PortfolioValuationCalculatedEvent(valuationsRunId, pipelineMode, portfolioId, asOfDate));
         
         logger.LogInformation("Portfolio calculated for Portfolio {PortfolioId}, AsOfDate {AsOfDate}", portfolioId, asOfDate.ToIsoDateString());
     }

@@ -1,7 +1,7 @@
 namespace Hoard.Messages.Valuations;
 
 public record CalculatePortfolioValuationBusCommand(
-    Guid CorrelationId,
+    Guid ValuationsRunId,
     PipelineMode PipelineMode,
     int PortfolioId,
     DateOnly AsOfDate);

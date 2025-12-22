@@ -3,8 +3,10 @@ using Hoard.Messages.Holdings;
 
 namespace Hoard.Core.Application.Holdings;
 
-public record TriggerCalculateHoldingsCommand(Guid CorrelationId, DateOnly? AsOfDate, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : 
+public sealed record TriggerCalculateHoldingsCommand(DateOnly? AsOfDate, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : 
     ITriggerCommand
 {
-    public object ToBusCommand() => new CalculateHoldingsBusCommand(CorrelationId, PipelineMode, AsOfDate);
+    public Guid HoldingsRunId { get; } = Guid.NewGuid();
+    
+    public object ToBusCommand() => new CalculateHoldingsBusCommand(HoldingsRunId, PipelineMode, AsOfDate);
 }

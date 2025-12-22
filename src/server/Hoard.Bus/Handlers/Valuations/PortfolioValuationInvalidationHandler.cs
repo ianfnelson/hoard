@@ -13,7 +13,7 @@ public class PortfolioValuationInvalidationHandler(IBus bus)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            await bus.Publish(new PortfolioValuationsInvalidatedEvent(message.CorrelationId, message.PipelineMode, message.AsOfDate));
+            await bus.Publish(new PortfolioValuationsInvalidatedEvent(message.PipelineMode, message.AsOfDate));
         }
     }
 }

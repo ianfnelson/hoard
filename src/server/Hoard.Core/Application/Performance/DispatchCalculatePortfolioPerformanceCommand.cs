@@ -4,7 +4,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Performance;
 
-public record DispatchCalculatePortfolioPerformanceCommand(Guid CorrelationId, IReadOnlyList<int> PortfolioIds, PipelineMode PipelineMode)
+public record DispatchCalculatePortfolioPerformanceCommand(Guid PerformanceRunId, IReadOnlyList<int> PortfolioIds, PipelineMode PipelineMode)
     : ICommand;
 
 public class DispatchCalculatePortfolioPerformanceHandler(IBus bus)
@@ -14,7 +14,7 @@ public class DispatchCalculatePortfolioPerformanceHandler(IBus bus)
     {
         foreach (var portfolioId in command.PortfolioIds)
         {
-            await bus.SendLocal(new CalculatePortfolioPerformanceBusCommand(command.CorrelationId, portfolioId, command.PipelineMode));
+            await bus.SendLocal(new CalculatePortfolioPerformanceBusCommand(command.PerformanceRunId, portfolioId, command.PipelineMode));
         }
     }
 }

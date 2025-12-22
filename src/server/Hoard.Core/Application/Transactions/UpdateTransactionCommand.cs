@@ -6,7 +6,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Transactions;
 
-public record UpdateTransactionCommand(Guid CorrelationId, int TransactionId, TransactionWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
+public record UpdateTransactionCommand(int TransactionId, TransactionWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
 public class UpdateTransactionHandler(
     HoardContext context,
@@ -16,7 +16,7 @@ public class UpdateTransactionHandler(
 {
     public async Task HandleAsync(UpdateTransactionCommand command, CancellationToken ct = default)
     {
-        var (correlationId, transactionId, dto, pipelineMode) = command;
+        var (transactionId, dto, pipelineMode) = command;
         
         // TODO - validate the DTO
 
@@ -26,7 +26,7 @@ public class UpdateTransactionHandler(
 
         await context.SaveChangesAsync(ct);
 
-        await bus.Publish(new TransactionUpdatedEvent(correlationId, pipelineMode, tx.Id, tx.Date));
+        await bus.Publish(new TransactionUpdatedEvent(pipelineMode, tx.Id, tx.Date));
     }
 
     private async Task<Transaction> GetExistingTransaction(int id, CancellationToken ct = default)

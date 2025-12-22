@@ -17,19 +17,19 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
     protected override void CorrelateMessages(ICorrelationConfig<CalculateSnapshotsSagaData> config)
     {
         config.Correlate<StartCalculateSnapshotsSagaCommand>(
-            m => $"{m.CorrelationId:N}:{m.Year}",
+            m => $"{m.SnapshotsRunId:N}:{m.Year}",
             d => d.CorrelationKey);
 
         config.Correlate<SnapshotCalculatedEvent>(
-            m => $"{m.CorrelationId:N}:{m.Year}",
+            m => $"{m.SnapshotsRunId:N}:{m.Year}",
             d => d.CorrelationKey);
     }
 
     public async Task Handle(StartCalculateSnapshotsSagaCommand message)
     {
-        var (correlationId, pipelineMode, portfolioId, nullableYear) = message;
+        var (snapshotsRunId, pipelineMode, portfolioId, nullableYear) = message;
 
-        Data.CorrelationId = correlationId;
+        Data.SnapshotsRunId = snapshotsRunId;
 
         var year = nullableYear ?? DateTime.Today.Year;
         Data.Year = year;
@@ -48,12 +48,12 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
 
         Data.PendingPortfolios = portfolioIds.ToHashSet();
 
-        await mediator.SendAsync(new DispatchCalculateSnapshotCommand(correlationId, pipelineMode, portfolioIds, year));
+        await mediator.SendAsync(new DispatchCalculateSnapshotCommand(snapshotsRunId, pipelineMode, portfolioIds, year));
     }
 
     public async Task Handle(SnapshotCalculatedEvent message)
     {
-        var (correlationId, pipelineMode, year, portfolioId) = message;
+        var (snapshotsRunId, pipelineMode, year, portfolioId) = message;
 
         Data.PendingPortfolios.Remove(portfolioId);
 
@@ -61,17 +61,17 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
         {
             logger.LogInformation("Calculate snapshots saga {CorrelationKey} complete", Data.CorrelationKey);
             MarkAsComplete();
-            await bus.Publish(new SnapshotsCalculatedEvent(correlationId, pipelineMode, year));
+            await bus.Publish(new SnapshotsCalculatedEvent(snapshotsRunId, pipelineMode, year));
         }
     }
 }
 
 public class CalculateSnapshotsSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid SnapshotsRunId { get; set; }
     public int Year { get; set; }
     
-    public string CorrelationKey => $"{CorrelationId:N}:{Year}";
+    public string CorrelationKey => $"{SnapshotsRunId:N}:{Year}";
 
     public HashSet<int> PendingPortfolios { get; set; } = new();
 }

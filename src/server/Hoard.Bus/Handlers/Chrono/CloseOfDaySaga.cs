@@ -32,58 +32,67 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
 {
     protected override void CorrelateMessages(ICorrelationConfig<CloseOfDaySagaData> config)
     {
-        config.Correlate<StartCloseOfDaySagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<StartCloseOfDaySagaCommand>(m => m.ChronoRunId, d => d.ChronoRunId);
 
-        config.Correlate<HoldingsBackfilledEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<HoldingsBackfilledEvent>(m => m.HoldingsRunId, d => d.HoldingsRunId);
         config.Correlate<PositionsCalculatedEvent>(m => m.PositionsRunId, d => d.PositionsRunId);
-        config.Correlate<PricesRefreshedEvent>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<ValuationsBackfilledEvent>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<PerformanceCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
-        config.Correlate<SnapshotsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        config.Correlate<PricesRefreshedEvent>(m => m.PricesRunId, d => d.PricesRunId);
+        config.Correlate<ValuationsBackfilledEvent>(m => m.ValuationsRunId, d => d.ValuationsRunId);
+        config.Correlate<PerformanceCalculatedEvent>(m => m.PerformanceRunId, d => d.PerformanceRunId);
+        config.Correlate<SnapshotsCalculatedEvent>(m => m.SnapshotsRunId, d => d.SnapshotsRunId);
     }
 
     public async Task Handle(StartCloseOfDaySagaCommand message)
     {
-        var (correlationId, nullableAsOfDate, pipelineMode) = message;
+        var (chronoRunId, nullableAsOfDate, pipelineMode) = message;
         
         var asOfDate = nullableAsOfDate.OrToday();
         
-        Data.CorrelationId = correlationId;
+        Data.ChronoRunId = chronoRunId;
         Data.PipelineMode = pipelineMode;
         Data.Today = asOfDate;
         Data.Tomorrow = asOfDate.AddDays(1);
         Data.RebuildStartDate = asOfDate.AddDays(-7);
         
-        logger.LogInformation("CloseOfDay {CorrelationId}: Starting {PipelineMode} for {AsOfDate}", 
-            correlationId, pipelineMode, asOfDate.ToIsoDateString());
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Starting {PipelineMode} for {AsOfDate}", 
+            chronoRunId, pipelineMode, asOfDate.ToIsoDateString());
         
-        logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Holdings", Data.CorrelationId);
-        await mediator.SendAsync(new TriggerBackfillHoldingsCommand(correlationId, Data.RebuildStartDate, Data.Tomorrow, pipelineMode));
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Holdings", Data.ChronoRunId);
+        var triggerHoldingsCommand =
+            new TriggerBackfillHoldingsCommand(Data.RebuildStartDate, Data.Tomorrow, pipelineMode);
+        Data.HoldingsRunId = triggerHoldingsCommand.HoldingsRunId;
+        await mediator.SendAsync(triggerHoldingsCommand);
         
-        logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Prices", Data.CorrelationId);
-        await mediator.SendAsync(new TriggerRefreshPricesCommand(correlationId, null, Data.RebuildStartDate, Data.Today, pipelineMode));
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Prices", Data.ChronoRunId);
+        var triggerPricesCommand =
+            new TriggerRefreshPricesCommand(null, Data.RebuildStartDate, Data.Today, pipelineMode);
+        Data.PricesRunId = triggerPricesCommand.PricesRunId;
+        await mediator.SendAsync(triggerPricesCommand);
     }
 
     public async Task Handle(PricesRefreshedEvent message)
     {
         Data.PricesRefreshed = true;
-        logger.LogInformation("CloseOfDay {CorrelationId}: Prices refreshed.", Data.CorrelationId);
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Prices refreshed.", Data.ChronoRunId);
 
         if (Data.HoldingsCalculated && !Data.ValuationsCalculated)
         {
-            logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Valuations (prices now available)", Data.CorrelationId);
-            await mediator.SendAsync(new TriggerBackfillValuationsCommand(Data.CorrelationId,null, Data.RebuildStartDate, Data.Tomorrow, Data.PipelineMode));
+            logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Valuations (prices now available)", Data.ChronoRunId);
+            var triggerValuationsCommand =
+                new TriggerBackfillValuationsCommand(null, Data.RebuildStartDate, Data.Tomorrow, Data.PipelineMode);
+            Data.ValuationsRunId = triggerValuationsCommand.ValuationsRunId;
+            await mediator.SendAsync(triggerValuationsCommand);
         }
     }
 
     public async Task Handle(HoldingsBackfilledEvent message)
     {
         Data.HoldingsCalculated = true;
-        logger.LogInformation("CloseOfDay {CorrelationId}: Holdings backfilled.", Data.CorrelationId);
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Holdings backfilled.", Data.ChronoRunId);
 
         if (!Data.PositionsCalculated)
         {
-            logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Positions", Data.CorrelationId);
+            logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Positions", Data.ChronoRunId);
             
             var positionsCommand = new TriggerCalculatePositionsCommand(Data.PipelineMode);
             Data.PositionsRunId = positionsCommand.PositionsRunId;
@@ -95,33 +104,40 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
     public async Task Handle(PositionsCalculatedEvent message)
     {
         Data.PositionsCalculated = true;
-        logger.LogInformation("CloseOfDay {CorrelationId}: Positions calculated.", Data.CorrelationId);
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Positions calculated.", Data.ChronoRunId);
         
         if (Data.PricesRefreshed &&
             Data.HoldingsCalculated &&
             !Data.ValuationsCalculated)
         {
-            logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Valuations", Data.CorrelationId);
-            await mediator.SendAsync(new TriggerBackfillValuationsCommand(Data.CorrelationId,null, Data.RebuildStartDate, Data.Tomorrow, Data.PipelineMode));
+            logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Valuations", Data.ChronoRunId);
+            var triggerValuationsCommand =
+                new TriggerBackfillValuationsCommand(null, Data.RebuildStartDate, Data.Tomorrow, Data.PipelineMode);
+            Data.ValuationsRunId = triggerValuationsCommand.ValuationsRunId;
+            await mediator.SendAsync(triggerValuationsCommand);
         }
     }
 
     public async Task Handle(ValuationsBackfilledEvent message)
     {
         Data.ValuationsCalculated = true;
-        logger.LogInformation("CloseOfDay {CorrelationId}: Valuations calculated.", Data.CorrelationId);
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Valuations calculated.", Data.ChronoRunId);
         
-        logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Performance", Data.CorrelationId);
-        await mediator.SendAsync(new TriggerCalculatePerformanceCommand(Data.CorrelationId, null, Data.PipelineMode));
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Performance", Data.ChronoRunId);
+        var triggerPerformanceCommand = new TriggerCalculatePerformanceCommand(null, Data.PipelineMode);
+        Data.PerformanceRunId = triggerPerformanceCommand.PerformanceRunId;
+        await mediator.SendAsync(triggerPerformanceCommand);
         
-        logger.LogInformation("CloseOfDay {CorrelationId}: Dispatching Snapshots", Data.CorrelationId);
-        await mediator.SendAsync(new TriggerCalculateSnapshotsCommand(Data.CorrelationId, Data.Today.Year, Data.PipelineMode));
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Snapshots", Data.ChronoRunId);
+        var triggerSnapshotsCommand = new TriggerCalculateSnapshotsCommand(Data.Today.Year, Data.PipelineMode);
+        Data.SnapshotsRunId = triggerSnapshotsCommand.SnapshotsRunId;
+        await mediator.SendAsync(triggerSnapshotsCommand);
     }
 
     public Task Handle(PerformanceCalculatedEvent message)
     {
         Data.PerformanceCalculated = true;
-        logger.LogInformation("CloseOfDay {CorrelationId}: Performance calculated.", Data.CorrelationId);
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Performance calculated.", Data.ChronoRunId);
 
         if (Data.SnapshotsCalculated)
         {
@@ -134,7 +150,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
     public Task Handle(SnapshotsCalculatedEvent message)
     {
         Data.SnapshotsCalculated = true;
-        logger.LogInformation("CloseOfDay {CorrelationId}: Snapshots calculated.", Data.CorrelationId);
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Snapshots calculated.", Data.ChronoRunId);
 
         if (Data.PerformanceCalculated)
         {
@@ -147,15 +163,21 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
     private void CompleteSaga()
     {
         MarkAsComplete();
-        logger.LogInformation("CloseOfDay {CorrelationId}: Completed {PipelineMode} for {AsOfDate}", 
-            Data.CorrelationId, Data.PipelineMode, Data.Today.ToIsoDateString());
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Completed {PipelineMode} for {AsOfDate}", 
+            Data.ChronoRunId, Data.PipelineMode, Data.Today.ToIsoDateString());
     }
 }
 
 public class CloseOfDaySagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid ChronoRunId { get; set; }
     public Guid PositionsRunId { get; set; }
+    public Guid HoldingsRunId { get; set; }
+    public Guid PricesRunId { get; set; }
+    public Guid ValuationsRunId { get; set; }
+    public Guid SnapshotsRunId { get; set; }
+    public Guid PerformanceRunId { get; set; }
+    
     public DateOnly RebuildStartDate { get; set; }
     public DateOnly Today { get; set; }
     public DateOnly Tomorrow { get; set; }

@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Holdings;
 
-public record HoldingsCalculatedEvent(Guid CorrelationId, PipelineMode PipelineMode, DateOnly AsOfDate);
+public record HoldingsCalculatedEvent(Guid HoldingsRunId, PipelineMode PipelineMode, DateOnly AsOfDate);

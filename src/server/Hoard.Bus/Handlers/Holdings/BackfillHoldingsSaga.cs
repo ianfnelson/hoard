@@ -21,15 +21,15 @@ public class BackfillHoldingsSaga(
 {
     protected override void CorrelateMessages(ICorrelationConfig<BackfillHoldingsSagaData> cfg)
     {
-        cfg.Correlate<StartBackfillHoldingsSagaCommand>(m => m.CorrelationId, d => d.CorrelationId);
-        cfg.Correlate<HoldingsCalculatedEvent>(m => m.CorrelationId, d => d.CorrelationId);
+        cfg.Correlate<StartBackfillHoldingsSagaCommand>(m => m.HoldingsRunId, d => d.HoldingsRunId);
+        cfg.Correlate<HoldingsCalculatedEvent>(m => m.HoldingsRunId, d => d.HoldingsRunId);
     }
 
     public async Task Handle(StartBackfillHoldingsSagaCommand message)
     {
-        var (correlationId, pipelineMode, startDate, endDate) = message;
+        var (holdingsRunId, pipelineMode, startDate, endDate) = message;
         
-        Data.CorrelationId = correlationId;
+        Data.HoldingsRunId = holdingsRunId;
         
         var dates = await mediator.QueryAsync<GetDatesForBackfillQuery, IReadOnlyList<DateOnly>>(
             new GetDatesForBackfillQuery(startDate, endDate));
@@ -38,7 +38,7 @@ public class BackfillHoldingsSaga(
         
         Data.PendingDates = dates.ToHashSet();
         
-        await mediator.SendAsync(new DispatchBackfillHoldingsCommand(correlationId, pipelineMode, dates));
+        await mediator.SendAsync(new DispatchBackfillHoldingsCommand(holdingsRunId, pipelineMode, dates));
     }
     
     public async Task Handle(HoldingsCalculatedEvent message)
@@ -49,14 +49,14 @@ public class BackfillHoldingsSaga(
             logger.LogInformation("All holdings recomputed. Done!");
             MarkAsComplete();
             await bus.Publish(new HoldingsBackfilledEvent(
-                Data.CorrelationId, Data.PipelineMode, Data.StartDate, Data.EndDate));
+                Data.HoldingsRunId, Data.PipelineMode, Data.StartDate, Data.EndDate));
         }
     }
 }
 
 public class BackfillHoldingsSagaData : SagaData
 {
-    public Guid CorrelationId { get; set; }
+    public Guid HoldingsRunId { get; set; }
     public PipelineMode PipelineMode { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }

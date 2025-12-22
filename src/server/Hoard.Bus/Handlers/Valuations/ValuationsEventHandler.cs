@@ -17,14 +17,14 @@ public class ValuationsEventHandler(IMediator mediator)
 {
     public async Task Handle(CalculateHoldingValuationsBusCommand message)
     {
-        var appCommand = new ProcessCalculateHoldingValuationsCommand(message.CorrelationId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
+        var appCommand = new ProcessCalculateHoldingValuationsCommand(message.ValuationsRunId, message.PipelineMode, message.InstrumentId, message.AsOfDate);
 
         await mediator.SendAsync(appCommand);
     }
     
     public async Task Handle(CalculatePortfolioValuationBusCommand message)
     {
-        var appCommand = new ProcessCalculatePortfolioValuationCommand(message.CorrelationId, message.PipelineMode, message.PortfolioId, message.AsOfDate);
+        var appCommand = new ProcessCalculatePortfolioValuationCommand(message.ValuationsRunId, message.PipelineMode, message.PortfolioId, message.AsOfDate);
 
         await mediator.SendAsync(appCommand);
     }
@@ -36,7 +36,7 @@ public class ValuationsEventHandler(IMediator mediator)
             if (message.AsOfDate == DateOnlyHelper.TodayLocal())
             {
                 var positionPerformanceAppCommand =
-                    new ProcessCalculatePositionPerformanceCommand(message.CorrelationId, message.InstrumentId,
+                    new ProcessCalculatePositionPerformanceCommand(Guid.NewGuid(), message.InstrumentId,
                         message.PipelineMode);
 
                 await mediator.SendAsync(positionPerformanceAppCommand); 
@@ -56,7 +56,7 @@ public class ValuationsEventHandler(IMediator mediator)
 
             foreach (var year in impactedYears)
             {
-                var appCommand = new ProcessCalculateSnapshotCommand(message.CorrelationId, message.PipelineMode, message.PortfolioId, year);
+                var appCommand = new ProcessCalculateSnapshotCommand(Guid.NewGuid(), message.PipelineMode, message.PortfolioId, year);
                 await mediator.SendAsync(appCommand);
             }
         }

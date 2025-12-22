@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Performance;
 
-public record CalculatePositionPerformanceBusCommand(Guid CorrelationId, int InstrumentId, PipelineMode PipelineMode);
+public record CalculatePositionPerformanceBusCommand(Guid PerformanceRunId, int InstrumentId, PipelineMode PipelineMode);
