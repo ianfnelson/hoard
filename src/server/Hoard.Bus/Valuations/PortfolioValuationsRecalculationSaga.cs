@@ -6,16 +6,16 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Valuations;
+namespace Hoard.Bus.Valuations;
 
 public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) :
-    Saga<PortfolioValuationsRecalculationSagaData>,
+    Saga<PvrSagaData>,
     IAmInitiatedBy<PortfolioValuationsInvalidatedEvent>,
     IHandleMessages<RecalculatePortfolioValuationsTimeout>
 {
     private static readonly TimeSpan DebounceDelay = TimeSpan.FromSeconds(3);
     
-    protected override void CorrelateMessages(ICorrelationConfig<PortfolioValuationsRecalculationSagaData> config)
+    protected override void CorrelateMessages(ICorrelationConfig<PvrSagaData> config)
     {
         config.Correlate<PortfolioValuationsInvalidatedEvent>(
             m => m.AsOfDate.ToString("yyyy-MM-dd"), 
@@ -56,7 +56,7 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
     }
 }
 
-public class PortfolioValuationsRecalculationSagaData : SagaData
+public class PvrSagaData : SagaData
 {
     public string Scope { get; set; } = DebounceScopes.PortfolioValuations;
     public string CorrelationKey => $"{AsOfDate.ToString("yyyy-MM-dd")}";

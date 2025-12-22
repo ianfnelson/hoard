@@ -6,15 +6,15 @@ using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Snapshots;
+namespace Hoard.Bus.Snapshots;
 
 public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMediator mediator, IBus bus)
     :
-        Saga<CalculateSnapshotsSagaData>,
+        Saga<CsSagaData>,
         IAmInitiatedBy<StartCalculateSnapshotsSagaCommand>,
         IHandleMessages<SnapshotCalculatedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<CalculateSnapshotsSagaData> config)
+    protected override void CorrelateMessages(ICorrelationConfig<CsSagaData> config)
     {
         config.Correlate<StartCalculateSnapshotsSagaCommand>(
             m => $"{m.SnapshotsRunId:N}:{m.Year}",
@@ -66,7 +66,7 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
     }
 }
 
-public class CalculateSnapshotsSagaData : SagaData
+public class CsSagaData : SagaData
 {
     public Guid SnapshotsRunId { get; set; }
     public int Year { get; set; }

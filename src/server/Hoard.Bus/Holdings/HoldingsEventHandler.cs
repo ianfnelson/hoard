@@ -6,7 +6,7 @@ using Hoard.Messages;
 using Hoard.Messages.Holdings;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Holdings;
+namespace Hoard.Bus.Holdings;
 
 public class HoldingsEventHandler(IMediator mediator) 
     : IHandleMessages<CalculateHoldingsBusCommand>, 

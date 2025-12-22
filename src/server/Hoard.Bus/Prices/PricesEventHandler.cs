@@ -5,7 +5,7 @@ using Hoard.Messages;
 using Hoard.Messages.Prices;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Prices;
+namespace Hoard.Bus.Prices;
 
 public class PricesEventHandler(IMediator mediator) : 
     IHandleMessages<RefreshPricesBatchBusCommand>,

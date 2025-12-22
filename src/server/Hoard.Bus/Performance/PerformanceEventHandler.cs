@@ -3,7 +3,7 @@ using Hoard.Core.Application.Performance;
 using Hoard.Messages.Performance;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Performance;
+namespace Hoard.Bus.Performance;
 
 public class PerformanceEventHandler(IMediator mediator)
     : 

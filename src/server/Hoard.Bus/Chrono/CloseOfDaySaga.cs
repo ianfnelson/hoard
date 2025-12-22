@@ -18,10 +18,10 @@ using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
-namespace Hoard.Bus.Handlers.Chrono;
+namespace Hoard.Bus.Chrono;
 
 public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
-: Saga<CloseOfDaySagaData>,
+: Saga<ChronoSagaData>,
     IAmInitiatedBy<StartCloseOfDaySagaCommand>,
     IHandleMessages<PricesRefreshedEvent>,
     IHandleMessages<HoldingsBackfilledEvent>,
@@ -30,7 +30,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
     IHandleMessages<PerformanceCalculatedEvent>,
     IHandleMessages<SnapshotsCalculatedEvent>
 {
-    protected override void CorrelateMessages(ICorrelationConfig<CloseOfDaySagaData> config)
+    protected override void CorrelateMessages(ICorrelationConfig<ChronoSagaData> config)
     {
         config.Correlate<StartCloseOfDaySagaCommand>(m => m.ChronoRunId, d => d.ChronoRunId);
 
@@ -197,7 +197,7 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
     }
 }
 
-public class CloseOfDaySagaData : SagaData
+public class ChronoSagaData : SagaData
 {
     public Guid ChronoRunId { get; set; }
     public Guid PositionsRunId { get; set; }

@@ -4,7 +4,7 @@ using Hoard.Core.Application.Positions;
 using Hoard.Messages.Positions;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Positions;
+namespace Hoard.Bus.Positions;
 
 public class PositionsEventHandler(IMediator mediator)
     : 

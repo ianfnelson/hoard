@@ -5,7 +5,7 @@ using Hoard.Messages;
 using Hoard.Messages.Transactions;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Transactions;
+namespace Hoard.Bus.Transactions;
 
 public class TransactionsEventHandler(IMediator mediator) :
     IHandleMessages<TransactionCreatedEvent>,

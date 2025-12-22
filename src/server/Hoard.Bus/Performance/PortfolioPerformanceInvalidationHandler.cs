@@ -4,7 +4,7 @@ using Hoard.Messages.Valuations;
 using Rebus.Bus;
 using Rebus.Handlers;
 
-namespace Hoard.Bus.Handlers.Performance;
+namespace Hoard.Bus.Performance;
 
 public class PortfolioPerformanceInvalidationHandler(IBus bus)
     :
