@@ -27,11 +27,12 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}chrono/trigger-close-of-day",
+              "raw": "{{BaseUrl}}operations/chrono/trigger-close-of-day",
               "host": [
-                "{{BaseUrl}}chrono"
+                "{{BaseUrl}}operations"
               ],
               "path": [
+                "chrono",
                 "trigger-close-of-day"
               ]
             }
@@ -293,11 +294,12 @@
               }
             },
             "url": {
-              "raw": "{{BaseUrl}}positions/calculate",
+              "raw": "{{BaseUrl}}operations/positions/calculate",
               "host": [
-                "{{BaseUrl}}positions"
+                "{{BaseUrl}}operations"
               ],
               "path": [
+                "positions",
                 "calculate"
               ]
             }
