@@ -1,0 +1,11 @@
+flowchart TD
+    A[Transactions] --> B[Holdings]
+    C[Prices] --> E[Valuations]
+    H[Quotes] --> E
+    B --> D[Positions]
+    B --> E[Valuations]
+    E --> F[Performance]
+    D --> F 
+    E --> G[Snapshots]
+  
+  
