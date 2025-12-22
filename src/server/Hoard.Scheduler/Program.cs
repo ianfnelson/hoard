@@ -17,10 +17,10 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 var applicationInsightsConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights")
                                           ?? throw new InvalidOperationException("No Application Insights connection string configured.");
 
-builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
-{
-    options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
-});
+// builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
+// {
+//     options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
+// });
 
 builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
