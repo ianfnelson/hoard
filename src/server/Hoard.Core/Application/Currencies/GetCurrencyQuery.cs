@@ -17,8 +17,7 @@ public class GetCurrencyHandler(HoardContext context, ILogger<GetCurrencyHandler
             .Select(c => new CurrencyDto
             {
                 Id = c.Id,
-                Name = c.Name,
-                CreatedUtc = c.CreatedUtc
+                Name = c.Name
             })
             .SingleOrDefaultAsync(ct);
 

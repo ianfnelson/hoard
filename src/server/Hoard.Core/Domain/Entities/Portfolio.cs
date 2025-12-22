@@ -9,5 +9,5 @@ public class Portfolio : Entity<int>
     
     public bool IsActive { get; set; } = true;
     
-    public DateTime CreatedUtc { get; set; } = DateTime.Now;
+    public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 }

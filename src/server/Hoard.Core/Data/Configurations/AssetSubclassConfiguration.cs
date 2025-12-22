@@ -17,10 +17,6 @@ public class AssetSubclassConfiguration : IEntityTypeConfiguration<AssetSubclass
         builder.Property(a => a.Code).IsRequired().HasMaxLength(10);
         builder.Property(a => a.Name).IsRequired().HasMaxLength(50);
         
-        builder.Property(e => e.CreatedUtc)
-            .HasColumnType("datetime2(3)")
-            .HasDefaultValueSql("SYSUTCDATETIME()");
-        
         builder.HasIndex(a => a.Code).IsUnique();
 
         builder.HasOne(a => a.AssetClass)

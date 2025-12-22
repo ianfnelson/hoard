@@ -15,8 +15,7 @@ public class GetCurrenciesHandler(HoardContext context)
             .Select(c => new CurrencyDto
             {
                 Id = c.Id,
-                Name = c.Name,
-                CreatedUtc = c.CreatedUtc,
+                Name = c.Name
             })
             .OrderBy(c => c.Name)
             .ToListAsync(ct);

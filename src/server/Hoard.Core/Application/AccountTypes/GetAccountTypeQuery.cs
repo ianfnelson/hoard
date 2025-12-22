@@ -17,8 +17,7 @@ public class GetAccountTypeHandler(HoardContext context, ILogger<GetAccountTypeH
             .Select(at => new AccountTypeDto
             {
                 Id = at.Id,
-                Name = at.Name,
-                CreatedUtc = at.CreatedUtc
+                Name = at.Name
             })
             .SingleOrDefaultAsync(ct);
 

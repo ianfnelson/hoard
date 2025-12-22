@@ -19,8 +19,7 @@ public class GetAssetClassHandler(HoardContext context, ILogger<GetAssetClassHan
             {
                 Id = ac.Id,
                 Code = ac.Code,
-                Name = ac.Name,
-                CreatedUtc = ac.CreatedUtc
+                Name = ac.Name
             })
             .SingleOrDefaultAsync(ct);
 

@@ -16,8 +16,7 @@ public class GetAssetClassesHandler(HoardContext context)
             {
                 Id = ac.Id,
                 Code = ac.Code,
-                Name = ac.Name,
-                CreatedUtc = ac.CreatedUtc,
+                Name = ac.Name
             })
             .OrderBy(ac => ac.Name)
             .ToListAsync(ct);
