@@ -39,10 +39,17 @@ public class AssetClassesController(IMediator mediator)
         return new OkObjectResult(dto);
     }
     
-    [HttpGet("{id:int}/subcategories")]
+    [HttpGet("{id:int}/subclasses")]
+    [ProducesResponseType(typeof(List<AssetSubclassDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<AssetSubclassDto>>> GetSubclasses(int id, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var query = new GetAssetSubclassesQuery
+        {
+            AssetClassId = id
+        };
+        
+        var dtos = await mediator.QueryAsync<GetAssetSubclassesQuery, List<AssetSubclassDto>>(query, ct);
+       
+        return new OkObjectResult(dtos);
     }
 }
