@@ -464,12 +464,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}portfolios/3/valuation/latest",
+              "raw": "{{BaseUrl}}portfolios/1/valuation/latest",
               "host": [
                 "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "3",
+                "1",
                 "valuation",
                 "latest"
               ]
@@ -552,7 +552,7 @@
           "response": []
         },
         {
-          "name": "Asset Clases",
+          "name": "Asset Classes",
           "id": "ca5022cb-70de-4aec-9551-383b78869c07",
           "request": {
             "method": "GET",
@@ -583,6 +583,72 @@
               "path": [
                 "asset-classes",
                 "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Asset Class — Subclasses",
+          "id": "7bf9917b-5377-40c5-8ed3-b4b60bd149bf",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/asset-classes/2/subclasses",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "asset-classes",
+                "2",
+                "subclasses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Asset Subclasses",
+          "id": "2275e4cb-edd1-4a39-95da-b39fa66eb02c",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/asset-subclasses/?assetClassId=3",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "asset-subclasses",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "assetClassId",
+                  "value": "3",
+                  "type": "text",
+                  "uuid": "92194e34-4bb3-45f8-ac2d-6d4535460b92"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Asset Subclass",
+          "id": "2f7fe6c3-db39-4edc-a88c-73acc0218e6b",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/asset-subclasses/5",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "asset-subclasses",
+                "5"
               ]
             }
           },
@@ -620,6 +686,43 @@
               "path": [
                 "currencies",
                 "GBP"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Instrument Types",
+          "id": "37afa166-ad56-439d-bbb4-d56e97e03605",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/instrument-types",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "instrument-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Instrument Type",
+          "id": "0092cede-05e6-4399-b8cf-1f6fbc1060aa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/instrument-types/2",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "instrument-types",
+                "2"
               ]
             }
           },
