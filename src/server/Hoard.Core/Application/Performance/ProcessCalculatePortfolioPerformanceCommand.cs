@@ -103,6 +103,14 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         
         perf.UpdatedUtc = DateTime.UtcNow;
         
+        logger.LogInformation(
+            "Portfolio {PortfolioId,5} | Value {Value,12:N2} | Δ {Change,10:N2} | 1Y {Return1Y,8:N2}%",
+            portfolio.Id,
+            perf.Value,
+            perf.ValueChange,
+            perf.Return1Y
+        );
+       
         await context.SaveChangesAsync(ct);
     }
 
