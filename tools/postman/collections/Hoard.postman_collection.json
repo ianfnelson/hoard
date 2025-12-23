@@ -6,6 +6,42 @@
   },
   "item": [
     {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Accounts",
+          "id": "ec8d3250-7c89-46d7-9cc0-9d5d027ebf35",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}accounts/1",
+              "host": [
+                "{{BaseUrl}}accounts"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Account",
+          "id": "7f908339-c5a7-4abf-a6ff-53d20445c088",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "0de7571b-75a5-4837-ad13-791fd4c273c9"
+    },
+    {
       "name": "Operations",
       "item": [
         {
