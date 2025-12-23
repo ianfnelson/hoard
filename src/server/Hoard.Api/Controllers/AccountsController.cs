@@ -11,16 +11,28 @@ namespace Hoard.Api.Controllers;
 public class AccountsController(IMediator mediator)
 {
     [HttpGet]
-    public async Task<ActionResult<List<AccountSummaryDto>>> GetList([FromQuery] int portfolioId, CancellationToken ct)
+    [ProducesResponseType(typeof(List<AccountSummaryDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<AccountSummaryDto>>> GetList([FromQuery] GetAccountsQuery query, CancellationToken ct)
     {
-        // TODO - implement Accounts Get
-        throw new NotImplementedException();
+        var dtos = await mediator.QueryAsync<GetAccountsQuery, List<AccountSummaryDto>>(query, ct);
+        
+        return new OkObjectResult(dtos);
     }
     
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(AccountDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AccountDetailDto>> Get(int id, CancellationToken ct)
     {
-        // TODO - implement Accounts Get by ID
-        throw new NotImplementedException();
+        var query = new GetAccountQuery(id);
+        
+        var dto = await mediator.QueryAsync<GetAccountQuery, AccountDetailDto?>(query, ct);
+
+        if (dto == null)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(dto);
     }
 }
