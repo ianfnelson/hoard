@@ -20,7 +20,6 @@ public partial class Instrument : Entity<int>
     public required string Ticker { get; set; }
     public string? Isin { get; set; }
     public bool EnablePriceUpdates  { get; set; }
-    public bool IsActive { get; set; } = true;
     
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     

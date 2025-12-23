@@ -21,8 +21,8 @@ public class InstrumentsController(IMediator mediator)
     [ProducesResponseType(typeof(PagedResult<InstrumentSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<InstrumentSummaryDto>>> GetList([FromQuery] GetInstrumentsQuery query, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var dtos = await mediator.QueryAsync<GetInstrumentsQuery, PagedResult<InstrumentSummaryDto>>(query, ct);
+        return new OkObjectResult(dtos);
     }
     
     [HttpPost]

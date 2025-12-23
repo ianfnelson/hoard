@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Accounts;
 public class GetAccountsQuery : IQuery<List<AccountSummaryDto>>
 {
     public int? PortfolioId { get; set; }
-    public ActiveStatus? ActiveStatus { get; set; }
+    public bool? IsActive { get; set; }
 }
 
 public class GetAccountsHandler(HoardContext context)
@@ -16,11 +16,9 @@ public class GetAccountsHandler(HoardContext context)
     {
         var q = context.Accounts.AsNoTracking();
 
-        if (query.ActiveStatus.HasValue)
+        if (query.IsActive.HasValue)
         {
-            q = query.ActiveStatus == ActiveStatus.Active 
-                ? q.Where(a => a.IsActive) 
-                : q.Where(a => !a.IsActive);
+            q = q.Where(a => a.IsActive == query.IsActive.Value);
         }
 
         if (query.PortfolioId.HasValue)

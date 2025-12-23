@@ -33,13 +33,45 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{BaseUrl}}accounts/?isActive=true",
+              "host": [
+                "{{BaseUrl}}accounts"
+              ],
+              "path": [
+                ""
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "98a47359-f8ad-481a-8541-a39b3eee9516"
+                }
+              ]
             }
           },
           "response": []
         }
       ],
       "id": "0de7571b-75a5-4837-ad13-791fd4c273c9"
+    },
+    {
+      "name": "Instruments",
+      "item": [
+        {
+          "name": "Instruments",
+          "id": "fd9dac6f-2098-4532-aa2a-6e568cfe7e48",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "83fe04f8-7c13-4f3a-ad0a-a67dd5d833df"
     },
     {
       "name": "Operations",
