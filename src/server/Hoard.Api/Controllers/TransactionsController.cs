@@ -16,7 +16,13 @@ public class TransactionsController(IMediator mediator) : ControllerBase
         throw new NotImplementedException();
     }
     
-    // TODO - add paginated endpoint for returning many transactions
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedResult<TransactionSummaryDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<TransactionSummaryDto>>> GetList([FromQuery] GetTransactionsQuery query, CancellationToken ct)
+    {
+        var dtos = await mediator.QueryAsync<GetTransactionsQuery, PagedResult<TransactionSummaryDto>>(query, ct);
+        return new OkObjectResult(dtos);
+    }
     
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] TransactionWriteDto request, CancellationToken ct)
