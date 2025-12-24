@@ -8,16 +8,20 @@ namespace Hoard.Core.Application.Instruments;
 public sealed class GetInstrumentsQuery
     : IQuery<PagedResult<InstrumentSummaryDto>>, IPagedQuery, ISortedQuery
 {
+    // Search
     public string? Search { get; init; }
     
+    // Filters
     public int? InstrumentTypeId { get; init; }
     public int? AssetClassId { get; init; }
     public int? AssetSubclassId { get; init; }
     public bool? EnablePriceUpdates { get; init; }
 
+    // Paging
     public int Page { get; init; } = 1;
     public int PageSize { get; init; } = 25;
 
+    // Sorting
     public string SortBy { get; init; } = "name";
     public SortDirection SortDirection { get; init; } = SortDirection.Asc;
 }
@@ -29,7 +33,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         GetInstrumentsQuery query,
         CancellationToken ct = default)
     {
-        IQueryable<Instrument> baseQuery = context.Instruments.AsNoTracking();
+        var baseQuery = context.Instruments.AsNoTracking();
 
         baseQuery = ApplyFilters(baseQuery, query);
         baseQuery = ApplySearch(baseQuery, query);

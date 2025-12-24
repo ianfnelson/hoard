@@ -65,7 +65,64 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{BaseUrl}}instruments/?page=1&pageSize=30&sortBy=name&sortDirection=asc&instrumentTypeId=1&search=kainos",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "30"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "asc"
+                },
+                {
+                  "key": "instrumentTypeId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "18e09529-50fb-453e-8439-4eadad6591fc"
+                },
+                {
+                  "key": "assetClassId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "2dc7fc2b-39b5-4e0c-8cea-2366e1293bbb",
+                  "disabled": true
+                },
+                {
+                  "key": "assetSubclassId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1b8198a5-ec89-4164-9f1c-7683acfc0070",
+                  "disabled": true
+                },
+                {
+                  "key": "enablePriceUpdates",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "b1c742f1-a040-462c-83ad-63ae9180e5a3",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "kainos",
+                  "type": "text",
+                  "uuid": "62e8fa28-b934-41de-879a-7888d100467c"
+                }
+              ]
             }
           },
           "response": []
@@ -858,7 +915,7 @@
           "response": []
         },
         {
-          "name": "Search Transactions",
+          "name": "Transactions",
           "id": "5e461a5f-66f6-46d9-8dd1-8bf709458449",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
@@ -874,12 +931,58 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{BaseUrl}}transactions/",
+              "raw": "{{BaseUrl}}transactions/?page=1&pageSize=30&sortBy=instrumentName&sortDirection=asc&accountId=1&categoryId=1&instrumentId=598&search=B856478211",
               "host": [
                 "{{BaseUrl}}transactions"
               ],
               "path": [
                 ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "uuid": "7d7d0c54-7c1a-41f7-9e84-e2936be3a57a"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "30",
+                  "uuid": "3274c9a2-36b7-4595-9b06-248a7b10f092"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "instrumentName",
+                  "uuid": "72d41a40-09be-41d3-8bad-9bc2df0e4439"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "asc",
+                  "uuid": "28921cb3-98e4-4b18-ab00-cbaaca64c46a"
+                },
+                {
+                  "key": "accountId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "da4868d1-3168-464f-a2a1-3a693eb2c53e"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "6eee4a8c-618f-4b85-b7b7-f6d40764c940"
+                },
+                {
+                  "key": "instrumentId",
+                  "value": "598",
+                  "type": "text",
+                  "uuid": "f06bd8b9-f029-4aaf-bd44-ca6114221d3e"
+                },
+                {
+                  "key": "search",
+                  "value": "B856478211",
+                  "type": "text",
+                  "uuid": "c3d63eb5-bf79-4fa4-81c9-3f4fb2a42370"
+                }
               ]
             }
           },
