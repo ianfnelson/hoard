@@ -85,7 +85,7 @@ public class ReferenceDataSeeder
         var items = new[]
         {
             new AssetSubclass { Id = 0, AssetClassId = 0, Code = "UK", Name = "Unknown" },
-            new AssetSubclass { Id = 1, AssetClassId = 1, Code = "UKEQ", Name = "UK Equities" },
+            new AssetSubclass { Id = 1, AssetClassId = 1, Code = "UKLC", Name = "UK Large-Cap Equities" },
             new AssetSubclass { Id = 2, AssetClassId = 1, Code = "GLEQ", Name = "Global Equities" },
             new AssetSubclass { Id = 3, AssetClassId = 1, Code = "USEQ", Name = "US Equities" },
             new AssetSubclass { Id = 4, AssetClassId = 1, Code = "EUEQ", Name = "European Equities" },
@@ -99,8 +99,10 @@ public class ReferenceDataSeeder
             new AssetSubclass { Id = 12, AssetClassId = 3, Code = "COMM", Name = "Commodities" },
             new AssetSubclass { Id = 13, AssetClassId = 3, Code = "PREQ", Name = "Private Equity" },
             new AssetSubclass { Id = 14, AssetClassId = 3, Code = "INFR", Name = "Infrastructure" },
-            new AssetSubclass { Id = 15, AssetClassId = 4, Code = "CASH", Name = "Cash" },
-            new AssetSubclass { Id = 16, AssetClassId = 5, Code = "FX", Name = "FX / Currency" }
+            new AssetSubclass { Id = AssetSubclass.Cash, AssetClassId = 4, Code = "CASH", Name = "Cash" },
+            new AssetSubclass { Id = 16, AssetClassId = 5, Code = "FX", Name = "FX / Currency" },
+            new AssetSubclass { Id = 17, AssetClassId = 1, Code = "UKMC", Name = "UK Mid-Cap Equities" },
+            new AssetSubclass { Id = 18, AssetClassId = 1, Code = "UKSC", Name = "UK Small-Cap Equities" },
         };
         await UpsertAsync(_context.AssetSubclasses, items, x => x.Id);
     }

@@ -545,6 +545,25 @@
           "response": []
         },
         {
+          "name": "Portfolio Exposure",
+          "id": "211e64d0-57d2-43c0-a06c-ea0d3a1ce387",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}portfolios/3/exposure",
+              "host": [
+                "{{BaseUrl}}portfolios"
+              ],
+              "path": [
+                "3",
+                "exposure"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Portfolio Performance",
           "id": "65fff2ee-21f6-44e2-b380-5dd5d9f91f63",
           "request": {
@@ -589,13 +608,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}portfolios/1/valuation/latest",
+              "raw": "{{BaseUrl}}portfolios/1/valuations/latest",
               "host": [
                 "{{BaseUrl}}portfolios"
               ],
               "path": [
                 "1",
-                "valuation",
+                "valuations",
                 "latest"
               ]
             }

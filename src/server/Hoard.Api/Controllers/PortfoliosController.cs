@@ -100,10 +100,14 @@ public class PortfoliosController(IMediator mediator)
     }
     
     [HttpGet("{id:int}/exposure")]
+    [ProducesResponseType(typeof(List<PortfolioExposureDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PortfolioExposureDto>> GetExposure(int id, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var query = new GetPortfolioExposureQuery(id);
+        
+        var dto = await mediator.QueryAsync<GetPortfolioExposureQuery, PortfolioExposureDto>(query, ct);
+        
+        return new OkObjectResult(dto);
     }
 
     [HttpGet("{id:int}/accounts")]
