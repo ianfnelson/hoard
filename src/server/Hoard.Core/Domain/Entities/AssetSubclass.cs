@@ -1,6 +1,6 @@
 namespace Hoard.Core.Domain.Entities;
 
-public class AssetSubclass : Entity<int>
+public partial class AssetSubclass : Entity<int>
 {
     public int AssetClassId { get; set; }
     public AssetClass AssetClass { get; set; } = null!;

@@ -17,7 +17,7 @@ public class HoardContext : DbContext
     public DbSet<Instrument> Instruments => Set<Instrument>();
     public DbSet<InstrumentType> InstrumentTypes => Set<InstrumentType>();
     public DbSet<Portfolio> Portfolios => Set<Portfolio>();
-    public DbSet<TargetAllocation> PortfolioAssetTargets => Set<TargetAllocation>();
+    public DbSet<TargetAllocation> TargetAllocations => Set<TargetAllocation>();
     public DbSet<PortfolioPerformance> PortfolioPerformances => Set<PortfolioPerformance>();
     public DbSet<PortfolioSnapshot> PortfolioSnapshots => Set<PortfolioSnapshot>();
     public DbSet<PortfolioValuation> PortfolioValuations => Set<PortfolioValuation>();
