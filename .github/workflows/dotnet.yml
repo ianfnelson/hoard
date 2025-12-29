@@ -1,4 +1,4 @@
-name: Build, Test, and Publish Hoard Containers
+name: Build, Test, and Publish Hoard Server Containers
 
 on:
   push:
