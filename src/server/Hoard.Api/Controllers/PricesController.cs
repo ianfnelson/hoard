@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("prices/")]
+[Route("api/prices/")]
 [Produces("application/json")]
 [Tags("Prices")]
 public class PricesController(IMediator mediator)

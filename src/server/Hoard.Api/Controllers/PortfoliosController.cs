@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("portfolios/")]
+[Route("api/portfolios/")]
 [Tags("Portfolios")]
 [Produces("application/json")]
 public class PortfoliosController(IMediator mediator)

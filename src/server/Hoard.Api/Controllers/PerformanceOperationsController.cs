@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("operations/performance/")]
+[Route("api/operations/performance/")]
 [Tags("Operations")]
 [Produces("application/json")]
 public class PerformanceOperationsController(IMediator mediator) : ControllerBase

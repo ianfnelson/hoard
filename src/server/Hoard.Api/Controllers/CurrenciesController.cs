@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("reference/currencies/")]
+[Route("api/reference/currencies/")]
 [Tags("Reference")]
 [Produces("application/json")]
 public class CurrenciesController(IMediator mediator)
