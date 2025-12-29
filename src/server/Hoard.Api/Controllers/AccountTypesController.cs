@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("reference/account-types/")]
+[Route("api/reference/account-types/")]
 [Tags("Reference")]
 [Produces("application/json")]
 public class AccountTypesController(IMediator mediator)

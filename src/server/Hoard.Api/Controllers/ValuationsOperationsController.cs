@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("operations/valuations/")]
+[Route("api/operations/valuations/")]
 [Produces("application/json")]
 [Tags("Operations")]
 public class ValuationsOperationsController(IMediator mediator) : ControllerBase

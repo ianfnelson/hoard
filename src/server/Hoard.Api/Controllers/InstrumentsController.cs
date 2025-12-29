@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("instruments/")]
+[Route("api/instruments/")]
 [Tags("Instruments")]
 [Produces("application/json")]
 public class InstrumentsController(IMediator mediator)

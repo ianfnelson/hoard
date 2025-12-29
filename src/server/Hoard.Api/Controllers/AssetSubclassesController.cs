@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("reference/asset-subclasses/")]
+[Route("api/reference/asset-subclasses/")]
 [Tags("Reference")]
 [Produces("application/json")]
 public class AssetSubclassesController(IMediator mediator)

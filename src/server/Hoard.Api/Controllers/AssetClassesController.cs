@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("reference/asset-classes/")]
+[Route("api/reference/asset-classes/")]
 [Tags("Reference")]
 [Produces("application/json")]
 public class AssetClassesController(IMediator mediator)
