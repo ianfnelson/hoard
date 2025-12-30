@@ -19,6 +19,7 @@ public class GetPortfolioValuationHandler(HoardContext context, ILogger<GetPortf
             .Where(pv => pv.PortfolioId == query.PortfolioId)
             .Select(pv => new PortfolioValuationDetailDto
             {
+                PortfolioId = pv.PortfolioId,
                 AsOfDate = pv.AsOfDate,
                 UpdatedUtc = pv.UpdatedUtc,
                 Value = pv.Value

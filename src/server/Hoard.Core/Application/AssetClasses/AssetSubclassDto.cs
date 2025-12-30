@@ -1,10 +1,8 @@
 namespace Hoard.Core.Application.AssetClasses;
 
-public class AssetClassDto
+public class AssetSubclassDto
 {
     public int Id { get; set; }
     public required string Code { get; set; }
     public required string Name { get; set; }
-    
-    public required List<AssetSubclassDto> Subclasses { get; set; }
 }

@@ -9,7 +9,7 @@
       "name": "Accounts",
       "item": [
         {
-          "name": "Accounts",
+          "name": "Account",
           "id": "ec8d3250-7c89-46d7-9cc0-9d5d027ebf35",
           "request": {
             "method": "GET",
@@ -27,7 +27,7 @@
           "response": []
         },
         {
-          "name": "Account",
+          "name": "Accounts",
           "id": "7f908339-c5a7-4abf-a6ff-53d20445c088",
           "request": {
             "method": "GET",
@@ -44,7 +44,6 @@
                 {
                   "key": "isActive",
                   "value": "true",
-                  "type": "text",
                   "uuid": "98a47359-f8ad-481a-8541-a39b3eee9516"
                 }
               ]
@@ -545,7 +544,7 @@
           "response": []
         },
         {
-          "name": "Portfolio Exposure",
+          "name": "Portfolio — Exposure",
           "id": "211e64d0-57d2-43c0-a06c-ea0d3a1ce387",
           "request": {
             "method": "GET",
@@ -564,26 +563,7 @@
           "response": []
         },
         {
-          "name": "Portfolio Performance",
-          "id": "65fff2ee-21f6-44e2-b380-5dd5d9f91f63",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}portfolios/3/performance",
-              "host": [
-                "{{BaseUrl}}portfolios"
-              ],
-              "path": [
-                "3",
-                "performance"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Portfolio Instrument Types",
+          "name": "Portfolio — Instrument Types",
           "id": "020b5092-5604-4924-b312-d5583bc6ca14",
           "request": {
             "method": "GET",
@@ -608,12 +588,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}portfolios/1/valuations/latest",
+              "raw": "{{BaseUrl}}portfolios/3/valuations/latest",
               "host": [
                 "{{BaseUrl}}portfolios"
               ],
               "path": [
-                "1",
+                "3",
                 "valuations",
                 "latest"
               ]
@@ -677,25 +657,6 @@
           "response": []
         },
         {
-          "name": "Account Type",
-          "id": "7966457e-8b77-4e8d-87e9-11b2abbf1be0",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/account-types/2",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "account-types",
-                "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Asset Classes",
           "id": "ca5022cb-70de-4aec-9551-383b78869c07",
           "request": {
@@ -708,25 +669,6 @@
               ],
               "path": [
                 "asset-classes"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Asset Class",
-          "id": "3e1ae5de-b053-426e-a092-b929d6c0926e",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/asset-classes/2",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "asset-classes",
-                "2"
               ]
             }
           },
@@ -753,52 +695,6 @@
           "response": []
         },
         {
-          "name": "Asset Subclasses",
-          "id": "2275e4cb-edd1-4a39-95da-b39fa66eb02c",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/asset-subclasses/?assetClassId=3",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "asset-subclasses",
-                ""
-              ],
-              "query": [
-                {
-                  "key": "assetClassId",
-                  "value": "3",
-                  "type": "text",
-                  "uuid": "92194e34-4bb3-45f8-ac2d-6d4535460b92"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Asset Subclass",
-          "id": "2f7fe6c3-db39-4edc-a88c-73acc0218e6b",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/asset-subclasses/5",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "asset-subclasses",
-                "5"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Currencies",
           "id": "d6f13166-5571-430d-9ea1-281ffd0856de",
           "request": {
@@ -817,25 +713,6 @@
           "response": []
         },
         {
-          "name": "Currency",
-          "id": "be4b1dc5-cabe-424a-9929-bea1a84e0092",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/currencies/GBP",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "currencies",
-                "GBP"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Instrument Types",
           "id": "37afa166-ad56-439d-bbb4-d56e97e03605",
           "request": {
@@ -848,25 +725,6 @@
               ],
               "path": [
                 "instrument-types"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Instrument Type",
-          "id": "0092cede-05e6-4399-b8cf-1f6fbc1060aa",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/instrument-types/2",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "instrument-types",
-                "2"
               ]
             }
           },
@@ -906,7 +764,7 @@
           "response": []
         },
         {
-          "name": "Retrieve Transaction",
+          "name": "Transaction",
           "id": "d6df7dd0-397b-425c-ab9b-c73f4c3f09c2",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
@@ -1050,18 +908,6 @@
               "path": [
                 "61"
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "New Request",
-          "id": "551b0938-0720-474a-b707-757f71e4e484",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": ""
             }
           },
           "response": []

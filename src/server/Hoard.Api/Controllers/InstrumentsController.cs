@@ -25,6 +25,8 @@ public class InstrumentsController(IMediator mediator)
         return new OkObjectResult(dtos);
     }
     
+    // TODO - lookup endpoint
+    
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] InstrumentWriteDto request, CancellationToken ct)
     {

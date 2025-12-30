@@ -20,7 +20,7 @@ public class AssetSubclassConfiguration : IEntityTypeConfiguration<AssetSubclass
         builder.HasIndex(a => a.Code).IsUnique();
 
         builder.HasOne(a => a.AssetClass)
-            .WithMany()
+            .WithMany(a => a.Subclasses)
             .HasForeignKey(a => a.AssetClassId)
             .OnDelete(DeleteBehavior.Cascade);
     }
