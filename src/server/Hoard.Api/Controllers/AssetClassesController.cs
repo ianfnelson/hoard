@@ -1,6 +1,5 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.AssetClasses;
-using Hoard.Core.Application.AssetSubclasses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -19,37 +18,6 @@ public class AssetClassesController(IMediator mediator)
         
         var dtos = await mediator.QueryAsync<GetAssetClassesQuery, List<AssetClassDto>>(query, ct);
         
-        return new OkObjectResult(dtos);
-    }
-    
-    [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(AssetClassDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<AssetClassDto>> Get(int id, CancellationToken ct)
-    {
-        var query = new GetAssetClassQuery(id);
-        
-        var dto = await mediator.QueryAsync<GetAssetClassQuery, AssetClassDto?>(query, ct);
-
-        if (dto == null)
-        {
-            return new NotFoundResult();
-        }
-
-        return new OkObjectResult(dto);
-    }
-    
-    [HttpGet("{id:int}/subclasses")]
-    [ProducesResponseType(typeof(List<AssetSubclassDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<AssetSubclassDto>>> GetSubclasses(int id, CancellationToken ct)
-    {
-        var query = new GetAssetSubclassesQuery
-        {
-            AssetClassId = id
-        };
-        
-        var dtos = await mediator.QueryAsync<GetAssetSubclassesQuery, List<AssetSubclassDto>>(query, ct);
-       
         return new OkObjectResult(dtos);
     }
 }

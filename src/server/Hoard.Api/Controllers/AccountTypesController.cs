@@ -20,21 +20,4 @@ public class AccountTypesController(IMediator mediator)
         
         return new OkObjectResult(dtos);
     }
-    
-    [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(AccountTypeDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<AccountTypeDto>> Get(int id, CancellationToken ct)
-    {
-        var query = new GetAccountTypeQuery(id);
-        
-        var dto = await mediator.QueryAsync<GetAccountTypeQuery, AccountTypeDto?>(query, ct);
-
-        if (dto == null)
-        {
-            return new NotFoundResult();
-        }
-
-        return new OkObjectResult(dto);
-    }
 }

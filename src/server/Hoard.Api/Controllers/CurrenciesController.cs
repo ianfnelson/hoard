@@ -20,21 +20,4 @@ public class CurrenciesController(IMediator mediator)
         
         return new OkObjectResult(dtos);
     }
-    
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(CurrencyDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<CurrencyDto>> Get(string id, CancellationToken ct)
-    {
-        var query = new GetCurrencyQuery(id);
-        
-        var dto = await mediator.QueryAsync<GetCurrencyQuery, CurrencyDto?>(query, ct);
-
-        if (dto == null)
-        {
-            return new NotFoundResult();
-        }
-
-        return new OkObjectResult(dto);
-    }
 }

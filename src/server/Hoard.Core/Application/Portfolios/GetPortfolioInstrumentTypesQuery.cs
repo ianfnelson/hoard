@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioInstrumentTypesQuery(int PortfolioId) : IQuery<List<PortfolioInstrumentTypeDto>>;
+public record GetPortfolioInstrumentTypesQuery(int PortfolioId) : IQuery<PortfolioInstrumentTypesDto>;
 
 public class GetPortfolioInstrumentTypesHandler(HoardContext context)
-:IQueryHandler<GetPortfolioInstrumentTypesQuery, List<PortfolioInstrumentTypeDto>>
+:IQueryHandler<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto>
 {
-    public async Task<List<PortfolioInstrumentTypeDto>> HandleAsync(GetPortfolioInstrumentTypesQuery query, CancellationToken ct = default)
+    public async Task<PortfolioInstrumentTypesDto> HandleAsync(GetPortfolioInstrumentTypesQuery query, CancellationToken ct = default)
     {
         var today = DateOnlyHelper.TodayLocal();
         
-        var results = await context
+        var instrumentTypes = await context
             .HoldingValuations
             .AsNoTracking()
             .Where(hv =>
@@ -29,9 +29,15 @@ public class GetPortfolioInstrumentTypesHandler(HoardContext context)
             .OrderByDescending(g => g.Value)
             .ToListAsync(ct);
         
-        PopulatePercentages(results);
+        PopulatePercentages(instrumentTypes);
 
-        return results;
+        return new PortfolioInstrumentTypesDto
+        {
+            InstrumentTypes = instrumentTypes,
+            PortfolioId = query.PortfolioId,
+            AsOfDate = today,
+            TotalValue = instrumentTypes.Sum(i => i.Value)
+        };
     }
 
     private static void PopulatePercentages(List<PortfolioInstrumentTypeDto> results)

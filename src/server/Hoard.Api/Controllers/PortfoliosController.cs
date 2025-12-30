@@ -39,21 +39,6 @@ public class PortfoliosController(IMediator mediator)
         return new OkObjectResult(dto);
     }
     
-    [HttpGet("{id:int}/performance")]
-    public async Task<ActionResult<PortfolioPerformanceDto>> GetPerformance(int id, CancellationToken ct)
-    {
-        var query = new GetPortfolioPerformanceQuery(id);
-        
-        var dto = await mediator.QueryAsync<GetPortfolioPerformanceQuery, PortfolioPerformanceDto?>(query, ct);
-
-        if (dto == null)
-        {
-            return new NotFoundResult();
-        }
-
-        return new OkObjectResult(dto);
-    }
-    
     [HttpGet("{id:int}/valuations/latest")]
     public async Task<ActionResult<PortfolioValuationDetailDto>> GetLatestValuation(int id, CancellationToken ct)
     {
@@ -89,18 +74,18 @@ public class PortfoliosController(IMediator mediator)
     }
 
     [HttpGet("{id:int}/instrument-types")]
-    public async Task<ActionResult<List<PortfolioInstrumentTypeDto>>> GetInstrumentTypes(int id, CancellationToken ct)
+    [ProducesResponseType(typeof(PortfolioInstrumentTypesDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PortfolioInstrumentTypesDto>> GetInstrumentTypes(int id, CancellationToken ct)
     {
-        // TODO - change this to return an envelope, not a bare list
         var query = new GetPortfolioInstrumentTypesQuery(id);
         
-        var dtos = await mediator.QueryAsync<GetPortfolioInstrumentTypesQuery, List<PortfolioInstrumentTypeDto>>(query, ct);
+        var dtos = await mediator.QueryAsync<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto>(query, ct);
         
         return new OkObjectResult(dtos);
     }
     
     [HttpGet("{id:int}/exposure")]
-    [ProducesResponseType(typeof(List<PortfolioExposureDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PortfolioExposureDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<PortfolioExposureDto>> GetExposure(int id, CancellationToken ct)
     {
         var query = new GetPortfolioExposureQuery(id);
@@ -108,13 +93,6 @@ public class PortfoliosController(IMediator mediator)
         var dto = await mediator.QueryAsync<GetPortfolioExposureQuery, PortfolioExposureDto>(query, ct);
         
         return new OkObjectResult(dto);
-    }
-
-    [HttpGet("{id:int}/accounts")]
-    public async Task<ActionResult<List<AccountSummaryDto>>> GetAccounts(int id, CancellationToken ct)
-    {
-        // TODO
-        throw new NotImplementedException();
     }
     
     [HttpGet("{id:int}/snapshots")]
@@ -126,13 +104,6 @@ public class PortfoliosController(IMediator mediator)
     
     [HttpGet("{id:int}/positions")]
     public async Task<ActionResult<List<PositionSummaryDto>>> GetPositions(int id, [FromQuery] PositionStatus? status, CancellationToken ct)
-    {
-        // TODO
-        throw new NotImplementedException();
-    }
-    
-    [HttpGet("{id:int}/snapshots/latest")]
-    public async Task<ActionResult<SnapshotDto>> GetLatestSnapshot(int id, CancellationToken ct)
     {
         // TODO
         throw new NotImplementedException();

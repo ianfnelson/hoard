@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioExposureQuery(int PortfolioId) : IQuery<PortfolioExposureDto?>;
+public record GetPortfolioExposureQuery(int PortfolioId) : IQuery<PortfolioExposureDto>;
 
 public class GetPortfolioExposureHandler(HoardContext context)
-    : IQueryHandler<GetPortfolioExposureQuery, PortfolioExposureDto?>
+    : IQueryHandler<GetPortfolioExposureQuery, PortfolioExposureDto>
 {
     private const decimal RebalanceReducePortfolioPercentage = 1.0M;
     private const decimal RebalanceAddPortfolioPercentage = -0.5M;
     
-    public async Task<PortfolioExposureDto?> HandleAsync(
+    public async Task<PortfolioExposureDto> HandleAsync(
         GetPortfolioExposureQuery query,
         CancellationToken ct = default)
     {
