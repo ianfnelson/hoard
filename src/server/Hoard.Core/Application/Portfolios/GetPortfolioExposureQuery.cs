@@ -2,21 +2,33 @@ using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioExposureQuery(int PortfolioId) : IQuery<PortfolioExposureDto>;
+public record GetPortfolioExposureQuery(int PortfolioId) : IQuery<PortfolioExposureDto?>;
 
-public class GetPortfolioExposureHandler(HoardContext context)
-    : IQueryHandler<GetPortfolioExposureQuery, PortfolioExposureDto>
+public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfolioExposureHandler> logger)
+    : IQueryHandler<GetPortfolioExposureQuery, PortfolioExposureDto?>
 {
     private const decimal RebalanceReducePortfolioPercentage = 1.0M;
     private const decimal RebalanceAddPortfolioPercentage = -0.5M;
     
-    public async Task<PortfolioExposureDto> HandleAsync(
+    public async Task<PortfolioExposureDto?> HandleAsync(
         GetPortfolioExposureQuery query,
         CancellationToken ct = default)
     {
+        var exists = await context.Portfolios
+            .AnyAsync(x => x.Id == query.PortfolioId, ct);
+
+        if (!exists)
+        {
+            logger.LogWarning(
+                "Portfolio with id {PortfolioId} not found",
+                query.PortfolioId);
+            return null;
+        }
+        
         var today = DateOnlyHelper.TodayLocal();
 
         // ------------------------------------------------------------------
@@ -138,14 +150,14 @@ public class GetPortfolioExposureHandler(HoardContext context)
                 AssetSubclassCode = x.AssetSubclassCode,
                 AssetSubclassName = x.AssetSubclassName,
 
-                ActualValue = x.ActualValue.RoundForDisplay(),
-                ActualPercentage = x.ActualPercentage.RoundForDisplay(),
+                ActualValue = x.ActualValue.RoundTo2Dp(),
+                ActualPercentage = x.ActualPercentage,
 
-                TargetValue = x.TargetValue.RoundForDisplay(),
-                TargetPercentage = x.TargetPercentage.RoundForDisplay(),
+                TargetValue = x.TargetValue.RoundTo2Dp(),
+                TargetPercentage = x.TargetPercentage,
 
-                DeviationValue = x.DeviationValue.RoundForDisplay(),
-                DeviationPercentage = x.DeviationPercentage.RoundForDisplay()
+                DeviationValue = x.DeviationValue.RoundTo2Dp(),
+                DeviationPercentage = x.DeviationPercentage
             })
             .ToList();
 
@@ -177,14 +189,14 @@ public class GetPortfolioExposureHandler(HoardContext context)
                         AssetClassCode = g.Key.AssetClassCode,
                         AssetClassName = g.Key.AssetClassName,
 
-                        ActualValue = actualValue.RoundForDisplay(),
-                        ActualPercentage = actualPct.RoundForDisplay(),
+                        ActualValue = actualValue.RoundTo2Dp(),
+                        ActualPercentage = actualPct,
 
-                        TargetValue = targetValue.RoundForDisplay(),
-                        TargetPercentage = targetPct.RoundForDisplay(),
+                        TargetValue = targetValue.RoundTo2Dp(),
+                        TargetPercentage = targetPct,
                         
-                        DeviationValue = deviationValue.RoundForDisplay(),
-                        DeviationPercentage = deviationPct.RoundForDisplay()
+                        DeviationValue = deviationValue.RoundTo2Dp(),
+                        DeviationPercentage = deviationPct
                     };
                 })
                 .OrderByDescending(x => x.ActualPercentage)
@@ -200,7 +212,7 @@ public class GetPortfolioExposureHandler(HoardContext context)
             PortfolioId = query.PortfolioId,
             AsOfDate = today,
 
-            TotalValue = totalValue.RoundForDisplay(),
+            TotalValue = totalValue.RoundTo2Dp(),
 
             AssetClasses = assetClassExposureDtos,
             AssetSubclasses = subclassExposureDtos,

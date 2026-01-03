@@ -1,18 +1,20 @@
-namespace Hoard.Core.Domain.Entities;
+namespace Hoard.Core.Application.Portfolios;
 
-public abstract class 
-    Performance : Entity<int>
+public class PositionPerformanceDto
 {
+    public decimal CostBasis { get; set; }
+    public decimal Units { get; set; }
+    
     // Valuation snapshot
     public decimal Value { get; set; }
     public decimal PreviousValue { get; set; }
     public decimal ValueChange { get; set; }
-
+    
     // Gains breakdown
     public decimal UnrealisedGain { get; set; }
     public decimal RealisedGain { get; set; }
     public decimal Income { get; set; }
-
+    
     // Returns
     public decimal? Return1D { get; set; }
     public decimal? Return1W { get; set; }

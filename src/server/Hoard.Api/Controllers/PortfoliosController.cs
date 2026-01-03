@@ -1,9 +1,5 @@
-using Hoard.Api.Models;
 using Hoard.Core.Application;
-using Hoard.Core.Application.Accounts;
 using Hoard.Core.Application.Portfolios;
-using Hoard.Core.Application.Positions;
-using Hoard.Core.Application.Snapshots;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -15,6 +11,7 @@ namespace Hoard.Api.Controllers;
 public class PortfoliosController(IMediator mediator)
 {
     [HttpGet]
+    [ProducesResponseType(typeof(List<PortfolioSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<PortfolioSummaryDto>>> GetList(CancellationToken ct)
     {
         var query = new GetPortfoliosQuery();
@@ -25,89 +22,79 @@ public class PortfoliosController(IMediator mediator)
     }
     
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<PortfolioSummaryDto>> Get(int id, CancellationToken ct)
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PortfolioDetailDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PortfolioDetailDto>> Get(int id, CancellationToken ct)
     {
         var query = new GetPortfolioQuery(id);
         
         var dto = await mediator.QueryAsync<GetPortfolioQuery, PortfolioDetailDto?>(query, ct);
 
-        if (dto == null)
-        {
-            return new NotFoundResult();
-        }
-
-        return new OkObjectResult(dto);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     [HttpGet("{id:int}/valuations/latest")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PortfolioValuationDetailDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<PortfolioValuationDetailDto>> GetLatestValuation(int id, CancellationToken ct)
     {
         var query = new GetPortfolioValuationQuery(id);
         
         var dto = await mediator.QueryAsync<GetPortfolioValuationQuery, PortfolioValuationDetailDto?>(query, ct);
 
-        if (dto == null)
-        {
-            return new NotFoundResult();
-        }
-
-        return new OkObjectResult(dto);
-    }
-    
-    [HttpGet("{id:int}/valuations/series")]
-    public async Task<ActionResult<List<PortfolioValuationSummaryDto>>> GetValuations(int id, [FromQuery]SeriesOptions seriesOptions, CancellationToken ct)
-    {
-        // TODO - buckets
-        var query = new GetPortfolioValuationsQuery(id, seriesOptions.From, seriesOptions.To);
-        
-        var dtos = await mediator.QueryAsync<GetPortfolioValuationsQuery, List<PortfolioValuationSummaryDto>>(query, ct);
-
-        return new OkObjectResult(dtos);
-    }
-    
-    [HttpGet("{id:int}/valuations")]
-    public async Task<ActionResult<PagedResult<PortfolioValuationSummaryDto>>> GetValuations(int id, [FromQuery]PagedOptions pagedOptions, CancellationToken ct)
-    {
-        // TODO - is PagedOptions sufficient here, maybe it needs sort properties too?
-        // TODO 
-        throw new NotImplementedException();
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
 
     [HttpGet("{id:int}/instrument-types")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PortfolioInstrumentTypesDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<PortfolioInstrumentTypesDto>> GetInstrumentTypes(int id, CancellationToken ct)
     {
         var query = new GetPortfolioInstrumentTypesQuery(id);
         
-        var dtos = await mediator.QueryAsync<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto>(query, ct);
+        var dto = await mediator.QueryAsync<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto?>(query, ct);
         
-        return new OkObjectResult(dtos);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     [HttpGet("{id:int}/exposure")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PortfolioExposureDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<PortfolioExposureDto>> GetExposure(int id, CancellationToken ct)
     {
         var query = new GetPortfolioExposureQuery(id);
         
-        var dto = await mediator.QueryAsync<GetPortfolioExposureQuery, PortfolioExposureDto>(query, ct);
+        var dto = await mediator.QueryAsync<GetPortfolioExposureQuery, PortfolioExposureDto?>(query, ct);
         
-        return new OkObjectResult(dto);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     [HttpGet("{id:int}/snapshots")]
-    public async Task<ActionResult<List<SnapshotDto>>> GetSnapshots(int id, CancellationToken ct)
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PortfolioSnapshotsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PortfolioSnapshotsDto?>> GetSnapshots(int id, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var query = new GetPortfolioSnapshotsQuery(id);
+        
+        var dto = await mediator.QueryAsync<GetPortfolioSnapshotsQuery, PortfolioSnapshotsDto?>(query, ct);
+
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     [HttpGet("{id:int}/positions")]
-    public async Task<ActionResult<List<PositionSummaryDto>>> GetPositions(int id, [FromQuery] PositionStatus? status, CancellationToken ct)
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PortfolioPositionsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PortfolioPositionsDto>> GetPositions(int id, [FromQuery] PositionStatus? status, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        // This needs more filters, sort, search in the query object. 
+        
+        var query = new GetPortfolioPositionsQuery(id);
+        
+        var dto = await mediator.QueryAsync<GetPortfolioPositionsQuery, PortfolioPositionsDto?>(query, ct);
+        
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     // TODO - add target allocations put endpoint
+    // TODO - valuations, for charts and export
 }

@@ -17,7 +17,7 @@ public class PositionPerformanceConfiguration
         base.Configure(builder);
 
         builder.HasOne(p => p.Position)
-            .WithOne()
+            .WithOne(p => p.Performance)
             .HasForeignKey<PositionPerformance>(p => p.PositionId);
 
         builder.Property(p => p.CostBasis)
