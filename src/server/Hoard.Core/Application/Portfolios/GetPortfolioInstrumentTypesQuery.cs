@@ -1,15 +1,28 @@
 using Hoard.Core.Data;
+using Hoard.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioInstrumentTypesQuery(int PortfolioId) : IQuery<PortfolioInstrumentTypesDto>;
+public record GetPortfolioInstrumentTypesQuery(int PortfolioId) : IQuery<PortfolioInstrumentTypesDto?>;
 
-public class GetPortfolioInstrumentTypesHandler(HoardContext context)
-:IQueryHandler<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto>
+public class GetPortfolioInstrumentTypesHandler(HoardContext context, ILogger<GetPortfolioInstrumentTypesHandler> logger)
+:IQueryHandler<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto?>
 {
-    public async Task<PortfolioInstrumentTypesDto> HandleAsync(GetPortfolioInstrumentTypesQuery query, CancellationToken ct = default)
+    public async Task<PortfolioInstrumentTypesDto?> HandleAsync(GetPortfolioInstrumentTypesQuery query, CancellationToken ct = default)
     {
+        var exists = await context.Portfolios
+            .AnyAsync(x => x.Id == query.PortfolioId, ct);
+
+        if (!exists)
+        {
+            logger.LogWarning(
+                "Portfolio with id {PortfolioId} not found",
+                query.PortfolioId);
+            return null;
+        }
+        
         var today = DateOnlyHelper.TodayLocal();
         
         var instrumentTypes = await context
@@ -48,7 +61,7 @@ public class GetPortfolioInstrumentTypesHandler(HoardContext context)
         
         foreach (var row in results)
         {
-            row.Percentage = decimal.Round(100.0M * row.Value / totalValue,4);
+            row.Percentage = 100.0M * row.Value / totalValue;
         }
     }
 }

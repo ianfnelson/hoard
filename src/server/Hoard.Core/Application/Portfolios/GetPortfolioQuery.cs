@@ -20,6 +20,31 @@ public class GetPortfolioHandler(HoardContext context, ILogger<GetPortfolioHandl
                 Name = p.Name,
                 IsActive = p.IsActive,
                 CreatedUtc = p.CreatedUtc,
+                Performance = p.Performance == null 
+                    ? null 
+                    : new PortfolioPerformanceDto
+                    {
+                        Value = p.Performance.Value,
+                        CashValue = p.Performance.CashValue,
+                        PreviousValue = p.Performance.PreviousValue,
+                        ValueChange = p.Performance.ValueChange,
+                        UnrealisedGain = p.Performance.UnrealisedGain,
+                        RealisedGain = p.Performance.RealisedGain,
+                        Income = p.Performance.Income,
+                        Return1D = p.Performance.Return1D,
+                        Return1W = p.Performance.Return1W,
+                        Return1M = p.Performance.Return1M,
+                        Return3M = p.Performance.Return3M,
+                        Return6M = p.Performance.Return6M,
+                        Return1Y = p.Performance.Return1Y,
+                        Return3Y = p.Performance.Return3Y,
+                        Return5Y = p.Performance.Return5Y,
+                        Return10Y = p.Performance.Return10Y,
+                        ReturnYtd = p.Performance.ReturnYtd,
+                        ReturnAllTime = p.Performance.ReturnAllTime,
+                        AnnualisedReturn = p.Performance.AnnualisedReturn,
+                        UpdatedUtc = p.Performance.UpdatedUtc
+                    }
             })
             .SingleOrDefaultAsync(ct);
         
@@ -30,33 +55,8 @@ public class GetPortfolioHandler(HoardContext context, ILogger<GetPortfolioHandl
                 query.PortfolioId);
             return dto;
         }
-        
-        dto.Performance = await context.PortfolioPerformances
-            .AsNoTracking()
-            .Where(ppc => ppc.PortfolioId == query.PortfolioId)
-            .Select(ppc => new PortfolioPerformanceDto
-            {
-                Value = ppc.Value,
-                CashValue = ppc.CashValue,
-                PreviousValue = ppc.PreviousValue,
-                ValueChange = ppc.ValueChange,
-                UnrealisedGain = ppc.UnrealisedGain,
-                RealisedGain = ppc.RealisedGain,
-                Income = ppc.Income,
-                Return1D = ppc.Return1D,
-                Return1W = ppc.Return1W,
-                Return1M = ppc.Return1M,
-                Return3M = ppc.Return3M,
-                Return6M = ppc.Return6M,
-                Return1Y = ppc.Return1Y,
-                Return3Y = ppc.Return3Y,
-                Return5Y = ppc.Return5Y,
-                Return10Y = ppc.Return10Y,
-                ReturnYtd = ppc.ReturnYtd,
-                ReturnAllTime = ppc.ReturnAllTime,
-                AnnualisedReturn = ppc.AnnualisedReturn,
-                UpdatedUtc = ppc.UpdatedUtc
-            }).SingleOrDefaultAsync(ct);
+
+        dto.Performance?.CashPercentage = 100.0M * dto.Performance.CashValue / dto.Performance.Value;
 
         return dto;
     }

@@ -5,6 +5,7 @@ public class PortfolioPerformanceDto
     // Snapshot values
     public decimal Value { get; init; }
     public decimal CashValue { get; init; }
+    public decimal CashPercentage { get; set; }
     public decimal PreviousValue { get; init; }
     public decimal ValueChange { get; init; }
 

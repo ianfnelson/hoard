@@ -25,26 +25,6 @@ public class PositionsController(IMediator mediator)
         // TODO
         throw new NotImplementedException();
     }
-    
-    [HttpGet("{id:int}/valuations/latest")]
-    public async Task<ActionResult<PositionValuationDetailDto>> GetLatestValuation(int id, CancellationToken ct)
-    {
-        // TODO
-        throw new NotImplementedException();
-    }
-    
-    [HttpGet("{id:int}/valuations")]
-    public async Task<ActionResult<PagedResult<PositionValuationSummaryDto>>> GetValuations(int id, [FromQuery]DateOnly? from, [FromQuery]DateOnly? to, CancellationToken ct)
-    {
-        // TODO - change the query objects
-        // TODO
-        throw new NotImplementedException();
-    }
-    
-    [HttpGet("{id:int}/valuations/series")]
-    public async Task<ActionResult<List<PositionValuationSummaryDto>>> GetValuations(int id, [FromQuery]DateOnly? from, [FromQuery]DateOnly? to, [FromQuery]Bucket? bucket, CancellationToken ct)
-    {
-        // TODO - change the query objects, use buckets
-        throw new NotImplementedException();
-    }
+
+    // TODO - valuations, for charts and export
 }

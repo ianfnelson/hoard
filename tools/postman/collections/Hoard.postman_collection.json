@@ -133,7 +133,7 @@
       "name": "Operations",
       "item": [
         {
-          "name": "Chrono :: Close Of Day",
+          "name": "Chrono — Close Of Day",
           "id": "186bf074-e8b8-48ec-8e4d-49c82355e00d",
           "request": {
             "auth": {
@@ -164,7 +164,7 @@
           "response": []
         },
         {
-          "name": "Holdings :: Backfill",
+          "name": "Holdings — Backfill",
           "id": "13a16b26-9202-4fa3-86f9-292dff821a7a",
           "request": {
             "auth": {
@@ -195,7 +195,7 @@
           "response": []
         },
         {
-          "name": "Holdings :: Calculate",
+          "name": "Holdings — Calculate",
           "id": "e2d665da-61a9-4baf-9c9e-7e63bf051176",
           "request": {
             "auth": {
@@ -226,7 +226,7 @@
           "response": []
         },
         {
-          "name": "Positions :: Calculate",
+          "name": "Positions — Calculate",
           "id": "a63a97c0-6388-470b-bd03-96a05664e3ac",
           "request": {
             "auth": {
@@ -257,7 +257,7 @@
           "response": []
         },
         {
-          "name": "Performance :: Calculate",
+          "name": "Performance — Calculate",
           "id": "961552e8-3093-4a7f-b274-be7a2112a7f7",
           "request": {
             "auth": {
@@ -288,7 +288,7 @@
           "response": []
         },
         {
-          "name": "Prices :: Backfill",
+          "name": "Prices — Backfill",
           "id": "93e79d4b-673a-42d1-ad8f-dd1dc1d0c7a0",
           "request": {
             "auth": {
@@ -319,7 +319,7 @@
           "response": []
         },
         {
-          "name": "Prices :: Refresh",
+          "name": "Prices — Refresh",
           "id": "02563e05-879c-4476-9c1b-2e6c45f57430",
           "request": {
             "auth": {
@@ -350,7 +350,7 @@
           "response": []
         },
         {
-          "name": "Quotes :: Refresh",
+          "name": "Quotes — Refresh",
           "id": "e0e30eab-c52c-4621-b6e6-98c4b7b763e4",
           "request": {
             "auth": {
@@ -381,7 +381,7 @@
           "response": []
         },
         {
-          "name": "Snapshots :: Backfill",
+          "name": "Snapshots — Backfill",
           "id": "8746da66-12a2-4e28-91aa-f5ca2c6a4f8f",
           "request": {
             "auth": {
@@ -412,7 +412,7 @@
           "response": []
         },
         {
-          "name": "Snapshots :: Calculate",
+          "name": "Snapshots — Calculate",
           "id": "837514a0-ed8b-4c46-928e-55b45279ffb9",
           "request": {
             "auth": {
@@ -443,7 +443,7 @@
           "response": []
         },
         {
-          "name": "Valuations :: Backfill",
+          "name": "Valuations — Backfill",
           "id": "01c8d96c-eb33-4a78-b21e-6a09f941ebff",
           "request": {
             "auth": {
@@ -474,7 +474,7 @@
           "response": []
         },
         {
-          "name": "Valuations :: Calculate",
+          "name": "Valuations — Calculate",
           "id": "4ab82bf0-28b1-4207-b45f-988a6b5a0b11",
           "request": {
             "auth": {
@@ -582,7 +582,26 @@
           "response": []
         },
         {
-          "name": "Portfolio Latest Valuation",
+          "name": "Portfolio — Positions",
+          "id": "c84f5c98-a8d7-400c-a300-d3c9d1f3282a",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}portfolios/3/positions",
+              "host": [
+                "{{BaseUrl}}portfolios"
+              ],
+              "path": [
+                "3",
+                "positions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Portfolio — Valuations — Latest",
           "id": "63937bbd-3faa-4771-96bb-ce01ba324bd1",
           "request": {
             "method": "GET",
@@ -596,37 +615,6 @@
                 "3",
                 "valuations",
                 "latest"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Portfolio Valuations",
-          "id": "faa82356-46e8-4642-b284-cdecde5877ef",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}portfolios/3/valuations?from=2005-01-01&to=2025-12-14",
-              "host": [
-                "{{BaseUrl}}portfolios"
-              ],
-              "path": [
-                "3",
-                "valuations"
-              ],
-              "query": [
-                {
-                  "key": "from",
-                  "value": "2005-01-01",
-                  "uuid": "803d21d6-e67c-4d5a-a2b7-dab519c3f9ef"
-                },
-                {
-                  "key": "to",
-                  "value": "2025-12-14",
-                  "uuid": "cf22951b-c3fa-44f2-b3be-7b7964ac42af"
-                }
               ]
             }
           },
@@ -669,26 +657,6 @@
               ],
               "path": [
                 "asset-classes"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Asset Class — Subclasses",
-          "id": "7bf9917b-5377-40c5-8ed3-b4b60bd149bf",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/asset-classes/2/subclasses",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "asset-classes",
-                "2",
-                "subclasses"
               ]
             }
           },
