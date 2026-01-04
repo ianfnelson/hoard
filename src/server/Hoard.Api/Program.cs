@@ -1,6 +1,11 @@
+using Hoard.Api.EventHandlers;
+using Hoard.Api.Hubs;
 using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
+using Hoard.Messages.Performance;
+using Rebus.Bus;
+using Rebus.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +26,8 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 builder.Services
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging(applicationInsightsConnectionString)
-    .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.api")
+    .AutoRegisterHandlersFromAssemblyOf<PortfolioUpdatedSignalRHandler>()
+    .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.api")
     .AddHoardServices()
     .AddHoardApplication()
     .AddTelemetryInitializer("hoard.api")
@@ -29,6 +35,7 @@ builder.Services
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 await app.ApplyMigrationsAndSeedAsync();
@@ -46,4 +53,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var bus = scope.ServiceProvider.GetRequiredService<IBus>();
+    await bus.Subscribe<PortfolioPerformanceCalculatedEvent>();
+}
+
+app.MapHub<PortfolioHub>(PortfolioHub.HubPath);
+
 app.Run();
