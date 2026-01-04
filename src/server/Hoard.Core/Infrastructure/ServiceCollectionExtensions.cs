@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
                         .UseRabbitMqAsOneWayClient(rabbitConnectionString)
                         .ClientConnectionName(connectionName)) :
                     configure.Transport(t => t
-                        .UseRabbitMq(rabbitConnectionString, "hoard.bus")
+                        .UseRabbitMq(rabbitConnectionString, connectionName)
                         .ClientConnectionName(connectionName));
             
                 if (!sendOnly)
