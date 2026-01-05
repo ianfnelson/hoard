@@ -3,6 +3,7 @@ using Hangfire;
 using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Chrono;
+using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Quotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,7 @@ public class SchedulerBootstrapper : IHostedService
     {
         _logger.LogInformation("Registering Hoard Scheduler jobs...");
 
+        RegisterStartOfDay();
         RegisterCloseOfDay();
         RegisterRefreshQuotes();
         
@@ -49,6 +51,15 @@ public class SchedulerBootstrapper : IHostedService
         );
     }
 
+    private void RegisterStartOfDay()
+    {
+        _recurring.AddOrUpdate(
+            "start-of-day",
+            () => TriggerStartOfDayCommand(),
+            "0 6 * * *" // daily at 06:00
+        );
+    }
+    
     private void RegisterCloseOfDay()
     {
         _recurring.AddOrUpdate(
@@ -87,6 +98,18 @@ public class SchedulerBootstrapper : IHostedService
         var today = DateOnlyHelper.TodayLocal();
         
         var command = new TriggerCloseOfDayRunCommand(today);
+        
+        await _mediator.SendAsync(command);
+    }
+    
+    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
+    public async Task TriggerStartOfDayCommand()
+    {
+        using var activity = ActivitySource.StartActivity();
+        
+        _logger.LogInformation("Triggering Start Of Day");
+        
+        var command = new TriggerCalculatePerformanceCommand(null);
         
         await _mediator.SendAsync(command);
     }
