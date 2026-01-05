@@ -40,7 +40,7 @@ const header_data = [
 
 // Shape rows for the table (keep template dumb)
 const rows = computed(() =>
-  store.openPositions.map(p => ({
+  store.openPositionsList.map(p => ({
     instrumentTicker: p.instrumentTicker,
     instrumentName: p.instrumentName,
     value: p.performance?.value,

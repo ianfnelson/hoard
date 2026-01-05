@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public record GetPortfolioPositionsQuery(int PortfolioId) : IQuery<PortfolioPositionsDto?>;
+public record GetPortfolioPositionsQuery(int PortfolioId, bool? IsOpen) : IQuery<PortfolioPositionsDto?>;
 
 public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortfolioHandler> logger)
     : IQueryHandler<GetPortfolioPositionsQuery, PortfolioPositionsDto?>
@@ -22,9 +22,16 @@ public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortf
         
         var portfolioValuation = await GetLatestPortfolioValuation(query, ct);
         
-        var positions = await context.Positions
+        var q = context.Positions
             .AsNoTracking()
-            .Where(p => p.PortfolioId == query.PortfolioId)
+            .Where(p => p.PortfolioId == query.PortfolioId);
+
+        if (query.IsOpen.HasValue)
+        {
+            q = query.IsOpen.Value ? q.Where(p => p.CloseDate == null) : q.Where(p => p.CloseDate != null);
+        }
+        
+        var positions = await q
             .Select(p => new PortfolioPositionDto
             {
                 InstrumentId = p.InstrumentId,

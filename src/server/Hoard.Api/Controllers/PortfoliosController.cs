@@ -84,11 +84,9 @@ public class PortfoliosController(IMediator mediator)
     [HttpGet("{id:int}/positions")]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PortfolioPositionsDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PortfolioPositionsDto>> GetPositions(int id, [FromQuery] PositionStatus? status, CancellationToken ct)
+    public async Task<ActionResult<PortfolioPositionsDto>> GetPositions(int id, [FromQuery] bool? isOpen, CancellationToken ct)
     {
-        // This needs more filters, sort, search in the query object. 
-        
-        var query = new GetPortfolioPositionsQuery(id);
+        var query = new GetPortfolioPositionsQuery(id, isOpen);
         
         var dto = await mediator.QueryAsync<GetPortfolioPositionsQuery, PortfolioPositionsDto?>(query, ct);
         
