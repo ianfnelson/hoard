@@ -50,7 +50,7 @@ const rows = computed(() =>
     returnAllTime: p.performance?.returnAllTime,
     annualisedReturn: p.performance?.annualisedReturn,
     portfolioPercentage: p.portfolioPercentage,
-    profit: p.performance ? p.performance?.unrealisedGain + p.performance?.realisedGain + p.performance?.income : null
+    profit: p.performance?.profit
   }))
 );
 </script>
