@@ -12,7 +12,7 @@ public class ProcessRefreshQuotesHandler(
     IBus bus, HoardContext context)
     : ICommandHandler<ProcessRefreshQuotesCommand>
 {
-    private const int BatchSize = 5;
+    private const int BatchSize = 10;
     
     public async Task HandleAsync(ProcessRefreshQuotesCommand command, CancellationToken ct = default)
     {

@@ -45,7 +45,7 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "refresh-quotes",
             () => TriggerRefreshQuotesCommand(),
-            "*/2 8-17 * * 1-5" // every two minutes during UK trading hours
+            "*/1 8-17 * * 1-5" // every minute during UK trading hours
         );
     }
 
