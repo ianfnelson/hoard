@@ -10,10 +10,12 @@ public class PositionPerformanceDto
     public decimal PreviousValue { get; set; }
     public decimal ValueChange { get; set; }
     
-    // Gains breakdown
+    // Gains breakdown and total
     public decimal UnrealisedGain { get; set; }
     public decimal RealisedGain { get; set; }
+    public decimal Gain { get; set; }
     public decimal Income { get; set; }
+    public decimal Profit { get; set; }
     
     // Returns
     public decimal? Return1D { get; set; }

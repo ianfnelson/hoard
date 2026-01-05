@@ -10,7 +10,9 @@ export interface PositionPerformanceDto {
   // Gains breakdown
   unrealisedGain: number;
   realisedGain: number;
+  gain: number;
   income: number;
+  profit: number;
 
   // Returns (nullable = insufficient history)
   return1D: number | null;
