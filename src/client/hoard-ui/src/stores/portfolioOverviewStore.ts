@@ -11,21 +11,16 @@ export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => 
   const portfolio = ref<PortfolioDetailDto | null>(null);
   const positions = ref<PortfolioPositionsDto | null>(null);
 
+  const openPositionsList = computed(() =>
+    positions.value?.positions ?? []
+  );
+
   const isLoading = ref(false)
   const lastUpdated = ref<Date | null>(null)
   const error = ref<string | null>(null)
 
   const hubConnection = ref<signalR.HubConnection | null>(null)
   const hubStarted = ref(false)
-
-  const openPositions = computed(() => {
-    if (!positions.value) {
-      return [];
-    }
-    return positions.value.positions.filter(
-      p => p.closeDate === null
-    );
-  });
 
   async function ensureSignalR() {
     if (hubConnection.value && hubStarted.value) {
@@ -96,7 +91,7 @@ export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => 
     try {
       const [portfolioResult, positionsResult] = await Promise.all([
         getPortfolioDetail(portfolioId.value),
-        getPortfolioPositions(portfolioId.value)
+        getPortfolioPositions(portfolioId.value, { isOpen: true })
       ])
 
       portfolio.value = portfolioResult
@@ -126,7 +121,7 @@ export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => 
     portfolio,
 
     // derived state
-    openPositions,
+    openPositionsList,
 
     // lifecycle
     isLoading,
