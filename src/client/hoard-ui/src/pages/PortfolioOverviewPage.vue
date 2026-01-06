@@ -3,6 +3,7 @@ import { onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 
 import { usePortfolioOverviewStore } from "@/stores/portfolioOverviewStore";
+import SummaryCard from "@/components/SummaryCard.vue";
 
 const route = useRoute();
 const store = usePortfolioOverviewStore();
@@ -56,13 +57,59 @@ const rows = computed(() =>
 </script>
 
 <template>
-  <v-container>
-    <v-card :loading="store.isLoading">
-      <v-card-title>
-        {{ store.portfolio?.name || '' }}
-      </v-card-title>
+  <v-container fluid>
+    <!-- Portfolio header -->
+    <v-row class="mb-2">
+      <v-col>
+        <v-toolbar density="compact">
+          <v-toolbar-title class="text-h6">
+            {{ store.portfolio?.name || '' }}
+          </v-toolbar-title>
+          <v-spacer />
+          <div class="text-caption text-medium-emphasis">
+            Last updated: {{ store.portfolio?.performance?.updatedUtc?.toLocaleString() || '' }}
+          </div>
+        </v-toolbar>
+      </v-col>
+    </v-row>
 
-      <v-card-text>
+    <!-- Summary strip -->
+    <v-row dense class="mb-4">
+      <v-col cols="12" sm="6" md="3">
+        <summary-card
+          title="Portfolio value"
+          :value="store.portfolio?.performance?.value?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="3">
+        <summary-card
+          title="Cash"
+          :value="store.portfolio?.performance?.cashValue?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
+          :secondary="store.portfolio?.performance?.cashPercentage.toFixed(2) || '' "
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="3">
+        <summary-card
+          title="Day change"
+          :value="store.portfolio?.performance?.valueChange?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
+          :secondary="store.portfolio?.performance?.return1D?.toFixed(2) || '' "
+          :trend="store.portfolio?.performance?.valueChange"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="3">
+        <summary-card
+          title="Year change"
+          :value="store.portfolio?.performance?.return1Y?.toFixed(2) || ''"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Positions table -->
+    <v-row>
+      <v-col>
         <v-data-table
           :headers="header_data"
           :items="rows"
@@ -108,7 +155,7 @@ const rows = computed(() =>
             No open positions
           </template>
         </v-data-table>
-      </v-card-text>
-    </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
