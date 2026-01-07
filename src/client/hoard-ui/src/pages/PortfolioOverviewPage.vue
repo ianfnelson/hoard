@@ -32,7 +32,6 @@ const header_data = [
   { title: "Value", key: "value", align: 'end' },
   { title: "Change", key: "valueChange", align: 'end'},
   { title: "1D", key: "return1D", align: 'end'},
-  { title: "1Y", key: "return1Y", align: 'end'},
   { title: "Profit", key: "profit", align: 'end'},
   { title: "All", key: "returnAllTime", align: 'end'},
   { title: "Annual", key: "annualisedReturn", align: 'end'},
@@ -47,7 +46,6 @@ const rows = computed(() =>
     value: p.performance?.value,
     valueChange: p.performance?.valueChange,
     return1D: p.performance?.return1D,
-    return1Y: p.performance?.return1Y,
     returnAllTime: p.performance?.returnAllTime,
     annualisedReturn: p.performance?.annualisedReturn,
     portfolioPercentage: p.portfolioPercentage,
@@ -65,9 +63,8 @@ const rows = computed(() =>
           <v-toolbar-title class="text-h6">
             {{ store.portfolio?.name || '' }}
           </v-toolbar-title>
-          <v-spacer />
-          <div class="text-caption text-medium-emphasis">
-            Last updated: {{ store.portfolio?.performance?.updatedUtc?.toLocaleString() || '' }}
+          <div class="text-caption pr-4">
+            {{ store.portfolio?.performance?.updatedUtc?.toLocaleString() || '' }}
           </div>
         </v-toolbar>
       </v-col>
@@ -75,14 +72,14 @@ const rows = computed(() =>
 
     <!-- Summary strip -->
     <v-row dense class="mb-4">
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="6" sm="3">
         <summary-card
           title="Portfolio value"
           :value="store.portfolio?.performance?.value?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
         />
       </v-col>
 
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="6" sm="3">
         <summary-card
           title="Cash"
           :value="store.portfolio?.performance?.cashValue?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
@@ -90,7 +87,7 @@ const rows = computed(() =>
         />
       </v-col>
 
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="6" sm="3">
         <summary-card
           title="Day change"
           :value="store.portfolio?.performance?.valueChange?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
@@ -99,7 +96,7 @@ const rows = computed(() =>
         />
       </v-col>
 
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="6" sm="3">
         <summary-card
           title="Year change"
           :value="store.portfolio?.performance?.return1Y?.toFixed(2) || ''"
@@ -129,10 +126,6 @@ const rows = computed(() =>
 
           <template #item.return1D="{ value }">
             {{ value.toFixed(2) || '' }}
-          </template>
-
-          <template #item.return1Y="{ value }">
-            {{ value?.toFixed(2) || '' }}
           </template>
 
           <template #item.profit="{ value }">
