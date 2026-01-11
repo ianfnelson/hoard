@@ -137,8 +137,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
             AssetSubclassCode = i.AssetSubclass.Code,
             AssetSubclassName = i.AssetSubclass.Name,
 
-            BaseCurrencyId = i.BaseCurrencyId,
-            QuoteCurrencyId = i.QuoteCurrencyId
+            CurrencyId = i.CurrencyId,
         };
     }
 }

@@ -94,7 +94,7 @@ public class ProcessCalculateHoldingsValuationHandler(
 
     private async Task<decimal> GetFxRate(Holding holding, CancellationToken ct = default)
     {
-        return holding.Instrument.QuoteCurrencyId switch
+        return holding.Instrument.CurrencyId switch
         {
             Currency.Gbp => 1M,
             Currency.Gbx => 100M,
@@ -103,7 +103,7 @@ public class ProcessCalculateHoldingsValuationHandler(
             Currency.Jpy => await GetLatestPriceForFxInstrument(Instrument.GbpJpy, holding.AsOfDate, ct),
             Currency.Dkk => await GetLatestPriceForFxInstrument(Instrument.GbpDkk, holding.AsOfDate, ct),
             Currency.Sek => await GetLatestPriceForFxInstrument(Instrument.GbpSek, holding.AsOfDate, ct),
-            _ => throw new InvalidOperationException($"Unknown currency {holding.Instrument.QuoteCurrencyId}")
+            _ => throw new InvalidOperationException($"Unknown currency {holding.Instrument.CurrencyId}")
         };
     }
 
