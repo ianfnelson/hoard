@@ -38,14 +38,9 @@ public class InstrumentConfiguration : IEntityTypeConfiguration<Instrument>
             .HasForeignKey(i => i.InstrumentTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(i => i.BaseCurrency)
+        builder.HasOne(i => i.Currency)
             .WithMany()
-            .HasForeignKey(i => i.BaseCurrencyId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(i => i.QuoteCurrency)
-            .WithMany()
-            .HasForeignKey(i => i.QuoteCurrencyId)
+            .HasForeignKey(i => i.CurrencyId)
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasIndex(i => i.Isin).IsUnique();

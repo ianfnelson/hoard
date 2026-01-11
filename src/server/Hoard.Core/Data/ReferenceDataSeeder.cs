@@ -199,23 +199,23 @@ public class ReferenceDataSeeder
         var items = new[]
         {
             new Instrument { Id = Instrument.Cash, Name = "Cash (GBP)", InstrumentTypeId = InstrumentType.Cash, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Gbp, EnablePriceUpdates = false,
+                CurrencyId = Currency.Gbp, EnablePriceUpdates = false,
                 Ticker = "CASH", AssetSubclassId = 15},
 
             new Instrument { Id = Instrument.GbpUsd, Name = "GBP/USD", InstrumentTypeId = InstrumentType.FxPair, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Usd, Ticker = "GBPUSD", 
+                CurrencyId = Currency.Usd, Ticker = "GBPUSD", 
                 TickerApi = "GBPUSD=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
             new Instrument { Id = Instrument.GbpEur, Name = "GBP/EUR", InstrumentTypeId = InstrumentType.FxPair, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Eur, Ticker = "GBPEUR", 
+                CurrencyId = Currency.Eur, Ticker = "GBPEUR", 
                 TickerApi = "GBPEUR=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
             new Instrument { Id = Instrument.GbpJpy, Name = "GBP/JPY", InstrumentTypeId = 6, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Jpy, Ticker = "GBPJPY", 
+                CurrencyId = Currency.Jpy, Ticker = "GBPJPY", 
                 TickerApi = "GBPJPY=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
             new Instrument { Id = Instrument.GbpDkk, Name = "GBP/DKK", InstrumentTypeId = 6, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Dkk, Ticker = "GBPDKK", 
+                CurrencyId = Currency.Dkk, Ticker = "GBPDKK", 
                 TickerApi = "GBPDKK=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
             new Instrument { Id = Instrument.GbpSek, Name = "GBP/SEK", InstrumentTypeId = 6, 
-                BaseCurrencyId = Currency.Gbp, QuoteCurrencyId = Currency.Sek, Ticker = "GBPSEK", 
+                CurrencyId = Currency.Sek, Ticker = "GBPSEK", 
                 TickerApi = "GBPSEK=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
         };
 

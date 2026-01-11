@@ -10,11 +10,8 @@ public partial class Instrument : Entity<int>
     public int AssetSubclassId { get; set; }
     public AssetSubclass AssetSubclass { get; set; } = null!;
     
-    public required string BaseCurrencyId { get; set; }
-    public Currency BaseCurrency { get; set; } = null!;
-    
-    public required string QuoteCurrencyId { get; set; }
-    public Currency QuoteCurrency { get; set; } = null!;
+    public required string CurrencyId { get; set; }
+    public Currency Currency { get; set; } = null!;
     
     public string? TickerApi { get; set; }
     public required string Ticker { get; set; }

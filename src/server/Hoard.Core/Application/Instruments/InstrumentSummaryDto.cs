@@ -26,6 +26,5 @@ public class InstrumentSummaryDto
     public required string AssetSubclassCode { get; set; }
     public required string AssetSubclassName { get; set; }
     
-    public required string BaseCurrencyId { get; set; }
-    public required string QuoteCurrencyId { get; set; }
+    public required string CurrencyId { get; set; }
 }
