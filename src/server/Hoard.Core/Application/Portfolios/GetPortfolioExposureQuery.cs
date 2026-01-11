@@ -159,6 +159,7 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
                 DeviationValue = x.DeviationValue.RoundTo2Dp(),
                 DeviationPercentage = x.DeviationPercentage
             })
+            .OrderByDescending(x => x.ActualPercentage)
             .ToList();
 
         // ------------------------------------------------------------------
@@ -181,7 +182,7 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
                     var targetPct = g.Sum(x => x.TargetPercentage);
                     
                     var deviationValue = g.Sum(x => x.DeviationValue);
-                    var deviationPct = g.Sum(x => x.DeviationPercentage);
+                    var deviationPct = targetPct == 0.0M ? 0.0M : 100.0M * (actualPct - targetPct) / targetPct;
 
                     return new AssetClassExposureDto
                     {
