@@ -1,9 +1,0 @@
-namespace Hoard.Core.Domain.Entities;
-
-public partial class TransactionSubcategory : Entity<int>
-{
-    public int TransactionCategoryId { get; set; }
-    public TransactionCategory TransactionCategory { get; set; } = null!;
-    
-    public required string Name { get; set; }
-}

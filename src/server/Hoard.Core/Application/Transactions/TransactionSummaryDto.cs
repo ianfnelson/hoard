@@ -11,8 +11,8 @@ public class TransactionSummaryDto
     public required string InstrumentName { get; set; }
     public required string InstrumentTicker { get; set; }
     
-    public int CategoryId { get; set; }
-    public required string CategoryName { get; set; }
+    public int TransactionTypeId { get; set; }
+    public required string TransactionTypeName { get; set; }
     
     public DateOnly Date { get; set; }
     public required string ContractNoteReference { get; set; }

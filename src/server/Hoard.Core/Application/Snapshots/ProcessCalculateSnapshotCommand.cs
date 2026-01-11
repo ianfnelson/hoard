@@ -47,46 +47,42 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
     private static void CalculateTransactionMetrics(PortfolioSnapshot snapshot, List<Transaction> t)
     {
         snapshot.CountTrades =
-            t.Count(x => x.CategoryId is TransactionCategory.Buy or TransactionCategory.Sell);
+            t.Count(x => x.TransactionTypeId is TransactionType.Buy or TransactionType.Sell);
 
         snapshot.TotalBuys = t
-            .Where(x => x.CategoryId == TransactionCategory.Buy ||
-                        x is { CategoryId: TransactionCategory.CorporateAction, Value: < decimal.Zero })
+            .Where(x => x.TransactionTypeId == TransactionType.Buy ||
+                        x is { TransactionTypeId: TransactionType.CorporateAction, Value: < decimal.Zero })
             .Sum(x => -x.Value);
         
         snapshot.TotalSells = t
-            .Where(x => x.CategoryId == TransactionCategory.Sell ||
-                        x is { CategoryId: TransactionCategory.CorporateAction, Value: > decimal.Zero })
+            .Where(x => x.TransactionTypeId == TransactionType.Sell ||
+                        x is { TransactionTypeId: TransactionType.CorporateAction, Value: > decimal.Zero })
             .Sum(x => x.Value);
         
-        snapshot.TotalIncome = GetTransactionTotal(t, TransactionCategory.Income, null);
-        snapshot.TotalIncomeInterest = GetTransactionTotal(t, TransactionCategory.Income, TransactionSubcategory.Interest);
-        snapshot.TotalIncomeLoyaltyBonus = GetTransactionTotal(t, TransactionCategory.Income, TransactionSubcategory.LoyaltyBonus);
-        snapshot.TotalIncomePromotion = GetTransactionTotal(t, TransactionCategory.Income, TransactionSubcategory.Promotion);
-        snapshot.TotalIncomeDividends = GetTransactionTotal(t, TransactionCategory.Income, TransactionSubcategory.Dividend);
+        snapshot.TotalIncomeInterest = GetTransactionTotal(t, TransactionType.IncomeInterest);
+        snapshot.TotalIncomeLoyaltyBonus = GetTransactionTotal(t, TransactionType.IncomeLoyaltyBonus);
+        snapshot.TotalIncomePromotion = GetTransactionTotal(t, TransactionType.IncomePromotion);
+        snapshot.TotalIncomeDividends = GetTransactionTotal(t, TransactionType.IncomeDividend);
 
-        snapshot.TotalFees = -GetTransactionTotal(t, TransactionCategory.Fee, null);
+        snapshot.TotalFees = -GetTransactionTotal(t, TransactionType.Fee);
         
         snapshot.TotalDealingCharge = t.Sum(x => x.DealingCharge ?? decimal.Zero);
         snapshot.TotalStampDuty = t.Sum(x => x.StampDuty ?? decimal.Zero);
         snapshot.TotalPtmLevy = t.Sum(x => x.PtmLevy ?? decimal.Zero);
         snapshot.TotalFxCharge = t.Sum(x => x.FxCharge ?? decimal.Zero);
         
-        snapshot.TotalDeposits = GetTransactionTotal(t, TransactionCategory.Deposit, null);
-        snapshot.TotalDepositEmployer = GetTransactionTotal(t, TransactionCategory.Deposit, TransactionSubcategory.EmployerContribution);
-        snapshot.TotalDepositIncomeTaxReclaim = GetTransactionTotal(t, TransactionCategory.Deposit, TransactionSubcategory.IncomeTaxReclaim);
-        snapshot.TotalDepositTransferIn = GetTransactionTotal(t, TransactionCategory.Deposit, TransactionSubcategory.TransferIn);
-        snapshot.TotalDepositPersonal = GetTransactionTotal(t, TransactionCategory.Deposit, TransactionSubcategory.PersonalContribution);
+        snapshot.TotalDepositEmployer = GetTransactionTotal(t, TransactionType.DepositEmployer);
+        snapshot.TotalDepositIncomeTaxReclaim = GetTransactionTotal(t, TransactionType.DepositIncomeTaxReclaim);
+        snapshot.TotalDepositTransferIn = GetTransactionTotal(t, TransactionType.DepositTransfer);
+        snapshot.TotalDepositPersonal = GetTransactionTotal(t, TransactionType.DepositPersonal);
         
-        snapshot.TotalWithdrawals = GetTransactionTotal(t, TransactionCategory.Withdrawal, null);
+        snapshot.TotalWithdrawals = GetTransactionTotal(t, TransactionType.Withdrawal);
     }
 
-    private static decimal GetTransactionTotal(List<Transaction> transactions, int categoryId,
-        int? subcategoryId)
+    private static decimal GetTransactionTotal(List<Transaction> transactions, int transactionTypeId)
     {
         return transactions
-            .Where(x => x.CategoryId == categoryId)
-            .Where(x => x.SubcategoryId == subcategoryId || subcategoryId == null)
+            .Where(x => x.TransactionTypeId == transactionTypeId)
             .Sum(x => x.Value);
     }
 

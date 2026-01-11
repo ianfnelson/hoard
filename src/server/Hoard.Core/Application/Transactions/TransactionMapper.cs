@@ -15,7 +15,7 @@ public class TransactionMapper
     public void Map(TransactionWriteDto source, Transaction destination)
     {
         destination.AccountId = source.AccountId!.Value;
-        destination.CategoryId = source.CategoryId!.Value;
+        destination.TransactionTypeId = source.TransactionTypeId!.Value;
         destination.ContractNoteReference = source.ContractNoteReference;
         destination.Date = source.Date!.Value;
         destination.DealingCharge = source.DealingCharge;
@@ -24,7 +24,6 @@ public class TransactionMapper
         destination.Notes = source.Notes;
         destination.PtmLevy = source.PtmLevy;
         destination.StampDuty = source.StampDuty;
-        destination.SubcategoryId = source.SubcategoryId!.Value;
         destination.Units = source.Units;
         destination.Value = source.Value!.Value;
     }

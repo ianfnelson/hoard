@@ -24,8 +24,7 @@ public class ReferenceDataSeeder
         await SeedAssetClassesAsync();
         await SeedAssetSubclassesAsync();
         await SeedInstrumentTypesAsync();
-        await SeedTransactionCategoriesAsync();
-        await SeedTransactionSubcategoriesAsync();
+        await SeedTransactionTypesAsync();
         
         await _context.SaveChangesAsync(cancellationToken);
         
@@ -123,75 +122,25 @@ public class ReferenceDataSeeder
         await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);
     }
     
-    private async Task SeedTransactionCategoriesAsync()
+    private async Task SeedTransactionTypesAsync()
     {
         var items = new[]
         {
-            new TransactionCategory { Id = TransactionCategory.Buy, Name = "Buy" },
-            new TransactionCategory { Id = TransactionCategory.Sell, Name = "Sell" },
-            new TransactionCategory { Id = TransactionCategory.Income, Name = "Income" },
-            new TransactionCategory { Id = TransactionCategory.Fee, Name = "Fee" },
-            new TransactionCategory { Id = TransactionCategory.Deposit, Name = "Deposit" },
-            new TransactionCategory { Id = TransactionCategory.Withdrawal, Name = "Withdrawal" },
-            new TransactionCategory { Id = TransactionCategory.CorporateAction, Name = "Corporate Action" }
+            new TransactionType { Id = TransactionType.Buy, Name = "Buy" },
+            new TransactionType { Id = TransactionType.Sell, Name = "Sell" },
+            new TransactionType { Id = TransactionType.CorporateAction, Name = "Corporate Action" },
+            new TransactionType { Id = TransactionType.DepositPersonal, Name = "Deposit — Personal" },
+            new TransactionType { Id = TransactionType.DepositEmployer, Name = "Deposit — Employer" },
+            new TransactionType { Id = TransactionType.DepositTransfer, Name = "Deposit — Transfer" },
+            new TransactionType { Id = TransactionType.DepositIncomeTaxReclaim, Name = "Deposit — Income Tax Reclaim" },
+            new TransactionType { Id = TransactionType.Withdrawal, Name = "Withdrawal" },
+            new TransactionType { Id = TransactionType.Fee, Name = "Fee" },
+            new TransactionType { Id = TransactionType.IncomeInterest, Name = "Income — Interest" },
+            new TransactionType { Id = TransactionType.IncomeLoyaltyBonus, Name = "Income — Loyalty Bonus" },
+            new TransactionType { Id = TransactionType.IncomePromotion, Name = "Income — Promotion" },
+            new TransactionType { Id = TransactionType.IncomeDividend, Name = "Income — Dividend" },
         };
-        await UpsertAsync(_context.TransactionCategories, items, x => x.Id);
-    }
-    
-    private async Task SeedTransactionSubcategoriesAsync()
-    {
-        var items = new[]
-        {
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.PersonalContribution, 
-                Name = "Personal Contribution", 
-                TransactionCategoryId = TransactionCategory.Deposit
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.EmployerContribution, 
-                Name = "Employer Contribution", 
-                TransactionCategoryId = TransactionCategory.Deposit
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.IncomeTaxReclaim, 
-                Name = "Income Tax Reclaim", 
-                TransactionCategoryId = TransactionCategory.Deposit
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.TransferIn, 
-                Name = "Transfer In", 
-                TransactionCategoryId = TransactionCategory.Deposit
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.Interest, 
-                Name = "Interest", 
-                TransactionCategoryId = TransactionCategory.Income
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.LoyaltyBonus, 
-                Name = "Loyalty Bonus", 
-                TransactionCategoryId = TransactionCategory.Income
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.Promotion, 
-                Name = "Promotion", 
-                TransactionCategoryId = TransactionCategory.Income
-            },
-            new TransactionSubcategory
-            {
-                Id = TransactionSubcategory.Dividend, 
-                Name = "Dividend / Tax Credit", 
-                TransactionCategoryId = TransactionCategory.Income
-            }
-        };
-        await UpsertAsync(_context.TransactionSubcategories, items, x => x.Id);
+        await UpsertAsync(_context.TransactionTypes, items, x => x.Id);
     }
     
     private async Task SeedInstrumentsAsync()
@@ -244,7 +193,7 @@ public class ReferenceDataSeeder
         foreach (var item in seedItems)
         {
             var key = keySelector(item);
-            if (existingMap.TryGetValue(key, out var existingItem))
+            if (existingMap.TryGetValue(key, out _))
             {
                 // Update the tracked entity
                 dbSet.Attach(item);

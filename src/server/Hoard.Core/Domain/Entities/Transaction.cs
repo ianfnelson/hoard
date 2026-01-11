@@ -8,11 +8,8 @@ public class Transaction : Entity<int>
     public int? InstrumentId { get; set; }
     public Instrument? Instrument { get; set; }
     
-    public int CategoryId { get; set; }
-    public TransactionCategory Category { get; set; } = null!;
-    
-    public int? SubcategoryId { get; set; }
-    public TransactionSubcategory? Subcategory { get; set; }
+    public int TransactionTypeId { get; set; }
+    public TransactionType TransactionType { get; set; } = null!;
     
     public DateOnly Date { get; set; }
     public string? Notes { get; set; }

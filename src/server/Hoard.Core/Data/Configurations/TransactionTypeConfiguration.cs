@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hoard.Core.Data.Configurations;
 
-public class TransactionCategoryConfiguration : IEntityTypeConfiguration<TransactionCategory>
+public class TransactionTypeConfiguration : IEntityTypeConfiguration<TransactionType>
 {
-    public void Configure(EntityTypeBuilder<TransactionCategory> builder)
+    public void Configure(EntityTypeBuilder<TransactionType> builder)
     {
-        builder.ToTable("TransactionCategory");
+        builder.ToTable("TransactionType");
         
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id)

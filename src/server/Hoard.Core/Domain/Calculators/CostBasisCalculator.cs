@@ -13,16 +13,16 @@ public static class CostBasisCalculator
 
         foreach (var f in transactions.OrderBy(x => x.Date))
         {
-            switch (f.CategoryId)
+            switch (f.TransactionTypeId)
             {
-                case TransactionCategory.Buy:
+                case TransactionType.Buy:
                 {
                     totalUnits += f.Units!.Value;
                     totalCost  -= f.Value;
                     break;
                 }
 
-                case TransactionCategory.Sell:
+                case TransactionType.Sell:
                 {
                     var unitsSold = f.Units!.Value;
                     var saleProceeds = f.Value;
@@ -48,7 +48,7 @@ public static class CostBasisCalculator
                     break;
                 }
 
-                case TransactionCategory.CorporateAction:
+                case TransactionType.CorporateAction:
                 {
                     totalUnits += f.Units!.Value;
                     totalCost  -= f.Value;

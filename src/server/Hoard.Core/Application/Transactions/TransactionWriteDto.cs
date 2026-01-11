@@ -3,9 +3,8 @@ namespace Hoard.Core.Application.Transactions;
 public class TransactionWriteDto
 {
     public int? AccountId { get; set; }
-    public int? CategoryId { get; set; }
-    public int? SubcategoryId { get; set; }
     public int? InstrumentId { get; set; }
+    public int? TransactionTypeId { get; set; }
     public DateOnly? Date { get; set; }
     public string? Notes { get; set; }
     public decimal? Units { get; set; }

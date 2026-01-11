@@ -12,8 +12,8 @@ public sealed class GetTransactionsQuery
     public DateOnly? FromDate { get; init; }
     public DateOnly? ToDate { get; init; }
     public int? AccountId { get; init; }
-    public int? CategoryId { get; init; }
     public int? InstrumentId { get; init; }
+    public int? TransactionTypeId { get; init; }
 
     // Search
     public string? Search { get; init; }
@@ -69,8 +69,8 @@ public sealed class GetTransactionsHandler(HoardContext context)
         if (request.AccountId.HasValue)
             query = query.Where(t => t.AccountId == request.AccountId.Value);
         
-        if (request.CategoryId.HasValue)
-            query = query.Where(t => t.CategoryId == request.CategoryId.Value);
+        if (request.TransactionTypeId.HasValue)
+            query = query.Where(t => t.TransactionTypeId == request.TransactionTypeId.Value);
         
         if (request.InstrumentId.HasValue)
             query = query.Where(t => t.InstrumentId == request.InstrumentId.Value);
@@ -132,8 +132,8 @@ public sealed class GetTransactionsHandler(HoardContext context)
             InstrumentName = t.Instrument != null ? t.Instrument.Name : "",
             InstrumentTicker = t.Instrument != null ? t.Instrument.Ticker : "",
             
-            CategoryId = t.CategoryId,
-            CategoryName = t.Category.Name
+            TransactionTypeId = t.TransactionTypeId,
+            TransactionTypeName = t.TransactionType.Name
         };
     }
 }
