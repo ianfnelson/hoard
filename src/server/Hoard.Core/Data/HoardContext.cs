@@ -25,8 +25,7 @@ public class HoardContext : DbContext
     public DbSet<PositionPerformance> PositionPerformances => Set<PositionPerformance>();
     public DbSet<Price> Prices => Set<Price>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
-    public DbSet<TransactionCategory> TransactionCategories => Set<TransactionCategory>();
-    public DbSet<TransactionSubcategory> TransactionSubcategories => Set<TransactionSubcategory>();
+    public DbSet<TransactionType> TransactionTypes => Set<TransactionType>();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

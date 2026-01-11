@@ -14,7 +14,6 @@ public class PortfolioSnapshotDto
     
     public decimal TotalBuys { get; set; }
     public decimal TotalSells { get; set; }
-    public decimal TotalIncome { get; set; }
     public decimal TotalIncomeInterest { get; set; }
     public decimal TotalIncomeLoyaltyBonus { get; set; }
     public decimal TotalIncomePromotion { get; set; }
@@ -24,7 +23,6 @@ public class PortfolioSnapshotDto
     public decimal TotalStampDuty { get; set; }
     public decimal TotalPtmLevy { get; set; }
     public decimal TotalFxCharge { get; set; }
-    public decimal TotalDeposits { get; set; }
     public decimal TotalDepositPersonal { get; set; }
     public decimal TotalDepositEmployer { get; set; }
     public decimal TotalDepositIncomeTaxReclaim { get; set; }

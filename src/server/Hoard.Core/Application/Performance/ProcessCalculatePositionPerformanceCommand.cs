@@ -116,7 +116,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         var (position, a, h, t, today, previousDay) = ctx;
         
         perf.Income = t
-            .Where(x => x.CategoryId == TransactionCategory.Income)
+            .Where(x => TransactionTypeSets.Income.Contains(x.TransactionTypeId))
             .Sum(x => x.Value);
         
         var (costBasis,realisedGain) = CostBasisCalculator.Calculate(t);

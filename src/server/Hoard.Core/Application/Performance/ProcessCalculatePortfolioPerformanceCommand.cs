@@ -46,10 +46,12 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
     private async Task<List<Transaction>> GetTransactions(Portfolio portfolio, CancellationToken ct)
     {
+        int[] transactionTypes = [..TransactionTypeSets.Deposit, TransactionType.Withdrawal];
+        
         var transactions = await context.Transactions
             .AsNoTracking()
             .Where(x => portfolio.Accounts.Select(x1 => x1.Id).Contains(x.AccountId))
-            .Where(x => new []{TransactionCategory.Deposit, TransactionCategory.Withdrawal, TransactionCategory.CorporateAction}.Contains(x.CategoryId))
+            .Where(x => transactionTypes.Contains(x.TransactionTypeId))
             .ToListAsync(ct);
         
         return transactions;

@@ -113,12 +113,15 @@ public class ProcessCalculateHoldingsHandler(
     
     private static List<HoldingSnapshot> BuildSnapshot(List<Transaction> transactions)
     {
+        int[] transactionTypes = {TransactionType.Buy, TransactionType.Sell, TransactionType.CorporateAction};
+        
         var snapshots =
-            transactions.Where(t => t.CategoryId is 1 or 2 or 7)
+            transactions
+                .Where(t => transactionTypes.Contains(t.TransactionTypeId))
                 .GroupBy(t => t.InstrumentId)
                 .Select(g => new HoldingSnapshot(
                     g.Key!.Value,
-                    g.Sum(t => t.CategoryId == 2 ? -t.Units!.Value : t.Units!.Value)))
+                    g.Sum(t => t.TransactionTypeId == TransactionType.Sell ? -t.Units!.Value : t.Units!.Value)))
                 .Where(s => s.Units != decimal.Zero)
                 .ToList();
 
