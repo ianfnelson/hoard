@@ -104,7 +104,7 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
     private static void CalculateDerivedMetrics(PortfolioSnapshot snapshot)
     {
         snapshot.Return = SimpleReturnCalculator.Calculate(snapshot.StartValue, snapshot.EndValue,
-            snapshot.TotalWithdrawals, snapshot.TotalDeposits);
+            snapshot.TotalWithdrawals, snapshot.TotalDepositEmployer + snapshot.TotalDepositPersonal + snapshot.TotalDepositIncomeTaxReclaim + snapshot.TotalDepositTransferIn);
         
         snapshot.Churn = 100.0M * Math.Max(snapshot.TotalBuys, snapshot.TotalSells) / snapshot.AverageValue;
     }

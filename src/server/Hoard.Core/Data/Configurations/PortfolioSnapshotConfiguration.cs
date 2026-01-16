@@ -39,9 +39,6 @@ public class PortfolioSnapshotConfiguration : IEntityTypeConfiguration<Portfolio
         builder.Property(p => p.TotalSells)
             .HasColumnType("decimal(18,2)");
         
-        builder.Property(p => p.TotalIncome)
-            .HasColumnType("decimal(18,2)");
-        
         builder.Property(p => p.TotalIncomeInterest)
             .HasColumnType("decimal(18,2)");
         
@@ -67,9 +64,6 @@ public class PortfolioSnapshotConfiguration : IEntityTypeConfiguration<Portfolio
             .HasColumnType("decimal(18,2)");
         
         builder.Property(p => p.TotalFxCharge)
-            .HasColumnType("decimal(18,2)");
-        
-        builder.Property(p => p.TotalDeposits)
             .HasColumnType("decimal(18,2)");
         
         builder.Property(p => p.TotalDepositPersonal)
