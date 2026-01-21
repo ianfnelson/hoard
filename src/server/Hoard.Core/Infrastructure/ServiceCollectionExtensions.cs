@@ -44,20 +44,20 @@ public static class ServiceCollectionExtensions
         }
 
         public IServiceCollection AddHoardRebus(
-            string rabbitConnectionString, 
+            string rabbitConnectionString,
             string sqlConnectionString,
-            bool sendOnly, 
-            string connectionName)
+            bool sendOnly,
+            string queueName)
         {
             services.AddRebus(configure =>
             {
                 var config = sendOnly ?
                     configure.Transport(t => t
                         .UseRabbitMqAsOneWayClient(rabbitConnectionString)
-                        .ClientConnectionName(connectionName)) :
+                        .SetConnectionName(queueName)) :
                     configure.Transport(t => t
-                        .UseRabbitMq(rabbitConnectionString, connectionName)
-                        .ClientConnectionName(connectionName));
+                        .UseRabbitMq(rabbitConnectionString, queueName)
+                        .SetConnectionName(queueName));
             
                 if (!sendOnly)
                 {
