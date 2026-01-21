@@ -24,7 +24,7 @@ public static class CostBasisCalculator
 
                 case TransactionType.Sell:
                 {
-                    var unitsSold = f.Units!.Value;
+                    var unitsSold = -f.Units!.Value;
                     var saleProceeds = f.Value;
 
                     if (totalUnits <= 0)
