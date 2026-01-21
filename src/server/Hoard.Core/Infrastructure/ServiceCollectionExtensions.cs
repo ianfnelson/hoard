@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rebus.Config;
-using Rebus.Persistence.InMem;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 using Rebus.Sagas.Exclusive;
@@ -89,7 +88,7 @@ public static class ServiceCollectionExtensions
 
         public IServiceCollection AddTelemetryInitializer(string roleName)
         {
-            services.AddSingleton<ITelemetryInitializer>(sp =>
+            services.AddSingleton<ITelemetryInitializer>(_ =>
             {
                 var initializer = new RoleNameInitializer(roleName);
                 return initializer;
