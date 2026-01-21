@@ -121,7 +121,7 @@ public class ProcessCalculateHoldingsHandler(
                 .GroupBy(t => t.InstrumentId)
                 .Select(g => new HoldingSnapshot(
                     g.Key!.Value,
-                    g.Sum(t => t.TransactionTypeId == TransactionType.Sell ? -t.Units!.Value : t.Units!.Value)))
+                    g.Sum(t => t.Units!.Value)))
                 .Where(s => s.Units != decimal.Zero)
                 .ToList();
 
