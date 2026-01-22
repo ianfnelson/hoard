@@ -46,14 +46,12 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
     private async Task<List<Transaction>> GetTransactions(Portfolio portfolio, CancellationToken ct)
     {
-        int[] transactionTypes = [..TransactionTypeSets.Deposit, TransactionType.Withdrawal];
-        
+        // Get ALL transactions for proper gain/fee calculation
         var transactions = await context.Transactions
             .AsNoTracking()
             .Where(x => portfolio.Accounts.Select(x1 => x1.Id).Contains(x.AccountId))
-            .Where(x => transactionTypes.Contains(x.TransactionTypeId))
             .ToListAsync(ct);
-        
+
         return transactions;
     }
 
@@ -118,15 +116,19 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
     private async Task CalculateStaticMetrics(PortfolioPerformance perf, PortfolioContext ctx, CancellationToken ct)
     {
-        var (portfolio, _, valuations, positionPerformances, today, previousDay) = ctx;
+        var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
 
         perf.Value = GetValueForDate(today, valuations) ?? decimal.Zero;
         perf.PreviousValue = GetValueForDate(previousDay, valuations) ?? decimal.Zero;
         perf.ValueChange = perf.Value - perf.PreviousValue;
-        
+
         perf.UnrealisedGain = positionPerformances.Sum(x => x.UnrealisedGain);
         perf.RealisedGain = positionPerformances.Sum(x => x.RealisedGain);
-        perf.Income = positionPerformances.Sum(x => x.Income);
+
+        // Portfolio-level income (ALL income, not just position-level)
+        perf.Income = transactions
+            .Where(x => TransactionTypeSets.Income.Contains(x.TransactionTypeId))
+            .Sum(x => x.Value);
 
         perf.CashValue = await GetCash(portfolio, today, ct);
     }
@@ -134,7 +136,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
     private static void CalculateReturns(PortfolioPerformance perf, PortfolioContext ctx)
     {
         var (_, transactions, _, _, today, previousDay) = ctx;
-        
+
         perf.Return1D = CalculatePeriodReturn(ctx, previousDay, today);
         perf.Return1W = CalculatePeriodReturn(ctx, today.AddDays(-7), today);
         perf.Return1M = CalculatePeriodReturn(ctx, today.AddMonths(-1), today);
@@ -145,9 +147,12 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         perf.Return5Y = CalculatePeriodReturn(ctx, today.AddYears(-5), today);
         perf.Return10Y = CalculatePeriodReturn(ctx, today.AddYears(-10), today);
         perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
-        
+
+        // Calculate absolute value change for 1-year period
+        perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
+
         var startDate = transactions.Select(x => x.Date).Min();
-        
+
         perf.ReturnAllTime = SimpleReturnCalculator.CalculateForPortfolio(decimal.Zero, perf.Value, transactions);
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, startDate, today);
     }
@@ -158,10 +163,38 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
         var valueStart = GetValueForDate(startDate, valuations) ?? 0M;
         var valueEnd = GetValueForDate(endDate, valuations) ?? 0M;
-        
+
         var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date < endDate).ToList();
-        
+
         return SimpleReturnCalculator.CalculateForPortfolio(valueStart, valueEnd, periodTransactions);
+    }
+
+    private static decimal? CalculateAbsoluteValueChange(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
+    {
+        var (_, transactions, valuations, _, _, _) = ctx;
+
+        var valueStart = GetValueForDate(startDate, valuations);
+        var valueEnd = GetValueForDate(endDate, valuations);
+
+        if (!valueStart.HasValue || !valueEnd.HasValue)
+        {
+            return null;
+        }
+
+        // Get deposits/withdrawals in the period
+        var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
+
+        var periodWithdrawals = periodTransactions
+            .Where(t => t.TransactionTypeId == TransactionType.Withdrawal)
+            .Sum(t => -t.Value);
+
+        var periodContributions = periodTransactions
+            .Where(t => TransactionTypeSets.Deposit.Contains(t.TransactionTypeId))
+            .Sum(t => t.Value);
+
+        // Absolute change = end value + withdrawals - contributions - start value
+        // This represents the actual gain/loss from investments
+        return valueEnd.Value + periodWithdrawals - periodContributions - valueStart.Value;
     }
 
     private static decimal? GetValueForDate(DateOnly previousDay, Dictionary<DateOnly, PortfolioValuation> valuations)

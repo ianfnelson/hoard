@@ -14,6 +14,9 @@ public class PortfolioPerformanceDto
     public decimal RealisedGain { get; init; }
     public decimal Income { get; init; }
 
+    // Absolute value changes
+    public decimal? ValueChange1Y { get; init; }
+
     // Returns (nullable = not enough data yet)
     public decimal? Return1D { get; init; }
     public decimal? Return1W { get; init; }

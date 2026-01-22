@@ -11,6 +11,9 @@ export interface PortfolioPerformanceDto {
   realisedGain: number;
   income: number;
 
+  // Absolute value changes
+  valueChange1Y: number | null;
+
   // Returns (nullable = not enough data yet)
   return1D: number | null;
   return1W: number | null;

@@ -13,6 +13,9 @@ public abstract class
     public decimal RealisedGain { get; set; }
     public decimal Income { get; set; }
 
+    // Absolute value changes
+    public decimal? ValueChange1Y { get; set; }
+
     // Returns
     public decimal? Return1D { get; set; }
     public decimal? Return1W { get; set; }

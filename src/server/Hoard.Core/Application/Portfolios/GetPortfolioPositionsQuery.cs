@@ -53,6 +53,7 @@ public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortf
                     Gain = p.Performance.UnrealisedGain + p.Performance.RealisedGain,
                     Income = p.Performance.Income,
                     Profit = p.Performance.UnrealisedGain + p.Performance.RealisedGain + p.Performance.Income,
+                    ValueChange1Y = p.Performance.ValueChange1Y,
                     Return1D = p.Performance.Return1D,
                     Return1W = p.Performance.Return1W,
                     Return1M = p.Performance.Return1M,
