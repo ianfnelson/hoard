@@ -1,4 +1,5 @@
 using Hoard.Core.Application;
+using Hoard.Core.Application.Shared;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages;

@@ -1,4 +1,5 @@
 using Hoard.Core.Application;
+using Hoard.Core.Application.Shared;
 using Hoard.Core.Application.Valuations;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
@@ -45,9 +46,9 @@ public class PortfolioValuationsRecalculationSaga(IBus bus, IMediator mediator) 
 
     public async Task Handle(RecalculatePortfolioValuationsTimeout message)
     {
-        var portfolioIds = 
-            await mediator.QueryAsync<GetPortfoliosForValuationQuery, IReadOnlyList<int>> (
-                new GetPortfoliosForValuationQuery());
+        var portfolioIds =
+            await mediator.QueryAsync<GetPortfolioIdsQuery, IReadOnlyList<int>> (
+                new GetPortfolioIdsQuery());
             
         await mediator.SendAsync(new DispatchCalculatePortfolioValuationCommand(Guid.NewGuid(), message.PipelineMode, portfolioIds, message.AsOfDate));
         

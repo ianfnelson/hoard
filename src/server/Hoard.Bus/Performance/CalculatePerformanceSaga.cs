@@ -1,5 +1,6 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
+using Hoard.Core.Application.Shared;
 using Hoard.Messages.Performance;
 using Microsoft.Extensions.Logging;
 using Rebus.Bus;
@@ -46,8 +47,8 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
             logger.LogInformation("All position performance calculated");
             
             var portfolioIds =
-                await mediator.QueryAsync<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>(
-                    new GetPortfoliosForPerformanceQuery());
+                await mediator.QueryAsync<GetPortfolioIdsQuery, IReadOnlyList<int>>(
+                    new GetPortfolioIdsQuery());
         
             logger.LogInformation("Starting portfolio performance calculation for {PortfolioIdsCount} portfolios", portfolioIds.Count);
         
