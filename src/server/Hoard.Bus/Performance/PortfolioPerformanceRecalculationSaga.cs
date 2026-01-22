@@ -1,5 +1,6 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Performance;
+using Hoard.Core.Application.Shared;
 using Hoard.Messages;
 using Hoard.Messages.Performance;
 using Rebus.Bus;
@@ -38,8 +39,8 @@ public class PortfolioPerformanceRecalculationSaga(IBus bus, IMediator mediator)
     public async Task Handle(RecalculatePortfolioPerformancesTimeout message)
     {
         var portfolioIds =
-            await mediator.QueryAsync<GetPortfoliosForPerformanceQuery, IReadOnlyList<int>>(
-                new GetPortfoliosForPerformanceQuery());
+            await mediator.QueryAsync<GetPortfolioIdsQuery, IReadOnlyList<int>>(
+                new GetPortfolioIdsQuery());
         
         await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(Guid.NewGuid(), portfolioIds, message.PipelineMode));
         

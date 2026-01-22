@@ -1,4 +1,5 @@
 using Hoard.Core.Application;
+using Hoard.Core.Application.Shared;
 using Hoard.Core.Application.Snapshots;
 using Hoard.Messages.Snapshots;
 using Microsoft.Extensions.Logging;
@@ -34,8 +35,8 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
         var year = nullableYear ?? DateTime.Today.Year;
         Data.Year = year;
 
-        var portfolioIds = await mediator.QueryAsync<GetPortfoliosForSnapshotQuery, IReadOnlyList<int>>(
-            new GetPortfoliosForSnapshotQuery(portfolioId));
+        var portfolioIds = await mediator.QueryAsync<GetPortfolioIdsQuery, IReadOnlyList<int>>(
+            new GetPortfolioIdsQuery(portfolioId));
 
         if (portfolioIds.Count == 0)
         {

@@ -1,4 +1,5 @@
 using Hoard.Core.Application;
+using Hoard.Core.Application.Shared;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Valuations;
@@ -66,9 +67,9 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         {
             logger.LogInformation("All holding valuations calculated");
             
-            var portfolioIds = 
-                await mediator.QueryAsync<GetPortfoliosForValuationQuery, IReadOnlyList<int>> (
-                    new GetPortfoliosForValuationQuery());
+            var portfolioIds =
+                await mediator.QueryAsync<GetPortfolioIdsQuery, IReadOnlyList<int>> (
+                    new GetPortfolioIdsQuery());
             
             logger.LogInformation("Starting portfolio valuation calculations for {PortfolioIdsCount} portfolios", portfolioIds.Count);
             
