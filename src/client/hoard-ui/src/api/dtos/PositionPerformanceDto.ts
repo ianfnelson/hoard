@@ -14,6 +14,9 @@ export interface PositionPerformanceDto {
   income: number;
   profit: number;
 
+  // Absolute value changes
+  valueChange1Y: number | null;
+
   // Returns (nullable = insufficient history)
   return1D: number | null;
   return1W: number | null;

@@ -63,7 +63,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
     private static void CalculateReturns(PositionPerformance perf, PositionContext ctx)
     {
         var (position, a, h, t, today, previousDay) = ctx;
-        
+
         perf.Return1D = CalculatePeriodReturn(ctx, previousDay, today);
         perf.Return1W = CalculatePeriodReturn(ctx, today.AddDays(-7), today);
         perf.Return1M = CalculatePeriodReturn(ctx, today.AddMonths(-1), today);
@@ -74,6 +74,9 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         perf.Return5Y = CalculatePeriodReturn(ctx, today.AddYears(-5), today);
         perf.Return10Y = CalculatePeriodReturn(ctx, today.AddYears(-10), today);
         perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
+
+        // Calculate absolute value change for 1-year period
+        perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
 
         perf.ReturnAllTime = SimpleReturnCalculator.CalculateForPosition(decimal.Zero, perf.Value, t);
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
@@ -146,13 +149,13 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
     private static decimal? CalculatePeriodReturn(PositionContext ctx, DateOnly startDate, DateOnly endDate)
     {
         var (position, accountIds, holdings, transactions, _, _) = ctx;
-        
+
         // No returns for closed positions
         if (position.CloseDate.HasValue)
         {
             return null;
         }
-        
+
         // No returns for positions that were not open the day after start date
         if (position.OpenDate > startDate.AddDays(1))
         {
@@ -161,10 +164,53 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
 
         var valueStart = GetValueForDate(startDate, holdings, accountIds) ?? 0M;
         var valueEnd = GetValueForDate(endDate, holdings, accountIds) ?? 0M;
-        
+
         var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
-        
+
         return SimpleReturnCalculator.CalculateForPosition(valueStart, valueEnd, periodTransactions);
+    }
+
+    private static decimal? CalculateAbsoluteValueChange(PositionContext ctx, DateOnly startDate, DateOnly endDate)
+    {
+        var (position, accountIds, holdings, transactions, _, _) = ctx;
+
+        // No value change for closed positions
+        if (position.CloseDate.HasValue)
+        {
+            return null;
+        }
+
+        // No value change for positions that were not open the day after start date
+        if (position.OpenDate > startDate.AddDays(1))
+        {
+            return null;
+        }
+
+        var valueStart = GetValueForDate(startDate, holdings, accountIds);
+        var valueEnd = GetValueForDate(endDate, holdings, accountIds);
+
+        if (!valueStart.HasValue || !valueEnd.HasValue)
+        {
+            return null;
+        }
+
+        // Get buy/sell/income/corporate action transactions in the period
+        var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
+
+        var periodWithdrawals = periodTransactions
+            .Where(t => t.TransactionTypeId == TransactionType.Sell ||
+                        t.TransactionTypeId == TransactionType.IncomeDividend ||
+                        t.TransactionTypeId == TransactionType.IncomeLoyaltyBonus ||
+                        t is { TransactionTypeId: TransactionType.CorporateAction, Value: > decimal.Zero })
+            .Sum(t => t.Value);
+
+        var periodContributions = periodTransactions
+            .Where(t => t.TransactionTypeId == TransactionType.Buy ||
+                        t is { TransactionTypeId: TransactionType.CorporateAction, Value: < decimal.Zero })
+            .Sum(t => -t.Value);
+
+        // Absolute change = end value + withdrawals - contributions - start value
+        return valueEnd.Value + periodWithdrawals - periodContributions - valueStart.Value;
     }
 
     private static decimal? GetUnitsForDate(DateOnly date, Dictionary<DateOnly, Holding[]> holdings, int[] accountIds)

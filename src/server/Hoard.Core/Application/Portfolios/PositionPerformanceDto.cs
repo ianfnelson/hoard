@@ -16,7 +16,10 @@ public class PositionPerformanceDto
     public decimal Gain { get; set; }
     public decimal Income { get; set; }
     public decimal Profit { get; set; }
-    
+
+    // Absolute value changes
+    public decimal? ValueChange1Y { get; set; }
+
     // Returns
     public decimal? Return1D { get; set; }
     public decimal? Return1W { get; set; }

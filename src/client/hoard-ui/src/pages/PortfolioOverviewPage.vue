@@ -99,7 +99,9 @@ const rows = computed(() =>
       <v-col cols="6" sm="3">
         <summary-card
           title="Year change"
-          :value="store.portfolio?.performance?.return1Y?.toFixed(2) || ''"
+          :value="(store.portfolio?.performance?.valueChange1Y ?? undefined)?.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
+          :secondary="store.portfolio?.performance?.return1Y ? `${store.portfolio.performance.return1Y.toFixed(2)}%` : ''"
+          :trend="store.portfolio?.performance?.valueChange1Y ?? undefined"
         />
       </v-col>
     </v-row>
