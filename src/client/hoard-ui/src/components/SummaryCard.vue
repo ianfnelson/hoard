@@ -17,11 +17,10 @@
       </div>
 
       <div
-        v-if="formattedPercentage"
         class="text-caption-lg mt-1"
         :class="trendClass"
       >
-        {{ formattedPercentage }}
+        {{ formattedPercentage || '\u00A0' }}
       </div>
     </v-card-text>
   </v-card>
