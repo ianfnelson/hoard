@@ -1,31 +1,10 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from "vue";
-import { useRoute } from "vue-router";
+import { computed } from "vue";
 
 import { usePortfolioStore } from "@/stores/portfolioStore";
-import { formatCurrency, formatPercentage, formatUpdatedTime, getTrendClass } from "@/utils/formatters";
+import { formatCurrency, formatPercentage, getTrendClass } from "@/utils/formatters";
 
-const route = useRoute();
 const store = usePortfolioStore();
-
-function getPortfolioId(): number {
-  const id = Number(route.params.id);
-  if (Number.isNaN(id)) {
-    throw new Error("Invalid portfolio id");
-  }
-  return id;
-}
-
-onMounted(() => {
-  store.load(getPortfolioId());
-});
-
-watch(
-  () => route.params.id,
-  () => {
-    store.load(getPortfolioId());
-  }
-);
 
 const instrumentTypesHeaders = [
   { title: "Name", key: "name" },
@@ -76,34 +55,8 @@ const rebalanceRows = computed(() =>
 );
 </script>
 
-<style scoped>
-.header-toolbar {
-  background-color: rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-}
-
-.v-theme--dark .header-toolbar {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-</style>
-
 <template>
   <v-container fluid>
-    <v-row>
-      <v-col>
-        <v-toolbar density="compact" flat class="header-toolbar">
-          <v-toolbar-title class="text-h6">
-            {{ store.portfolio?.name || '' }} — Exposure
-          </v-toolbar-title>
-          <div class="text-caption-lg pr-4">
-            {{ formatUpdatedTime(store.portfolio?.performance?.updatedUtc) }}
-          </div>
-        </v-toolbar>
-      </v-col>
-    </v-row>
-
     <v-row dense class="mt-0">
       <v-col cols="12" md="6">
         <v-card>
@@ -176,9 +129,7 @@ const rebalanceRows = computed(() =>
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row>
 
-    <v-row dense>
       <v-col cols="12" md="6">
         <v-card>
           <v-card-title>Instrument Types</v-card-title>

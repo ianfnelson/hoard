@@ -1,32 +1,11 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from "vue";
-import { useRoute } from "vue-router";
+import { computed } from "vue";
 
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import SummaryCard from "@/components/SummaryCard.vue";
-import { formatCurrency, formatPercentage, formatUpdatedTime, getTrendClass } from "@/utils/formatters";
+import { formatCurrency, formatPercentage, getTrendClass } from "@/utils/formatters";
 
-const route = useRoute();
 const store = usePortfolioStore();
-
-function getPortfolioId(): number {
-  const id = Number(route.params.id);
-  if (Number.isNaN(id)) {
-    throw new Error("Invalid portfolio id");
-  }
-  return id;
-}
-
-onMounted(() => {
-  store.load(getPortfolioId());
-});
-
-watch(
-  () => route.params.id,
-  () => {
-    store.load(getPortfolioId());
-  }
-);
 
 const header_data = [
   { title: "Ticker", key: "instrumentTicker" },
@@ -55,34 +34,8 @@ const rows = computed(() =>
 );
 </script>
 
-<style scoped>
-.header-toolbar {
-  background-color: rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-}
-
-.v-theme--dark .header-toolbar {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-</style>
-
 <template>
   <v-container fluid>
-    <!-- Portfolio header -->
-    <v-row>
-      <v-col>
-        <v-toolbar density="compact" flat class="header-toolbar">
-          <v-toolbar-title class="text-h6">
-            {{ store.portfolio?.name || '' }}
-          </v-toolbar-title>
-          <div class="text-caption-lg pr-4">
-            {{ formatUpdatedTime(store.portfolio?.performance?.updatedUtc) }}
-          </div>
-        </v-toolbar>
-      </v-col>
-    </v-row>
 
     <!-- Summary strip -->
     <v-row dense class="mt-0">
