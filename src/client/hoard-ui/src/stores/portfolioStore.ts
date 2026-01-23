@@ -21,7 +21,7 @@ export const usePortfolioStore = defineStore("portfolio", () => {
   const instrumentTypes = ref<PortfolioInstrumentTypesDto | null>(null);
 
   const openPositionsList = computed(() =>
-    positions.value?.positions ?? []
+    (positions.value?.positions ?? []).filter(p => p.closeDate === null)
   );
 
   const isLoading = ref(false)
@@ -100,7 +100,7 @@ export const usePortfolioStore = defineStore("portfolio", () => {
     try {
       const [portfolioResult, positionsResult, exposureResult, instrumentTypesResult] = await Promise.all([
         getPortfolioDetail(portfolioId.value),
-        getPortfolioPositions(portfolioId.value, { isOpen: true }),
+        getPortfolioPositions(portfolioId.value),
         getPortfolioExposure(portfolioId.value),
         getPortfolioInstrumentTypes(portfolioId.value)
       ])

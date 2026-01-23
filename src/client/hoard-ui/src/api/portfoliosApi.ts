@@ -3,9 +3,15 @@ import type { PortfolioDetailDto } from "./dtos/PortfolioDetailDto";
 import type { PortfolioPositionsDto } from "@/api/dtos/PortfolioPositionsDto.ts";
 import type { PortfolioExposureDto } from "@/api/dtos/PortfolioExposureDto";
 import type { PortfolioInstrumentTypesDto } from "@/api/dtos/PortfolioInstrumentTypesDto";
+import type { PortfolioSummary } from "@/stores/navigationStore";
 
 export interface GetPortfolioPositionsParams {
   isOpen?: boolean;
+}
+
+export async function getPortfolioList(): Promise<PortfolioSummary[]> {
+  const response = await hoardApi.get("/portfolios");
+  return response.data;
 }
 
 export async function getPortfolioDetail(
