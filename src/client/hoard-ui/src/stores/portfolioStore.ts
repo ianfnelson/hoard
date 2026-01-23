@@ -134,6 +134,7 @@ export const usePortfolioStore = defineStore("portfolio", () => {
 
     // raw state
     portfolio,
+    positions,
     exposure,
     instrumentTypes,
 

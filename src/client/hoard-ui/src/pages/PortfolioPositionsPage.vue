@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import { formatCurrency, formatPercentage, getTrendClass } from "@/utils/formatters";
+import type { PortfolioPositionDto } from "@/api/dtos/PortfolioPositionDto";
 
 const store = usePortfolioStore();
 
@@ -17,7 +18,7 @@ const headers = [
 ] as const;
 
 const rows = computed(() =>
-  allPositions.value.map(p => ({
+  allPositions.value.map((p: PortfolioPositionDto) => ({
     instrumentTicker: p.instrumentTicker,
     instrumentName: p.instrumentName,
     openDate: p.openDate ? new Date(p.openDate).toLocaleDateString() : '-',

@@ -13,7 +13,7 @@ const router = createRouter({
         },
         {
           path: "portfolios",
-          redirect: (to) => {
+          redirect: () => {
             // TODO: Redirect to first portfolio from store
             return "/portfolios/1"
           }
