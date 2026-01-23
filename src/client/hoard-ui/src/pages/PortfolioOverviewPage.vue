@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 
 import { usePortfolioOverviewStore } from "@/stores/portfolioOverviewStore";
 import SummaryCard from "@/components/SummaryCard.vue";
+import { formatCurrency, formatPercentage, formatUpdatedTime, getTrendClass } from "@/utils/formatters";
 
 const route = useRoute();
 const store = usePortfolioOverviewStore();
@@ -63,8 +64,8 @@ const rows = computed(() =>
           <v-toolbar-title class="text-h6">
             {{ store.portfolio?.name || '' }}
           </v-toolbar-title>
-          <div class="text-caption pr-4">
-            {{ store.portfolio?.performance?.updatedUtc?.toLocaleString() || '' }}
+          <div class="text-caption-lg pr-4">
+            {{ formatUpdatedTime(store.portfolio?.performance?.updatedUtc) }}
           </div>
         </v-toolbar>
       </v-col>
@@ -75,23 +76,23 @@ const rows = computed(() =>
       <v-col cols="6" sm="3">
         <summary-card
           title="Portfolio value"
-          :value="store.portfolio?.performance?.value?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
+          :value="store.portfolio?.performance?.value"
         />
       </v-col>
 
       <v-col cols="6" sm="3">
         <summary-card
           title="Cash"
-          :value="store.portfolio?.performance?.cashValue?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
-          :secondary="store.portfolio?.performance?.cashPercentage.toFixed(2) || '' "
+          :value="store.portfolio?.performance?.cashValue"
+          :percentage="store.portfolio?.performance?.cashPercentage"
         />
       </v-col>
 
       <v-col cols="6" sm="3">
         <summary-card
           title="Day change"
-          :value="store.portfolio?.performance?.valueChange?.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
-          :secondary="store.portfolio?.performance?.return1D?.toFixed(2) || '' "
+          :value="store.portfolio?.performance?.valueChange"
+          :percentage="store.portfolio?.performance?.return1D ?? undefined"
           :trend="store.portfolio?.performance?.valueChange"
         />
       </v-col>
@@ -99,8 +100,8 @@ const rows = computed(() =>
       <v-col cols="6" sm="3">
         <summary-card
           title="Year change"
-          :value="(store.portfolio?.performance?.valueChange1Y ?? undefined)?.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', minimumFractionDigits: 2, maximumFractionDigits: 2 }) || ''"
-          :secondary="store.portfolio?.performance?.return1Y ? `${store.portfolio.performance.return1Y.toFixed(2)}%` : ''"
+          :value="store.portfolio?.performance?.valueChange1Y ?? undefined"
+          :percentage="store.portfolio?.performance?.return1Y ?? undefined"
           :trend="store.portfolio?.performance?.valueChange1Y ?? undefined"
         />
       </v-col>
@@ -119,31 +120,31 @@ const rows = computed(() =>
           hide-default-footer
         >
           <template #item.value="{ value }">
-            {{ value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            <span>{{ formatCurrency(value) }}</span>
           </template>
 
           <template #item.valueChange="{ value }">
-            {{ value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
           </template>
 
           <template #item.return1D="{ value }">
-            {{ value.toFixed(2) || '' }}
+            <span :class="getTrendClass(value)">{{ formatPercentage(value) }}</span>
           </template>
 
           <template #item.profit="{ value }">
-            {{ value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
           </template>
 
           <template #item.returnAllTime="{ value }">
-            {{ value?.toFixed(2) || '' }}
+            <span :class="getTrendClass(value)">{{ formatPercentage(value) }}</span>
           </template>
 
           <template #item.annualisedReturn="{ value }">
-            {{ value?.toFixed(2) || '' }}
+            <span :class="getTrendClass(value)">{{ formatPercentage(value) }}</span>
           </template>
 
           <template #item.portfolioPercentage="{ value }">
-            {{ value.toFixed(2) }}
+            <span>{{ formatPercentage(value) }}</span>
           </template>
 
           <template #no-data>
