@@ -1,15 +1,24 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import * as signalR from "@microsoft/signalr";
-import { getPortfolioDetail, getPortfolioPositions } from "@/api/portfoliosApi";
+import {
+  getPortfolioDetail,
+  getPortfolioPositions,
+  getPortfolioExposure,
+  getPortfolioInstrumentTypes
+} from "@/api/portfoliosApi";
 import type { PortfolioDetailDto } from "@/api/dtos/PortfolioDetailDto.ts";
 import type { PortfolioPositionsDto } from "@/api/dtos/PortfolioPositionsDto.ts";
+import type { PortfolioExposureDto } from "@/api/dtos/PortfolioExposureDto";
+import type { PortfolioInstrumentTypesDto } from "@/api/dtos/PortfolioInstrumentTypesDto";
 
-export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => {
+export const usePortfolioStore = defineStore("portfolio", () => {
   const portfolioId = ref<number | null>(null);
 
   const portfolio = ref<PortfolioDetailDto | null>(null);
   const positions = ref<PortfolioPositionsDto | null>(null);
+  const exposure = ref<PortfolioExposureDto | null>(null);
+  const instrumentTypes = ref<PortfolioInstrumentTypesDto | null>(null);
 
   const openPositionsList = computed(() =>
     positions.value?.positions ?? []
@@ -89,16 +98,20 @@ export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => 
     error.value = null
 
     try {
-      const [portfolioResult, positionsResult] = await Promise.all([
+      const [portfolioResult, positionsResult, exposureResult, instrumentTypesResult] = await Promise.all([
         getPortfolioDetail(portfolioId.value),
-        getPortfolioPositions(portfolioId.value, { isOpen: true })
+        getPortfolioPositions(portfolioId.value, { isOpen: true }),
+        getPortfolioExposure(portfolioId.value),
+        getPortfolioInstrumentTypes(portfolioId.value)
       ])
 
       portfolio.value = portfolioResult
       positions.value = positionsResult
+      exposure.value = exposureResult
+      instrumentTypes.value = instrumentTypesResult
       lastUpdated.value = new Date()
     } catch (e: any) {
-      error.value = "Failed to load portfolio overview";
+      error.value = "Failed to load portfolio data";
       throw e
     } finally {
       isLoading.value = false
@@ -109,6 +122,8 @@ export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => 
     portfolioId.value = null;
     portfolio.value = null;
     positions.value = null;
+    exposure.value = null;
+    instrumentTypes.value = null;
     lastUpdated.value = null;
     error.value = null;
   }
@@ -119,6 +134,8 @@ export const usePortfolioOverviewStore = defineStore("portfolioOverview", () => 
 
     // raw state
     portfolio,
+    exposure,
+    instrumentTypes,
 
     // derived state
     openPositionsList,

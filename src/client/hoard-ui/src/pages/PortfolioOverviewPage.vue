@@ -2,12 +2,12 @@
 import { onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 
-import { usePortfolioOverviewStore } from "@/stores/portfolioOverviewStore";
+import { usePortfolioStore } from "@/stores/portfolioStore";
 import SummaryCard from "@/components/SummaryCard.vue";
 import { formatCurrency, formatPercentage, formatUpdatedTime, getTrendClass } from "@/utils/formatters";
 
 const route = useRoute();
-const store = usePortfolioOverviewStore();
+const store = usePortfolioStore();
 
 function getPortfolioId(): number {
   const id = Number(route.params.id);
@@ -55,12 +55,25 @@ const rows = computed(() =>
 );
 </script>
 
+<style scoped>
+.header-toolbar {
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+}
+
+.v-theme--dark .header-toolbar {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+</style>
+
 <template>
   <v-container fluid>
     <!-- Portfolio header -->
-    <v-row class="mb-2">
+    <v-row>
       <v-col>
-        <v-toolbar density="compact">
+        <v-toolbar density="compact" flat class="header-toolbar">
           <v-toolbar-title class="text-h6">
             {{ store.portfolio?.name || '' }}
           </v-toolbar-title>
@@ -72,7 +85,7 @@ const rows = computed(() =>
     </v-row>
 
     <!-- Summary strip -->
-    <v-row dense class="mb-4">
+    <v-row dense class="mt-0">
       <v-col cols="6" sm="3">
         <summary-card
           title="Portfolio value"
@@ -108,7 +121,7 @@ const rows = computed(() =>
     </v-row>
 
     <!-- Positions table -->
-    <v-row>
+    <v-row dense>
       <v-col>
         <v-data-table
           :headers="header_data"
