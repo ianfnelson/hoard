@@ -1,0 +1,14 @@
+/* Financial trend colors */
+.text-positive {
+  color: #1976d2 !important; /* Deep blue for positive financial values */
+}
+
+.text-negative {
+  color: #b71c1c !important; /* Red for negative financial values */
+}
+
+/* Enhanced caption text for better readability */
+.text-caption-lg {
+  font-size: 0.875rem !important; /* 14px - slightly larger than default caption (12px) */
+  letter-spacing: 0.0333333333em !important;
+}
