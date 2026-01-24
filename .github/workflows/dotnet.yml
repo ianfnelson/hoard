@@ -63,6 +63,8 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}-api:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}-api:${{ github.sha }}
+          secrets: |
+            "nuget_auth_token=${{ secrets.GITHUB_TOKEN }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -77,6 +79,8 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}-bus:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}-bus:${{ github.sha }}
+          secrets: |
+            "nuget_auth_token=${{ secrets.GITHUB_TOKEN }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -91,5 +95,7 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}-scheduler:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}-scheduler:${{ github.sha }}
+          secrets: |
+            "nuget_auth_token=${{ secrets.GITHUB_TOKEN }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
