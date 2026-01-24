@@ -35,7 +35,7 @@ public class ProcessRefreshQuotesHandler(
         return await context
             .Instruments
             .Where(i => i.EnablePriceUpdates)
-            .Where(i => i.TickerApi != null)
+            .Where(i => i.TickerPriceUpdates != null)
             .Select(x => x.Id)
             .ToListAsync(ct);
     }

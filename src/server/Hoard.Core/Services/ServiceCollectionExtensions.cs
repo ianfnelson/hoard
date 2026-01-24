@@ -1,3 +1,4 @@
+using Clarion;
 using Hoard.Core.Services.YahooFinance;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +10,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<QuoteService, YahooFinanceClient>();
         services.AddScoped<PriceService, YahooFinanceClient>();
-        
+        services.AddScoped<ClarionClient>(_ => ClarionClient.Create());
+
         return services;
     }
 }

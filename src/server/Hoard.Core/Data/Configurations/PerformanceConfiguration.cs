@@ -17,6 +17,9 @@ public abstract class PerformanceConfiguration<TEntity> : IEntityTypeConfigurati
 
         builder.Property(p => p.ValueChange)
             .HasColumnType("decimal(18,2)");
+        
+        builder.Property(p => p.ValueChange1Y)
+            .HasColumnType("decimal(18,2)");
 
         builder.Property(p => p.UnrealisedGain)
             .HasColumnType("decimal(18,2)");

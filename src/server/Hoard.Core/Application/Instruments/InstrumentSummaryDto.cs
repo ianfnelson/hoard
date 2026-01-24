@@ -5,11 +5,14 @@ public class InstrumentSummaryDto
     public int Id { get; set; }
     public required string Name { get; set; }
     
-    public required string Ticker { get; set; }
-    public required string TickerApi { get; set; }
+    public required string TickerDisplay { get; set; }
+    public string? TickerPriceUpdates { get; set; }
+    public string? TickerNewsUpdates { get; set; }
     public required string Isin { get; set; }
     
     public bool EnablePriceUpdates { get; set; }
+    public bool EnableNewsUpdates { get; set; }
+    
     public DateTime CreatedUtc { get; set; }
     
     public int InstrumentTypeId { get; set; }

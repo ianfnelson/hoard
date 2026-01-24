@@ -226,6 +226,37 @@
           "response": []
         },
         {
+          "name": "News— Refresh",
+          "id": "4acfa0ce-f1b9-4f77-8e31-3be8742a5299",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"InstrumentId\": 514    // Optional instrument ID - defaults to all\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/news/refresh",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "news",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Positions — Calculate",
           "id": "a63a97c0-6388-470b-bd03-96a05664e3ac",
           "request": {
