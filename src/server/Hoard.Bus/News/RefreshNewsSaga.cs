@@ -48,7 +48,7 @@ public class RefreshNewsSaga(
         {
             logger.LogInformation("News refresh saga {NewsRunId} complete", Data.NewsRunId);
             MarkAsComplete();
-            await bus.Publish(new AllNewsRefreshedEvent(Data.NewsRunId, Data.PipelineMode));
+            //await bus.Publish(new AllNewsRefreshedEvent(Data.NewsRunId, Data.PipelineMode));
         }
     }
 }
