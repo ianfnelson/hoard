@@ -54,7 +54,7 @@ public class ProcessRefreshQuotesBatchHandler(
     {
         foreach (var instrument in instruments)
         {
-            if (!freshQuotes.TryGetValue(instrument.TickerApi!, out var dto))
+            if (!freshQuotes.TryGetValue(instrument.TickerPriceUpdates!, out var dto))
                 continue;
 
             if (instrument.Quote == null)
@@ -87,8 +87,8 @@ public class ProcessRefreshQuotesBatchHandler(
             .Include(x => x.InstrumentType)
             .Where(x => command.InstrumentIds.Contains(x.Id))
             .Where(x => x.EnablePriceUpdates)
-            .Where(x => x.TickerApi != null)
-            .ToDictionaryAsync(x => x.TickerApi!, ct);
+            .Where(x => x.TickerPriceUpdates != null)
+            .ToDictionaryAsync(x => x.TickerPriceUpdates!, ct);
         
         return instruments;
     }

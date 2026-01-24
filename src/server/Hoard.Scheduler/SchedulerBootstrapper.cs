@@ -3,6 +3,7 @@ using Hangfire;
 using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Chrono;
+using Hoard.Core.Application.News;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Quotes;
 using Microsoft.Extensions.Hosting;
@@ -38,7 +39,8 @@ public class SchedulerBootstrapper : IHostedService
         RegisterStartOfDay();
         RegisterCloseOfDay();
         RegisterRefreshQuotes();
-        
+        RegisterRefreshNews();
+
         return Task.CompletedTask;
     }
     
@@ -48,6 +50,15 @@ public class SchedulerBootstrapper : IHostedService
             "refresh-quotes",
             () => TriggerRefreshQuotesCommand(),
             "*/1 8-17 * * 1-5" // every minute during UK trading hours
+        );
+    }
+
+    private void RegisterRefreshNews()
+    {
+        _recurring.AddOrUpdate(
+            "refresh-news",
+            () => TriggerRefreshNewsCommand(),
+            "10 7-18 * * 1-5" // 10 minutes past every hour, 7am-6pm, weekdays
         );
     }
 
@@ -80,10 +91,22 @@ public class SchedulerBootstrapper : IHostedService
     public async Task TriggerRefreshQuotesCommand()
     {
         using var activity = ActivitySource .StartActivity();
-        
+
         _logger.LogInformation("Triggering Refresh Quotes");
 
         var command = new TriggerRefreshQuotesCommand();
+
+        await _mediator.SendAsync(command);
+    }
+
+    // ReSharper disable once MemberCanBePrivate.Global public required for Hangfire background jobs
+    public async Task TriggerRefreshNewsCommand()
+    {
+        using var activity = ActivitySource.StartActivity();
+
+        _logger.LogInformation("Triggering Refresh News");
+
+        var command = new TriggerRefreshNewsCommand(null);
 
         await _mediator.SendAsync(command);
     }

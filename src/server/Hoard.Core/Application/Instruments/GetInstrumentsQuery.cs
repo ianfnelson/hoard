@@ -16,6 +16,7 @@ public sealed class GetInstrumentsQuery
     public int? AssetClassId { get; init; }
     public int? AssetSubclassId { get; init; }
     public bool? EnablePriceUpdates { get; init; }
+    public bool? EnableNewsUpdates { get; init; }
 
     // Paging
     public int Page { get; init; } = 1;
@@ -72,6 +73,9 @@ public sealed class GetInstrumentsHandler(HoardContext context)
 
         if (request.EnablePriceUpdates.HasValue)
             query = query.Where(i => i.EnablePriceUpdates == request.EnablePriceUpdates.Value);
+        
+        if (request.EnableNewsUpdates.HasValue)
+            query = query.Where(i => i.EnableNewsUpdates == request.EnableNewsUpdates.Value);
 
         return query;
     }
@@ -87,7 +91,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
 
         return query.Where(i =>
             i.Name.Contains(term) ||
-            i.Ticker.Contains(term) ||
+            i.TickerDisplay.Contains(term) ||
             (i.Isin != null && i.Isin.Contains(term)));
     }
     
@@ -102,8 +106,8 @@ public sealed class GetInstrumentsHandler(HoardContext context)
                 : query.OrderByDescending(i => i.Name),
 
             "ticker" => request.SortDirection == SortDirection.Asc
-                ? query.OrderBy(i => i.Ticker)
-                : query.OrderByDescending(i => i.Ticker),
+                ? query.OrderBy(i => i.TickerDisplay)
+                : query.OrderByDescending(i => i.TickerDisplay),
 
             _ => query.OrderBy(i => i.Name)
         };
@@ -117,10 +121,12 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         {
             Id = i.Id,
             Name = i.Name,
-            Ticker = i.Ticker,
-            TickerApi = i.TickerApi ?? "",
+            TickerDisplay = i.TickerDisplay,
+            TickerPriceUpdates = i.TickerPriceUpdates ?? "",
+            TickerNewsUpdates = i.TickerNewsUpdates ?? "",
             Isin = i.Isin ?? "",
             EnablePriceUpdates = i.EnablePriceUpdates,
+            EnableNewsUpdates = i.EnableNewsUpdates,
             CreatedUtc = i.CreatedUtc,
 
             InstrumentTypeId = i.InstrumentTypeId,

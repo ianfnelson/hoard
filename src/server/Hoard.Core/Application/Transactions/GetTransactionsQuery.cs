@@ -88,7 +88,7 @@ public sealed class GetTransactionsHandler(HoardContext context)
         return query.Where(t =>
             (t.ContractNoteReference != null && t.ContractNoteReference.Contains(term)) ||
             (t.Notes != null && t.Notes.Contains(term)) ||
-            (t.Instrument != null && (t.Instrument.Ticker.Contains(term) || t.Instrument.Name.Contains(term))));
+            (t.Instrument != null && (t.Instrument.TickerDisplay.Contains(term) || t.Instrument.Name.Contains(term))));
     }
     
     private static IOrderedQueryable<Transaction> ApplySorting(
@@ -130,7 +130,7 @@ public sealed class GetTransactionsHandler(HoardContext context)
 
             InstrumentId = t.InstrumentId,
             InstrumentName = t.Instrument != null ? t.Instrument.Name : "",
-            InstrumentTicker = t.Instrument != null ? t.Instrument.Ticker : "",
+            InstrumentTicker = t.Instrument != null ? t.Instrument.TickerDisplay : "",
             
             TransactionTypeId = t.TransactionTypeId,
             TransactionTypeName = t.TransactionType.Name

@@ -16,7 +16,7 @@ public class GetInstrumentsForRefreshHandler(HoardContext context, ILogger<GetIn
             return await context.Instruments
                 .Include(x => x.InstrumentType)
                 .Where(x => x.EnablePriceUpdates)
-                .Where(x => x.TickerApi != null)
+                .Where(x => x.TickerPriceUpdates != null)
                 .Select(x => x.Id)
                 .ToListAsync(cancellationToken: ct);
         }

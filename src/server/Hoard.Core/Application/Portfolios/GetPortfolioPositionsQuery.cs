@@ -36,7 +36,7 @@ public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortf
             {
                 InstrumentId = p.InstrumentId,
                 InstrumentName = p.Instrument.Name,
-                InstrumentTicker = p.Instrument.Ticker,
+                InstrumentTicker = p.Instrument.TickerDisplay,
                 OpenDate = p.OpenDate,
                 CloseDate = p.CloseDate,
                 Performance = p.Performance == null
