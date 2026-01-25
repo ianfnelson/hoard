@@ -1,16 +1,10 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { getPortfolioList } from "@/api/portfoliosApi";
-
-export interface PortfolioSummary {
-  id: number;
-  name: string;
-  isActive: boolean;
-  createdUtc: string;
-}
+import type { PortfolioSummaryDto } from "@/api/dtos/PortfolioSummaryDto";
 
 export const useNavigationStore = defineStore("navigation", () => {
-  const portfolios = ref<PortfolioSummary[]>([]);
+  const portfolios = ref<PortfolioSummaryDto[]>([]);
   const isLoading = ref(false);
   const lastUpdated = ref<Date | null>(null);
   const error = ref<string | null>(null);
