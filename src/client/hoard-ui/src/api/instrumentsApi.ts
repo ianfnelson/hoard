@@ -1,5 +1,6 @@
 import { hoardApi } from "./hoardApi";
 import type { InstrumentSummaryDto } from "./dtos/InstrumentSummaryDto";
+import type { PagedResult } from "@/api/types/PagedResult";
 
 export interface GetInstrumentsParams {
   pageNumber?: number;
@@ -8,7 +9,7 @@ export interface GetInstrumentsParams {
 
 export async function getInstruments(
   params?: GetInstrumentsParams
-): Promise<{ items: InstrumentSummaryDto[]; totalCount: number }> {
+): Promise<PagedResult<InstrumentSummaryDto>> {
   const response = await hoardApi.get("/instruments", { params });
   return response.data;
 }
