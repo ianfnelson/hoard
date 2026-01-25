@@ -2,6 +2,6 @@ namespace Hoard.Core.Application;
 
 public interface IPagedQuery
 {
-    int Page { get; }
+    int PageNumber { get; }
     int PageSize { get; }
 }

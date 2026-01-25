@@ -1,6 +1,6 @@
 namespace Hoard.Core.Application.News;
 
-public class NewsArticleDto
+public class NewsArticleDetailDto
 {
     public int Id { get; set; }
     

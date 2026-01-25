@@ -19,7 +19,7 @@ public sealed class GetInstrumentsQuery
     public bool? EnableNewsUpdates { get; init; }
 
     // Paging
-    public int Page { get; init; } = 1;
+    public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 25;
 
     // Sorting
@@ -39,12 +39,12 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         baseQuery = ApplyFilters(baseQuery, query);
         baseQuery = ApplySearch(baseQuery, query);
 
-        var totalItems = await baseQuery.CountAsync(ct);
+        var totalCount = await baseQuery.CountAsync(ct);
 
         var sortedQuery = ApplySorting(baseQuery, query);
 
         var items = await sortedQuery
-            .Skip((query.Page - 1) * query.PageSize)
+            .Skip((query.PageNumber - 1) * query.PageSize)
             .Take(query.PageSize)
             .Select(ProjectToSummary())
             .ToListAsync(ct);
@@ -52,9 +52,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         return new PagedResult<InstrumentSummaryDto>
         {
             Items = items,
-            Page = query.Page,
-            PageSize = query.PageSize,
-            TotalItems = totalItems
+            TotalCount = totalCount
         };
     }
     

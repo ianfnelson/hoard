@@ -15,7 +15,7 @@ public class GetPortfolioHandler(HoardContext context, ILogger<GetPortfolioHandl
             .AsNoTracking()
             .Where(p => p.Id == query.PortfolioId)
             .Select(p => new PortfolioDetailDto
-            {
+            {   
                 Id = p.Id,
                 Name = p.Name,
                 IsActive = p.IsActive,

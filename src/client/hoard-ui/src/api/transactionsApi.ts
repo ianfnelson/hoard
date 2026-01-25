@@ -1,5 +1,6 @@
 import { hoardApi } from "./hoardApi";
 import type { TransactionDto } from "./dtos/TransactionDto";
+import type { PagedResult } from "@/api/types/PagedResult";
 
 export interface GetTransactionsParams {
   accountId?: number;
@@ -9,7 +10,7 @@ export interface GetTransactionsParams {
 
 export async function getTransactions(
   params?: GetTransactionsParams
-): Promise<{ items: TransactionDto[]; totalCount: number }> {
+): Promise<PagedResult<TransactionDto>> {
   const response = await hoardApi.get("/transactions", { params });
   return response.data;
 }

@@ -60,6 +60,33 @@ export function formatUpdatedTime(date: Date | string | null | undefined): strin
 }
 
 /**
+ * Formats a date and time for display
+ * @param date The date to format (Date object or ISO string)
+ * @returns Formatted date-time string (e.g., "15 Jan 2026 14:30")
+ */
+export function formatDateTime(date: Date | string | null | undefined): string {
+  if (!date) return '';
+
+  const parsedDate = typeof date === 'string' ? new Date(date) : date;
+
+  if (isNaN(parsedDate.getTime())) return '';
+
+  const datePart = parsedDate.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  const timePart = parsedDate.toLocaleString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+
+  return `${datePart} ${timePart}`;
+}
+
+/**
  * Returns CSS class for trend-based coloring
  * @param value The numeric value to determine trend
  * @returns CSS class name ('text-positive', 'text-negative', or undefined)
