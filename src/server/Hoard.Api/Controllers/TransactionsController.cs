@@ -11,9 +11,13 @@ namespace Hoard.Api.Controllers;
 public class TransactionsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{id:int}")]
-    public Task<ActionResult<TransactionDetailDto>> Get(int id, CancellationToken ct)
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(TransactionDetailDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<TransactionDetailDto>> Get(int id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var query = new GetTransactionQuery(id);
+        var dto = await mediator.QueryAsync<GetTransactionQuery, TransactionDetailDto?>(query, ct);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     [HttpGet]

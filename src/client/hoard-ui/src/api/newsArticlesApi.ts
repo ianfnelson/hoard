@@ -1,7 +1,7 @@
 import { hoardApi } from './hoardApi';
 import type { NewsArticleDetailDto} from "@/api/dtos/NewsArticleDetailDto.ts";
 import type { NewsArticleSummaryDto } from "@/api/dtos/NewsArticleSummaryDto.ts";
-import type { PagedResult } from "@/api/types/PagedResult";
+import type { PagedResult } from "@/api/dtos/PagedResult.ts";
 
 export interface GetNewsArticlesParams {
   instrumentId?: number;

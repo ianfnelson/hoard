@@ -78,7 +78,7 @@ const router = createRouter({
         {
           path: "news",
           name: "news",
-          component: () => import("@/pages/NewsPage.vue")
+          component: () => import("@/pages/NewsArticlesPage.vue")
         },
         {
           path: "news/:id",

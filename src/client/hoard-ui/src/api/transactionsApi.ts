@@ -1,6 +1,7 @@
 import { hoardApi } from "./hoardApi";
-import type { TransactionDto } from "./dtos/TransactionDto";
-import type { PagedResult } from "@/api/types/PagedResult";
+import type {TransactionSummaryDto} from "./dtos/TransactionSummaryDto.ts";
+import type { PagedResult } from "@/api/dtos/PagedResult.ts";
+import type {TransactionDetailDto} from "@/api/dtos/TransactionDetailDto.ts";
 
 export interface GetTransactionsParams {
   accountId?: number;
@@ -10,26 +11,16 @@ export interface GetTransactionsParams {
 
 export async function getTransactions(
   params?: GetTransactionsParams
-): Promise<PagedResult<TransactionDto>> {
+): Promise<PagedResult<TransactionSummaryDto>> {
   const response = await hoardApi.get("/transactions", { params });
   return response.data;
 }
 
-export async function createTransaction(
-  transaction: Omit<TransactionDto, "id">
-): Promise<TransactionDto> {
-  const response = await hoardApi.post("/transactions", transaction);
+export async function getTransactionDetail(
+  transactionId: number
+): Promise<TransactionDetailDto> {
+  const response = await hoardApi.get(
+    `/transactions/${transactionId}`
+  );
   return response.data;
-}
-
-export async function updateTransaction(
-  id: number,
-  transaction: Partial<TransactionDto>
-): Promise<TransactionDto> {
-  const response = await hoardApi.put(`/transactions/${id}`, transaction);
-  return response.data;
-}
-
-export async function deleteTransaction(id: number): Promise<void> {
-  await hoardApi.delete(`/transactions/${id}`);
 }
