@@ -130,6 +130,100 @@
       "id": "83fe04f8-7c13-4f3a-ad0a-a67dd5d833df"
     },
     {
+      "name": "News Articles",
+      "item": [
+        {
+          "name": "News Article",
+          "id": "fffa530a-1fe0-4d91-83c5-b1d47e6eb869",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{BaseUrl}}news-articles/59",
+              "host": [
+                "{{BaseUrl}}news-articles"
+              ],
+              "path": [
+                "59"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "News Articles",
+          "id": "c4126110-6115-4377-9957-2ca73b86dc46",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{BaseUrl}}news-articles/?pagenumber=1&pageSize=30&sortBy=instrumentname&sortDirection=asc&instrumentId=437&search=",
+              "host": [
+                "{{BaseUrl}}news-articles"
+              ],
+              "path": [
+                ""
+              ],
+              "query": [
+                {
+                  "key": "pagenumber",
+                  "value": "1",
+                  "uuid": "28938403-c187-4fc8-a19f-8dc1f60f729e"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "30",
+                  "uuid": "3274c9a2-36b7-4595-9b06-248a7b10f092"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "instrumentname",
+                  "uuid": "72d41a40-09be-41d3-8bad-9bc2df0e4439"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "asc",
+                  "uuid": "28921cb3-98e4-4b18-ab00-cbaaca64c46a"
+                },
+                {
+                  "key": "instrumentId",
+                  "value": "437",
+                  "uuid": "f06bd8b9-f029-4aaf-bd44-ca6114221d3e"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "uuid": "c3d63eb5-bf79-4fa4-81c9-3f4fb2a42370"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "daa1c46c-ae5f-44da-94e6-ac3505a91bfe"
+    },
+    {
       "name": "Operations",
       "item": [
         {

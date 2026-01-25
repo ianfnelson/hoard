@@ -28,7 +28,7 @@ export function formatPercentage(value: number | null | undefined): string {
 /**
  * Formats an "updated time" for display in the UI
  * - If within the last 24 hours: HH:mm format
- * - Otherwise: DD Mmmm format (e.g., "23 January")
+ * - Otherwise: DD Mmm YYYY format (e.g., "23 Jan 2006")
  * @param date The date to format (Date object or ISO string)
  * @returns Formatted date string
  */
@@ -54,9 +54,29 @@ export function formatUpdatedTime(date: Date | string | null | undefined): strin
     // Older than 24 hours - show date
     return parsedDate.toLocaleString('en-GB', {
       day: '2-digit',
-      month: 'long'
+      month: 'short',
+      year: 'numeric'
     });
   }
+}
+
+/**
+ * Formats a date for display in the UI
+ * @param date The date to format (Date object or ISO string)
+ * @returns Formatted date string (e.g. "15 Jan 2026")
+ */
+export function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return '';
+
+  const parsedDate = typeof date === 'string' ? new Date(date) : date;
+
+  if (isNaN(parsedDate.getTime())) return '';
+
+  return parsedDate.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
 }
 
 /**

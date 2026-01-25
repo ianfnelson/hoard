@@ -120,7 +120,7 @@ public sealed class GetTransactionsHandler(HoardContext context)
             Id = t.Id,
             Date = t.Date,
             ContractNoteReference = t.ContractNoteReference ?? "",
-            Units = t.Units,
+            Units = t.TransactionTypeId == TransactionType.Sell ? -t.Units! : t.Units,
             Value = t.Value,
 
             AccountId = t.AccountId,

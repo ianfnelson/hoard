@@ -1,6 +1,6 @@
 import { hoardApi } from "./hoardApi";
 import type { InstrumentSummaryDto } from "./dtos/InstrumentSummaryDto";
-import type { PagedResult } from "@/api/types/PagedResult";
+import type { PagedResult } from "@/api/dtos/PagedResult.ts";
 
 export interface GetInstrumentsParams {
   pageNumber?: number;
