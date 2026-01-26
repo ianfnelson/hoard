@@ -4,6 +4,7 @@ import type { PortfolioPositionsDto } from "@/api/dtos/PortfolioPositionsDto.ts"
 import type { PortfolioExposureDto } from "@/api/dtos/PortfolioExposureDto";
 import type { PortfolioInstrumentTypesDto } from "@/api/dtos/PortfolioInstrumentTypesDto";
 import type { PortfolioSummaryDto } from "@/api/dtos/PortfolioSummaryDto";
+import type { PortfolioStatementsDto } from "@/api/dtos/PortfolioStatementsDto";
 
 export interface GetPortfolioPositionsParams {
   isOpen?: boolean;
@@ -50,6 +51,15 @@ export async function getPortfolioInstrumentTypes(
 ): Promise<PortfolioInstrumentTypesDto> {
   const response = await hoardApi.get(
     `/portfolios/${portfolioId}/instrument-types`
+  );
+  return response.data;
+}
+
+export async function getPortfolioStatements(
+  portfolioId: number
+): Promise<PortfolioStatementsDto> {
+  const response = await hoardApi.get(
+    `/portfolios/${portfolioId}/snapshots`
   );
   return response.data;
 }
