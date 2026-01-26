@@ -96,21 +96,25 @@ public sealed class GetTransactionsHandler(HoardContext context)
         var orderedQueryable = request.SortBy.ToLowerInvariant() switch
         {
             "date" => request.SortDirection == SortDirection.Asc
-                ? query.OrderBy(i => i.Date)
-                : query.OrderByDescending(i => i.Date),
+                ? query.OrderBy(t => t.Date)
+                : query.OrderByDescending(t => t.Date),
 
             "instrumentname" => request.SortDirection == SortDirection.Asc
                 ? query.OrderBy(t => t.Instrument != null ? t.Instrument.Name : "")
                 : query.OrderByDescending(t => t.Instrument != null ? t.Instrument.Name : ""),
             
+            "instrumentticker" => request.SortDirection == SortDirection.Asc
+                ? query.OrderBy(t => t.Instrument != null ? t.Instrument.TickerDisplay : "")
+                : query.OrderByDescending(t => t.Instrument != null ? t.Instrument.TickerDisplay : ""),
+            
             "value" => request.SortDirection == SortDirection.Asc
-                ? query.OrderBy(i => i.Value)
-                : query.OrderByDescending(i => i.Value),
+                ? query.OrderBy(t => t.Value)
+                : query.OrderByDescending(t => t.Value),
 
-            _ => query.OrderByDescending(i => i.Date)
+            _ => query.OrderByDescending(t => t.Date)
         };
 
-        return orderedQueryable.ThenBy(i => i.Id);
+        return orderedQueryable.ThenBy(t => t.Id);
     }
 
     private static Expression<Func<Transaction, TransactionSummaryDto>> ProjectToSummary()

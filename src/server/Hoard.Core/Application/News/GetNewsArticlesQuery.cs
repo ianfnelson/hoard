@@ -87,6 +87,10 @@ public sealed class GetNewsArticlesHandler(HoardContext context)
                 ? query.OrderBy(n => n.PublishedUtc).ThenBy(n => n.Instrument.Name)
                 : query.OrderByDescending(n => n.PublishedUtc).ThenBy(n => n.Instrument.Name),
     
+            "instrumentticker" => request.SortDirection == SortDirection.Asc
+                ? query.OrderBy(n => n.Instrument.TickerDisplay).ThenBy(n => n.Headline)
+                : query.OrderByDescending(n => n.Instrument.TickerDisplay).ThenBy(n => n.Headline),
+            
             "instrumentname" => request.SortDirection == SortDirection.Asc
                 ? query.OrderBy(n => n.Instrument.Name).ThenBy(n => n.Headline)
                 : query.OrderByDescending(n => n.Instrument.Name).ThenBy(n => n.Headline),

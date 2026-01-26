@@ -15,7 +15,8 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
 
 const headers = [
   { title: "Published", key: "publishedUtc", sortable: true, width: '160px' },
-  { title: "Instrument", key: "instrumentName", sortable: true },
+  { title: "Ticker", key: "instrumentTicker", sortable: true },
+  { title: "Instrument Name", key: "instrumentName", sortable: true },
   { title: "Headline", key: "headline", sortable: true }
 ] as const;
 
