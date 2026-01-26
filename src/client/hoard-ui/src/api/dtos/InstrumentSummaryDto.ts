@@ -1,7 +1,10 @@
 export interface InstrumentSummaryDto {
   id: number;
-  ticker: string;
+  tickerDisplay: string;
   name: string;
-  instrumentType: string;
-  assetClass: string;
+  instrumentTypeName: string;
+  assetClassName: string;
+  assetSubclassName: string;
+  enablePriceUpdates: boolean;
+  enableNewsUpdates: boolean;
 }
