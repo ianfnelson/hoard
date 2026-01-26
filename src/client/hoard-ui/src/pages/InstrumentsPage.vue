@@ -12,9 +12,9 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
 ]);
 
 const headers = [
-  { title: "TickerDisplay", key: "tickerDisplay", sortable: true, width: '160px' },
+  { title: "Ticker", key: "tickerDisplay", sortable: true, width: '160px' },
   { title: "Name", key: "name", sortable: true },
-  { title: "Type", key: "instrumentTypeName", sortable: false },
+  { title: "Instrument Type", key: "instrumentTypeName", sortable: false },
   { title: "Asset Class", key: "assetClassName", sortable: true },
   { title: "Asset Subclass", key: "assetSubclassName", sortable: false },
   { title: "Prices", key: "enablePriceUpdates", sortable: false},
