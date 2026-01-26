@@ -11,7 +11,7 @@ const tabs = [
   { name: "portfolio-overview", label: "Overview", to: { name: "portfolio-overview" } },
   { name: "portfolio-exposure", label: "Exposure", to: { name: "portfolio-exposure" } },
   { name: "portfolio-positions", label: "Positions", to: { name: "portfolio-positions" } },
-  { name: "portfolio-snapshots", label: "Snapshots", to: { name: "portfolio-snapshots" } },
+  { name: "portfolio-statements", label: "Statements", to: { name: "portfolio-statements" } },
   { name: "portfolio-history", label: "History", to: { name: "portfolio-history" } }
 ];
 
