@@ -103,7 +103,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
                 ? query.OrderBy(i => i.Name)
                 : query.OrderByDescending(i => i.Name),
 
-            "ticker" => request.SortDirection == SortDirection.Asc
+            "tickerDisplay" => request.SortDirection == SortDirection.Asc
                 ? query.OrderBy(i => i.TickerDisplay)
                 : query.OrderByDescending(i => i.TickerDisplay),
 

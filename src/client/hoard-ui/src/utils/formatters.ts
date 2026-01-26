@@ -117,3 +117,13 @@ export function getTrendClass(value: number | null | undefined): string | undefi
   if (value < 0) return 'text-negative';
   return undefined;
 }
+
+/**
+ * Formats a boolean as Yes/No
+ * @param value The boolean value to format
+ * @returns "Yes" for true, "No" for false, or empty string for null/undefined
+ */
+export function formatYesNo(value: boolean | null | undefined): string {
+  if (value == null) return '';
+  return value ? 'Yes' : 'No';
+}
