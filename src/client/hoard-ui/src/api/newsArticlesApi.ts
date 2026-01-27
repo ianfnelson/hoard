@@ -8,10 +8,10 @@ export interface GetNewsArticlesParams {
   fromDate?: string;
   toDate?: string;
 
-  search?: string;
-
   pageNumber?: number;
   pageSize?: number;
+
+  search?: string;
 
   sortBy?: string;
   sortDirection?: string;
