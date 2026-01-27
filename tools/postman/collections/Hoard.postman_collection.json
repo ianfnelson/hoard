@@ -822,6 +822,24 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Transaction Types",
+          "id": "0a0b0238-a054-4e27-8ca9-54d61ae2e7ed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/transaction-types",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "transaction-types"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "id": "5d660ec9-a032-4ccf-8380-79280b765f6e"
