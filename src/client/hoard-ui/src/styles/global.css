@@ -1,3 +1,22 @@
+/* Typography */
+body,
+.v-application,
+.v-application .text-h1,
+.v-application .text-h2,
+.v-application .text-h3,
+.v-application .text-h4,
+.v-application .text-h5,
+.v-application .text-h6,
+.v-application .text-subtitle-1,
+.v-application .text-subtitle-2,
+.v-application .text-body-1,
+.v-application .text-body-2,
+.v-application .text-button,
+.v-application .text-caption,
+.v-application .text-overline {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
 /* Financial trend colors */
 .text-positive {
   color: #1976d2 !important; /* Deep blue for positive financial values */

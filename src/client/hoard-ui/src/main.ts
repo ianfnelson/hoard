@@ -19,6 +19,23 @@ const vuetify = createVuetify({
     sets : {
       mdi
     }
+  },
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: {
+        colors: {
+          // Can add custom colors here if needed
+        }
+      }
+    }
+  },
+  defaults: {
+    VApp: {
+      style: {
+        fontFamily: '"IBM Plex Sans", sans-serif'
+      }
+    }
   }
 })
 
