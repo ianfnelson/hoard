@@ -10,6 +10,9 @@ export interface GetInstrumentsParams {
   enableNewsUpdates?: boolean;
   pageNumber?: number;
   pageSize?: number;
+  search?: string;
+  sortBy?: string;
+  sortDirection?: string;
 }
 
 export async function getInstruments(
