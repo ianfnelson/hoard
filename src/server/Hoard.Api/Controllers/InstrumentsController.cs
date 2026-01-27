@@ -1,5 +1,6 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Instruments;
+using Hoard.Core.Application.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -25,7 +26,15 @@ public class InstrumentsController(IMediator mediator)
         return new OkObjectResult(dtos);
     }
     
-    // TODO - lookup endpoint
+    [HttpGet]                                                        
+    [Route("lookup")]                                                
+    [ProducesResponseType(typeof(List<LookupDto>), StatusCodes.Status200OK)]                                        
+    public async Task<ActionResult<List<LookupDto>>> GetLookup(CancellationToken ct)                                  
+    {                                                                
+        var query = new GetInstrumentsLookupQuery();                 
+        var dtos = await mediator.QueryAsync<GetInstrumentsLookupQuery, List<LookupDto>>(query, ct);                                     
+        return new OkObjectResult(dtos);                             
+    }  
     
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] InstrumentWriteDto request, CancellationToken ct)

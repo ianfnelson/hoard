@@ -1,15 +1,43 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useTransactions } from "@/composables/useTransactions";
+import { useReferenceDataStore } from "@/stores/referenceDataStore";
+import { useNavigationStore } from "@/stores/navigationStore";
 import {formatCurrency, formatDate, getTrendClass} from "@/utils/formatters";
 
 const { items, totalCount, isLoading, fetchTransactions } = useTransactions();
+const refStore = useReferenceDataStore();
+const navStore = useNavigationStore();
 
 const page = ref(1);
 const itemsPerPage = ref(15);
 const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
   { key: 'date', order: 'desc' }
 ]);
+
+const selectedAccountId = ref<number | null>(null);
+const selectedInstrumentId = ref<number | null>(null);
+const selectedTransactionTypeId = ref<number | null>(null);
+const fromDate = ref<string>("");
+const toDate = ref<string>("");
+const searchText = ref("");
+
+const debouncedSearch = ref("");
+let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(searchText, (val) => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    debouncedSearch.value = val;
+  }, 400);
+});
+
+const instrumentItems = computed(() => {
+  return refStore.instruments.map(i => ({
+    title: i.context ? `${i.name} (${i.context})` : i.name,
+    value: i.id
+  }));
+});
 
 const headers = [
   { title: "Date", key: "date", sortable: true, width: '160px' },
@@ -27,19 +55,120 @@ async function loadItems() {
     pageNumber: page.value,
     pageSize: itemsPerPage.value === -1 ? undefined : itemsPerPage.value,
     sortBy: sortBy.value[0]?.key,
-    sortDirection: sortBy.value[0]?.order
+    sortDirection: sortBy.value[0]?.order,
+    accountId: selectedAccountId.value ?? undefined,
+    instrumentId: selectedInstrumentId.value ?? undefined,
+    transactionTypeId: selectedTransactionTypeId.value ?? undefined,
+    fromDate: fromDate.value || undefined,
+    toDate: toDate.value || undefined,
+    search: debouncedSearch.value || undefined,
   };
   await fetchTransactions(params);
 }
 
+// Reset page when filters change
+watch(
+  [selectedAccountId, selectedInstrumentId, selectedTransactionTypeId, fromDate, toDate, debouncedSearch],
+  () => {
+    page.value = 1;
+  }
+);
+
 // Watch for changes and reload
-watch([page, itemsPerPage, sortBy], () => {
-  loadItems();
-}, { immediate: true });
+watch(
+  [page, itemsPerPage, sortBy, selectedAccountId, selectedInstrumentId, selectedTransactionTypeId, fromDate, toDate, debouncedSearch],
+  () => {
+    loadItems();
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  refStore.loadTransactionTypes();
+  refStore.loadInstruments();
+  navStore.loadAccounts();
+});
 </script>
 
 <template>
   <v-container fluid>
+    <v-row dense class="mb-2">
+      <v-col cols="12" sm="6" md="2">
+        <v-text-field
+          v-model="searchText"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="2">
+        <v-select
+          v-model="selectedAccountId"
+          :items="navStore.accounts"
+          item-title="name"
+          item-value="id"
+          label="Account"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="2">
+        <v-select
+          v-model="selectedTransactionTypeId"
+          :items="refStore.transactionTypes"
+          item-title="name"
+          item-value="id"
+          label="Transaction Type"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="2">
+        <v-select
+          v-model="selectedInstrumentId"
+          :items="instrumentItems"
+          label="Instrument"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="2">
+        <v-text-field
+          v-model="fromDate"
+          label="From Date"
+          type="date"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" sm="6" md="2">
+        <v-text-field
+          v-model="toDate"
+          label="To Date"
+          type="date"
+          clearable
+          hide-details
+          density="compact"
+          variant="outlined"
+        />
+      </v-col>
+    </v-row>
     <v-row dense>
       <v-col>
         <v-data-table-server
