@@ -2,11 +2,15 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { getPortfolioList } from "@/api/portfoliosApi";
 import type { PortfolioSummaryDto } from "@/api/dtos/PortfolioSummaryDto";
+import { getAccounts } from "@/api/accountsApi";
+import type { AccountSummaryDto } from "@/api/dtos/AccountSummaryDto";
 
 export const useNavigationStore = defineStore("navigation", () => {
   const portfolios = ref<PortfolioSummaryDto[]>([]);
+  const accounts = ref<AccountSummaryDto[]>([]);
   const isLoading = ref(false);
   const lastUpdated = ref<Date | null>(null);
+  const accountsLoaded = ref(false);
   const error = ref<string | null>(null);
 
   async function loadPortfolios() {
@@ -24,16 +28,37 @@ export const useNavigationStore = defineStore("navigation", () => {
     }
   }
 
+  async function loadAccounts() {
+    if (accountsLoaded.value) return;
+
+    isLoading.value = true;
+    error.value = null;
+    try {
+      accounts.value = await getAccounts({ isActive: true });
+      accountsLoaded.value = true;
+    } catch (e: any) {
+      error.value = "Failed to load accounts";
+      console.error("Failed to load accounts:", e);
+      accounts.value = [];
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   async function refresh() {
-    await loadPortfolios();
+    lastUpdated.value = null;
+    accountsLoaded.value = false;
+    await Promise.all([loadPortfolios(), loadAccounts()]);
   }
 
   return {
     portfolios,
+    accounts,
     isLoading,
     lastUpdated,
     error,
     loadPortfolios,
+    loadAccounts,
     refresh
   };
 });
