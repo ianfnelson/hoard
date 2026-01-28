@@ -14,10 +14,7 @@ public class AssetSubclassConfiguration : IEntityTypeConfiguration<AssetSubclass
         builder.Property(e => e.Id)
             .ValueGeneratedNever();
         
-        builder.Property(a => a.Code).IsRequired().HasMaxLength(10);
         builder.Property(a => a.Name).IsRequired().HasMaxLength(50);
-        
-        builder.HasIndex(a => a.Code).IsUnique();
 
         builder.HasOne(a => a.AssetClass)
             .WithMany(a => a.Subclasses)

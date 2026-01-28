@@ -15,13 +15,11 @@ public class GetAssetClassesHandler(HoardContext context)
             .Select(ac => new AssetClassDto
             {
                 Id = ac.Id,
-                Code = ac.Code,
                 Name = ac.Name,
                 Subclasses = ac.Subclasses
                     .Select(s => new AssetSubclassDto
                     {
                         Id = s.Id,
-                        Code = s.Code,
                         Name = s.Name
                     })
                     .OrderBy(s => s.Name)

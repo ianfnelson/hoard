@@ -128,17 +128,14 @@ public sealed class GetInstrumentsHandler(HoardContext context)
             CreatedUtc = i.CreatedUtc,
 
             InstrumentTypeId = i.InstrumentTypeId,
-            InstrumentTypeCode = i.InstrumentType.Code,
             InstrumentTypeName = i.InstrumentType.Name,
             InstrumentTypeIsCash = i.InstrumentType.IsCash,
             InstrumentTypeIsFxPair = i.InstrumentType.IsFxPair,
 
             AssetClassId = i.AssetSubclass.AssetClassId,
-            AssetClassCode = i.AssetSubclass.AssetClass.Code,
             AssetClassName = i.AssetSubclass.AssetClass.Name,
 
             AssetSubclassId = i.AssetSubclassId,
-            AssetSubclassCode = i.AssetSubclass.Code,
             AssetSubclassName = i.AssetSubclass.Name,
 
             CurrencyId = i.CurrencyId,

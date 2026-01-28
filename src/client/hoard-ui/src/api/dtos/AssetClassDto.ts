@@ -1,7 +1,4 @@
-export interface AssetSubclassDto {
-  id: number;
-  name: string;
-}
+import type {AssetSubclassDto} from "@/api/dtos/AssetSubclassDto.ts";
 
 export interface AssetClassDto {
   id: number;
