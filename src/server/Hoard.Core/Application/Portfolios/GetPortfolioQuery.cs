@@ -44,7 +44,8 @@ public class GetPortfolioHandler(HoardContext context, ILogger<GetPortfolioHandl
                         ReturnYtd = p.Performance.ReturnYtd,
                         ReturnAllTime = p.Performance.ReturnAllTime,
                         AnnualisedReturn = p.Performance.AnnualisedReturn,
-                        UpdatedUtc = p.Performance.UpdatedUtc
+                        UpdatedUtc = p.Performance.UpdatedUtc,
+                        Yield = p.Performance.Yield
                     }
             })
             .SingleOrDefaultAsync(ct);
