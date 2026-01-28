@@ -33,6 +33,9 @@ public class PortfolioSnapshotConfiguration : IEntityTypeConfiguration<Portfolio
         builder.Property(p => p.Churn)
             .HasColumnType("decimal(18,4)");
         
+        builder.Property(p => p.Yield)
+            .HasColumnType("decimal(18,4)");
+        
         builder.Property(p => p.TotalBuys)
             .HasColumnType("decimal(18,2)");
         
@@ -45,7 +48,7 @@ public class PortfolioSnapshotConfiguration : IEntityTypeConfiguration<Portfolio
         builder.Property(p => p.TotalIncomeLoyaltyBonus)
             .HasColumnType("decimal(18,2)");
         
-        builder.Property(p => p.TotalIncomePromotion)
+        builder.Property(p => p.TotalPromotion)
             .HasColumnType("decimal(18,2)");
         
         builder.Property(p => p.TotalIncomeDividends)

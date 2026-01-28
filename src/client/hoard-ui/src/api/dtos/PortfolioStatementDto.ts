@@ -8,6 +8,7 @@ export interface PortfolioStatementDto {
   averageValue: number;
   return: number;
   churn: number;
+  yield: number;
 
   // Trading metrics
   totalBuys: number;
@@ -17,8 +18,8 @@ export interface PortfolioStatementDto {
   // Income
   totalIncomeInterest: number;
   totalIncomeLoyaltyBonus: number;
-  totalIncomePromotion: number;
   totalIncomeDividends: number;
+  totalPromotion: number;
 
   // Deposits
   totalDepositPersonal: number;

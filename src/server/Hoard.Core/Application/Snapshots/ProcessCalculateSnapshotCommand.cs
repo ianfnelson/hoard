@@ -59,10 +59,11 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
                         x is { TransactionTypeId: TransactionType.CorporateAction, Value: > decimal.Zero })
             .Sum(x => x.Value);
         
+        snapshot.TotalIncomeDividends = GetTransactionTotal(t, TransactionType.IncomeDividend);
         snapshot.TotalIncomeInterest = GetTransactionTotal(t, TransactionType.IncomeInterest);
         snapshot.TotalIncomeLoyaltyBonus = GetTransactionTotal(t, TransactionType.IncomeLoyaltyBonus);
-        snapshot.TotalIncomePromotion = GetTransactionTotal(t, TransactionType.IncomePromotion);
-        snapshot.TotalIncomeDividends = GetTransactionTotal(t, TransactionType.IncomeDividend);
+        
+        snapshot.TotalPromotion = GetTransactionTotal(t, TransactionType.Promotion);
 
         snapshot.TotalFees = -GetTransactionTotal(t, TransactionType.Fee);
         
@@ -105,8 +106,13 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
     {
         snapshot.Return = SimpleReturnCalculator.Calculate(snapshot.StartValue, snapshot.EndValue,
             snapshot.TotalWithdrawals, snapshot.TotalDepositEmployer + snapshot.TotalDepositPersonal + snapshot.TotalDepositIncomeTaxReclaim + snapshot.TotalDepositTransferIn);
-        
+
         snapshot.Churn = 100.0M * Math.Max(snapshot.TotalBuys, snapshot.TotalSells) / snapshot.AverageValue;
+
+        var totalIncome = snapshot.TotalIncomeDividends + snapshot.TotalIncomeInterest + snapshot.TotalIncomeLoyaltyBonus;
+        snapshot.Yield = snapshot.AverageValue > 0
+            ? 100.0M * totalIncome / snapshot.AverageValue
+            : decimal.Zero;
     }
 
     private async Task<PortfolioSnapshot> LoadOrCreate(Portfolio portfolio, int year, CancellationToken ct)
