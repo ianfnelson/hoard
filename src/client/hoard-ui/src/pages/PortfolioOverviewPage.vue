@@ -53,7 +53,7 @@ const rows = computed(() =>
     <v-row dense class="mt-0">
       <v-col cols="6" sm="3">
         <summary-card
-          title="Value / yield"
+          title="Value / Yield"
           :value="store.portfolio?.performance?.value"
           :percentage="store.portfolio?.performance?.yield"
         />

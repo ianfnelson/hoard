@@ -8,6 +8,7 @@ public class PortfolioPerformanceDto
     public decimal CashPercentage { get; set; }
     public decimal PreviousValue { get; init; }
     public decimal ValueChange { get; init; }
+    public decimal Yield { get; init; }
 
     // Gains
     public decimal UnrealisedGain { get; init; }
