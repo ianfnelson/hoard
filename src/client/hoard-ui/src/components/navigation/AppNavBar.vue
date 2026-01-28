@@ -4,10 +4,7 @@ import PortfolioSelector from "./PortfolioSelector.vue";
 
 <template>
   <v-app-bar density="comfortable" elevation="1">
-    <v-app-bar-title>Hoard</v-app-bar-title>
-
-    <v-spacer />
-
+    
     <PortfolioSelector />
 
     <v-btn :to="{ name: 'instruments' }" text>Instruments</v-btn>
