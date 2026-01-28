@@ -39,10 +39,8 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             .Select(sc => new
             {
                 sc.Id,
-                sc.Code,
                 sc.Name,
                 sc.AssetClassId,
-                AssetClassCode = sc.AssetClass.Code,
                 AssetClassName = sc.AssetClass.Name
             })
             .ToListAsync(ct);
@@ -92,11 +90,9 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             return new
             {
                 sc.Id,
-                sc.Code,
                 sc.Name,
 
                 sc.AssetClassId,
-                sc.AssetClassCode,
                 sc.AssetClassName,
 
                 ActualValue = actualValue,
@@ -116,11 +112,9 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             return new
             {
                 x.AssetClassId,
-                x.AssetClassCode,
                 x.AssetClassName,
 
                 AssetSubclassId = x.Id,
-                AssetSubclassCode = x.Code,
                 AssetSubclassName = x.Name,
 
                 ActualValue = x.ActualValue,
@@ -143,11 +137,9 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             .Select(x => new AssetSubclassExposureDto
             {
                 AssetClassId = x.AssetClassId,
-                AssetClassCode = x.AssetClassCode,
                 AssetClassName = x.AssetClassName,
 
                 AssetSubclassId = x.AssetSubclassId,
-                AssetSubclassCode = x.AssetSubclassCode,
                 AssetSubclassName = x.AssetSubclassName,
 
                 ActualValue = x.ActualValue.RoundTo2Dp(),
@@ -170,7 +162,6 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
                 .GroupBy(x => new
                 {
                     x.AssetClassId,
-                    x.AssetClassCode,
                     x.AssetClassName
                 })
                 .Select(g =>
@@ -187,7 +178,6 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
                     return new AssetClassExposureDto
                     {
                         AssetClassId = g.Key.AssetClassId,
-                        AssetClassCode = g.Key.AssetClassCode,
                         AssetClassName = g.Key.AssetClassName,
 
                         ActualValue = actualValue.RoundTo2Dp(),
@@ -239,7 +229,6 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
         {
             actions.Add(new RebalanceActionDto
             {
-                AssetSubclassCode = subclassToSell.AssetSubclassCode,
                 AssetSubclassId = subclassToSell.AssetSubclassId,
                 AssetSubclassName = subclassToSell.AssetSubclassName,
                 RebalanceAction = RebalanceActionType.Reduce,
@@ -260,7 +249,6 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             
             actions.Add(new RebalanceActionDto
             {
-                AssetSubclassCode = subclassToAdd.AssetSubclassCode,
                 AssetSubclassName = subclassToAdd.AssetSubclassName,
                 AssetSubclassId = subclassToAdd.AssetClassId,
                 RebalanceAction = RebalanceActionType.Add,

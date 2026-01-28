@@ -17,17 +17,14 @@ public class InstrumentDetailDto
     public DateTime CreatedUtc { get; set; }
     
     public int InstrumentTypeId { get; set; }
-    public required string InstrumentTypeCode { get; set; }
     public required string InstrumentTypeName { get; set; }
     public bool InstrumentTypeIsCash { get; set; }
     public bool InstrumentTypeIsFxPair { get; set; }
     
     public int AssetClassId { get; set; }
-    public required string AssetClassCode { get; set; }
     public required string AssetClassName { get; set; }
     
     public int AssetSubclassId { get; set; }
-    public required string AssetSubclassCode { get; set; }
     public required string AssetSubclassName { get; set; }
     
     public required string BaseCurrencyId { get; set; }

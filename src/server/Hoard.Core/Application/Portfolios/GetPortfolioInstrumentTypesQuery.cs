@@ -35,7 +35,6 @@ public class GetPortfolioInstrumentTypesHandler(HoardContext context, ILogger<Ge
             .Select(g => new PortfolioInstrumentTypeDto
             {
                 Id = g.Key.Id,
-                Code = g.Key.Code,
                 Name = g.Key.Name,
                 Value = g.Sum(hv => hv.Value)
             })

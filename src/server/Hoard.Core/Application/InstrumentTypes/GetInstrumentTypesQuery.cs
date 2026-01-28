@@ -15,7 +15,6 @@ public class GetInstrumentTypesHandler(HoardContext context)
             .Select(i => new InstrumentTypeDto
             {
                 Id = i.Id,
-                Code = i.Code,
                 Name = i.Name,
                 IsCash = i.IsCash,
                 IsFxPair = i.IsFxPair

@@ -14,9 +14,6 @@ public class InstrumentTypeConfiguration : IEntityTypeConfiguration<InstrumentTy
         builder.Property(e => e.Id)
             .ValueGeneratedNever();
         
-        builder.Property(t => t.Code).IsRequired().HasMaxLength(10);
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
-        
-        builder.HasIndex(a => a.Code).IsUnique();
     }
 }
