@@ -13,8 +13,8 @@ public partial class TransactionType
     public const int Fee = 600;
     public const int IncomeInterest = 701;
     public const int IncomeLoyaltyBonus = 702;
-    public const int IncomePromotion = 703;
     public const int IncomeDividend = 704;
+    public const int Promotion = 800;
 }
 
 internal static class TransactionTypeSets
@@ -31,7 +31,6 @@ internal static class TransactionTypeSets
     [
         TransactionType.IncomeInterest, 
         TransactionType.IncomeLoyaltyBonus, 
-        TransactionType.IncomePromotion, 
         TransactionType.IncomeDividend
     ];
 }

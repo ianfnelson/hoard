@@ -5,6 +5,7 @@ export interface PortfolioPerformanceDto {
   cashPercentage: number;
   previousValue: number;
   valueChange: number;
+  yield: number;
 
   // Gains
   unrealisedGain: number;

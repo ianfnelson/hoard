@@ -122,7 +122,7 @@ public class ReferenceDataSeeder
             new TransactionType { Id = TransactionType.Fee, Name = "Fee" },
             new TransactionType { Id = TransactionType.IncomeInterest, Name = "Interest" },
             new TransactionType { Id = TransactionType.IncomeLoyaltyBonus, Name = "Loyalty Bonus" },
-            new TransactionType { Id = TransactionType.IncomePromotion, Name = "Promotion" },
+            new TransactionType { Id = TransactionType.Promotion, Name = "Promotion" },
             new TransactionType { Id = TransactionType.IncomeDividend, Name = "Dividend" },
         };
         await UpsertAsync(_context.TransactionTypes, items, x => x.Id);

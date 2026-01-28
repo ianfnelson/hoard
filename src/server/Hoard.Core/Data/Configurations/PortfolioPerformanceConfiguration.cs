@@ -20,6 +20,9 @@ public class PortfolioPerformanceConfiguration
         builder.Property(p => p.CashValue)
             .HasColumnType("decimal(18,2)");
         
+        builder.Property(p => p.Yield)
+            .HasColumnType("decimal(18,4)");
+        
         builder.Property(p => p.PortfolioId)
             .ValueGeneratedNever();
 

@@ -6,4 +6,5 @@ public class PortfolioPerformance : Performance
     public Portfolio Portfolio { get; set; } = null!;
     
     public decimal CashValue { get; set; }
+    public decimal Yield { get; set; }
 }

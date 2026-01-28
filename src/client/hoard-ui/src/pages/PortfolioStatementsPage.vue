@@ -19,6 +19,7 @@ const performanceHeaders = [
   { title: "Change", key: "valueChange", sortable: true, align: 'end' },
   { title: "Average", key: "averageValue", sortable: true, align: 'end' },
   { title: "Return", key: "return", sortable: true, align: 'end' },
+  { title: "Yield", key: "yield", sortable: true, align: 'end' },
 
 ] as const;
 
@@ -36,10 +37,10 @@ const tradesHeaders = [
 
 const movementsHeaders = [
   { title: "Year", key: "year", sortable: true },
+  { title: "Dividends", key: "totalIncomeDividends", sortable: true, align: 'end' },
   { title: "Interest", key: "totalIncomeInterest", sortable: true, align: 'end' },
   { title: "Loyalty", key: "totalIncomeLoyaltyBonus", sortable: true, align: 'end' },
-  { title: "Promotion", key: "totalIncomePromotion", sortable: true, align: 'end' },
-  { title: "Dividends", key: "totalIncomeDividends", sortable: true, align: 'end' },
+  { title: "Promotion", key: "totalPromotion", sortable: true, align: 'end' },
   { title: "Personal", key: "totalDepositPersonal", sortable: true, align: 'end' },
   { title: "Employer", key: "totalDepositEmployer", sortable: true, align: 'end' },
   { title: "Tax Reclaim", key: "totalDepositIncomeTaxReclaim", sortable: true, align: 'end' },
@@ -122,7 +123,9 @@ onMounted(async () => {
                 <span :class="getTrendClass(value)">{{ formatPercentage(value) }}</span>
               </template>
 
-
+              <template #item.yield="{ value }">
+                <span>{{ formatPercentage(value) }}</span>
+              </template>
 
               <template #no-data>
                 No statement data available
@@ -204,7 +207,7 @@ onMounted(async () => {
                 <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
               </template>
 
-              <template #item.totalIncomePromotion="{ value }">
+              <template #item.totalPromotion="{ value }">
                 <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
               </template>
 

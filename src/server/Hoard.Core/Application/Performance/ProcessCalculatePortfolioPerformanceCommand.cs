@@ -155,6 +155,14 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
         perf.ReturnAllTime = SimpleReturnCalculator.CalculateForPortfolio(decimal.Zero, perf.Value, transactions);
         perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, startDate, today);
+
+        // Calculate 1-year rolling yield
+        var oneYearAgo = today.AddYears(-1);
+        var income1Y = CalculatePeriodIncome(transactions, oneYearAgo, today);
+        var averageValue1Y = CalculateAverageValue(ctx.Valuations, oneYearAgo, today);
+        perf.Yield = averageValue1Y is > 0
+            ? 100.0M * income1Y / averageValue1Y.Value
+            : decimal.Zero;
     }
     
     private static decimal? CalculatePeriodReturn(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
@@ -195,6 +203,24 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         // Absolute change = end value + withdrawals - contributions - start value
         // This represents the actual gain/loss from investments
         return valueEnd.Value + periodWithdrawals - periodContributions - valueStart.Value;
+    }
+
+    private static decimal CalculatePeriodIncome(List<Transaction> transactions, DateOnly startDate, DateOnly endDate)
+    {
+        return transactions
+            .Where(x => x.Date > startDate && x.Date <= endDate)
+            .Where(x => TransactionTypeSets.Income.Contains(x.TransactionTypeId))
+            .Sum(x => x.Value);
+    }
+
+    private static decimal? CalculateAverageValue(Dictionary<DateOnly, PortfolioValuation> valuations, DateOnly startDate, DateOnly endDate)
+    {
+        var periodValuations = valuations
+            .Where(kvp => kvp.Key > startDate && kvp.Key <= endDate)
+            .Select(kvp => kvp.Value.Value)
+            .ToList();
+
+        return periodValuations.Count == 0 ? null : periodValuations.Average();
     }
 
     private static decimal? GetValueForDate(DateOnly previousDay, Dictionary<DateOnly, PortfolioValuation> valuations)
