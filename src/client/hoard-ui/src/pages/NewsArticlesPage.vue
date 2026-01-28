@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useNewsArticles } from "@/composables/useNewsArticles";
 import { useReferenceDataStore } from "@/stores/referenceDataStore";
 import { formatDateTime } from "@/utils/formatters";
 
 const router = useRouter();
+const route = useRoute();
 const { items, totalCount, isLoading, fetchNewsArticles } = useNewsArticles();
 const refStore = useReferenceDataStore();
 
@@ -15,12 +16,17 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
   { key: 'publishedUtc', order: 'desc' }
 ]);
 
-// Filter state
-const searchText = ref("");
-const debouncedSearch = ref("");
-const selectedInstrumentId = ref<number | null>(null);
-const fromDate = ref<string>("");
-const toDate = ref<string>("");
+// Filter state - initialize from query params
+const initialSearch = (route.query.search as string) || "";
+const initialInstrumentId = route.query.instrumentId ? Number(route.query.instrumentId) : null;
+const initialFromDate = (route.query.fromDate as string) || "";
+const initialToDate = (route.query.toDate as string) || "";
+
+const searchText = ref(initialSearch);
+const debouncedSearch = ref(initialSearch);
+const selectedInstrumentId = ref<number | null>(initialInstrumentId);
+const fromDate = ref<string>(initialFromDate);
+const toDate = ref<string>(initialToDate);
 
 // Debounce search
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
@@ -70,6 +76,20 @@ watch(
   [selectedInstrumentId, fromDate, toDate, debouncedSearch],
   () => {
     page.value = 1;
+  }
+);
+
+// Watch filter changes and update URL
+watch(
+  [searchText, selectedInstrumentId, fromDate, toDate],
+  () => {
+    const query: Record<string, string> = {};
+    if (searchText.value) query.search = searchText.value;
+    if (selectedInstrumentId.value) query.instrumentId = String(selectedInstrumentId.value);
+    if (fromDate.value) query.fromDate = fromDate.value;
+    if (toDate.value) query.toDate = toDate.value;
+
+    router.replace({ query });
   }
 );
 

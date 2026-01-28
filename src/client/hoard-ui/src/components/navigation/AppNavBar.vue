@@ -4,7 +4,7 @@ import PortfolioSelector from "./PortfolioSelector.vue";
 
 <template>
   <v-app-bar density="comfortable" elevation="1">
-    
+
     <PortfolioSelector />
 
     <v-btn :to="{ name: 'instruments' }" text>Instruments</v-btn>

@@ -67,7 +67,11 @@ public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortf
                     ReturnAllTime = p.Performance.ReturnAllTime,
                     AnnualisedReturn = p.Performance.AnnualisedReturn,
                     UpdatedUtc = p.Performance.UpdatedUtc
-                }
+                },
+                LatestNewsPublishedUtc = p.Instrument.NewsArticles
+                    .OrderByDescending(na => na.PublishedUtc)
+                    .Select(na => (DateTime?)na.PublishedUtc)
+                    .FirstOrDefault()
             })
             .ToListAsync(ct);
 

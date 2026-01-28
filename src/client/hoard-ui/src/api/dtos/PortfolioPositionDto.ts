@@ -11,4 +11,5 @@ export interface PortfolioPositionDto {
   performance: PositionPerformanceDto | null;
 
   portfolioPercentage: number;
+  latestNewsPublishedUtc: string | null;
 }

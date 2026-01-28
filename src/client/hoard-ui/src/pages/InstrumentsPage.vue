@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useInstruments } from "@/composables/useInstruments";
 import { useReferenceDataStore } from "@/stores/referenceDataStore";
 import { formatYesNo } from "@/utils/formatters";
 
+const router = useRouter();
+const route = useRoute();
 const { items, totalCount, isLoading, fetchInstruments } = useInstruments();
 const refStore = useReferenceDataStore();
 
@@ -13,18 +16,26 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
   { key: 'name', order: 'asc' }
 ]);
 
-const selectedInstrumentTypeId = ref<number | null>(null);
-const selectedAssetClassId = ref<number | null>(null);
-const selectedAssetSubclassId = ref<number | null>(null);
-const enablePriceUpdates = ref<boolean | null>(null);
-const enableNewsUpdates = ref<boolean | null>(null);
-const searchText = ref("");
+// Filter state - initialize from query params
+const initialSearch = (route.query.search as string) || "";
+const initialInstrumentTypeId = route.query.instrumentTypeId ? Number(route.query.instrumentTypeId) : null;
+const initialAssetClassId = route.query.assetClassId ? Number(route.query.assetClassId) : null;
+const initialAssetSubclassId = route.query.assetSubclassId ? Number(route.query.assetSubclassId) : null;
+const initialPriceUpdates = route.query.priceUpdates === "true" ? true : route.query.priceUpdates === "false" ? false : null;
+const initialNewsUpdates = route.query.newsUpdates === "true" ? true : route.query.newsUpdates === "false" ? false : null;
+
+const selectedInstrumentTypeId = ref<number | null>(initialInstrumentTypeId);
+const selectedAssetClassId = ref<number | null>(initialAssetClassId);
+const selectedAssetSubclassId = ref<number | null>(initialAssetSubclassId);
+const enablePriceUpdates = ref<boolean | null>(initialPriceUpdates);
+const enableNewsUpdates = ref<boolean | null>(initialNewsUpdates);
+const searchText = ref(initialSearch);
 
 const booleanOptions = [
   { title: "Yes", value: true },
   { title: "No", value: false },
 ];
-const debouncedSearch = ref("");
+const debouncedSearch = ref(initialSearch);
 
 const availableSubclasses = computed(() => {
   if (!selectedAssetClassId.value) return [];
@@ -32,8 +43,35 @@ const availableSubclasses = computed(() => {
   return ac?.subclasses ?? [];
 });
 
-watch(selectedAssetClassId, () => {
-  selectedAssetSubclassId.value = null;
+// Helper to find parent asset class from subclass ID
+function findParentAssetClassId(subclassId: number): number | null {
+  const parent = refStore.assetClasses.find(ac =>
+    ac.subclasses.some(s => s.id === subclassId)
+  );
+  return parent?.id ?? null;
+}
+
+// Auto-resolve parent asset class when subclass is provided in URL without asset class
+watch(
+  () => refStore.assetClasses,
+  (classes) => {
+    if (classes.length > 0 && initialAssetSubclassId && !selectedAssetClassId.value) {
+      const parentId = findParentAssetClassId(initialAssetSubclassId);
+      if (parentId) {
+        selectedAssetClassId.value = parentId;
+        // Re-set the subclass after asset class is set (since the watcher below clears it)
+        selectedAssetSubclassId.value = initialAssetSubclassId;
+      }
+    }
+  },
+  { immediate: true }
+);
+
+watch(selectedAssetClassId, (_newVal, oldVal) => {
+  // Only clear subclass when user manually changes asset class, not on initial auto-resolve
+  if (oldVal !== null) {
+    selectedAssetSubclassId.value = null;
+  }
 });
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
@@ -74,6 +112,22 @@ async function loadItems() {
 watch([selectedInstrumentTypeId, selectedAssetClassId, selectedAssetSubclassId, enablePriceUpdates, enableNewsUpdates, debouncedSearch], () => {
   page.value = 1;
 });
+
+// Watch filter changes and update URL
+watch(
+  [searchText, selectedInstrumentTypeId, selectedAssetClassId, selectedAssetSubclassId, enablePriceUpdates, enableNewsUpdates],
+  () => {
+    const query: Record<string, string> = {};
+    if (searchText.value) query.search = searchText.value;
+    if (selectedInstrumentTypeId.value) query.instrumentTypeId = String(selectedInstrumentTypeId.value);
+    if (selectedAssetClassId.value) query.assetClassId = String(selectedAssetClassId.value);
+    if (selectedAssetSubclassId.value) query.assetSubclassId = String(selectedAssetSubclassId.value);
+    if (enablePriceUpdates.value !== null) query.priceUpdates = String(enablePriceUpdates.value);
+    if (enableNewsUpdates.value !== null) query.newsUpdates = String(enableNewsUpdates.value);
+
+    router.replace({ query });
+  }
+);
 
 // Watch for changes and reload
 watch([page, itemsPerPage, sortBy, selectedInstrumentTypeId, selectedAssetClassId, selectedAssetSubclassId, enablePriceUpdates, enableNewsUpdates, debouncedSearch], () => {

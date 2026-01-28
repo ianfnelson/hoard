@@ -12,4 +12,6 @@ public class PortfolioPositionDto
     public PositionPerformanceDto? Performance { get; set; }
     
     public decimal PortfolioPercentage { get; set; }
+    
+    public DateTime? LatestNewsPublishedUtc { get; set; }
 }

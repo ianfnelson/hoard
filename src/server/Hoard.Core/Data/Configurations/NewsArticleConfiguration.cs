@@ -11,7 +11,7 @@ public class NewsArticleConfiguration : IEntityTypeConfiguration<NewsArticle>
         builder.ToTable("NewsArticle");
 
         builder.HasOne(na => na.Instrument)
-            .WithMany()
+            .WithMany(i => i.NewsArticles)
             .HasForeignKey(na => na.InstrumentId)
             .OnDelete(DeleteBehavior.Restrict);
 
