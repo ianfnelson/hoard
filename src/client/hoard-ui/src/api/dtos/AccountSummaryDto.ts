@@ -3,6 +3,4 @@ export interface AccountSummaryDto {
   name: string;
   isActive: boolean;
   createdUtc: string;
-  accountTypeId: number;
-  accountTypeName: string;
 }

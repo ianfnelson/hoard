@@ -8,7 +8,6 @@ public class HoardContext : DbContext
     public HoardContext(DbContextOptions<HoardContext> options) : base(options) { }
 
     public DbSet<Account> Accounts => Set<Account>();
-    public DbSet<AccountType> AccountTypes => Set<AccountType>();
     public DbSet<AssetClass> AssetClasses => Set<AssetClass>();
     public DbSet<AssetSubclass> AssetSubclasses => Set<AssetSubclass>();
     public DbSet<Currency> Currencies => Set<Currency>();

@@ -19,7 +19,6 @@ public class ReferenceDataSeeder
     {
         _logger.LogInformation("Seeding reference data...");
 
-        await SeedAccountTypesAsync();
         await SeedCurrenciesAsync();
         await SeedAssetClassesAsync();
         await SeedAssetSubclassesAsync();
@@ -33,20 +32,6 @@ public class ReferenceDataSeeder
         await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Reference data seeding complete.");
-    }
-
-
-    private async Task SeedAccountTypesAsync()
-    {
-        var items = new[]
-        {
-            new AccountType { Id = 0, Name = "Unknown" },
-            new AccountType { Id = 1, Name = "SIPP" },
-            new AccountType { Id = 2, Name = "ISA" },
-            new AccountType { Id = 3, Name = "GIA" }
-        };
-
-        await UpsertAsync(_context.AccountTypes, items, x => x.Id);
     }
     
     private async Task SeedCurrenciesAsync()

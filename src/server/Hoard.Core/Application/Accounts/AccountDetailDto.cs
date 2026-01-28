@@ -9,8 +9,5 @@ public class AccountDetailDto
     public bool IsActive { get; set; }
     public DateTime CreatedUtc { get; set; }
     
-    public int AccountTypeId { get; set; }
-    public required string AccountTypeName { get; set; }
-    
     public required List<PortfolioSummaryDto> Portfolios { get; set; }
 }
