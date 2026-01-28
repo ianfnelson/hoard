@@ -21,8 +21,6 @@ public class GetAccountHandler(HoardContext context, ILogger<GetAccountHandler> 
                 Name = a.Name,
                 IsActive = a.IsActive,
                 CreatedUtc = a.CreatedUtc,
-                AccountTypeId = a.AccountTypeId,
-                AccountTypeName = a.AccountType.Name,
                 Portfolios = a.Portfolios.Select(p => new PortfolioSummaryDto
                 {
                     Id = p.Id,

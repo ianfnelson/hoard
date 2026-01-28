@@ -32,9 +32,7 @@ public class GetAccountsHandler(HoardContext context)
                 Id = a.Id,
                 Name = a.Name,
                 IsActive = a.IsActive,
-                CreatedUtc = a.CreatedUtc,
-                AccountTypeId = a.AccountTypeId,
-                AccountTypeName = a.AccountType.Name
+                CreatedUtc = a.CreatedUtc
             })
             .ToListAsync(ct);
 

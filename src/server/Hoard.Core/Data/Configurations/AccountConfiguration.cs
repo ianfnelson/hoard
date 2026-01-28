@@ -13,15 +13,6 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(a => a.Name)
             .IsRequired()
             .HasMaxLength(100);
-
-        builder.Property(i => i.AccountTypeId)
-            .HasDefaultValue(0)
-            .IsRequired();
-        
-        builder.HasOne(a => a.AccountType)
-            .WithMany()
-            .HasForeignKey(a => a.AccountTypeId)
-            .OnDelete(DeleteBehavior.Restrict);
         
         builder.Property(e => e.CreatedUtc)
             .HasColumnType("datetime2(3)")

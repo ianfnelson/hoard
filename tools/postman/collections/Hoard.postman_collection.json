@@ -752,24 +752,6 @@
       "name": "Reference",
       "item": [
         {
-          "name": "Account Types",
-          "id": "7a64399e-0dfd-4561-9c5f-7865a13b4bd5",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BaseUrl}}reference/account-types",
-              "host": [
-                "{{BaseUrl}}reference"
-              ],
-              "path": [
-                "account-types"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Asset Classes",
           "id": "ca5022cb-70de-4aec-9551-383b78869c07",
           "request": {
