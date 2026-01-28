@@ -767,6 +767,25 @@
           "response": []
         },
         {
+          "name": "Portfolio — Snapshots",
+          "id": "894b7adc-c272-4776-ac03-286e55fc2043",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}portfolios/3/snapshots",
+              "host": [
+                "{{BaseUrl}}portfolios"
+              ],
+              "path": [
+                "3",
+                "snapshots"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Portfolio — Valuations — Latest",
           "id": "63937bbd-3faa-4771-96bb-ce01ba324bd1",
           "request": {
