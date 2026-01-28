@@ -125,6 +125,47 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Instruments Lookup",
+          "id": "68219065-e64c-4f9b-9b36-ae212e51b021",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}instruments/lookup",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "assetClassId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "2dc7fc2b-39b5-4e0c-8cea-2366e1293bbb",
+                  "disabled": true
+                },
+                {
+                  "key": "assetSubclassId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1b8198a5-ec89-4164-9f1c-7683acfc0070",
+                  "disabled": true
+                },
+                {
+                  "key": "enablePriceUpdates",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "b1c742f1-a040-462c-83ad-63ae9180e5a3",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "id": "83fe04f8-7c13-4f3a-ad0a-a67dd5d833df"

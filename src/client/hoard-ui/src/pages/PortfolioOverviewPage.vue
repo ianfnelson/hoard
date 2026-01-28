@@ -18,11 +18,23 @@ const header_data = [
   { title: "%", key: "portfolioPercentage", align: 'end'}
 ] as const;
 
+// Check if a date string is "today" in UTC
+function isToday(dateString: string | null | undefined): boolean {
+  if (!dateString) return false;
+  const date = new Date(dateString);
+  const today = new Date();
+  return date.getUTCFullYear() === today.getUTCFullYear()
+    && date.getUTCMonth() === today.getUTCMonth()
+    && date.getUTCDate() === today.getUTCDate();
+}
+
 // Shape rows for the table (keep template dumb)
 const rows = computed(() =>
   store.openPositionsList.map(p => ({
+    instrumentId: p.instrumentId,
     instrumentTicker: p.instrumentTicker,
     instrumentName: p.instrumentName,
+    latestNewsPublishedUtc: p.latestNewsPublishedUtc,
     value: p.performance?.value,
     valueChange: p.performance?.valueChange,
     return1D: p.performance?.return1D,
@@ -85,6 +97,12 @@ const rows = computed(() =>
           :sort-by="[{ key: 'value', order: 'desc' }]"
           hide-default-footer
         >
+          <template #item.instrumentTicker="{ item }">
+            {{ item.instrumentTicker }}<template v-if="isToday(item.latestNewsPublishedUtc)">&nbsp;<router-link
+                :to="{ name: 'news', query: { instrumentId: item.instrumentId } }"
+              ><v-icon size="small" color="#B87333" style="position: relative; top: -2px">mdi-newspaper</v-icon></router-link></template>
+          </template>
+
           <template #item.value="{ value }">
             <span>{{ formatCurrency(value) }}</span>
           </template>

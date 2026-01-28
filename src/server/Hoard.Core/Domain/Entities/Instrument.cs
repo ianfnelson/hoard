@@ -23,5 +23,7 @@ public partial class Instrument : Entity<int>
     
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     
-    public Quote? Quote { get; set; } 
+    public Quote? Quote { get; set; }
+
+    public ICollection<NewsArticle> NewsArticles { get; set; } = [];
 }

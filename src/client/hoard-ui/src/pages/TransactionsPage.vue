@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useTransactions } from "@/composables/useTransactions";
 import { useReferenceDataStore } from "@/stores/referenceDataStore";
 import { useNavigationStore } from "@/stores/navigationStore";
 import {formatCurrency, formatDate, getTrendClass} from "@/utils/formatters";
 
+const router = useRouter();
+const route = useRoute();
 const { items, totalCount, isLoading, fetchTransactions } = useTransactions();
 const refStore = useReferenceDataStore();
 const navStore = useNavigationStore();
@@ -15,14 +18,22 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
   { key: 'date', order: 'desc' }
 ]);
 
-const selectedAccountId = ref<number | null>(null);
-const selectedInstrumentId = ref<number | null>(null);
-const selectedTransactionTypeId = ref<number | null>(null);
-const fromDate = ref<string>("");
-const toDate = ref<string>("");
-const searchText = ref("");
+// Filter state - initialize from query params
+const initialSearch = (route.query.search as string) || "";
+const initialAccountId = route.query.accountId ? Number(route.query.accountId) : null;
+const initialTransactionTypeId = route.query.transactionTypeId ? Number(route.query.transactionTypeId) : null;
+const initialInstrumentId = route.query.instrumentId ? Number(route.query.instrumentId) : null;
+const initialFromDate = (route.query.fromDate as string) || "";
+const initialToDate = (route.query.toDate as string) || "";
 
-const debouncedSearch = ref("");
+const selectedAccountId = ref<number | null>(initialAccountId);
+const selectedInstrumentId = ref<number | null>(initialInstrumentId);
+const selectedTransactionTypeId = ref<number | null>(initialTransactionTypeId);
+const fromDate = ref<string>(initialFromDate);
+const toDate = ref<string>(initialToDate);
+const searchText = ref(initialSearch);
+
+const debouncedSearch = ref(initialSearch);
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
 watch(searchText, (val) => {
@@ -71,6 +82,22 @@ watch(
   [selectedAccountId, selectedInstrumentId, selectedTransactionTypeId, fromDate, toDate, debouncedSearch],
   () => {
     page.value = 1;
+  }
+);
+
+// Watch filter changes and update URL
+watch(
+  [searchText, selectedAccountId, selectedTransactionTypeId, selectedInstrumentId, fromDate, toDate],
+  () => {
+    const query: Record<string, string> = {};
+    if (searchText.value) query.search = searchText.value;
+    if (selectedAccountId.value) query.accountId = String(selectedAccountId.value);
+    if (selectedTransactionTypeId.value) query.transactionTypeId = String(selectedTransactionTypeId.value);
+    if (selectedInstrumentId.value) query.instrumentId = String(selectedInstrumentId.value);
+    if (fromDate.value) query.fromDate = fromDate.value;
+    if (toDate.value) query.toDate = toDate.value;
+
+    router.replace({ query });
   }
 );
 
