@@ -1,0 +1,1 @@
+cd src/client/hoard-ui && npx lint-staged

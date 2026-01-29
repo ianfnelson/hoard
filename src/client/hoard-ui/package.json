@@ -9,7 +9,11 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "type-check": "vue-tsc --noEmit",
+    "prepare": "cd ../../.. && husky || true"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -22,19 +26,33 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/jsdom": "^27.0.0",
     "@types/node": "^24.10.1",
     "@typescript-eslint/parser": "^8.26.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "eslint": "^9.21.0",
     "eslint-plugin-vue": "^10.1.0",
     "globals": "^17.2.0",
+    "husky": "^9.1.7",
+    "jsdom": "^27.4.0",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.5.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.26.0",
     "vite": "^7.2.4",
     "vite-plugin-vuetify": "^2.1.2",
+    "vitest": "^4.0.18",
     "vue-tsc": "^3.1.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,vue}": [
+      "eslint --fix"
+    ],
+    "*.{ts,tsx,vue,json,md}": [
+      "prettier --write"
+    ]
   }
 }
