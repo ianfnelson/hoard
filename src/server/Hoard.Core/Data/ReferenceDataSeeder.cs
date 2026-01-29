@@ -56,7 +56,7 @@ public class ReferenceDataSeeder
         {
             new AssetClass { Id = 0, Name = "Unknown"},
             new AssetClass { Id = 1, Name = "Equities" },
-            new AssetClass { Id = 2, Name = "Bonds and Defensives" },
+            new AssetClass { Id = 2, Name = "Defensives" },
             new AssetClass { Id = 3, Name = "Alternatives" },
             new AssetClass { Id = 4, Name = "Cash" },
             new AssetClass { Id = 5, Name = "FX / Currency" }
@@ -69,24 +69,24 @@ public class ReferenceDataSeeder
         var items = new[]
         {
             new AssetSubclass { Id = 0, AssetClassId = 0, Name = "Unknown" },
-            new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK Large-Cap Equities" },
-            new AssetSubclass { Id = 2, AssetClassId = 1, Name = "Global Equities" },
-            new AssetSubclass { Id = 3, AssetClassId = 1, Name = "US Equities" },
-            new AssetSubclass { Id = 4, AssetClassId = 1, Name = "European Equities" },
-            new AssetSubclass { Id = 5, AssetClassId = 1, Name = "Emerging Market Equities" },
-            new AssetSubclass { Id = 6, AssetClassId = 1, Name = "Japanese Equities" },
+            new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK Large-Cap" },
+            new AssetSubclass { Id = 2, AssetClassId = 1, Name = "Global" },
+            new AssetSubclass { Id = 3, AssetClassId = 1, Name = "USA" },
+            new AssetSubclass { Id = 4, AssetClassId = 1, Name = "Europe" },
+            new AssetSubclass { Id = 5, AssetClassId = 1, Name = "Emerging Markets" },
+            new AssetSubclass { Id = 6, AssetClassId = 1, Name = "Japan" },
             new AssetSubclass { Id = 7, AssetClassId = 2, Name = "Corporate Bonds" },
-            new AssetSubclass { Id = 8, AssetClassId = 2, Name = "UK Gilts" },
-            new AssetSubclass { Id = 9, AssetClassId = 2, Name = "Global Government Bonds" },
-            new AssetSubclass { Id = 10, AssetClassId = 2, Name = "Gold and Precious Metals" },
+            new AssetSubclass { Id = 8, AssetClassId = 2, Name = "Gilts" },
+            new AssetSubclass { Id = 9, AssetClassId = 2, Name = "Global Govt. Bonds" },
+            new AssetSubclass { Id = 10, AssetClassId = 2, Name = "Precious Metals" },
             new AssetSubclass { Id = 11, AssetClassId = 3, Name = "Property" },
             new AssetSubclass { Id = 12, AssetClassId = 3, Name = "Commodities" },
             new AssetSubclass { Id = 13, AssetClassId = 3, Name = "Private Equity" },
             new AssetSubclass { Id = 14, AssetClassId = 3, Name = "Infrastructure" },
             new AssetSubclass { Id = AssetSubclass.Cash, AssetClassId = 4, Name = "Cash" },
             new AssetSubclass { Id = 16, AssetClassId = 5, Name = "FX / Currency" },
-            new AssetSubclass { Id = 17, AssetClassId = 1, Name = "UK Mid-Cap Equities" },
-            new AssetSubclass { Id = 18, AssetClassId = 1, Name = "UK Small-Cap Equities" },
+            new AssetSubclass { Id = 17, AssetClassId = 1, Name = "UK Mid-Cap" },
+            new AssetSubclass { Id = 18, AssetClassId = 1, Name = "UK Small-Cap" },
         };
         await UpsertAsync(_context.AssetSubclasses, items, x => x.Id);
     }
@@ -97,12 +97,12 @@ public class ReferenceDataSeeder
         {
             new InstrumentType { Id = 0, Name = "Unknown" },
             new InstrumentType { Id = 1, Name = "Share" },
-            new InstrumentType { Id = 2, Name = "Exchange Traded Fund" },
-            new InstrumentType { Id = 3, Name = "Open-Ended Investment Company" },
-            new InstrumentType { Id = 4, Name = "Investment Trust" },
+            new InstrumentType { Id = 2, Name = "ETF" },
+            new InstrumentType { Id = 3, Name = "OEIC" },
+            new InstrumentType { Id = 4, Name = "IT" },
             new InstrumentType { Id = 5, Name = "Cash", IsCash = true },
-            new InstrumentType { Id = 6, Name = "Foreign Exchange Pair", IsFxPair = true },
-            new InstrumentType { Id = 7,  Name = "Gilts" }
+            new InstrumentType { Id = 6, Name = "FX", IsFxPair = true },
+            new InstrumentType { Id = 7,  Name = "Gilt" }
         };
         await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);
     }
