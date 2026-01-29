@@ -1,36 +1,38 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue'
 
-import { usePortfolioStore } from "@/stores/portfolioStore";
-import SummaryCard from "@/components/SummaryCard.vue";
-import { formatCurrency, formatPercentage, getTrendClass } from "@/utils/formatters";
+import { usePortfolioStore } from '@/stores/portfolioStore'
+import SummaryCard from '@/components/SummaryCard.vue'
+import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 
-const store = usePortfolioStore();
+const store = usePortfolioStore()
 
 const header_data = [
-  { title: "Ticker", key: "instrumentTicker" },
-  { title: "Value", key: "value", align: 'end' },
-  { title: "Change", key: "valueChange", align: 'end'},
-  { title: "1D", key: "return1D", align: 'end'},
-  { title: "Profit", key: "profit", align: 'end'},
-  { title: "All", key: "returnAllTime", align: 'end'},
-  { title: "Annual", key: "annualisedReturn", align: 'end'},
-  { title: "%", key: "portfolioPercentage", align: 'end'}
-] as const;
+  { title: 'Ticker', key: 'instrumentTicker' },
+  { title: 'Value', key: 'value', align: 'end' },
+  { title: 'Change', key: 'valueChange', align: 'end' },
+  { title: '1D', key: 'return1D', align: 'end' },
+  { title: 'Profit', key: 'profit', align: 'end' },
+  { title: 'All', key: 'returnAllTime', align: 'end' },
+  { title: 'Annual', key: 'annualisedReturn', align: 'end' },
+  { title: '%', key: 'portfolioPercentage', align: 'end' },
+] as const
 
 // Check if a date string is "today" in UTC
 function isToday(dateString: string | null | undefined): boolean {
-  if (!dateString) return false;
-  const date = new Date(dateString);
-  const today = new Date();
-  return date.getUTCFullYear() === today.getUTCFullYear()
-    && date.getUTCMonth() === today.getUTCMonth()
-    && date.getUTCDate() === today.getUTCDate();
+  if (!dateString) return false
+  const date = new Date(dateString)
+  const today = new Date()
+  return (
+    date.getUTCFullYear() === today.getUTCFullYear() &&
+    date.getUTCMonth() === today.getUTCMonth() &&
+    date.getUTCDate() === today.getUTCDate()
+  )
 }
 
 // Shape rows for the table (keep template dumb)
 const rows = computed(() =>
-  store.openPositionsList.map(p => ({
+  store.openPositionsList.map((p) => ({
     instrumentId: p.instrumentId,
     instrumentTicker: p.instrumentTicker,
     instrumentName: p.instrumentName,
@@ -41,14 +43,13 @@ const rows = computed(() =>
     returnAllTime: p.performance?.returnAllTime,
     annualisedReturn: p.performance?.annualisedReturn,
     portfolioPercentage: p.portfolioPercentage,
-    profit: p.performance?.profit
+    profit: p.performance?.profit,
   }))
-);
+)
 </script>
 
 <template>
   <v-container fluid>
-
     <!-- Summary strip -->
     <v-row dense class="mt-0">
       <v-col cols="6" sm="3">
@@ -99,9 +100,14 @@ const rows = computed(() =>
           hide-default-footer
         >
           <template #item.instrumentTicker="{ item }">
-            {{ item.instrumentTicker }}<template v-if="isToday(item.latestNewsPublishedUtc)">&nbsp;<router-link
-                :to="{ name: 'news', query: { instrumentId: item.instrumentId } }"
-              ><v-icon size="small" color="#B87333" style="position: relative; top: -2px">mdi-newspaper</v-icon></router-link></template>
+            {{ item.instrumentTicker
+            }}<template v-if="isToday(item.latestNewsPublishedUtc)"
+              >&nbsp;<router-link :to="{ name: 'news', query: { instrumentId: item.instrumentId } }"
+                ><v-icon size="small" color="#B87333" style="position: relative; top: -2px"
+                  >mdi-newspaper</v-icon
+                ></router-link
+              ></template
+            >
           </template>
 
           <template #item.value="{ value }">
@@ -132,9 +138,7 @@ const rows = computed(() =>
             <span>{{ formatPercentage(value) }}</span>
           </template>
 
-          <template #no-data>
-            No open positions
-          </template>
+          <template #no-data> No open positions </template>
         </v-data-table>
       </v-col>
     </v-row>

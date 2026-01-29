@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { useNavigationStore } from "@/stores/navigationStore";
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useNavigationStore } from '@/stores/navigationStore'
 
-const route = useRoute();
-const navStore = useNavigationStore();
+const route = useRoute()
+const navStore = useNavigationStore()
 
 const currentPortfolioId = computed(() => {
-  const id = route.params.id;
-  return typeof id === "string" ? Number(id) : null;
-});
+  const id = route.params.id
+  return typeof id === 'string' ? Number(id) : null
+})
 
 const currentPortfolioName = computed(() => {
-  if (!currentPortfolioId.value) return null;
-  return navStore.portfolios.find(p => p.id === currentPortfolioId.value)?.name;
-});
+  if (!currentPortfolioId.value) return null
+  return navStore.portfolios.find((p) => p.id === currentPortfolioId.value)?.name
+})
 </script>
 
 <template>
   <v-menu>
     <template #activator="{ props }">
       <v-btn text v-bind="props">
-        {{ currentPortfolioName || "Select Portfolio" }}
+        {{ currentPortfolioName || 'Select Portfolio' }}
         <v-icon end>mdi-chevron-down</v-icon>
       </v-btn>
     </template>

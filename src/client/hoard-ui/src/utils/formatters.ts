@@ -4,14 +4,14 @@
  * @returns Formatted currency string (e.g., "£1,234.56")
  */
 export function formatCurrency(value: number | null | undefined): string {
-  if (value == null || isNaN(value)) return '';
+  if (value == null || isNaN(value)) return ''
 
   return value.toLocaleString('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+    maximumFractionDigits: 2,
+  })
 }
 
 /**
@@ -20,9 +20,9 @@ export function formatCurrency(value: number | null | undefined): string {
  * @returns Formatted percentage string (e.g., "12.34%")
  */
 export function formatPercentage(value: number | null | undefined): string {
-  if (value == null || isNaN(value)) return '';
+  if (value == null || isNaN(value)) return ''
 
-  return `${value.toFixed(2)}%`;
+  return `${value.toFixed(2)}%`
 }
 
 /**
@@ -33,30 +33,30 @@ export function formatPercentage(value: number | null | undefined): string {
  * @returns Formatted date string
  */
 export function formatUpdatedTime(date: Date | string | null | undefined): string {
-  if (!date) return '';
+  if (!date) return ''
 
-  const parsedDate = typeof date === 'string' ? new Date(date) : date;
+  const parsedDate = typeof date === 'string' ? new Date(date) : date
 
-  if (isNaN(parsedDate.getTime())) return '';
+  if (isNaN(parsedDate.getTime())) return ''
 
-  const now = new Date();
-  const diffMs = now.getTime() - parsedDate.getTime();
-  const diffHours = diffMs / (1000 * 60 * 60);
+  const now = new Date()
+  const diffMs = now.getTime() - parsedDate.getTime()
+  const diffHours = diffMs / (1000 * 60 * 60)
 
   if (diffHours < 24) {
     // Within last 24 hours - show time
     return parsedDate.toLocaleString('en-GB', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
-    });
+      hour12: false,
+    })
   } else {
     // Older than 24 hours - show date
     return parsedDate.toLocaleString('en-GB', {
       day: '2-digit',
       month: 'short',
-      year: 'numeric'
-    });
+      year: 'numeric',
+    })
   }
 }
 
@@ -66,17 +66,17 @@ export function formatUpdatedTime(date: Date | string | null | undefined): strin
  * @returns Formatted date string (e.g. "15 Jan 2026")
  */
 export function formatDate(date: Date | string | null | undefined): string {
-  if (!date) return '';
+  if (!date) return ''
 
-  const parsedDate = typeof date === 'string' ? new Date(date) : date;
+  const parsedDate = typeof date === 'string' ? new Date(date) : date
 
-  if (isNaN(parsedDate.getTime())) return '';
+  if (isNaN(parsedDate.getTime())) return ''
 
   return parsedDate.toLocaleString('en-GB', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric'
-  });
+    year: 'numeric',
+  })
 }
 
 /**
@@ -85,25 +85,25 @@ export function formatDate(date: Date | string | null | undefined): string {
  * @returns Formatted date-time string (e.g., "15 Jan 2026 14:30")
  */
 export function formatDateTime(date: Date | string | null | undefined): string {
-  if (!date) return '';
+  if (!date) return ''
 
-  const parsedDate = typeof date === 'string' ? new Date(date) : date;
+  const parsedDate = typeof date === 'string' ? new Date(date) : date
 
-  if (isNaN(parsedDate.getTime())) return '';
+  if (isNaN(parsedDate.getTime())) return ''
 
   const datePart = parsedDate.toLocaleString('en-GB', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric'
-  });
+    year: 'numeric',
+  })
 
   const timePart = parsedDate.toLocaleString('en-GB', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false
-  });
+    hour12: false,
+  })
 
-  return `${datePart} ${timePart}`;
+  return `${datePart} ${timePart}`
 }
 
 /**
@@ -112,10 +112,10 @@ export function formatDateTime(date: Date | string | null | undefined): string {
  * @returns CSS class name ('text-positive', 'text-negative', or undefined)
  */
 export function getTrendClass(value: number | null | undefined): string | undefined {
-  if (value == null) return undefined;
-  if (value > 0) return 'text-positive';
-  if (value < 0) return 'text-negative';
-  return undefined;
+  if (value == null) return undefined
+  if (value > 0) return 'text-positive'
+  if (value < 0) return 'text-negative'
+  return undefined
 }
 
 /**
@@ -124,6 +124,6 @@ export function getTrendClass(value: number | null | undefined): string | undefi
  * @returns "Yes" for true, "No" for false, or empty string for null/undefined
  */
 export function formatYesNo(value: boolean | null | undefined): string {
-  if (value == null) return '';
-  return value ? 'Yes' : 'No';
+  if (value == null) return ''
+  return value ? 'Yes' : 'No'
 }

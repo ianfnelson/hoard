@@ -6,7 +6,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
-import router from "./router";
+import router from './router'
 import App from './App.vue'
 import './styles/global.css'
 
@@ -16,9 +16,9 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: 'mdi',
     aliases,
-    sets : {
-      mdi
-    }
+    sets: {
+      mdi,
+    },
   },
   theme: {
     defaultTheme: 'light',
@@ -26,21 +26,17 @@ const vuetify = createVuetify({
       light: {
         colors: {
           // Can add custom colors here if needed
-        }
-      }
-    }
+        },
+      },
+    },
   },
   defaults: {
     VApp: {
       style: {
-        fontFamily: '"IBM Plex Sans", sans-serif'
-      }
-    }
-  }
+        fontFamily: '"IBM Plex Sans", sans-serif',
+      },
+    },
+  },
 })
 
-createApp(App)
-  .use(createPinia())
-  .use(router)
-  .use(vuetify)
-  .mount('#app')
+createApp(App).use(createPinia()).use(router).use(vuetify).mount('#app')

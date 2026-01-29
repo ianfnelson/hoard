@@ -1,54 +1,54 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { getPortfolioList } from "@/api/portfoliosApi";
-import type { PortfolioSummaryDto } from "@/api/dtos/PortfolioSummaryDto";
-import { getAccounts } from "@/api/accountsApi";
-import type { AccountSummaryDto } from "@/api/dtos/AccountSummaryDto";
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { getPortfolioList } from '@/api/portfoliosApi'
+import type { PortfolioSummaryDto } from '@/api/dtos/PortfolioSummaryDto'
+import { getAccounts } from '@/api/accountsApi'
+import type { AccountSummaryDto } from '@/api/dtos/AccountSummaryDto'
 
-export const useNavigationStore = defineStore("navigation", () => {
-  const portfolios = ref<PortfolioSummaryDto[]>([]);
-  const accounts = ref<AccountSummaryDto[]>([]);
-  const isLoading = ref(false);
-  const lastUpdated = ref<Date | null>(null);
-  const accountsLoaded = ref(false);
-  const error = ref<string | null>(null);
+export const useNavigationStore = defineStore('navigation', () => {
+  const portfolios = ref<PortfolioSummaryDto[]>([])
+  const accounts = ref<AccountSummaryDto[]>([])
+  const isLoading = ref(false)
+  const lastUpdated = ref<Date | null>(null)
+  const accountsLoaded = ref(false)
+  const error = ref<string | null>(null)
 
   async function loadPortfolios() {
-    isLoading.value = true;
-    error.value = null;
+    isLoading.value = true
+    error.value = null
     try {
-      portfolios.value = await getPortfolioList();
-      lastUpdated.value = new Date();
-    } catch (e: any) {
-      error.value = "Failed to load portfolios";
-      console.error("Failed to load portfolios:", e);
-      portfolios.value = [];
+      portfolios.value = await getPortfolioList()
+      lastUpdated.value = new Date()
+    } catch (e) {
+      error.value = 'Failed to load portfolios'
+      console.error('Failed to load portfolios:', e)
+      portfolios.value = []
     } finally {
-      isLoading.value = false;
+      isLoading.value = false
     }
   }
 
   async function loadAccounts() {
-    if (accountsLoaded.value) return;
+    if (accountsLoaded.value) return
 
-    isLoading.value = true;
-    error.value = null;
+    isLoading.value = true
+    error.value = null
     try {
-      accounts.value = await getAccounts({ isActive: true });
-      accountsLoaded.value = true;
-    } catch (e: any) {
-      error.value = "Failed to load accounts";
-      console.error("Failed to load accounts:", e);
-      accounts.value = [];
+      accounts.value = await getAccounts({ isActive: true })
+      accountsLoaded.value = true
+    } catch (e) {
+      error.value = 'Failed to load accounts'
+      console.error('Failed to load accounts:', e)
+      accounts.value = []
     } finally {
-      isLoading.value = false;
+      isLoading.value = false
     }
   }
 
   async function refresh() {
-    lastUpdated.value = null;
-    accountsLoaded.value = false;
-    await Promise.all([loadPortfolios(), loadAccounts()]);
+    lastUpdated.value = null
+    accountsLoaded.value = false
+    await Promise.all([loadPortfolios(), loadAccounts()])
   }
 
   return {
@@ -59,6 +59,6 @@ export const useNavigationStore = defineStore("navigation", () => {
     error,
     loadPortfolios,
     loadAccounts,
-    refresh
-  };
-});
+    refresh,
+  }
+})

@@ -1,5 +1,5 @@
 export interface PortfolioInstrumentTypeDto {
-  name: string;
-  value: number;
-  percentage: number;
+  name: string
+  value: number
+  percentage: number
 }

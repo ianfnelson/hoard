@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from "vue";
-import { usePortfolioStore } from "@/stores/portfolioStore";
-import PortfolioTabs from "@/components/navigation/PortfolioTabs.vue";
+import { onMounted, watch, computed } from 'vue'
+import { usePortfolioStore } from '@/stores/portfolioStore'
+import PortfolioTabs from '@/components/navigation/PortfolioTabs.vue'
 
-const props = defineProps<{ id: string }>();
+const props = defineProps<{ id: string }>()
 
-const portfolioStore = usePortfolioStore();
+const portfolioStore = usePortfolioStore()
 
-const portfolioId = computed(() => Number(props.id));
+const portfolioId = computed(() => Number(props.id))
 
 onMounted(() => {
-  portfolioStore.load(portfolioId.value);
-});
+  portfolioStore.load(portfolioId.value)
+})
 
-watch(() => props.id, (newId) => {
-  portfolioStore.load(Number(newId));
-});
+watch(
+  () => props.id,
+  (newId) => {
+    portfolioStore.load(Number(newId))
+  }
+)
 </script>
 
 <template>

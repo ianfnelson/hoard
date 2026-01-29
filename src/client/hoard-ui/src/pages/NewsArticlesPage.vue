@@ -1,57 +1,58 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useNewsArticles } from "@/composables/useNewsArticles";
-import { useReferenceDataStore } from "@/stores/referenceDataStore";
-import { formatDateTime } from "@/utils/formatters";
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useNewsArticles } from '@/composables/useNewsArticles'
+import { useReferenceDataStore } from '@/stores/referenceDataStore'
+import { formatDateTime } from '@/utils/formatters'
+import type { NewsArticleSummaryDto } from '@/api/dtos/NewsArticleSummaryDto'
 
-const router = useRouter();
-const route = useRoute();
-const { items, totalCount, isLoading, fetchNewsArticles } = useNewsArticles();
-const refStore = useReferenceDataStore();
+const router = useRouter()
+const route = useRoute()
+const { items, totalCount, isLoading, fetchNewsArticles } = useNewsArticles()
+const refStore = useReferenceDataStore()
 
-const page = ref(1);
-const itemsPerPage = ref(15);
+const page = ref(1)
+const itemsPerPage = ref(15)
 const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
-  { key: 'publishedUtc', order: 'desc' }
-]);
+  { key: 'publishedUtc', order: 'desc' },
+])
 
 // Filter state - initialize from query params
-const initialSearch = (route.query.search as string) || "";
-const initialInstrumentId = route.query.instrumentId ? Number(route.query.instrumentId) : null;
-const initialFromDate = (route.query.fromDate as string) || "";
-const initialToDate = (route.query.toDate as string) || "";
+const initialSearch = (route.query.search as string) || ''
+const initialInstrumentId = route.query.instrumentId ? Number(route.query.instrumentId) : null
+const initialFromDate = (route.query.fromDate as string) || ''
+const initialToDate = (route.query.toDate as string) || ''
 
-const searchText = ref(initialSearch);
-const debouncedSearch = ref(initialSearch);
-const selectedInstrumentId = ref<number | null>(initialInstrumentId);
-const fromDate = ref<string>(initialFromDate);
-const toDate = ref<string>(initialToDate);
+const searchText = ref(initialSearch)
+const debouncedSearch = ref(initialSearch)
+const selectedInstrumentId = ref<number | null>(initialInstrumentId)
+const fromDate = ref<string>(initialFromDate)
+const toDate = ref<string>(initialToDate)
 
 // Debounce search
-let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+let debounceTimer: ReturnType<typeof setTimeout> | undefined
 
 watch(searchText, (val) => {
-  clearTimeout(debounceTimer);
+  clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
-    debouncedSearch.value = val;
-  }, 400);
-});
+    debouncedSearch.value = val
+  }, 400)
+})
 
 // Computed properties
 const instrumentItems = computed(() => {
-  return refStore.instruments.map(i => ({
+  return refStore.instruments.map((i) => ({
     title: i.context ? `${i.name} (${i.context})` : i.name,
-    value: i.id
-  }));
-});
+    value: i.id,
+  }))
+})
 
 const headers = [
-  { title: "Published", key: "publishedUtc", sortable: true, width: '160px' },
-  { title: "Ticker", key: "instrumentTicker", sortable: true },
-  { title: "Instrument Name", key: "instrumentName", sortable: true },
-  { title: "Headline", key: "headline", sortable: true }
-] as const;
+  { title: 'Published', key: 'publishedUtc', sortable: true, width: '160px' },
+  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
+  { title: 'Instrument Name', key: 'instrumentName', sortable: true },
+  { title: 'Headline', key: 'headline', sortable: true },
+] as const
 
 async function loadItems() {
   const params = {
@@ -63,48 +64,42 @@ async function loadItems() {
     fromDate: fromDate.value || undefined,
     toDate: toDate.value || undefined,
     search: debouncedSearch.value || undefined,
-  };
-  await fetchNewsArticles(params);
+  }
+  await fetchNewsArticles(params)
 }
 
-function viewArticle(item: any) {
-  router.push({ name: 'news-article-detail', params: { id: item.id } });
+function viewArticle(item: NewsArticleSummaryDto) {
+  router.push({ name: 'news-article-detail', params: { id: item.id } })
 }
 
 // Reset page when filters change
-watch(
-  [selectedInstrumentId, fromDate, toDate, debouncedSearch],
-  () => {
-    page.value = 1;
-  }
-);
+watch([selectedInstrumentId, fromDate, toDate, debouncedSearch], () => {
+  page.value = 1
+})
 
 // Watch filter changes and update URL
-watch(
-  [searchText, selectedInstrumentId, fromDate, toDate],
-  () => {
-    const query: Record<string, string> = {};
-    if (searchText.value) query.search = searchText.value;
-    if (selectedInstrumentId.value) query.instrumentId = String(selectedInstrumentId.value);
-    if (fromDate.value) query.fromDate = fromDate.value;
-    if (toDate.value) query.toDate = toDate.value;
+watch([searchText, selectedInstrumentId, fromDate, toDate], () => {
+  const query: Record<string, string> = {}
+  if (searchText.value) query.search = searchText.value
+  if (selectedInstrumentId.value) query.instrumentId = String(selectedInstrumentId.value)
+  if (fromDate.value) query.fromDate = fromDate.value
+  if (toDate.value) query.toDate = toDate.value
 
-    router.replace({ query });
-  }
-);
+  router.replace({ query })
+})
 
 // Watch for changes and reload
 watch(
   [page, itemsPerPage, sortBy, selectedInstrumentId, fromDate, toDate, debouncedSearch],
   () => {
-    loadItems();
+    loadItems()
   },
   { immediate: true }
-);
+)
 
 onMounted(() => {
-  refStore.loadInstruments();
-});
+  refStore.loadInstruments()
+})
 </script>
 
 <template>
@@ -161,40 +156,34 @@ onMounted(() => {
     <v-row dense>
       <v-col>
         <v-data-table-server
+          v-model:page="page"
+          v-model:items-per-page="itemsPerPage"
+          v-model:sort-by="sortBy"
           :headers="headers"
           :items="items"
           :items-length="totalCount"
           :loading="isLoading"
-          v-model:page="page"
-          v-model:items-per-page="itemsPerPage"
-          v-model:sort-by="sortBy"
           :items-per-page-options="[
             { value: 10, title: '10' },
             { value: 15, title: '15' },
             { value: 25, title: '25' },
             { value: 50, title: '50' },
             { value: 100, title: '100' },
-            { value: -1, title: 'All' }
+            { value: -1, title: 'All' },
           ]"
           density="compact"
         >
           <template #item.headline="{ item }">
-            <a
-              href="#"
-              class="text-decoration-none"
-              @click.prevent="viewArticle(item)"
-            >
+            <a href="#" class="text-decoration-none" @click.prevent="viewArticle(item)">
               {{ item.headline }}
             </a>
           </template>
 
           <template #item.publishedUtc="{ value }">
-            <span style="white-space: nowrap;">{{ formatDateTime(value) }}</span>
+            <span style="white-space: nowrap">{{ formatDateTime(value) }}</span>
           </template>
 
-          <template #no-data>
-            No news articles found
-          </template>
+          <template #no-data> No news articles found </template>
         </v-data-table-server>
       </v-col>
     </v-row>

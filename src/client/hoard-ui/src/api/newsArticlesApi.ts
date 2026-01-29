@@ -1,34 +1,30 @@
-import { hoardApi } from './hoardApi';
-import type { NewsArticleDetailDto} from "@/api/dtos/NewsArticleDetailDto.ts";
-import type { NewsArticleSummaryDto } from "@/api/dtos/NewsArticleSummaryDto.ts";
-import type { PagedResult } from "@/api/dtos/PagedResult.ts";
+import { hoardApi } from './hoardApi'
+import type { NewsArticleDetailDto } from '@/api/dtos/NewsArticleDetailDto.ts'
+import type { NewsArticleSummaryDto } from '@/api/dtos/NewsArticleSummaryDto.ts'
+import type { PagedResult } from '@/api/dtos/PagedResult.ts'
 
 export interface GetNewsArticlesParams {
-  instrumentId?: number;
-  fromDate?: string;
-  toDate?: string;
+  instrumentId?: number
+  fromDate?: string
+  toDate?: string
 
-  pageNumber?: number;
-  pageSize?: number;
+  pageNumber?: number
+  pageSize?: number
 
-  search?: string;
+  search?: string
 
-  sortBy?: string;
-  sortDirection?: string;
+  sortBy?: string
+  sortDirection?: string
 }
 
 export async function getNewsArticles(
   params?: GetNewsArticlesParams
 ): Promise<PagedResult<NewsArticleSummaryDto>> {
-  const response = await hoardApi.get("/news-articles", { params });
-  return response.data;
+  const response = await hoardApi.get('/news-articles', { params })
+  return response.data
 }
 
-export async function getNewsArticleDetail(
-  newsArticleId: number
-): Promise<NewsArticleDetailDto> {
-  const response = await hoardApi.get(
-    `/news-articles/${newsArticleId}`
-  );
-  return response.data;
+export async function getNewsArticleDetail(newsArticleId: number): Promise<NewsArticleDetailDto> {
+  const response = await hoardApi.get(`/news-articles/${newsArticleId}`)
+  return response.data
 }
