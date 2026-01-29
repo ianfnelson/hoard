@@ -34,12 +34,17 @@ dotnet test Hoard.sln --filter "FullyQualifiedName~TestClassName.TestMethodName"
 ```bash
 # From src/client/hoard-ui directory
 npm install
-npm run dev      # Development server (proxies /api and /hubs to localhost:5183)
-npm run build    # Production build
-npm run lint     # Check for linting issues
-npm run lint:fix # Auto-fix linting issues
-npm run format   # Format code with Prettier
+npm run dev        # Development server (proxies /api and /hubs to localhost:5183)
+npm run build      # Production build
+npm run lint       # Check for linting issues
+npm run lint:fix   # Auto-fix linting issues
+npm run format     # Format code with Prettier
+npm run test       # Run tests in watch mode
+npm run test:run   # Run tests once
+npm run type-check # Type-check without emitting
 ```
+
+Pre-commit hooks (via Husky + lint-staged) automatically run ESLint and Prettier on staged files.
 
 ### EF Core Migrations
 
@@ -73,6 +78,7 @@ Vue 3 SPA with Vuetify UI framework:
 - `src/api/` - API client modules
 - `src/pages/` - Page components
 - `src/components/` - Reusable components
+- `src/composables/` - Composable functions (with `__tests__/` for unit tests)
 - `src/stores/` - Pinia state management
 - `src/router/` - Vue Router configuration
 
