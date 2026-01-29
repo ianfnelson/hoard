@@ -1,35 +1,29 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useNewsArticleDetail } from "@/composables/useNewsArticleDetail";
-import { formatDateTime } from "@/utils/formatters";
+import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useNewsArticleDetail } from '@/composables/useNewsArticleDetail'
+import { formatDateTime } from '@/utils/formatters'
 
-const route = useRoute();
-const router = useRouter();
-const { article, isLoading, error, fetchNewsArticle } = useNewsArticleDetail();
+const route = useRoute()
+const router = useRouter()
+const { article, isLoading, error, fetchNewsArticle } = useNewsArticleDetail()
 
-const id = Number(route.params.id);
+const id = Number(route.params.id)
 
 function goBack() {
-  router.push({ name: 'news' });
+  router.push({ name: 'news' })
 }
 
 onMounted(() => {
-  fetchNewsArticle(id);
-});
+  fetchNewsArticle(id)
+})
 </script>
 
 <template>
   <v-container fluid>
     <v-row dense>
       <v-col>
-        <v-btn
-          variant="text"
-          prepend-icon="mdi-arrow-left"
-          @click="goBack"
-        >
-          Back to News
-        </v-btn>
+        <v-btn variant="text" prepend-icon="mdi-arrow-left" @click="goBack"> Back to News </v-btn>
       </v-col>
     </v-row>
 

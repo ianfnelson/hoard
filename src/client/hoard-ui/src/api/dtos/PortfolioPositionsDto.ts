@@ -1,6 +1,6 @@
-import type { PortfolioPositionDto } from "./PortfolioPositionDto";
+import type { PortfolioPositionDto } from './PortfolioPositionDto'
 
 export interface PortfolioPositionsDto {
-  portfolioId: number;
-  positions: PortfolioPositionDto[];
+  portfolioId: number
+  positions: PortfolioPositionDto[]
 }

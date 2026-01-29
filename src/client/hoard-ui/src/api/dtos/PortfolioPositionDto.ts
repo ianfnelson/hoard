@@ -1,15 +1,15 @@
-import type { PositionPerformanceDto } from "./PositionPerformanceDto";
+import type { PositionPerformanceDto } from './PositionPerformanceDto'
 
 export interface PortfolioPositionDto {
-  instrumentId: number;
-  instrumentName: string;
-  instrumentTicker: string;
+  instrumentId: number
+  instrumentName: string
+  instrumentTicker: string
 
-  openDate: string;      // ISO date: YYYY-MM-DD
-  closeDate: string | null;
+  openDate: string // ISO date: YYYY-MM-DD
+  closeDate: string | null
 
-  performance: PositionPerformanceDto | null;
+  performance: PositionPerformanceDto | null
 
-  portfolioPercentage: number;
-  latestNewsPublishedUtc: string | null;
+  portfolioPercentage: number
+  latestNewsPublishedUtc: string | null
 }

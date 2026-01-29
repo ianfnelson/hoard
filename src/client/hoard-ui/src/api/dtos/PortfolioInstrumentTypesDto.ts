@@ -1,5 +1,5 @@
-import type { PortfolioInstrumentTypeDto } from "./PortfolioInstrumentTypeDto";
+import type { PortfolioInstrumentTypeDto } from './PortfolioInstrumentTypeDto'
 
 export interface PortfolioInstrumentTypesDto {
-  instrumentTypes: PortfolioInstrumentTypeDto[];
+  instrumentTypes: PortfolioInstrumentTypeDto[]
 }

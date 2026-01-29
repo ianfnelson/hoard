@@ -1,25 +1,15 @@
 <template>
-  <v-card
-    density="compact"
-    flat
-    class="summary-card"
-  >
+  <v-card density="compact" flat class="summary-card">
     <v-card-text class="py-3 text-center">
       <div class="text-caption-lg text-medium-emphasis">
         {{ title }}
       </div>
 
-      <div
-        class="text-h6 font-weight-medium mt-1"
-        :class="trendClass"
-      >
+      <div class="text-h6 font-weight-medium mt-1" :class="trendClass">
         {{ formattedValue }}
       </div>
 
-      <div
-        class="text-caption-lg mt-1"
-        :class="trendClass"
-      >
+      <div class="text-caption-lg mt-1" :class="trendClass">
         {{ formattedPercentage || '\u00A0' }}
       </div>
     </v-card-text>

@@ -1,6 +1,6 @@
-# CLAUDE.md
+# Agents.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Agentic coding assistants when working with code in this repository.
 
 ## Project Overview
 
@@ -36,6 +36,9 @@ dotnet test Hoard.sln --filter "FullyQualifiedName~TestClassName.TestMethodName"
 npm install
 npm run dev      # Development server (proxies /api and /hubs to localhost:5183)
 npm run build    # Production build
+npm run lint     # Check for linting issues
+npm run lint:fix # Auto-fix linting issues
+npm run format   # Format code with Prettier
 ```
 
 ### EF Core Migrations
@@ -72,6 +75,17 @@ Vue 3 SPA with Vuetify UI framework:
 - `src/components/` - Reusable components
 - `src/stores/` - Pinia state management
 - `src/router/` - Vue Router configuration
+
+### Frontend Code Style
+
+The frontend uses ESLint and Prettier with modern Vue ecosystem conventions:
+
+- **No semi-colons** - omit trailing semi-colons
+- **Single quotes** - use `'string'` not `"string"`
+- **Trailing commas** - include in multi-line arrays/objects
+- **No explicit `any`** - use `catch (e)` not `catch (e: any)`
+
+Run `npm run format` after making changes to ensure consistent formatting.
 
 ### Event-Driven Data Flow
 

@@ -1,6 +1,6 @@
 export interface AccountSummaryDto {
-  id: number;
-  name: string;
-  isActive: boolean;
-  createdUtc: string;
+  id: number
+  name: string
+  isActive: boolean
+  createdUtc: string
 }
