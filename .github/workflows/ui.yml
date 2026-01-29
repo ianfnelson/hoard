@@ -34,6 +34,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Type check
+        run: npm run type-check
+
   build-and-push:
     needs: lint
     runs-on: ubuntu-latest
