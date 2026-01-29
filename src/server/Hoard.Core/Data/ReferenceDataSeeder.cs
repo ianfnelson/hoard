@@ -87,6 +87,7 @@ public class ReferenceDataSeeder
             new AssetSubclass { Id = 16, AssetClassId = 5, Name = "FX / Currency" },
             new AssetSubclass { Id = 17, AssetClassId = 1, Name = "UK Mid-Cap" },
             new AssetSubclass { Id = 18, AssetClassId = 1, Name = "UK Small-Cap" },
+            new AssetSubclass { Id = 19, AssetClassId = 2, Name = "Multi-Asset" },
         };
         await UpsertAsync(_context.AssetSubclasses, items, x => x.Id);
     }
