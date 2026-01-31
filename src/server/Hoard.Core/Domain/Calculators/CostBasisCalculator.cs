@@ -40,11 +40,6 @@ public static class CostBasisCalculator
                     totalUnits -= unitsSold;
                     totalCost  -= costRemoved;
 
-                    if (totalUnits == decimal.Zero)
-                    {
-                        totalUnits = decimal.Zero;
-                    }
-
                     break;
                 }
 
