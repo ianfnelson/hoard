@@ -127,7 +127,7 @@
           "response": []
         },
         {
-          "name": "Instruments Lookup",
+          "name": "Instruments — Lookup",
           "id": "68219065-e64c-4f9b-9b36-ae212e51b021",
           "request": {
             "method": "GET",
@@ -161,6 +161,37 @@
                   "type": "text",
                   "uuid": "b1c742f1-a040-462c-83ad-63ae9180e5a3",
                   "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Instruments — Prices",
+          "id": "badfdcd1-80f8-4f88-9eef-bf59e71b73d0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}instruments/10/prices?page=1&pageSize=30",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                "10",
+                "prices"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "uuid": "8127994a-2047-4b1c-8fdd-1ea34ba935dd"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "30",
+                  "uuid": "105947e2-f887-47cf-bf76-2c77cabd9f88"
                 }
               ]
             }

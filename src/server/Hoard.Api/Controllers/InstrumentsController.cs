@@ -36,6 +36,18 @@ public class InstrumentsController(IMediator mediator)
         return new OkObjectResult(dtos);                             
     }  
     
+    [HttpGet]
+    [Route("{id:int}/prices")]
+    [ProducesResponseType(typeof(PagedResult<PriceSummaryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PagedResult<PriceSummaryDto>>> GetPrices(int id, [FromQuery] GetPricesQuery query,
+        CancellationToken ct)
+    {
+        query.InstrumentId = id;
+        var dtos = await mediator.QueryAsync<GetPricesQuery, PagedResult<PriceSummaryDto>?>(query, ct);
+        return dtos == null ? new NotFoundResult() : new OkObjectResult(dtos);
+    }
+    
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] InstrumentWriteDto request, CancellationToken ct)
     {
@@ -57,6 +69,5 @@ public class InstrumentsController(IMediator mediator)
         throw new NotImplementedException();
     }
     
-    // TODO - prices endpoints - series and paginated
     // TODO - quote endpoint
 }
