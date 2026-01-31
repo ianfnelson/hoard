@@ -1,5 +1,6 @@
 import { hoardApi } from './hoardApi'
 import type { InstrumentSummaryDto } from './dtos/InstrumentSummaryDto'
+import type { PriceSummaryDto } from './dtos/PriceSummaryDto.ts'
 import type { PagedResult } from '@/api/dtos/PagedResult.ts'
 import type { LookupDto } from './dtos/LookupDto'
 
@@ -25,5 +26,18 @@ export async function getInstruments(
 
 export async function getInstrumentsLookup(): Promise<LookupDto[]> {
   const response = await hoardApi.get('/instruments/lookup')
+  return response.data
+}
+
+export interface GetPricesParams {
+  pageNumber?: number
+  pageSize?: number
+}
+
+export async function getPrices(
+  instrumentId: number,
+  params?: GetPricesParams
+): Promise<PagedResult<PriceSummaryDto>> {
+  const response = await hoardApi.get(`/instruments/${instrumentId}/prices`, { params })
   return response.data
 }
