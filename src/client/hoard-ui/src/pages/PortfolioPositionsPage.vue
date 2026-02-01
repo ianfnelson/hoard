@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { formatCurrency, formatPercentage, getTrendClass, formatDate } from '@/utils/formatters'
-import type { PortfolioPositionDto } from '@/api/dtos/PortfolioPositionDto'
+import type { PortfolioPositionDto } from '@/api/dtos/Portfolios/PortfolioPositionDto'
 
 const store = usePortfolioStore()
 

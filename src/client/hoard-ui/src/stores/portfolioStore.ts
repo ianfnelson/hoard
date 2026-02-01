@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import * as signalR from '@microsoft/signalr'
 import {
   getPortfolioDetail,
   getPortfolioPositions,
   getPortfolioExposure,
   getPortfolioInstrumentTypes,
 } from '@/api/portfoliosApi'
-import type { PortfolioDetailDto } from '@/api/dtos/PortfolioDetailDto.ts'
-import type { PortfolioPositionsDto } from '@/api/dtos/PortfolioPositionsDto.ts'
-import type { PortfolioExposureDto } from '@/api/dtos/PortfolioExposureDto'
-import type { PortfolioInstrumentTypesDto } from '@/api/dtos/PortfolioInstrumentTypesDto'
+import { useSignalRSubscription } from '@/composables/useSignalRSubscription'
+import type { PortfolioDetailDto } from '@/api/dtos/Portfolios/PortfolioDetailDto'
+import type { PortfolioPositionsDto } from '@/api/dtos/Portfolios/PortfolioPositionsDto'
+import type { PortfolioExposureDto } from '@/api/dtos/Portfolios/PortfolioExposureDto'
+import type { PortfolioInstrumentTypesDto } from '@/api/dtos/Portfolios/PortfolioInstrumentTypesDto'
 
 export const usePortfolioStore = defineStore('portfolio', () => {
   const portfolioId = ref<number | null>(null)
@@ -28,50 +28,16 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const lastUpdated = ref<Date | null>(null)
   const error = ref<string | null>(null)
 
-  const hubConnection = ref<signalR.HubConnection | null>(null)
-  const hubStarted = ref(false)
-
-  async function ensureSignalR() {
-    if (hubConnection.value && hubStarted.value) {
-      return
-    }
-
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/portfolio')
-      .withAutomaticReconnect()
-      .build()
-
-    connection.on('PortfolioUpdated', async (payload: { portfolioId: number }) => {
-      if (payload.portfolioId === portfolioId.value) {
-        await refresh()
-      }
-    })
-
-    connection.onreconnected(async () => {
-      if (portfolioId.value !== null) {
-        try {
-          await connection.invoke('SubscribeToPortfolio', portfolioId.value)
-        } catch {
-          // swallow reconnect edge cases
-        }
-      }
-    })
-
-    await connection.start()
-
-    hubConnection.value = connection
-    hubStarted.value = true
-  }
-
-  async function unsubscribe() {
-    if (hubConnection.value && hubStarted.value && portfolioId.value !== null) {
-      try {
-        await hubConnection.value.invoke('UnsubscribeFromPortfolio', portfolioId.value)
-      } catch {
-        // ignore
-      }
-    }
-  }
+  const { subscribe, unsubscribe } = useSignalRSubscription(
+    {
+      hubUrl: '/hubs/portfolio',
+      eventName: 'PortfolioUpdated',
+      subscribeMethod: 'SubscribeToPortfolio',
+      unsubscribeMethod: 'UnsubscribeFromPortfolio',
+    },
+    portfolioId,
+    refresh
+  )
 
   async function load(id: number) {
     if (portfolioId.value !== id) {
@@ -80,14 +46,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       portfolioId.value = id
     }
 
-    await ensureSignalR()
-
-    try {
-      await hubConnection.value?.invoke('SubscribeToPortfolio', id)
-    } catch {
-      // connection race / reconnect – ignore
-    }
-
+    await subscribe(id)
     await refresh()
   }
 

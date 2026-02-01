@@ -1,5 +1,5 @@
 using Hoard.Core.Application;
-using Hoard.Core.Application.Shared;
+using Hoard.Core.Application.Portfolios;
 using Hoard.Core.Application.Snapshots;
 using Hoard.Messages.Snapshots;
 using Microsoft.Extensions.Logging;

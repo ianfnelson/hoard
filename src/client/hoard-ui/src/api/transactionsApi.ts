@@ -1,7 +1,7 @@
 import { hoardApi } from './hoardApi'
-import type { TransactionSummaryDto } from './dtos/TransactionSummaryDto.ts'
-import type { PagedResult } from '@/api/dtos/PagedResult.ts'
-import type { TransactionDetailDto } from '@/api/dtos/TransactionDetailDto.ts'
+import type { TransactionSummaryDto } from './dtos/Transactions/TransactionSummaryDto'
+import type { PagedResult } from '@/api/dtos/PagedResult'
+import type { TransactionDetailDto } from './dtos/Transactions/TransactionDetailDto'
 
 export interface GetTransactionsParams {
   accountId?: number

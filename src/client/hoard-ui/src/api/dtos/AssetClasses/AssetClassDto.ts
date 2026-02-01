@@ -1,4 +1,4 @@
-import type { AssetSubclassDto } from '@/api/dtos/AssetSubclassDto.ts'
+import type { AssetSubclassDto } from './AssetSubclassDto'
 
 export interface AssetClassDto {
   id: number

@@ -4,6 +4,7 @@ using Hoard.Core.Application;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
 using Hoard.Messages.Performance;
+using Hoard.Messages.Quotes;
 using Rebus.Bus;
 using Rebus.Config;
 
@@ -60,8 +61,10 @@ await using (var scope = app.Services.CreateAsyncScope())
 {
     var bus = scope.ServiceProvider.GetRequiredService<IBus>();
     await bus.Subscribe<PortfolioPerformanceCalculatedEvent>();
+    await bus.Subscribe<QuoteChangedEvent>();
 }
 
 app.MapHub<PortfolioHub>(PortfolioHub.HubPath);
+app.MapHub<InstrumentHub>(InstrumentHub.HubPath);
 
 app.Run();

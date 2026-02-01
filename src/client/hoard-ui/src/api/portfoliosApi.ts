@@ -1,10 +1,10 @@
 import { hoardApi } from './hoardApi'
-import type { PortfolioDetailDto } from './dtos/PortfolioDetailDto'
-import type { PortfolioPositionsDto } from '@/api/dtos/PortfolioPositionsDto.ts'
-import type { PortfolioExposureDto } from '@/api/dtos/PortfolioExposureDto'
-import type { PortfolioInstrumentTypesDto } from '@/api/dtos/PortfolioInstrumentTypesDto'
-import type { PortfolioSummaryDto } from '@/api/dtos/PortfolioSummaryDto'
-import type { PortfolioStatementsDto } from '@/api/dtos/PortfolioStatementsDto'
+import type { PortfolioDetailDto } from './dtos/Portfolios/PortfolioDetailDto'
+import type { PortfolioPositionsDto } from './dtos/Portfolios/PortfolioPositionsDto'
+import type { PortfolioExposureDto } from './dtos/Portfolios/PortfolioExposureDto'
+import type { PortfolioInstrumentTypesDto } from './dtos/Portfolios/PortfolioInstrumentTypesDto'
+import type { PortfolioSummaryDto } from './dtos/Portfolios/PortfolioSummaryDto'
+import type { PortfolioStatementsDto } from './dtos/Portfolios/PortfolioStatementsDto'
 
 export interface GetPortfolioPositionsParams {
   isOpen?: boolean

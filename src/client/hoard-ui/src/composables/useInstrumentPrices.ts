@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getPrices, type GetPricesParams } from '@/api/instrumentsApi.ts'
-import type { PriceSummaryDto } from '@/api/dtos/PriceSummaryDto'
+import type { PriceSummaryDto } from '@/api/dtos/Instruments/PriceSummaryDto'
 
 export function useInstrumentPrices() {
   const items = ref<PriceSummaryDto[]>([])

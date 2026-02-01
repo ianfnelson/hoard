@@ -2,7 +2,7 @@ using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hoard.Core.Application.Shared;
+namespace Hoard.Core.Application.Portfolios;
 
 public record GetPortfolioIdsQuery(int? PortfolioId = null, bool ActiveOnly = true)
     : IQuery<IReadOnlyList<int>>;

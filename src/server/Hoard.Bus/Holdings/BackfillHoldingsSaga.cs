@@ -1,6 +1,6 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Holdings;
-using Hoard.Core.Application.Shared;
+using Hoard.Core.Application.Transactions;
 using Hoard.Core.Extensions;
 using Hoard.Messages;
 using Hoard.Messages.Holdings;

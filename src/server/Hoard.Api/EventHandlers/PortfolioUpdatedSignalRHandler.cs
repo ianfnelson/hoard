@@ -13,6 +13,6 @@ public sealed class PortfolioUpdatedSignalRHandler(IHubContext<PortfolioHub> hub
         var group = PortfolioHub.GroupName(message.PortfolioId);
         
         await hub.Clients.Group(group).SendAsync("PortfolioUpdated",
-            new { portfolioId = message.PortfolioId, });
+            new { portfolioId = message.PortfolioId });
     }
 }

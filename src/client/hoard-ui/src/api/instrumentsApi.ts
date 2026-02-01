@@ -1,8 +1,9 @@
 import { hoardApi } from './hoardApi'
-import type { InstrumentSummaryDto } from './dtos/InstrumentSummaryDto'
-import type { PriceSummaryDto } from './dtos/PriceSummaryDto.ts'
-import type { PagedResult } from '@/api/dtos/PagedResult.ts'
-import type { LookupDto } from './dtos/LookupDto'
+import type { InstrumentDetailDto } from './dtos/Instruments/InstrumentDetailDto'
+import type { InstrumentSummaryDto } from './dtos/Instruments/InstrumentSummaryDto'
+import type { PriceSummaryDto } from './dtos/Instruments/PriceSummaryDto'
+import type { PagedResult } from '@/api/dtos/PagedResult'
+import type { LookupDto } from './dtos/LookupDto.ts'
 
 export interface GetInstrumentsParams {
   instrumentTypeId?: number
@@ -15,6 +16,11 @@ export interface GetInstrumentsParams {
   search?: string
   sortBy?: string
   sortDirection?: string
+}
+
+export async function getInstrumentDetail(id: number): Promise<InstrumentDetailDto> {
+  const response = await hoardApi.get(`/instruments/${id}`)
+  return response.data
 }
 
 export async function getInstruments(

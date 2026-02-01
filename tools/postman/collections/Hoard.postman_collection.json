@@ -127,6 +127,75 @@
           "response": []
         },
         {
+          "name": "Instrument",
+          "id": "a398e5f1-8220-4abd-8a27-1711a1ff9c84",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}instruments/?page=1&pageSize=30&sortBy=name&sortDirection=asc&instrumentTypeId=1&search=kainos",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "30"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "asc"
+                },
+                {
+                  "key": "instrumentTypeId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "18e09529-50fb-453e-8439-4eadad6591fc"
+                },
+                {
+                  "key": "assetClassId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "2dc7fc2b-39b5-4e0c-8cea-2366e1293bbb",
+                  "disabled": true
+                },
+                {
+                  "key": "assetSubclassId",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1b8198a5-ec89-4164-9f1c-7683acfc0070",
+                  "disabled": true
+                },
+                {
+                  "key": "enablePriceUpdates",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "b1c742f1-a040-462c-83ad-63ae9180e5a3",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "kainos",
+                  "type": "text",
+                  "uuid": "62e8fa28-b934-41de-879a-7888d100467c"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Instruments — Lookup",
           "id": "68219065-e64c-4f9b-9b36-ae212e51b021",
           "request": {

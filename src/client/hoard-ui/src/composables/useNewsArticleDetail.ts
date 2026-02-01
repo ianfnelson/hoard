@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getNewsArticleDetail } from '@/api/newsArticlesApi.ts'
-import type { NewsArticleDetailDto } from '@/api/dtos/NewsArticleDetailDto'
+import type { NewsArticleDetailDto } from '@/api/dtos/News/NewsArticleDetailDto'
 
 export function useNewsArticleDetail() {
   const article = ref<NewsArticleDetailDto | null>(null)

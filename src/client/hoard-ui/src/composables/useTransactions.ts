@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getTransactions, type GetTransactionsParams } from '@/api/transactionsApi.ts'
-import type { TransactionSummaryDto } from '@/api/dtos/TransactionSummaryDto'
+import type { TransactionSummaryDto } from '@/api/dtos/Transactions/TransactionSummaryDto'
 
 export function useTransactions() {
   const items = ref<TransactionSummaryDto[]>([])
