@@ -1,6 +1,5 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Instruments;
-using Hoard.Core.Application.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -12,10 +11,13 @@ namespace Hoard.Api.Controllers;
 public class InstrumentsController(IMediator mediator)
 {
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(InstrumentDetailDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<InstrumentDetailDto>> Get(int id, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var query = new GetInstrumentQuery(id);
+        var dto = await mediator.QueryAsync<GetInstrumentQuery, InstrumentDetailDto?>(query, ct);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
     
     [HttpGet]

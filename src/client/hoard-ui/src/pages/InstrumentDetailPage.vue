@@ -1,16 +1,27 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useInstrumentStore } from '@/stores/instrumentStore'
 import { useNewsArticles } from '@/composables/useNewsArticles'
 import { useInstrumentPrices } from '@/composables/useInstrumentPrices'
 import { useTransactions } from '@/composables/useTransactions'
-import { formatDateTime, formatDate, formatCurrency, getTrendClass } from '@/utils/formatters'
-import type { NewsArticleSummaryDto } from '@/api/dtos/NewsArticleSummaryDto'
+import {
+  formatDateTime,
+  formatDate,
+  formatCurrency,
+  formatPercentage,
+  getTrendClass,
+} from '@/utils/formatters'
+import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
 
 const router = useRouter()
 
 const props = defineProps<{ id: string }>()
 const instrumentId = Number(props.id)
+
+// Instrument detail
+const instrumentStore = useInstrumentStore()
+instrumentStore.load(instrumentId)
 
 // News
 const {
@@ -118,8 +129,108 @@ watch(
 
 <template>
   <v-container fluid>
-    <!-- News Card -->
+    <!-- Instrument Details Card -->
     <v-row dense>
+      <v-col>
+        <v-card>
+          <v-card-title>Instrument</v-card-title>
+          <v-card-text>
+            <v-list density="compact" lines="two">
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.name }}</template>
+                <template #subtitle>Name</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.tickerDisplay }}</template>
+                <template #subtitle>Ticker</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.isin ?? '—' }}</template>
+                <template #subtitle>ISIN</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.instrumentTypeName }}</template>
+                <template #subtitle>Type</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.assetClassName }}</template>
+                <template #subtitle>Class</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.assetSubclassName }}</template>
+                <template #subtitle>Subclass</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument?.currencyName }}</template>
+                <template #subtitle>Currency</template>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Quote Card -->
+    <v-row v-if="instrumentStore.instrument?.quote" dense>
+      <v-col>
+        <v-card>
+          <v-card-title>Quote</v-card-title>
+          <v-card-text>
+            <v-list density="compact" lines="two">
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument.quote.bid }}</template>
+                <template #subtitle>Bid</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument.quote.ask }}</template>
+                <template #subtitle>Ask</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument.quote.fiftyTwoWeekHigh }}</template>
+                <template #subtitle>52-week high</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{ instrumentStore.instrument.quote.fiftyTwoWeekLow }}</template>
+                <template #subtitle>52-week low</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>{{
+                  instrumentStore.instrument.quote.regularMarketPrice
+                }}</template>
+                <template #subtitle>Price</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>
+                  <span
+                    :class="getTrendClass(instrumentStore.instrument.quote.regularMarketChange)"
+                  >
+                    {{ instrumentStore.instrument.quote.regularMarketChange }}
+                  </span>
+                </template>
+                <template #subtitle>Change</template>
+              </v-list-item>
+              <v-list-item>
+                <template #title>
+                  <span
+                    :class="
+                      getTrendClass(instrumentStore.instrument.quote.regularMarketChangePercent)
+                    "
+                  >
+                    {{
+                      formatPercentage(instrumentStore.instrument.quote.regularMarketChangePercent)
+                    }}
+                  </span>
+                </template>
+                <template #subtitle>Change %</template>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- News Card -->
+    <v-row v-if="newsIsLoading || newsTotalCount > 0" dense>
       <v-col>
         <v-card>
           <v-card-title>News</v-card-title>
@@ -160,7 +271,7 @@ watch(
     </v-row>
 
     <!-- Prices Card -->
-    <v-row dense>
+    <v-row v-if="priceIsLoading || priceTotalCount > 0" dense>
       <v-col>
         <v-card>
           <v-card-title>Prices</v-card-title>
@@ -210,7 +321,7 @@ watch(
     </v-row>
 
     <!-- Transactions Card -->
-    <v-row dense>
+    <v-row v-if="txnIsLoading || txnTotalCount > 0" dense>
       <v-col>
         <v-card>
           <v-card-title>Transactions</v-card-title>

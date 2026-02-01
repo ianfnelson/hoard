@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useTransactions } from '../useTransactions'
 import * as transactionsApi from '@/api/transactionsApi'
-import type { TransactionSummaryDto } from '@/api/dtos/TransactionSummaryDto'
+import type { TransactionSummaryDto } from '@/api/dtos/Transactions/TransactionSummaryDto'
 import type { PagedResult } from '@/api/dtos/PagedResult'
 
 vi.mock('@/api/transactionsApi')

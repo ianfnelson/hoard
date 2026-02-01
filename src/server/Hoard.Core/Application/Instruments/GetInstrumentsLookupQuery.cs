@@ -1,4 +1,3 @@
-using Hoard.Core.Application.Shared;
 using Hoard.Core.Data;
 using Microsoft.EntityFrameworkCore;
 

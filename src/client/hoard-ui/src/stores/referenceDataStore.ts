@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getInstrumentTypes, getAssetClasses, getTransactionTypes } from '@/api/referencesApi'
-import type { InstrumentTypeDto } from '@/api/dtos/InstrumentTypeDto'
-import type { AssetClassDto } from '@/api/dtos/AssetClassDto'
-import type { TransactionTypeDto } from '@/api/dtos/TransactionTypeDto'
+import type { InstrumentTypeDto } from '@/api/dtos/InstrumentTypes/InstrumentTypeDto'
+import type { AssetClassDto } from '@/api/dtos/AssetClasses/AssetClassDto'
+import type { TransactionTypeDto } from '@/api/dtos/TransactionTypes/TransactionTypeDto'
 import { getInstrumentsLookup } from '@/api/instrumentsApi'
-import type { LookupDto } from '@/api/dtos/LookupDto'
+import type { LookupDto } from '@/api/dtos/LookupDto.ts'
 
 export const useReferenceDataStore = defineStore('referenceData', () => {
   const instrumentTypes = ref<InstrumentTypeDto[]>([])

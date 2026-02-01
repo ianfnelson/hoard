@@ -1,5 +1,5 @@
 import { hoardApi } from './hoardApi'
-import type { AccountSummaryDto } from './dtos/AccountSummaryDto'
+import type { AccountSummaryDto } from './dtos/Accounts/AccountSummaryDto'
 
 export interface GetAccountsParams {
   portfolioId?: number

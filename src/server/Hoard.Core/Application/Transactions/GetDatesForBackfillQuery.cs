@@ -2,7 +2,7 @@ using Hoard.Core.Data;
 using Hoard.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hoard.Core.Application.Shared;
+namespace Hoard.Core.Application.Transactions;
 
 public record GetDatesForBackfillQuery(DateOnly? StartDate, DateOnly? EndDate)
     : IQuery<IReadOnlyList<DateOnly>>;

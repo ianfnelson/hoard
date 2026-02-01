@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useNewsArticles } from '@/composables/useNewsArticles'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { formatDateTime } from '@/utils/formatters'
-import type { NewsArticleSummaryDto } from '@/api/dtos/NewsArticleSummaryDto'
+import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
 
 const router = useRouter()
 const route = useRoute()

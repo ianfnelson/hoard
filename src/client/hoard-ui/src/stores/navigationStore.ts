@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getPortfolioList } from '@/api/portfoliosApi'
-import type { PortfolioSummaryDto } from '@/api/dtos/PortfolioSummaryDto'
+import type { PortfolioSummaryDto } from '@/api/dtos/Portfolios/PortfolioSummaryDto'
 import { getAccounts } from '@/api/accountsApi'
-import type { AccountSummaryDto } from '@/api/dtos/AccountSummaryDto'
+import type { AccountSummaryDto } from '@/api/dtos/Accounts/AccountSummaryDto'
 
 export const useNavigationStore = defineStore('navigation', () => {
   const portfolios = ref<PortfolioSummaryDto[]>([])

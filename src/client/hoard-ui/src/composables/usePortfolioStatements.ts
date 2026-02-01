@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getPortfolioStatements } from '@/api/portfoliosApi'
-import type { PortfolioStatementDto } from '@/api/dtos/PortfolioStatementDto'
+import type { PortfolioStatementDto } from '@/api/dtos/Portfolios/PortfolioStatementDto'
 
 export function usePortfolioStatements() {
   const items = ref<PortfolioStatementDto[]>([])

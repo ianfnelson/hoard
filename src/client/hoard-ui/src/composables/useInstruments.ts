@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getInstruments, type GetInstrumentsParams } from '@/api/instrumentsApi.ts'
-import type { InstrumentSummaryDto } from '@/api/dtos/InstrumentSummaryDto.ts'
+import type { InstrumentSummaryDto } from '@/api/dtos/Instruments/InstrumentSummaryDto'
 
 export function useInstruments() {
   const items = ref<InstrumentSummaryDto[]>([])
