@@ -9,8 +9,6 @@ export interface GetInstrumentsParams {
   instrumentTypeId?: number
   assetClassId?: number
   assetSubclassId?: number
-  enablePriceUpdates?: boolean
-  enableNewsUpdates?: boolean
   pageNumber?: number
   pageSize?: number
   search?: string

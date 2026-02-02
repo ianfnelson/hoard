@@ -6,12 +6,7 @@ public class InstrumentSummaryDto
     public required string Name { get; set; }
     
     public required string TickerDisplay { get; set; }
-    public string? TickerPriceUpdates { get; set; }
-    public string? TickerNewsUpdates { get; set; }
     public required string Isin { get; set; }
-    
-    public bool EnablePriceUpdates { get; set; }
-    public bool EnableNewsUpdates { get; set; }
     
     public DateTime CreatedUtc { get; set; }
     

@@ -100,8 +100,9 @@ const rows = computed(() =>
           hide-default-footer
         >
           <template #item.instrumentTicker="{ item }">
-            {{ item.instrumentTicker
-            }}<template v-if="isToday(item.latestNewsPublishedUtc)"
+            <router-link :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }">
+              {{ item.instrumentTicker }}</router-link
+            ><template v-if="isToday(item.latestNewsPublishedUtc)"
               >&nbsp;<router-link :to="{ name: 'news', query: { instrumentId: item.instrumentId } }"
                 ><v-icon size="small" color="#B87333" style="position: relative; top: -2px"
                   >mdi-newspaper</v-icon

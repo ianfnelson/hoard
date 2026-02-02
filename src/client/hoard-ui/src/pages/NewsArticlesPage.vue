@@ -4,7 +4,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useNewsArticles } from '@/composables/useNewsArticles'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { formatDateTime } from '@/utils/formatters'
-import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
 
 const router = useRouter()
 const route = useRoute()
@@ -66,10 +65,6 @@ async function loadItems() {
     search: debouncedSearch.value || undefined,
   }
   await fetchNewsArticles(params)
-}
-
-function viewArticle(item: NewsArticleSummaryDto) {
-  router.push({ name: 'news-article-detail', params: { id: item.id } })
 }
 
 // Reset page when filters change
@@ -173,14 +168,30 @@ onMounted(() => {
           ]"
           density="compact"
         >
-          <template #item.headline="{ item }">
-            <a href="#" class="text-decoration-none" @click.prevent="viewArticle(item)">
-              {{ item.headline }}
-            </a>
+          <template #item.publishedUtc="{ item }">
+            <span style="white-space: nowrap">
+              <router-link :to="{ name: 'news-article-detail', params: { id: item.id } }">
+                {{ formatDateTime(item.publishedUtc) }}</router-link
+              >
+            </span>
           </template>
 
-          <template #item.publishedUtc="{ value }">
-            <span style="white-space: nowrap">{{ formatDateTime(value) }}</span>
+          <template #item.instrumentTicker="{ item }">
+            <router-link :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }">
+              {{ item.instrumentTicker }}</router-link
+            >
+          </template>
+
+          <template #item.instrumentName="{ item }">
+            <router-link :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }">
+              {{ item.instrumentName }}</router-link
+            >
+          </template>
+
+          <template #item.headline="{ item }">
+            <router-link :to="{ name: 'news-article-detail', params: { id: item.id } }">
+              {{ item.headline }}</router-link
+            >
           </template>
 
           <template #no-data> No news articles found </template>

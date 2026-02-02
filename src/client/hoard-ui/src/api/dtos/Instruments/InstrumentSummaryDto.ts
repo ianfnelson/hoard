@@ -5,6 +5,4 @@ export interface InstrumentSummaryDto {
   instrumentTypeName: string
   assetClassName: string
   assetSubclassName: string
-  enablePriceUpdates: boolean
-  enableNewsUpdates: boolean
 }
