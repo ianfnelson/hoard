@@ -249,6 +249,26 @@ onMounted(() => {
             <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
           </template>
 
+          <template #item.instrumentTicker="{ item }">
+            <router-link
+              v-if="item.instrumentId"
+              :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
+              class="text-decoration-none"
+            >
+              {{ item.instrumentTicker }}
+            </router-link>
+          </template>
+
+          <template #item.instrumentName="{ item }">
+            <router-link
+              v-if="item.instrumentId"
+              :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
+              class="text-decoration-none"
+            >
+              {{ item.instrumentName }}
+            </router-link>
+          </template>
+
           <template #no-data> No transactions found </template>
         </v-data-table-server>
       </v-col>

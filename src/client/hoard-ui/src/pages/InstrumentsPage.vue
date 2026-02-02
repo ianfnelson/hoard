@@ -3,7 +3,6 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useInstruments } from '@/composables/useInstruments'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
-import { formatYesNo } from '@/utils/formatters'
 
 const router = useRouter()
 const route = useRoute()
@@ -23,22 +22,11 @@ const initialAssetClassId = route.query.assetClassId ? Number(route.query.assetC
 const initialAssetSubclassId = route.query.assetSubclassId
   ? Number(route.query.assetSubclassId)
   : null
-const initialPriceUpdates =
-  route.query.priceUpdates === 'true' ? true : route.query.priceUpdates === 'false' ? false : null
-const initialNewsUpdates =
-  route.query.newsUpdates === 'true' ? true : route.query.newsUpdates === 'false' ? false : null
 
 const selectedInstrumentTypeId = ref<number | null>(initialInstrumentTypeId)
 const selectedAssetClassId = ref<number | null>(initialAssetClassId)
 const selectedAssetSubclassId = ref<number | null>(initialAssetSubclassId)
-const enablePriceUpdates = ref<boolean | null>(initialPriceUpdates)
-const enableNewsUpdates = ref<boolean | null>(initialNewsUpdates)
 const searchText = ref(initialSearch)
-
-const booleanOptions = [
-  { title: 'Yes', value: true },
-  { title: 'No', value: false },
-]
 const debouncedSearch = ref(initialSearch)
 
 const availableSubclasses = computed(() => {
@@ -90,8 +78,6 @@ const headers = [
   { title: 'Instrument Type', key: 'instrumentTypeName', sortable: false },
   { title: 'Asset Class', key: 'assetClassName', sortable: true },
   { title: 'Asset Subclass', key: 'assetSubclassName', sortable: false },
-  { title: 'Prices', key: 'enablePriceUpdates', sortable: false },
-  { title: 'News', key: 'enableNewsUpdates', sortable: false },
 ] as const
 
 async function loadItems() {
@@ -103,8 +89,6 @@ async function loadItems() {
     instrumentTypeId: selectedInstrumentTypeId.value ?? undefined,
     assetClassId: selectedAssetClassId.value ?? undefined,
     assetSubclassId: selectedAssetSubclassId.value ?? undefined,
-    enablePriceUpdates: enablePriceUpdates.value ?? undefined,
-    enableNewsUpdates: enableNewsUpdates.value ?? undefined,
     search: debouncedSearch.value || undefined,
   }
   await fetchInstruments(params)
@@ -112,42 +96,23 @@ async function loadItems() {
 
 // Reset page when filters change
 watch(
-  [
-    selectedInstrumentTypeId,
-    selectedAssetClassId,
-    selectedAssetSubclassId,
-    enablePriceUpdates,
-    enableNewsUpdates,
-    debouncedSearch,
-  ],
+  [selectedInstrumentTypeId, selectedAssetClassId, selectedAssetSubclassId, debouncedSearch],
   () => {
     page.value = 1
   }
 )
 
 // Watch filter changes and update URL
-watch(
-  [
-    searchText,
-    selectedInstrumentTypeId,
-    selectedAssetClassId,
-    selectedAssetSubclassId,
-    enablePriceUpdates,
-    enableNewsUpdates,
-  ],
-  () => {
-    const query: Record<string, string> = {}
-    if (searchText.value) query.search = searchText.value
-    if (selectedInstrumentTypeId.value)
-      query.instrumentTypeId = String(selectedInstrumentTypeId.value)
-    if (selectedAssetClassId.value) query.assetClassId = String(selectedAssetClassId.value)
-    if (selectedAssetSubclassId.value) query.assetSubclassId = String(selectedAssetSubclassId.value)
-    if (enablePriceUpdates.value !== null) query.priceUpdates = String(enablePriceUpdates.value)
-    if (enableNewsUpdates.value !== null) query.newsUpdates = String(enableNewsUpdates.value)
+watch([searchText, selectedInstrumentTypeId, selectedAssetClassId, selectedAssetSubclassId], () => {
+  const query: Record<string, string> = {}
+  if (searchText.value) query.search = searchText.value
+  if (selectedInstrumentTypeId.value)
+    query.instrumentTypeId = String(selectedInstrumentTypeId.value)
+  if (selectedAssetClassId.value) query.assetClassId = String(selectedAssetClassId.value)
+  if (selectedAssetSubclassId.value) query.assetSubclassId = String(selectedAssetSubclassId.value)
 
-    router.replace({ query })
-  }
-)
+  router.replace({ query })
+})
 
 // Watch for changes and reload
 watch(
@@ -158,8 +123,6 @@ watch(
     selectedInstrumentTypeId,
     selectedAssetClassId,
     selectedAssetSubclassId,
-    enablePriceUpdates,
-    enableNewsUpdates,
     debouncedSearch,
   ],
   () => {
@@ -228,28 +191,6 @@ onMounted(() => {
           :disabled="!selectedAssetClassId"
         />
       </v-col>
-      <v-col cols="12" sm="6" md="2">
-        <v-select
-          v-model="enablePriceUpdates"
-          :items="booleanOptions"
-          label="Price Updates"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
-      <v-col cols="12" sm="6" md="2">
-        <v-select
-          v-model="enableNewsUpdates"
-          :items="booleanOptions"
-          label="News Updates"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
     </v-row>
     <v-row dense>
       <v-col>
@@ -271,12 +212,16 @@ onMounted(() => {
           ]"
           density="compact"
         >
-          <template #item.enablePriceUpdates="{ value }">
-            {{ formatYesNo(value) }}
+          <template #item.tickerDisplay="{ item }">
+            <router-link :to="{ name: 'instrument-detail', params: { id: item.id } }">
+              {{ item.tickerDisplay }}</router-link
+            >
           </template>
 
-          <template #item.enableNewsUpdates="{ value }">
-            {{ formatYesNo(value) }}
+          <template #item.name="{ item }">
+            <router-link :to="{ name: 'instrument-detail', params: { id: item.id } }">
+              {{ item.name }}</router-link
+            >
           </template>
 
           <template #no-data> No instruments found </template>

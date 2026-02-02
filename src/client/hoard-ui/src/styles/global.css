@@ -31,3 +31,7 @@ body,
   font-size: 0.875rem !important; /* 14px - slightly larger than default caption (12px) */
   letter-spacing: 0.0333333333em !important;
 }
+
+a {
+  text-decoration: none;
+}

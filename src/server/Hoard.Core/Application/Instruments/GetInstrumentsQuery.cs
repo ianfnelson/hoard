@@ -15,8 +15,6 @@ public sealed class GetInstrumentsQuery
     public int? InstrumentTypeId { get; init; }
     public int? AssetClassId { get; init; }
     public int? AssetSubclassId { get; init; }
-    public bool? EnablePriceUpdates { get; init; }
-    public bool? EnableNewsUpdates { get; init; }
 
     // Paging
     public int PageNumber { get; init; } = 1;
@@ -69,12 +67,6 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         if (request.AssetSubclassId.HasValue)
             query = query.Where(i => i.AssetSubclassId == request.AssetSubclassId.Value);
 
-        if (request.EnablePriceUpdates.HasValue)
-            query = query.Where(i => i.EnablePriceUpdates == request.EnablePriceUpdates.Value);
-        
-        if (request.EnableNewsUpdates.HasValue)
-            query = query.Where(i => i.EnableNewsUpdates == request.EnableNewsUpdates.Value);
-
         return query;
     }
     
@@ -120,11 +112,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
             Id = i.Id,
             Name = i.Name,
             TickerDisplay = i.TickerDisplay,
-            TickerPriceUpdates = i.TickerPriceUpdates ?? "",
-            TickerNewsUpdates = i.TickerNewsUpdates ?? "",
             Isin = i.Isin ?? "",
-            EnablePriceUpdates = i.EnablePriceUpdates,
-            EnableNewsUpdates = i.EnableNewsUpdates,
             CreatedUtc = i.CreatedUtc,
 
             InstrumentTypeId = i.InstrumentTypeId,

@@ -129,109 +129,135 @@ watch(
 
 <template>
   <v-container fluid>
-    <!-- Instrument Details Card -->
     <v-row dense>
-      <v-col>
+      <!-- Instrument Details Card -->
+      <v-col cols="12" md="6" lg="3">
         <v-card>
-          <v-card-title>Instrument</v-card-title>
+          <v-card-title>{{ instrumentStore.instrument?.name }}</v-card-title>
           <v-card-text>
-            <v-list density="compact" lines="two">
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.name }}</template>
-                <template #subtitle>Name</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.tickerDisplay }}</template>
-                <template #subtitle>Ticker</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.isin ?? '—' }}</template>
-                <template #subtitle>ISIN</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.instrumentTypeName }}</template>
-                <template #subtitle>Type</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.assetClassName }}</template>
-                <template #subtitle>Class</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.assetSubclassName }}</template>
-                <template #subtitle>Subclass</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument?.currencyName }}</template>
-                <template #subtitle>Currency</template>
-              </v-list-item>
-            </v-list>
+            <v-row>
+              <v-col cols="6">
+                <v-list density="compact" lines="two">
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument?.tickerDisplay }}</template>
+                    <template #subtitle>Ticker</template>
+                  </v-list-item>
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument?.isin ?? '—' }}</template>
+                    <template #subtitle>ISIN</template>
+                  </v-list-item>
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument?.currencyName }}</template>
+                    <template #subtitle>Currency</template>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+              <v-col cols="6">
+                <v-list density="compact" lines="two">
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument?.instrumentTypeName }}</template>
+                    <template #subtitle>Type</template>
+                  </v-list-item>
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument?.assetClassName }}</template>
+                    <template #subtitle>Class</template>
+                  </v-list-item>
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument?.assetSubclassName }}</template>
+                    <template #subtitle>Subclass</template>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <!-- Quote Card -->
+      <v-col v-if="instrumentStore.instrument?.quote" cols="12" md="6" lg="3">
+        <v-card>
+          <v-card-title>
+            <span :class="getTrendClass(instrumentStore.instrument.quote.regularMarketChange)">
+              {{ instrumentStore.instrument.quote.regularMarketPrice }}
+              {{ instrumentStore.instrument.quote.regularMarketChange }}
+              {{
+                formatPercentage(instrumentStore.instrument.quote.regularMarketChangePercent)
+              }}</span
+            ></v-card-title
+          >
+          <v-card-text>
+            <v-row>
+              <v-col cols="6">
+                <v-list density="compact" lines="two">
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument.quote.ask }}</template>
+                    <template #subtitle>Ask</template>
+                  </v-list-item>
+                  <v-list-item>
+                    <template #title>{{ instrumentStore.instrument.quote.bid }}</template>
+                    <template #subtitle>Bid</template>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+              <v-col cols="6">
+                <v-list density="compact" lines="two">
+                  <v-list-item>
+                    <template #title>{{
+                      instrumentStore.instrument.quote.fiftyTwoWeekHigh
+                    }}</template>
+                    <template #subtitle>52-week high</template>
+                  </v-list-item>
+                  <v-list-item>
+                    <template #title>{{
+                      instrumentStore.instrument.quote.fiftyTwoWeekLow
+                    }}</template>
+                    <template #subtitle>52-week low</template>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <!-- Transactions Card -->
+      <v-col v-if="txnIsLoading || txnTotalCount > 0" cols="12" md="6">
+        <v-card>
+          <v-card-title>Transactions</v-card-title>
+          <v-card-text>
+            <v-data-table-server
+              v-model:page="txnPage"
+              v-model:items-per-page="txnItemsPerPage"
+              v-model:sort-by="txnSortBy"
+              :headers="txnHeaders"
+              :items="txnItems"
+              :items-length="txnTotalCount"
+              :loading="txnIsLoading"
+              :items-per-page-options="[
+                { value: 10, title: '10' },
+                { value: 15, title: '15' },
+                { value: 25, title: '25' },
+                { value: 50, title: '50' },
+                { value: 100, title: '100' },
+                { value: -1, title: 'All' },
+              ]"
+              density="compact"
+            >
+              <template #item.date="{ value }">
+                <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+              </template>
+
+              <template #item.value="{ value }">
+                <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
+              </template>
+
+              <template #no-data> No transactions found </template>
+            </v-data-table-server>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Quote Card -->
-    <v-row v-if="instrumentStore.instrument?.quote" dense>
-      <v-col>
-        <v-card>
-          <v-card-title>Quote</v-card-title>
-          <v-card-text>
-            <v-list density="compact" lines="two">
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument.quote.bid }}</template>
-                <template #subtitle>Bid</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument.quote.ask }}</template>
-                <template #subtitle>Ask</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument.quote.fiftyTwoWeekHigh }}</template>
-                <template #subtitle>52-week high</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ instrumentStore.instrument.quote.fiftyTwoWeekLow }}</template>
-                <template #subtitle>52-week low</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{
-                  instrumentStore.instrument.quote.regularMarketPrice
-                }}</template>
-                <template #subtitle>Price</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>
-                  <span
-                    :class="getTrendClass(instrumentStore.instrument.quote.regularMarketChange)"
-                  >
-                    {{ instrumentStore.instrument.quote.regularMarketChange }}
-                  </span>
-                </template>
-                <template #subtitle>Change</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>
-                  <span
-                    :class="
-                      getTrendClass(instrumentStore.instrument.quote.regularMarketChangePercent)
-                    "
-                  >
-                    {{
-                      formatPercentage(instrumentStore.instrument.quote.regularMarketChangePercent)
-                    }}
-                  </span>
-                </template>
-                <template #subtitle>Change %</template>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- News Card -->
-    <v-row v-if="newsIsLoading || newsTotalCount > 0" dense>
-      <v-col>
+    <v-row dense>
+      <!-- News Card -->
+      <v-col v-if="newsIsLoading || newsTotalCount > 0" cols="12" md="6">
         <v-card>
           <v-card-title>News</v-card-title>
           <v-card-text>
@@ -268,11 +294,8 @@ watch(
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row>
-
-    <!-- Prices Card -->
-    <v-row v-if="priceIsLoading || priceTotalCount > 0" dense>
-      <v-col>
+      <!-- Prices Card -->
+      <v-col v-if="priceIsLoading || priceTotalCount > 0" cols="12" md="6">
         <v-card>
           <v-card-title>Prices</v-card-title>
           <v-card-text>
@@ -314,45 +337,6 @@ watch(
               </template>
 
               <template #no-data> No prices found </template>
-            </v-data-table-server>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- Transactions Card -->
-    <v-row v-if="txnIsLoading || txnTotalCount > 0" dense>
-      <v-col>
-        <v-card>
-          <v-card-title>Transactions</v-card-title>
-          <v-card-text>
-            <v-data-table-server
-              v-model:page="txnPage"
-              v-model:items-per-page="txnItemsPerPage"
-              v-model:sort-by="txnSortBy"
-              :headers="txnHeaders"
-              :items="txnItems"
-              :items-length="txnTotalCount"
-              :loading="txnIsLoading"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
-              density="compact"
-            >
-              <template #item.date="{ value }">
-                <span style="white-space: nowrap">{{ formatDate(value) }}</span>
-              </template>
-
-              <template #item.value="{ value }">
-                <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
-              </template>
-
-              <template #no-data> No transactions found </template>
             </v-data-table-server>
           </v-card-text>
         </v-card>
