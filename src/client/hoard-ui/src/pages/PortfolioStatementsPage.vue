@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { usePortfolioStatements } from '@/composables/usePortfolioStatements'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
+import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
 const props = defineProps<{
   id: string
@@ -11,6 +12,10 @@ const { items, isLoading, error, fetchStatements } = usePortfolioStatements()
 
 type ViewTab = 'performance' | 'trades' | 'contributions'
 const activeTab = ref<ViewTab>('performance')
+
+// Shared state across all tabs
+const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([{ key: 'year', order: 'desc' }])
+const itemsPerPage = ref(15)
 
 const performanceHeaders = [
   { title: 'Year', key: 'year', sortable: true },
@@ -82,19 +87,13 @@ onMounted(async () => {
         <v-window v-model="activeTab">
           <v-window-item value="performance">
             <v-data-table
+              v-model:items-per-page="itemsPerPage"
+              v-model:sort-by="sortBy"
               :headers="performanceHeaders"
               :items="items"
               :loading="isLoading"
               density="compact"
-              :items-per-page="15"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: -1, title: 'All' },
-              ]"
-              :sort-by="[{ key: 'year', order: 'desc' }]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
             >
               <template #item.startValue="{ value }">
                 <span>{{ formatCurrency(value) }}</span>
@@ -126,19 +125,13 @@ onMounted(async () => {
 
           <v-window-item value="trades">
             <v-data-table
+              v-model:items-per-page="itemsPerPage"
+              v-model:sort-by="sortBy"
               :headers="tradesHeaders"
               :items="items"
               :loading="isLoading"
               density="compact"
-              :items-per-page="15"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: -1, title: 'All' },
-              ]"
-              :sort-by="[{ key: 'year', order: 'desc' }]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
             >
               <template #item.totalBuys="{ value }">
                 <span>{{ formatCurrency(value) }}</span>
@@ -174,19 +167,13 @@ onMounted(async () => {
 
           <v-window-item value="movements">
             <v-data-table
+              v-model:items-per-page="itemsPerPage"
+              v-model:sort-by="sortBy"
               :headers="movementsHeaders"
               :items="items"
               :loading="isLoading"
               density="compact"
-              :items-per-page="15"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: -1, title: 'All' },
-              ]"
-              :sort-by="[{ key: 'year', order: 'desc' }]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
             >
               <template #item.totalIncomeInterest="{ value }">
                 <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>

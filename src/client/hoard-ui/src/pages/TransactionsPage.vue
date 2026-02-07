@@ -5,6 +5,7 @@ import { useTransactions } from '@/composables/useTransactions'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { useNavigationStore } from '@/stores/navigationStore'
 import { formatCurrency, formatDate, getTrendClass } from '@/utils/formatters'
+import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
 const router = useRouter()
 const route = useRoute()
@@ -55,7 +56,7 @@ const headers = [
   { title: 'Account', key: 'accountName', sortable: false },
   { title: 'Type', key: 'transactionTypeName', sortable: false },
   { title: 'Units', key: 'units', sortable: false, align: 'end' },
-  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
+  { title: 'Instrument', key: 'instrumentName', sortable: true },
   { title: 'Price', key: 'price', sortable: false, align: 'end' },
   { title: 'Value', key: 'value', sortable: true, align: 'end' },
   { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
@@ -231,14 +232,7 @@ onMounted(() => {
           :items="items"
           :items-length="totalCount"
           :loading="isLoading"
-          :items-per-page-options="[
-            { value: 10, title: '10' },
-            { value: 15, title: '15' },
-            { value: 25, title: '25' },
-            { value: 50, title: '50' },
-            { value: 100, title: '100' },
-            { value: -1, title: 'All' },
-          ]"
+          :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
           density="compact"
         >
           <template #item.date="{ value }">
@@ -247,16 +241,6 @@ onMounted(() => {
 
           <template #item.value="{ value }">
             <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
-          </template>
-
-          <template #item.instrumentTicker="{ item }">
-            <router-link
-              v-if="item.instrumentId"
-              :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
-              class="text-decoration-none"
-            >
-              {{ item.instrumentTicker }}
-            </router-link>
           </template>
 
           <template #item.instrumentName="{ item }">

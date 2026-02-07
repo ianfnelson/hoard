@@ -2,11 +2,12 @@
  * Formats a number as currency (GBP)
  * @param value The numeric value to format
  * @returns Formatted currency string (e.g., "£1,234.56")
+ * @note Always displays absolute value - use getTrendClass for sign indication
  */
 export function formatCurrency(value: number | null | undefined): string {
   if (value == null || isNaN(value)) return ''
 
-  return value.toLocaleString('en-GB', {
+  return Math.abs(value).toLocaleString('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: 2,
@@ -18,11 +19,12 @@ export function formatCurrency(value: number | null | undefined): string {
  * Formats a number as a percentage with 2 decimal places
  * @param value The numeric value to format
  * @returns Formatted percentage string (e.g., "12.34%")
+ * @note Always displays absolute value - use getTrendClass for sign indication
  */
 export function formatPercentage(value: number | null | undefined): string {
   if (value == null || isNaN(value)) return ''
 
-  return `${value.toFixed(2)}%`
+  return `${Math.abs(value).toFixed(2)}%`
 }
 
 /**
@@ -116,14 +118,4 @@ export function getTrendClass(value: number | null | undefined): string | undefi
   if (value > 0) return 'text-positive'
   if (value < 0) return 'text-negative'
   return undefined
-}
-
-/**
- * Formats a boolean as Yes/No
- * @param value The boolean value to format
- * @returns "Yes" for true, "No" for false, or empty string for null/undefined
- */
-export function formatYesNo(value: boolean | null | undefined): string {
-  if (value == null) return ''
-  return value ? 'Yes' : 'No'
 }
