@@ -2,10 +2,17 @@
 import { computed } from 'vue'
 
 import { usePortfolioStore } from '@/stores/portfolioStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import SummaryCard from '@/components/SummaryCard.vue'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 
 const store = usePortfolioStore()
+
+const pageTitle = computed(() => {
+  const portfolioName = store.portfolio?.name
+  return portfolioName ? `${portfolioName} : Overview` : null
+})
+usePageTitle(pageTitle)
 
 const header_data = [
   { title: 'Ticker', key: 'instrumentTicker' },

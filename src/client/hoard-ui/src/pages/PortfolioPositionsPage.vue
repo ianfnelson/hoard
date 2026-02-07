@@ -1,10 +1,17 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass, formatDate } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
 const store = usePortfolioStore()
+
+const pageTitle = computed(() => {
+  const portfolioName = store.portfolio?.name
+  return portfolioName ? `${portfolioName} : Positions` : null
+})
+usePageTitle(pageTitle)
 
 const allPositions = computed(() => store.positions?.positions ?? [])
 

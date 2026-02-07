@@ -4,8 +4,12 @@ import { useRouter, useRoute } from 'vue-router'
 import { useTransactions } from '@/composables/useTransactions'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { useNavigationStore } from '@/stores/navigationStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatDate, getTrendClass } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+
+const pageTitle = ref('Transactions')
+usePageTitle(pageTitle)
 
 const router = useRouter()
 const route = useRoute()
