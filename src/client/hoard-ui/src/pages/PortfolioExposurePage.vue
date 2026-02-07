@@ -87,7 +87,7 @@ const rebalanceRows = computed(() =>
       </v-col>
 
       <v-col cols="12" md="6">
-        <v-card>
+        <v-card class="mb-2">
           <v-card-title>Asset Classes</v-card-title>
           <v-card-text>
             <v-data-table
@@ -118,10 +118,7 @@ const rebalanceRows = computed(() =>
             </v-data-table>
           </v-card-text>
         </v-card>
-      </v-col>
-
-      <v-col cols="12" md="6">
-        <v-card>
+        <v-card class="mb-2">
           <v-card-title>Instrument Types</v-card-title>
           <v-card-text>
             <v-data-table
@@ -144,10 +141,7 @@ const rebalanceRows = computed(() =>
             </v-data-table>
           </v-card-text>
         </v-card>
-      </v-col>
-
-      <v-col v-if="rebalanceRows.length > 0" cols="12" md="6">
-        <v-card>
+        <v-card v-if="rebalanceRows.length > 0" class="mb-2">
           <v-card-title>Provisional Rebalancing Trades</v-card-title>
           <v-card-text>
             <v-data-table
