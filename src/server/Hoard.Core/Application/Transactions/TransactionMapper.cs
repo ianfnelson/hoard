@@ -22,6 +22,7 @@ public class TransactionMapper
         destination.FxCharge = source.FxCharge;
         destination.InstrumentId = source.InstrumentId;
         destination.Notes = source.Notes;
+        destination.Price = source.Price;
         destination.PtmLevy = source.PtmLevy;
         destination.StampDuty = source.StampDuty;
         destination.Units = source.Units;

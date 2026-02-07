@@ -16,5 +16,6 @@ public class TransactionWriteDto
     public decimal? StampDuty { get; set; }
     public decimal? PtmLevy { get; set; }
     
+    public decimal? Price { get; set; }
     public decimal? Value { get; set; }
 }

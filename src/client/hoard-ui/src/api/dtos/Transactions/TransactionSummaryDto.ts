@@ -11,4 +11,5 @@ export interface TransactionSummaryDto {
   transactionTypeName: string
   units?: number
   value: number
+  price?: number
 }

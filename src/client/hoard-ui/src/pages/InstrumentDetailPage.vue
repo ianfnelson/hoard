@@ -107,9 +107,10 @@ const txnHeaders = [
   { title: 'Date', key: 'date', sortable: true },
   { title: 'Account', key: 'accountName', sortable: false },
   { title: 'Type', key: 'transactionTypeName', sortable: false },
-  { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
   { title: 'Units', key: 'units', sortable: false, align: 'end' },
+  { title: 'Price', key: 'price', sortable: false, align: 'end' },
   { title: 'Value', key: 'value', sortable: true, align: 'end' },
+  { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
 ] as const
 
 watch(
