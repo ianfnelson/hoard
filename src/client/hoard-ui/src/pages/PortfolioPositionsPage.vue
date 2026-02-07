@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { formatCurrency, formatPercentage, getTrendClass, formatDate } from '@/utils/formatters'
+import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
 const store = usePortfolioStore()
 
@@ -15,10 +16,11 @@ const searchText = ref('')
 const debouncedSearch = ref('')
 const selectedStatus = ref<'all' | 'open' | 'closed'>('all')
 
-// Shared sorting state across all tabs
+// Shared state across all tabs
 const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
   { key: 'openDate', order: 'desc' },
 ])
+const itemsPerPage = ref(15)
 
 // Debounce search input
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
@@ -132,17 +134,10 @@ const performanceHeaders = [
           <v-window-item value="holdings">
             <v-data-table
               v-model:sort-by="sortBy"
+              v-model:items-per-page="itemsPerPage"
               :headers="holdingsHeaders"
               :items="filteredPositions"
-              :items-per-page="15"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               :loading="store.isLoading"
               density="compact"
             >
@@ -190,17 +185,10 @@ const performanceHeaders = [
           <v-window-item value="gains">
             <v-data-table
               v-model:sort-by="sortBy"
+              v-model:items-per-page="itemsPerPage"
               :headers="gainsHeaders"
               :items="filteredPositions"
-              :items-per-page="15"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               :loading="store.isLoading"
               density="compact"
             >
@@ -250,17 +238,10 @@ const performanceHeaders = [
           <v-window-item value="performance">
             <v-data-table
               v-model:sort-by="sortBy"
+              v-model:items-per-page="itemsPerPage"
               :headers="performanceHeaders"
               :items="filteredPositions"
-              :items-per-page="15"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               :loading="store.isLoading"
               density="compact"
             >

@@ -12,6 +12,7 @@ import {
   formatPercentage,
   getTrendClass,
 } from '@/utils/formatters'
+import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
 
 const router = useRouter()
@@ -232,14 +233,7 @@ watch(
               :items="txnItems"
               :items-length="txnTotalCount"
               :loading="txnIsLoading"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               density="compact"
             >
               <template #item.date="{ value }">
@@ -270,14 +264,7 @@ watch(
               :items="newsItems"
               :items-length="newsTotalCount"
               :loading="newsIsLoading"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               density="compact"
             >
               <template #item.publishedUtc="{ value }">
@@ -307,14 +294,7 @@ watch(
               :items="priceItems"
               :items-length="priceTotalCount"
               :loading="priceIsLoading"
-              :items-per-page-options="[
-                { value: 10, title: '10' },
-                { value: 15, title: '15' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               density="compact"
             >
               <template #item.asOfDate="{ value }">
