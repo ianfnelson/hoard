@@ -114,7 +114,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
             Id = i.Id,
             Name = i.Name,
             TickerDisplay = i.TickerDisplay,
-            Isin = i.Isin ?? "",
+            Isin = i.Isin,
             CreatedUtc = i.CreatedUtc,
 
             InstrumentTypeId = i.InstrumentTypeId,
