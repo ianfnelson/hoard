@@ -123,7 +123,7 @@ public sealed class GetTransactionsHandler(HoardContext context)
         {
             Id = t.Id,
             Date = t.Date,
-            ContractNoteReference = t.ContractNoteReference ?? "",
+            ContractNoteReference = t.ContractNoteReference,
             Units = t.TransactionTypeId == TransactionType.Sell ? -t.Units! : t.Units,
             Value = t.Value,
             Price = t.Price,
@@ -132,8 +132,8 @@ public sealed class GetTransactionsHandler(HoardContext context)
             AccountName = t.Account.Name,
 
             InstrumentId = t.InstrumentId,
-            InstrumentName = t.Instrument != null ? t.Instrument.Name : "",
-            InstrumentTicker = t.Instrument != null ? t.Instrument.TickerDisplay : "",
+            InstrumentName =  t.Instrument == null ? null : t.Instrument.Name,
+            InstrumentTicker = t.Instrument == null ? null : t.Instrument.TickerDisplay,
             
             TransactionTypeId = t.TransactionTypeId,
             TransactionTypeName = t.TransactionType.Name
