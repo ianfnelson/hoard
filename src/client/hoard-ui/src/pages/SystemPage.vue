@@ -1,4 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { usePageTitle } from '@/composables/usePageTitle'
+
+const pageTitle = ref('System')
+usePageTitle(pageTitle)
+</script>
 
 <template>
   <v-container fluid>

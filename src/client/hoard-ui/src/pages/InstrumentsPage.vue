@@ -3,7 +3,11 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useInstruments } from '@/composables/useInstruments'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+
+const pageTitle = ref('Instruments')
+usePageTitle(pageTitle)
 
 const router = useRouter()
 const route = useRoute()

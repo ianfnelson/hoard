@@ -3,8 +3,12 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useNewsArticles } from '@/composables/useNewsArticles'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDateTime } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+
+const pageTitle = ref('News')
+usePageTitle(pageTitle)
 
 const router = useRouter()
 const route = useRoute()

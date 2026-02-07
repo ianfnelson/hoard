@@ -1,4 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { usePortfolioStore } from '@/stores/portfolioStore'
+import { usePageTitle } from '@/composables/usePageTitle'
+
+const store = usePortfolioStore()
+
+const pageTitle = computed(() => {
+  const portfolioName = store.portfolio?.name
+  return portfolioName ? `${portfolioName} : History` : null
+})
+usePageTitle(pageTitle)
+</script>
 
 <template>
   <v-container fluid>

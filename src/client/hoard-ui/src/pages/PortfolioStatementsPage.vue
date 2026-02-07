@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { usePortfolioStatements } from '@/composables/usePortfolioStatements'
+import { usePortfolioStore } from '@/stores/portfolioStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
@@ -9,6 +11,13 @@ const props = defineProps<{
 }>()
 
 const { items, isLoading, error, fetchStatements } = usePortfolioStatements()
+const store = usePortfolioStore()
+
+const pageTitle = computed(() => {
+  const portfolioName = store.portfolio?.name
+  return portfolioName ? `${portfolioName} : Statements` : null
+})
+usePageTitle(pageTitle)
 
 type ViewTab = 'performance' | 'trades' | 'contributions'
 const activeTab = ref<ViewTab>('performance')

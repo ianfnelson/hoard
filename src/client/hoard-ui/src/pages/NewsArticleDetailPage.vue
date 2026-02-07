@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useNewsArticleDetail } from '@/composables/useNewsArticleDetail'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDateTime } from '@/utils/formatters'
 
 const route = useRoute()
 const { article, isLoading, error, fetchNewsArticle } = useNewsArticleDetail()
+
+const pageTitle = computed(() => article.value?.headline)
+usePageTitle(pageTitle)
 
 const id = Number(route.params.id)
 

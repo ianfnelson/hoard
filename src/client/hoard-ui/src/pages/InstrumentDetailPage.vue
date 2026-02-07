@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useInstrumentStore } from '@/stores/instrumentStore'
 import { useNewsArticles } from '@/composables/useNewsArticles'
 import { useInstrumentPrices } from '@/composables/useInstrumentPrices'
 import { useTransactions } from '@/composables/useTransactions'
+import { usePageTitle } from '@/composables/usePageTitle'
 import {
   formatDateTime,
   formatDate,
@@ -23,6 +24,9 @@ const instrumentId = Number(props.id)
 // Instrument detail
 const instrumentStore = useInstrumentStore()
 instrumentStore.load(instrumentId)
+
+const pageTitle = computed(() => instrumentStore.instrument?.name)
+usePageTitle(pageTitle)
 
 // News
 const {

@@ -2,9 +2,16 @@
 import { computed } from 'vue'
 
 import { usePortfolioStore } from '@/stores/portfolioStore'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 
 const store = usePortfolioStore()
+
+const pageTitle = computed(() => {
+  const portfolioName = store.portfolio?.name
+  return portfolioName ? `${portfolioName} : Exposure` : null
+})
+usePageTitle(pageTitle)
 
 const instrumentTypesHeaders = [
   { title: 'Name', key: 'name' },
