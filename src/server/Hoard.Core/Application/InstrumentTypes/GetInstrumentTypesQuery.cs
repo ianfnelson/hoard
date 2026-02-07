@@ -15,9 +15,7 @@ public class GetInstrumentTypesHandler(HoardContext context)
             .Select(i => new InstrumentTypeDto
             {
                 Id = i.Id,
-                Name = i.Name,
-                IsCash = i.IsCash,
-                IsFxPair = i.IsFxPair
+                Name = i.Name
             })
             .OrderBy(i => i.Name)
             .ToListAsync(ct);

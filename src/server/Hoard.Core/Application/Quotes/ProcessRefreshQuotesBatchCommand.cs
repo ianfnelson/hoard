@@ -41,7 +41,7 @@ public class ProcessRefreshQuotesBatchHandler(
 
         foreach (var instrument in changed)
         {
-            await bus.Publish(new QuoteChangedEvent(instrument.Id, instrument.InstrumentType.IsFxPair, now));
+            await bus.Publish(new QuoteChangedEvent(instrument.Id, instrument.InstrumentTypeId, now));
             logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
         }
     }

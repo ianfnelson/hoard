@@ -1,6 +1,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.Prices;
 using Hoard.Core.Application.Valuations;
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Prices;
 using Rebus.Handlers;
@@ -26,7 +27,7 @@ public class PricesEventHandler(IMediator mediator) :
     
     public async Task Handle(PriceChangedEvent message)
     {
-        if (message is { PipelineMode: PipelineMode.DaytimeReactive, IsFxPair: false })
+        if (message is { PipelineMode: PipelineMode.DaytimeReactive, InstrumentTypeId: not InstrumentType.FxPair })
         {
             var appCommand =
                 new ProcessCalculateHoldingValuationsCommand(Guid.NewGuid(), message.PipelineMode, message.InstrumentId, message.AsOfDate);

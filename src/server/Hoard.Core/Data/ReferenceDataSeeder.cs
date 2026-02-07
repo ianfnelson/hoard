@@ -103,8 +103,8 @@ public class ReferenceDataSeeder
             new InstrumentType { Id = 2, Name = "ETF" },
             new InstrumentType { Id = 3, Name = "OEIC" },
             new InstrumentType { Id = 4, Name = "IT" },
-            new InstrumentType { Id = 5, Name = "Cash", IsCash = true },
-            new InstrumentType { Id = 6, Name = "FX", IsFxPair = true },
+            new InstrumentType { Id = 5, Name = "Cash" },
+            new InstrumentType { Id = 6, Name = "FX"},
             new InstrumentType { Id = 7,  Name = "Gilt" }
         };
         await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);

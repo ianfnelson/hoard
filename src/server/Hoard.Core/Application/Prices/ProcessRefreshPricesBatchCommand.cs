@@ -51,10 +51,10 @@ public class ProcessRefreshPricesBatchHandler(
         
         foreach (var date in changed)
         {
-            await bus.Publish(new PriceChangedEvent(command.PricesRunId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, date, now));
+            await bus.Publish(new PriceChangedEvent(command.PricesRunId, command.PipelineMode, instrument.Id, instrument.InstrumentTypeId, date, now));
         }
-        
-        await bus.Publish(new PriceRefreshedEvent(command.PricesRunId, command.PipelineMode, instrument.Id, instrument.InstrumentType.IsFxPair, command.StartDate, command.EndDate, now));
+
+        await bus.Publish(new PriceRefreshedEvent(command.PricesRunId, command.PipelineMode, instrument.Id, instrument.InstrumentTypeId, command.StartDate, command.EndDate, now));
         logger.LogInformation("Prices refreshed for Instrument {InstrumentId}", instrument.Id);
     }
 
