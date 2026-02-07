@@ -18,6 +18,7 @@ public class Transaction : Entity<int>
     
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     
+    public decimal? Price { get; set; }
     public decimal? Units { get; set; }
     public decimal Value { get; set; }
     

@@ -32,6 +32,9 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.Property(e => e.Value)
             .HasColumnType("decimal(18, 2)");
         
+        builder.Property(e => e.Price)
+            .HasColumnType("decimal(18, 4)");
+        
         builder.Property(e => e.Units)
             .HasColumnType("decimal(18, 6)");
 

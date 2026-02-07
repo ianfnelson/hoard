@@ -11,6 +11,7 @@ export interface TransactionDetailDto {
   transactionTypeId: number
   transactionTypeName: string
   units?: number
+  price?: number
   value: number
   dealingCharge?: number
   stampDuty?: number

@@ -29,6 +29,7 @@ public sealed class GetTransactionHandler(HoardContext context, ILogger<GetTrans
                 Date = t.Date,
                 Units = t.TransactionTypeId == TransactionType.Sell ? -t.Units! : t.Units,
                 Value = t.Value,
+                Price = t.Price,
                 DealingCharge = t.DealingCharge,
                 StampDuty = t.StampDuty,
                 PtmLevy = t.PtmLevy,

@@ -54,11 +54,11 @@ const headers = [
   { title: 'Date', key: 'date', sortable: true, width: '160px' },
   { title: 'Account', key: 'accountName', sortable: false },
   { title: 'Type', key: 'transactionTypeName', sortable: false },
-  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
-  { title: 'Instrument Name', key: 'instrumentName', sortable: true },
-  { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
   { title: 'Units', key: 'units', sortable: false, align: 'end' },
+  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
+  { title: 'Price', key: 'price', sortable: false, align: 'end' },
   { title: 'Value', key: 'value', sortable: true, align: 'end' },
+  { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
 ] as const
 
 async function loadItems() {
