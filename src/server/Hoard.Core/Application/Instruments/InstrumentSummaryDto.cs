@@ -12,8 +12,6 @@ public class InstrumentSummaryDto
     
     public int InstrumentTypeId { get; set; }
     public required string InstrumentTypeName { get; set; }
-    public bool InstrumentTypeIsCash { get; set; }
-    public bool InstrumentTypeIsFxPair { get; set; }
     
     public int AssetClassId { get; set; }
     public required string AssetClassName { get; set; }

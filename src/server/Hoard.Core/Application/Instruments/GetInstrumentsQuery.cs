@@ -32,7 +32,9 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         GetInstrumentsQuery query,
         CancellationToken ct = default)
     {
-        var baseQuery = context.Instruments.AsNoTracking();
+        var baseQuery = context.Instruments
+            .Where(x => x.InstrumentTypeId != InstrumentType.Cash)
+            .AsNoTracking();
 
         baseQuery = ApplyFilters(baseQuery, query);
         baseQuery = ApplySearch(baseQuery, query);
@@ -117,8 +119,6 @@ public sealed class GetInstrumentsHandler(HoardContext context)
 
             InstrumentTypeId = i.InstrumentTypeId,
             InstrumentTypeName = i.InstrumentType.Name,
-            InstrumentTypeIsCash = i.InstrumentType.IsCash,
-            InstrumentTypeIsFxPair = i.InstrumentType.IsFxPair,
 
             AssetClassId = i.AssetSubclass.AssetClassId,
             AssetClassName = i.AssetSubclass.AssetClass.Name,
