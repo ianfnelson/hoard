@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Favicon Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin: 10px;
+    }
+    button {
+      background: #237343;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #1a5a32;
+    }
+    .info {
+      background: #f0f0f0;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hoard Favicon Generator</h1>
+  <div class="info">
+    <p>Click the buttons below to generate and download each favicon size.</p>
+    <p>Save each file to the <code>public/</code> directory with the exact filename shown.</p>
+  </div>
+
+  <div id="canvases"></div>
+
+  <script>
+    const sizes = [
+      { width: 16, height: 16, name: 'favicon-16x16.png' },
+      { width: 32, height: 32, name: 'favicon-32x32.png' },
+      { width: 180, height: 180, name: 'apple-touch-icon.png' },
+      { width: 192, height: 192, name: 'android-chrome-192x192.png' },
+      { width: 512, height: 512, name: 'android-chrome-512x512.png' }
+    ]
+
+    function drawFavicon(canvas, size) {
+      const ctx = canvas.getContext('2d')
+
+      // White background
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, size, size)
+
+      // Deep green H
+      ctx.fillStyle = '#237343'
+      ctx.font = `bold ${size * 0.74}px Arial, sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('H', size / 2, size / 2)
+    }
+
+    function downloadCanvas(canvas, filename) {
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(url)
+      })
+    }
+
+    const container = document.getElementById('canvases')
+
+    sizes.forEach(config => {
+      const wrapper = document.createElement('div')
+      wrapper.style.display = 'inline-block'
+      wrapper.style.textAlign = 'center'
+      wrapper.style.margin = '10px'
+
+      const canvas = document.createElement('canvas')
+      canvas.width = config.width
+      canvas.height = config.height
+      canvas.style.width = Math.min(config.width, 200) + 'px'
+      canvas.style.height = Math.min(config.height, 200) + 'px'
+      drawFavicon(canvas, config.width)
+
+      const label = document.createElement('div')
+      label.textContent = `${config.width}x${config.height}`
+      label.style.marginTop = '5px'
+      label.style.fontSize = '12px'
+
+      const button = document.createElement('button')
+      button.textContent = `Download ${config.name}`
+      button.onclick = () => downloadCanvas(canvas, config.name)
+
+      wrapper.appendChild(canvas)
+      wrapper.appendChild(label)
+      wrapper.appendChild(button)
+      container.appendChild(wrapper)
+    })
+
+    // Generate ICO file info
+    const icoInfo = document.createElement('div')
+    icoInfo.className = 'info'
+    icoInfo.innerHTML = `
+      <h3>For favicon.ico:</h3>
+      <p>After downloading the PNG files above, use an online converter like
+      <a href="https://convertio.co/png-ico/" target="_blank">convertio.co/png-ico/</a> to convert
+      <code>favicon-32x32.png</code> to <code>favicon.ico</code></p>
+    `
+    container.appendChild(icoInfo)
+  </script>
+</body>
+</html>
