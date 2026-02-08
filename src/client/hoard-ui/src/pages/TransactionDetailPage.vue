@@ -63,16 +63,19 @@ const formData = reactive({
   fxCharge: null as number | null,
 })
 
-// When loading transaction for edit, convert to positive values
+// When loading transaction for edit, convert to positive values (except for corporate actions)
 watch([() => transaction.value, isEditMode], ([txn, editMode]) => {
   if (txn && editMode) {
+    const isCorporateActionTxn = txn.transactionTypeId === TransactionTypeIds.CorporateAction
+
     formData.accountId = txn.accountId
     formData.instrumentId = txn.instrumentId ?? null
     formData.transactionTypeId = txn.transactionTypeId
     formData.date = txn.date
     formData.notes = txn.notes ?? ''
-    formData.value = Math.abs(txn.value) // Convert to positive for editing
-    formData.units = txn.units ? Math.abs(txn.units) : null // Convert to positive
+    // Convert to positive for editing, except for corporate actions
+    formData.value = isCorporateActionTxn ? txn.value : Math.abs(txn.value)
+    formData.units = txn.units ? (isCorporateActionTxn ? txn.units : Math.abs(txn.units)) : null
     formData.price = txn.price ?? null
     formData.contractNoteReference = txn.contractNoteReference ?? ''
     formData.dealingCharge = txn.dealingCharge ?? null
