@@ -76,6 +76,12 @@ const router = createRouter({
           component: () => import('@/pages/TransactionsPage.vue'),
         },
         {
+          path: 'transactions/:id',
+          name: 'transaction-detail',
+          component: () => import('@/pages/TransactionDetailPage.vue'),
+          props: true,
+        },
+        {
           path: 'news',
           name: 'news',
           component: () => import('@/pages/NewsArticlesPage.vue'),

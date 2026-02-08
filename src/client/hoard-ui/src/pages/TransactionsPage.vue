@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTransactions } from '@/composables/useTransactions'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { useNavigationStore } from '@/stores/navigationStore'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { formatCurrency, formatDate, getTrendClass } from '@/utils/formatters'
+import { formatCurrency, formatDate, formatUnits, getTrendClass } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
 const pageTitle = ref('Transactions')
@@ -27,12 +27,10 @@ const initialAccountId = route.query.accountId ? Number(route.query.accountId) :
 const initialTransactionTypeId = route.query.transactionTypeId
   ? Number(route.query.transactionTypeId)
   : null
-const initialInstrumentId = route.query.instrumentId ? Number(route.query.instrumentId) : null
 const initialFromDate = (route.query.fromDate as string) || ''
 const initialToDate = (route.query.toDate as string) || ''
 
 const selectedAccountId = ref<number | null>(initialAccountId)
-const selectedInstrumentId = ref<number | null>(initialInstrumentId)
 const selectedTransactionTypeId = ref<number | null>(initialTransactionTypeId)
 const fromDate = ref<string>(initialFromDate)
 const toDate = ref<string>(initialToDate)
@@ -46,13 +44,6 @@ watch(searchText, (val) => {
   debounceTimer = setTimeout(() => {
     debouncedSearch.value = val
   }, 400)
-})
-
-const instrumentItems = computed(() => {
-  return refStore.instruments.map((i) => ({
-    title: i.context ? `${i.name} (${i.context})` : i.name,
-    value: i.id,
-  }))
 })
 
 const headers = [
@@ -73,7 +64,6 @@ async function loadItems() {
     sortBy: sortBy.value[0]?.key,
     sortDirection: sortBy.value[0]?.order,
     accountId: selectedAccountId.value ?? undefined,
-    instrumentId: selectedInstrumentId.value ?? undefined,
     transactionTypeId: selectedTransactionTypeId.value ?? undefined,
     fromDate: fromDate.value || undefined,
     toDate: toDate.value || undefined,
@@ -83,43 +73,22 @@ async function loadItems() {
 }
 
 // Reset page when filters change
-watch(
-  [
-    selectedAccountId,
-    selectedInstrumentId,
-    selectedTransactionTypeId,
-    fromDate,
-    toDate,
-    debouncedSearch,
-  ],
-  () => {
-    page.value = 1
-  }
-)
+watch([selectedAccountId, selectedTransactionTypeId, fromDate, toDate, debouncedSearch], () => {
+  page.value = 1
+})
 
 // Watch filter changes and update URL
-watch(
-  [
-    searchText,
-    selectedAccountId,
-    selectedTransactionTypeId,
-    selectedInstrumentId,
-    fromDate,
-    toDate,
-  ],
-  () => {
-    const query: Record<string, string> = {}
-    if (searchText.value) query.search = searchText.value
-    if (selectedAccountId.value) query.accountId = String(selectedAccountId.value)
-    if (selectedTransactionTypeId.value)
-      query.transactionTypeId = String(selectedTransactionTypeId.value)
-    if (selectedInstrumentId.value) query.instrumentId = String(selectedInstrumentId.value)
-    if (fromDate.value) query.fromDate = fromDate.value
-    if (toDate.value) query.toDate = toDate.value
+watch([searchText, selectedAccountId, selectedTransactionTypeId, fromDate, toDate], () => {
+  const query: Record<string, string> = {}
+  if (searchText.value) query.search = searchText.value
+  if (selectedAccountId.value) query.accountId = String(selectedAccountId.value)
+  if (selectedTransactionTypeId.value)
+    query.transactionTypeId = String(selectedTransactionTypeId.value)
+  if (fromDate.value) query.fromDate = fromDate.value
+  if (toDate.value) query.toDate = toDate.value
 
-    router.replace({ query })
-  }
-)
+  router.replace({ query })
+})
 
 // Watch for changes and reload
 watch(
@@ -128,7 +97,6 @@ watch(
     itemsPerPage,
     sortBy,
     selectedAccountId,
-    selectedInstrumentId,
     selectedTransactionTypeId,
     fromDate,
     toDate,
@@ -191,18 +159,6 @@ onMounted(() => {
       </v-col>
 
       <v-col cols="12" sm="6" md="2">
-        <v-select
-          v-model="selectedInstrumentId"
-          :items="instrumentItems"
-          label="Instrument"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
         <v-text-field
           v-model="fromDate"
           label="From Date"
@@ -225,6 +181,22 @@ onMounted(() => {
           variant="outlined"
         />
       </v-col>
+
+      <v-col cols="12" sm="6" md="2">
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-plus"
+          @click="
+            router.push({
+              name: 'transaction-detail',
+              params: { id: 'new' },
+              query: { mode: 'create' },
+            })
+          "
+        >
+          New Transaction
+        </v-btn>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col>
@@ -239,8 +211,20 @@ onMounted(() => {
           :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
           density="compact"
         >
-          <template #item.date="{ value }">
-            <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+          <template #item.date="{ item, value }">
+            <router-link
+              :to="{ name: 'transaction-detail', params: { id: item.id } }"
+              class="text-decoration-none"
+              style="white-space: nowrap"
+            >
+              {{ formatDate(value) }}
+            </router-link>
+          </template>
+
+          <template #item.units="{ value }">
+            <span v-if="value !== null && value !== undefined" :class="getTrendClass(value)">
+              {{ formatUnits(value) }}
+            </span>
           </template>
 
           <template #item.value="{ value }">
