@@ -63,16 +63,19 @@ const formData = reactive({
   fxCharge: null as number | null,
 })
 
-// When loading transaction for edit, convert to positive values
+// When loading transaction for edit, convert to positive values (except for corporate actions)
 watch([() => transaction.value, isEditMode], ([txn, editMode]) => {
   if (txn && editMode) {
+    const isCorporateActionTxn = txn.transactionTypeId === TransactionTypeIds.CorporateAction
+
     formData.accountId = txn.accountId
     formData.instrumentId = txn.instrumentId ?? null
     formData.transactionTypeId = txn.transactionTypeId
     formData.date = txn.date
     formData.notes = txn.notes ?? ''
-    formData.value = Math.abs(txn.value) // Convert to positive for editing
-    formData.units = txn.units ? Math.abs(txn.units) : null // Convert to positive
+    // Convert to positive for editing, except for corporate actions
+    formData.value = isCorporateActionTxn ? txn.value : Math.abs(txn.value)
+    formData.units = txn.units ? (isCorporateActionTxn ? txn.units : Math.abs(txn.units)) : null
     formData.price = txn.price ?? null
     formData.contractNoteReference = txn.contractNoteReference ?? ''
     formData.dealingCharge = txn.dealingCharge ?? null
@@ -175,7 +178,9 @@ onMounted(async () => {
   await refStore.loadInstruments()
   await navStore.loadAccounts()
 
-  if (!isCreateMode.value) {
+  if (isCreateMode.value) {
+    formData.date = today
+  } else {
     const transactionId = Number(props.id)
     await fetchTransaction(transactionId)
   }
@@ -203,69 +208,101 @@ onMounted(async () => {
         <!-- View Mode -->
         <v-card v-if="isViewMode">
           <v-card-title>Transaction Details</v-card-title>
-          <v-card-text>
-            <v-list v-if="transaction" density="compact" lines="two">
-              <v-list-item>
-                <template #title>{{ transaction.accountName }}</template>
-                <template #subtitle>Account</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ transaction.transactionTypeName }}</template>
-                <template #subtitle>Transaction Type</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.instrumentName">
-                <template #title>{{ transaction.instrumentName }}</template>
-                <template #subtitle>Instrument</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.instrumentTicker">
-                <template #title>{{ transaction.instrumentTicker }}</template>
-                <template #subtitle>Ticker</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>{{ formatDate(transaction.date) }}</template>
-                <template #subtitle>Date</template>
-              </v-list-item>
-              <v-list-item>
-                <template #title>
-                  <span :class="getTrendClass(transaction.value)">{{
-                    formatCurrency(transaction.value)
-                  }}</span>
-                </template>
-                <template #subtitle>Value</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.units !== null && transaction.units !== undefined">
-                <template #title>
-                  <span :class="getTrendClass(transaction.units)">{{
-                    formatUnits(transaction.units)
-                  }}</span>
-                </template>
-                <template #subtitle>Units</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.price !== null && transaction.price !== undefined">
-                <template #title>{{ transaction.price }}</template>
-                <template #subtitle>Price</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.dealingCharge">
-                <template #title>{{ formatCurrency(transaction.dealingCharge) }}</template>
-                <template #subtitle>Dealing Charge</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.stampDuty">
-                <template #title>{{ formatCurrency(transaction.stampDuty) }}</template>
-                <template #subtitle>Stamp Duty</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.ptmLevy">
-                <template #title>{{ formatCurrency(transaction.ptmLevy) }}</template>
-                <template #subtitle>PTM Levy</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.fxCharge">
-                <template #title>{{ formatCurrency(transaction.fxCharge) }}</template>
-                <template #subtitle>FX Charge</template>
-              </v-list-item>
-              <v-list-item v-if="transaction.notes">
-                <template #title>{{ transaction.notes }}</template>
-                <template #subtitle>Notes</template>
-              </v-list-item>
-            </v-list>
+          <v-card-text v-if="transaction">
+            <!-- Section 1: Core (Date, Account, Type) -->
+            <v-row dense>
+              <v-col cols="12" sm="4">
+                <div class="text-caption text-medium-emphasis">Date</div>
+                <div class="text-body-1">{{ formatDate(transaction.date) }}</div>
+              </v-col>
+              <v-col cols="12" sm="4">
+                <div class="text-caption text-medium-emphasis">Account</div>
+                <div class="text-body-1">{{ transaction.accountName }}</div>
+              </v-col>
+              <v-col cols="12" sm="4">
+                <div class="text-caption text-medium-emphasis">Transaction Type</div>
+                <div class="text-body-1">{{ transaction.transactionTypeName }}</div>
+              </v-col>
+            </v-row>
+
+            <v-divider class="my-3" />
+
+            <!-- Section 2: Value & Trade (Value, Units, Price) -->
+            <v-row dense>
+              <v-col cols="12" sm="4">
+                <div class="text-caption text-medium-emphasis">Value</div>
+                <div class="text-body-1" :class="getTrendClass(transaction.value)">
+                  {{ formatCurrency(transaction.value) }}
+                </div>
+              </v-col>
+              <v-col v-if="transaction.units !== null" cols="12" sm="4">
+                <div class="text-caption text-medium-emphasis">Units</div>
+                <div class="text-body-1" :class="getTrendClass(transaction.units)">
+                  {{ formatUnits(transaction.units) }}
+                </div>
+              </v-col>
+              <v-col v-if="transaction.price !== null" cols="12" sm="4">
+                <div class="text-caption text-medium-emphasis">Price</div>
+                <div class="text-body-1">{{ transaction.price }}</div>
+              </v-col>
+            </v-row>
+
+            <!-- Section 3: Costs (conditional) -->
+            <template
+              v-if="
+                transaction.dealingCharge ||
+                transaction.stampDuty ||
+                transaction.ptmLevy ||
+                transaction.fxCharge
+              "
+            >
+              <v-divider class="my-3" />
+              <v-row dense>
+                <v-col v-if="transaction.dealingCharge" cols="12" sm="6" md="3">
+                  <div class="text-caption text-medium-emphasis">Dealing Charge</div>
+                  <div class="text-body-1">{{ formatCurrency(transaction.dealingCharge) }}</div>
+                </v-col>
+                <v-col v-if="transaction.stampDuty" cols="12" sm="6" md="3">
+                  <div class="text-caption text-medium-emphasis">Stamp Duty</div>
+                  <div class="text-body-1">{{ formatCurrency(transaction.stampDuty) }}</div>
+                </v-col>
+                <v-col v-if="transaction.ptmLevy" cols="12" sm="6" md="3">
+                  <div class="text-caption text-medium-emphasis">PTM Levy</div>
+                  <div class="text-body-1">{{ formatCurrency(transaction.ptmLevy) }}</div>
+                </v-col>
+                <v-col v-if="transaction.fxCharge" cols="12" sm="6" md="3">
+                  <div class="text-caption text-medium-emphasis">FX Charge</div>
+                  <div class="text-body-1">{{ formatCurrency(transaction.fxCharge) }}</div>
+                </v-col>
+              </v-row>
+            </template>
+
+            <!-- Section 4: Instrument (conditional) -->
+            <template v-if="transaction.instrumentName">
+              <v-divider class="my-3" />
+              <v-row dense>
+                <v-col>
+                  <div class="text-caption text-medium-emphasis">Instrument</div>
+                  <div class="text-body-1">
+                    {{ transaction.instrumentName }}
+                    <span v-if="transaction.instrumentTicker" class="text-medium-emphasis">
+                      ({{ transaction.instrumentTicker }})
+                    </span>
+                  </div>
+                </v-col>
+              </v-row>
+            </template>
+
+            <!-- Section 5: Notes (conditional) -->
+            <template v-if="transaction.notes">
+              <v-divider class="my-3" />
+              <v-row dense>
+                <v-col>
+                  <div class="text-caption text-medium-emphasis">Notes</div>
+                  <div class="text-body-1">{{ transaction.notes }}</div>
+                </v-col>
+              </v-row>
+            </template>
           </v-card-text>
           <v-card-actions>
             <v-btn
@@ -292,62 +329,70 @@ onMounted(async () => {
           <v-card-title>{{ isCreateMode ? 'New Transaction' : 'Edit Transaction' }}</v-card-title>
           <v-card-text>
             <v-form>
-              <!-- Account dropdown (required) -->
-              <v-select
-                v-model="formData.accountId"
-                :items="navStore.accounts"
-                item-title="name"
-                item-value="id"
-                label="Account"
-                :rules="[(v) => !!v || 'Account is required']"
-                required
-                variant="outlined"
-                density="compact"
-              />
+              <!-- Section 1: Core (Date, Account, Type) -->
+              <v-row dense>
+                <v-col cols="12" sm="4">
+                  <v-text-field
+                    v-model="formData.date"
+                    label="Date"
+                    type="date"
+                    :max="today"
+                    :rules="[
+                      (v) => !!v || 'Date is required',
+                      (v) => v <= today || 'Future dates not allowed',
+                    ]"
+                    required
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-select
+                    v-model="formData.accountId"
+                    :items="navStore.accounts"
+                    item-title="name"
+                    item-value="id"
+                    label="Account"
+                    :rules="[(v) => !!v || 'Account is required']"
+                    required
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-select
+                    v-model="formData.transactionTypeId"
+                    :items="refStore.transactionTypes"
+                    item-title="name"
+                    item-value="id"
+                    label="Transaction Type"
+                    :rules="[(v) => !!v || 'Transaction Type is required']"
+                    required
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+              </v-row>
 
-              <!-- Transaction Type dropdown (required) -->
-              <v-select
-                v-model="formData.transactionTypeId"
-                :items="refStore.transactionTypes"
-                item-title="name"
-                item-value="id"
-                label="Transaction Type"
-                :rules="[(v) => !!v || 'Transaction Type is required']"
-                required
-                variant="outlined"
-                density="compact"
-              />
-
-              <!-- Instrument dropdown (conditional) -->
-              <v-select
-                v-if="showInstrumentField"
-                v-model="formData.instrumentId"
-                :items="instrumentItems"
-                label="Instrument"
-                :rules="instrumentRequired ? [(v) => !!v || 'Instrument is required'] : []"
-                clearable
-                variant="outlined"
-                density="compact"
-              />
-
-              <!-- Date picker (required, no future dates) -->
-              <v-text-field
-                v-model="formData.date"
-                label="Date"
-                type="date"
-                :max="today"
-                :rules="[
-                  (v) => !!v || 'Date is required',
-                  (v) => v <= today || 'Future dates not allowed',
-                ]"
-                required
-                variant="outlined"
-                density="compact"
-              />
-
-              <!-- Trading fields (conditional on transaction type) -->
-              <v-row v-if="showTradingFields" dense class="my-0">
-                <v-col cols="12" md="6">
+              <!-- Section 2: Value & Trade (Value, Units, Price) -->
+              <v-row dense>
+                <v-col cols="12" sm="4">
+                  <v-text-field
+                    v-model.number="formData.value"
+                    label="Value"
+                    type="number"
+                    step="0.01"
+                    :rules="[
+                      (v) => (v !== null && v !== '') || 'Value is required',
+                      (v) => isCorporateAction || v >= 0 || 'Value must be positive',
+                    ]"
+                    required
+                    variant="outlined"
+                    density="compact"
+                    prefix="£"
+                  />
+                </v-col>
+                <v-col v-if="showTradingFields" cols="12" sm="4">
                   <v-text-field
                     v-model.number="formData.units"
                     label="Units"
@@ -358,7 +403,7 @@ onMounted(async () => {
                     density="compact"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
+                <v-col v-if="showTradingFields" cols="12" sm="4">
                   <v-text-field
                     v-model.number="formData.price"
                     label="Price"
@@ -372,9 +417,9 @@ onMounted(async () => {
                 </v-col>
               </v-row>
 
-              <!-- Fee fields (conditional) -->
-              <v-row v-if="showTradingFields" dense class="my-0">
-                <v-col cols="12" md="6">
+              <!-- Section 3: Costs (conditional) -->
+              <v-row v-if="showTradingFields" dense>
+                <v-col cols="12" sm="6" md="3">
                   <v-text-field
                     v-model.number="formData.dealingCharge"
                     label="Dealing Charge"
@@ -387,7 +432,7 @@ onMounted(async () => {
                     prefix="£"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="3">
                   <v-text-field
                     v-model.number="formData.stampDuty"
                     label="Stamp Duty"
@@ -400,9 +445,7 @@ onMounted(async () => {
                     prefix="£"
                   />
                 </v-col>
-              </v-row>
-              <v-row v-if="showTradingFields" dense class="my-0">
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="3">
                   <v-text-field
                     v-model.number="formData.ptmLevy"
                     label="PTM Levy"
@@ -415,7 +458,7 @@ onMounted(async () => {
                     prefix="£"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
+                <v-col cols="12" sm="6" md="3">
                   <v-text-field
                     v-model.number="formData.fxCharge"
                     label="FX Charge"
@@ -430,30 +473,33 @@ onMounted(async () => {
                 </v-col>
               </v-row>
 
-              <!-- Value (required, 2 decimals) -->
-              <v-text-field
-                v-model.number="formData.value"
-                label="Value"
-                type="number"
-                step="0.01"
-                :rules="[
-                  (v) => (v !== null && v !== '') || 'Value is required',
-                  (v) => isCorporateAction || v >= 0 || 'Value must be positive',
-                ]"
-                required
-                variant="outlined"
-                density="compact"
-                prefix="£"
-              />
+              <!-- Section 4: Instrument (conditional) -->
+              <v-row v-if="showInstrumentField" dense>
+                <v-col>
+                  <v-select
+                    v-model="formData.instrumentId"
+                    :items="instrumentItems"
+                    label="Instrument"
+                    :rules="instrumentRequired ? [(v) => !!v || 'Instrument is required'] : []"
+                    clearable
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+              </v-row>
 
-              <!-- Notes (optional) -->
-              <v-textarea
-                v-model="formData.notes"
-                label="Notes"
-                variant="outlined"
-                density="compact"
-                rows="3"
-              />
+              <!-- Section 5: Notes -->
+              <v-row dense>
+                <v-col>
+                  <v-textarea
+                    v-model="formData.notes"
+                    label="Notes"
+                    variant="outlined"
+                    density="compact"
+                    rows="3"
+                  />
+                </v-col>
+              </v-row>
             </v-form>
           </v-card-text>
           <v-card-actions>
