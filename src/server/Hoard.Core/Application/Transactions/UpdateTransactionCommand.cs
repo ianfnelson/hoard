@@ -17,8 +17,6 @@ public class UpdateTransactionHandler(
     public async Task HandleAsync(UpdateTransactionCommand command, CancellationToken ct = default)
     {
         var (transactionId, dto, pipelineMode) = command;
-        
-        // TODO - validate the DTO
 
         var tx = await GetExistingTransaction(transactionId, ct);
 

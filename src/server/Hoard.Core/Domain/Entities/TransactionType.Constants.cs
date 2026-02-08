@@ -33,4 +33,16 @@ internal static class TransactionTypeSets
         TransactionType.IncomeLoyaltyBonus, 
         TransactionType.IncomeDividend
     ];
+
+    internal static readonly int[] NegativeUnits =
+    [
+        TransactionType.Sell
+    ];
+    
+    internal static readonly int[] NegativeValue =
+    [
+        TransactionType.Buy,
+        TransactionType.Withdrawal,
+        TransactionType.Fee
+    ];
 }

@@ -1,5 +1,4 @@
 using Hoard.Core.Data;
-using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +26,8 @@ public sealed class GetTransactionHandler(HoardContext context, ILogger<GetTrans
                 TransactionTypeId = t.TransactionTypeId,
                 TransactionTypeName = t.TransactionType.Name,
                 Date = t.Date,
-                Units = t.TransactionTypeId == TransactionType.Sell ? -t.Units! : t.Units,
+                Notes = t.Notes,
+                Units = t.Units,
                 Value = t.Value,
                 Price = t.Price,
                 DealingCharge = t.DealingCharge,

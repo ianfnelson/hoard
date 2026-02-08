@@ -13,8 +13,6 @@ public class CreateTransactionHandler(IBus bus, IMapper mapper, HoardContext con
 {
     public async Task<int> HandleAsync(CreateTransactionCommand command, CancellationToken ct = default)
     {
-        // TODO - input validation
-        
         var tx = mapper.Map<TransactionWriteDto, Transaction>(command.Dto);
         
         context.Transactions.Add(tx);

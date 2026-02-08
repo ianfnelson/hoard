@@ -109,6 +109,23 @@ export function formatDateTime(date: Date | string | null | undefined): string {
 }
 
 /**
+ * Formats a unit value with up to 6 decimal places
+ * Removes trailing zeros and adds thousands separators
+ * @note Always displays absolute value - use getTrendClass for sign indication
+ */
+export function formatUnits(value: number | null | undefined): string {
+  if (value === null || value === undefined) return '—'
+
+  // Format with up to 6 decimals, remove trailing zeros
+  const formatted = Math.abs(value).toLocaleString('en-GB', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 6,
+  })
+
+  return formatted
+}
+
+/**
  * Returns CSS class for trend-based coloring
  * @param value The numeric value to determine trend
  * @returns CSS class name ('text-positive', 'text-negative', or undefined)

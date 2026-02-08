@@ -1,3 +1,5 @@
+using FluentValidation;
+using Hoard.Core.Application.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hoard.Core.Application;
@@ -8,7 +10,8 @@ public static class ServiceCollectionExtensions
     {
         AddMapping(services);
         AddMediator(services);
-        
+        AddValidation(services);
+
         return services;
     }
 
@@ -35,14 +38,32 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddMapping(IServiceCollection services)
     {
+        // Register individual mappers
         services.Scan(scan => scan
             .FromAssemblyOf<MapperFacade>()
             .AddClasses(classes => classes.AssignableTo(typeof(IMapper<,>)))
-            .AsImplementedInterfaces()
+            .AsSelf()
             .WithTransientLifetime()
         );
-        services.AddSingleton<IMapper, MapperFacade>();
-        
+
+        // Register MapperFacade with factory that collects all mappers
+        services.AddSingleton<IMapper>(sp =>
+        {
+            var assembly = typeof(MapperFacade).Assembly;
+            var mapperTypes = assembly.GetTypes()
+                .Where(t => t.GetInterfaces()
+                    .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapper<,>)));
+
+            var mappers = mapperTypes.Select(t => sp.GetRequiredService(t)).ToList();
+            return new MapperFacade(mappers);
+        });
+
+        return services;
+    }
+
+    private static IServiceCollection AddValidation(IServiceCollection services)
+    {
+        services.AddValidatorsFromAssemblyContaining<TransactionWriteDtoValidator>();
         return services;
     }
 }

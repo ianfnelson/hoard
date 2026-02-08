@@ -25,7 +25,17 @@ public class TransactionMapper
         destination.Price = source.Price;
         destination.PtmLevy = source.PtmLevy;
         destination.StampDuty = source.StampDuty;
-        destination.Units = source.Units;
-        destination.Value = source.Value!.Value;
+        destination.Units = MapUnits(source);
+        destination.Value = MapValue(source);
+    }
+
+    private static decimal? MapUnits(TransactionWriteDto source)
+    {
+        return TransactionTypeSets.NegativeUnits.Contains(source.TransactionTypeId!.Value) ? -source.Units : source.Units;
+    }
+    
+    private static decimal MapValue(TransactionWriteDto source)
+    {
+        return TransactionTypeSets.NegativeValue.Contains(source.TransactionTypeId!.Value) ? -source.Value!.Value : source.Value!.Value;
     }
 }

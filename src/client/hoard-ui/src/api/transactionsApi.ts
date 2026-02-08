@@ -2,6 +2,7 @@ import { hoardApi } from './hoardApi'
 import type { TransactionSummaryDto } from './dtos/Transactions/TransactionSummaryDto'
 import type { PagedResult } from '@/api/dtos/PagedResult'
 import type { TransactionDetailDto } from './dtos/Transactions/TransactionDetailDto'
+import type { TransactionWriteDto } from './dtos/Transactions/TransactionWriteDto'
 
 export interface GetTransactionsParams {
   accountId?: number
@@ -26,4 +27,17 @@ export async function getTransactions(
 export async function getTransactionDetail(transactionId: number): Promise<TransactionDetailDto> {
   const response = await hoardApi.get(`/transactions/${transactionId}`)
   return response.data
+}
+
+export async function createTransaction(data: TransactionWriteDto): Promise<number> {
+  const response = await hoardApi.post('/transactions', data)
+  return response.data
+}
+
+export async function updateTransaction(id: number, data: TransactionWriteDto): Promise<void> {
+  await hoardApi.put(`/transactions/${id}`, data)
+}
+
+export async function deleteTransaction(id: number): Promise<void> {
+  await hoardApi.delete(`/transactions/${id}`)
 }
