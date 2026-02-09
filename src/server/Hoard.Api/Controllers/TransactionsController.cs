@@ -1,5 +1,7 @@
+using FluentValidation;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Transactions;
+using Hoard.Core.Application.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -8,7 +10,7 @@ namespace Hoard.Api.Controllers;
 [Route("api/transactions/")]
 [Produces("application/json")]
 [Tags("Transactions")]
-public class TransactionsController(IMediator mediator) : ControllerBase
+public class TransactionsController(IMediator mediator, IValidator<TransactionWriteDto> validator) : ControllerBase
 {
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
@@ -29,15 +31,29 @@ public class TransactionsController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<int>> Create([FromBody] TransactionWriteDto request, CancellationToken ct)
     {
+        var problems = await validator.ValidateAndGetProblemsAsync(request, cancellationToken: ct);
+        if (problems != null)
+        {
+            return BadRequest(problems);
+        }
+
         var id = await mediator.SendAsync<CreateTransactionCommand, int>(new CreateTransactionCommand(request), ct);
         return CreatedAtAction(nameof(Get), new { id }, id);
     }
     
     [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Update(int id, [FromBody] TransactionWriteDto request, CancellationToken ct)
     {
+        var problems = await validator.ValidateAndGetProblemsAsync(request, entityId: id, cancellationToken: ct);
+        if (problems != null)
+        {
+            return BadRequest(problems);
+        }
+
         await mediator.SendAsync(new UpdateTransactionCommand(id, request), ct);
         return NoContent();
     }

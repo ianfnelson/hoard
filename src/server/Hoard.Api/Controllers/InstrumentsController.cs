@@ -1,5 +1,7 @@
+using FluentValidation;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Instruments;
+using Hoard.Core.Application.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -8,7 +10,7 @@ namespace Hoard.Api.Controllers;
 [Route("api/instruments/")]
 [Tags("Instruments")]
 [Produces("application/json")]
-public class InstrumentsController(IMediator mediator) : ControllerBase
+public class InstrumentsController(IMediator mediator, IValidator<InstrumentWriteDto> validator) : ControllerBase
 {
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
@@ -51,15 +53,29 @@ public class InstrumentsController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<int>> Create([FromBody] InstrumentWriteDto request, CancellationToken ct)
     {
+        var problems = await validator.ValidateAndGetProblemsAsync(request, cancellationToken: ct);
+        if (problems != null)
+        {
+            return BadRequest(problems);
+        }
+
         var id = await mediator.SendAsync<CreateInstrumentCommand, int>(new CreateInstrumentCommand(request), ct);
         return CreatedAtAction(nameof(Get), new { id }, id);
     }
     
     [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Update(int id, [FromBody] InstrumentWriteDto request, CancellationToken ct)
     {
+        var problems = await validator.ValidateAndGetProblemsAsync(request, entityId: id, cancellationToken: ct);
+        if (problems != null)
+        {
+            return BadRequest(problems);
+        }
+
         await mediator.SendAsync(new UpdateInstrumentCommand(id, request), ct);
         return NoContent();
     }

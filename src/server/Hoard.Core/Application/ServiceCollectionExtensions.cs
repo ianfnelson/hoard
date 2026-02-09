@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
                 .Where(t => t.GetInterfaces()
                     .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapper<,>)));
 
-            var mappers = mapperTypes.Select(t => sp.GetRequiredService(t)).ToList();
+            var mappers = mapperTypes.Select(sp.GetRequiredService).ToList();
             return new MapperFacade(mappers);
         });
 

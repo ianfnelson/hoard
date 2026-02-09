@@ -35,10 +35,7 @@ builder.Services
     .AddTelemetryInitializer("hoard.api")
     .Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<Hoard.Api.Filters.AutoValidateFilter>();
-});
+builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
