@@ -9,6 +9,7 @@ using Hoard.Messages.Positions;
 using Hoard.Messages.Prices;
 using Hoard.Messages.Quotes;
 using Hoard.Messages.Snapshots;
+using Hoard.Messages.Transactions;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,6 +77,10 @@ await using (var scope = app.Services.CreateAsyncScope())
     
     await bus.Subscribe<SnapshotCalculatedEvent>();
     await bus.Subscribe<SnapshotsCalculatedEvent>();
+    
+    await bus.Subscribe<TransactionDeletedEvent>();
+    await bus.Subscribe<TransactionCreatedEvent>();
+    await bus.Subscribe<TransactionUpdatedEvent>();
 }
 
 await app.RunAsync();

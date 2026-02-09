@@ -1,13 +1,13 @@
 using FluentValidation;
+using Hoard.Core.Application.Validation;
 using Hoard.Core.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Core.Application.Instruments;
 
 public class InstrumentWriteDtoValidator : AbstractValidator<InstrumentWriteDto>
 {
-    public InstrumentWriteDtoValidator(HoardContext context, IHttpContextAccessor httpContextAccessor)
+    public InstrumentWriteDtoValidator(HoardContext context)
     {
         RuleFor(x => x.Name)
             .NotEmpty()
@@ -42,7 +42,7 @@ public class InstrumentWriteDtoValidator : AbstractValidator<InstrumentWriteDto>
         RuleFor(x => x.Isin)
             .MaximumLength(12)
             .WithMessage("ISIN cannot exceed 12 characters")
-            .MustAsync(async (isin, ct) =>
+            .MustAsync(async (dto, isin, validationContext, ct) =>
             {
                 if (isin == null)
                 {
@@ -50,8 +50,8 @@ public class InstrumentWriteDtoValidator : AbstractValidator<InstrumentWriteDto>
                 }
 
                 int? currentId = null;
-                if (httpContextAccessor.HttpContext?.Request.RouteValues.TryGetValue("id", out var idValue) == true
-                    && int.TryParse(idValue?.ToString(), out var parsedId))
+                if (validationContext.RootContextData.TryGetValue(ValidationExtensions.EntityIdKey, out var idValue)
+                    && idValue is int parsedId)
                 {
                     currentId = parsedId;
                 }
