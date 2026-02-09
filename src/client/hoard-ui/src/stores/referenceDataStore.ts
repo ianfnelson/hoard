@@ -1,9 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getInstrumentTypes, getAssetClasses, getTransactionTypes } from '@/api/referencesApi'
+import {
+  getInstrumentTypes,
+  getAssetClasses,
+  getTransactionTypes,
+  getCurrencies,
+} from '@/api/referencesApi'
 import type { InstrumentTypeDto } from '@/api/dtos/InstrumentTypes/InstrumentTypeDto'
 import type { AssetClassDto } from '@/api/dtos/AssetClasses/AssetClassDto'
 import type { TransactionTypeDto } from '@/api/dtos/TransactionTypes/TransactionTypeDto'
+import type { CurrencyDto } from '@/api/dtos/Currencies/CurrencyDto'
 import { getInstrumentsLookup } from '@/api/instrumentsApi'
 import type { LookupDto } from '@/api/dtos/LookupDto.ts'
 
@@ -11,11 +17,13 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
   const instrumentTypes = ref<InstrumentTypeDto[]>([])
   const assetClasses = ref<AssetClassDto[]>([])
   const transactionTypes = ref<TransactionTypeDto[]>([])
+  const currencies = ref<CurrencyDto[]>([])
   const instruments = ref<LookupDto[]>([])
   const isLoading = ref(false)
   const lastUpdated = ref<Date | null>(null)
   const assetClassesLoaded = ref(false)
   const transactionTypesLoaded = ref(false)
+  const currenciesLoaded = ref(false)
   const instrumentsLoaded = ref(false)
   const error = ref<string | null>(null)
 
@@ -70,6 +78,23 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     }
   }
 
+  async function loadCurrencies() {
+    if (currenciesLoaded.value) return
+
+    isLoading.value = true
+    error.value = null
+    try {
+      currencies.value = await getCurrencies()
+      currenciesLoaded.value = true
+    } catch (e) {
+      error.value = 'Failed to load currencies'
+      console.error('Failed to load currencies:', e)
+      currencies.value = []
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function loadInstruments() {
     if (instrumentsLoaded.value) return
 
@@ -91,11 +116,13 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     lastUpdated.value = null
     assetClassesLoaded.value = false
     transactionTypesLoaded.value = false
+    currenciesLoaded.value = false
     instrumentsLoaded.value = false
     await Promise.all([
       loadInstrumentTypes(),
       loadAssetClasses(),
       loadTransactionTypes(),
+      loadCurrencies(),
       loadInstruments(),
     ])
   }
@@ -104,6 +131,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     instrumentTypes,
     assetClasses,
     transactionTypes,
+    currencies,
     instruments,
     isLoading,
     lastUpdated,
@@ -111,6 +139,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     loadInstrumentTypes,
     loadAssetClasses,
     loadTransactionTypes,
+    loadCurrencies,
     loadInstruments,
     refresh,
   }

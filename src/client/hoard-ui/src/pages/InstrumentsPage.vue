@@ -196,6 +196,22 @@ onMounted(() => {
           :disabled="!selectedAssetClassId"
         />
       </v-col>
+      <v-col cols="12" sm="6" md="2"></v-col>
+      <v-col cols="12" sm="6" md="2">
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-plus"
+          @click="
+            router.push({
+              name: 'instrument-detail',
+              params: { id: 'new' },
+              query: { mode: 'create' },
+            })
+          "
+        >
+          New Instrument
+        </v-btn>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col>
