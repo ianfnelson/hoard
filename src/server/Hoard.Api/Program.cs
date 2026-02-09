@@ -25,6 +25,7 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 // });
 
 builder.Services
+    .AddHttpContextAccessor()
     .AddHoardData(sqlConnectionString)
     .AddHoardLogging(applicationInsightsConnectionString)
     .AutoRegisterHandlersFromAssemblyOf<PortfolioUpdatedSignalRHandler>()

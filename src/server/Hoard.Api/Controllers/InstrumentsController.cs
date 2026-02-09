@@ -8,7 +8,7 @@ namespace Hoard.Api.Controllers;
 [Route("api/instruments/")]
 [Tags("Instruments")]
 [Produces("application/json")]
-public class InstrumentsController(IMediator mediator)
+public class InstrumentsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
@@ -53,23 +53,21 @@ public class InstrumentsController(IMediator mediator)
     [HttpPost]
     public async Task<ActionResult<int>> Create([FromBody] InstrumentWriteDto request, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        var id = await mediator.SendAsync<CreateInstrumentCommand, int>(new CreateInstrumentCommand(request), ct);
+        return CreatedAtAction(nameof(Get), new { id }, id);
     }
     
     [HttpPut("{id:int}")]
     public async Task<ActionResult> Update(int id, [FromBody] InstrumentWriteDto request, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        await mediator.SendAsync(new UpdateInstrumentCommand(id, request), ct);
+        return NoContent();
     }
     
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        // TODO
-        throw new NotImplementedException();
+        await mediator.SendAsync(new DeleteInstrumentCommand(id), ct);
+        return NoContent();  // 204
     }
-    
-    // TODO - quote endpoint
 }
