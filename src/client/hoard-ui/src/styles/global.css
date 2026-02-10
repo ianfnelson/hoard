@@ -26,6 +26,15 @@ body,
   color: #b71c1c !important; /* Red for negative financial values */
 }
 
+/* Dark mode variants with better contrast */
+.v-theme--dark .text-positive {
+  color: #64b5f6 !important; /* Light blue for positive financial values in dark mode */
+}
+
+.v-theme--dark .text-negative {
+  color: #ef5350 !important; /* Light red for negative financial values in dark mode */
+}
+
 /* Enhanced caption text for better readability */
 .text-caption-lg {
   font-size: 0.875rem !important; /* 14px - slightly larger than default caption (12px) */
