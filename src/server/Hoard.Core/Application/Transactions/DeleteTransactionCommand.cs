@@ -1,5 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Core.Services;
 using Hoard.Messages;
 using Hoard.Messages.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace Hoard.Core.Application.Transactions;
 
 public record DeleteTransactionCommand(int TransactionId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
-public class DeleteTransactionHandler(HoardContext context, IBus bus) 
+public class DeleteTransactionHandler(HoardContext context, IBus bus, IBlobStorageService blobService)
     : ICommandHandler<DeleteTransactionCommand>
 {
     public async Task HandleAsync(DeleteTransactionCommand command, CancellationToken ct = default)
@@ -17,10 +18,16 @@ public class DeleteTransactionHandler(HoardContext context, IBus bus)
         var tx = await GetExistingTransaction(command.TransactionId, ct);
 
         var transactionDate = tx.Date;
-        
+
+        // Delete contract note blob if exists
+        if (!string.IsNullOrEmpty(tx.ContractNoteReference))
+        {
+            await blobService.DeleteContractNoteAsync(tx.ContractNoteReference, ct);
+        }
+
         context.Transactions.Remove(tx);
         await context.SaveChangesAsync(ct);
-        
+
         await bus.Publish(new TransactionDeletedEvent(command.PipelineMode, command.TransactionId, transactionDate));
     }
 

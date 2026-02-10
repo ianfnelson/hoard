@@ -18,6 +18,7 @@ import {
 } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
+import { useContractNoteDownload } from '@/composables/useContractNoteDownload'
 
 const route = useRoute()
 const router = useRouter()
@@ -272,7 +273,7 @@ const txnHeaders = [
   { title: 'Units', key: 'units', sortable: false, align: 'end' },
   { title: 'Price', key: 'price', sortable: false, align: 'end' },
   { title: 'Value', key: 'value', sortable: true, align: 'end' },
-  { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
+  { title: '', key: 'contractNoteReference', sortable: false },
 ] as const
 
 watch(
@@ -301,6 +302,9 @@ watch(
   },
   { immediate: true }
 )
+
+// Contract note download
+const { handleDownloadContractNote, isDownloading } = useContractNoteDownload()
 
 // Initialize reference data
 onMounted(() => {
@@ -469,6 +473,22 @@ onMounted(() => {
 
               <template #item.value="{ value }">
                 <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
+              </template>
+
+              <template #item.contractNoteReference="{ item, value }">
+                <v-btn
+                  v-if="value"
+                  icon
+                  size="small"
+                  variant="text"
+                  :loading="isDownloading(value)"
+                  @click.stop="handleDownloadContractNote(item.id, value)"
+                >
+                  <v-icon class="doc-link-icon">mdi-file-document</v-icon>
+                  <v-tooltip activator="parent" location="top">
+                    Download {{ value }}.pdf
+                  </v-tooltip>
+                </v-btn>
               </template>
 
               <template #no-data> No transactions found </template>

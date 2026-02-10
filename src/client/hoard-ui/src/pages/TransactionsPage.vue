@@ -7,6 +7,7 @@ import { useNavigationStore } from '@/stores/navigationStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatDate, formatUnits, getTrendClass } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+import { useContractNoteDownload } from '@/composables/useContractNoteDownload'
 
 const pageTitle = ref('Transactions')
 usePageTitle(pageTitle)
@@ -54,7 +55,7 @@ const headers = [
   { title: 'Instrument', key: 'instrumentName', sortable: true },
   { title: 'Price', key: 'price', sortable: false, align: 'end' },
   { title: 'Value', key: 'value', sortable: true, align: 'end' },
-  { title: 'Contract Note', key: 'contractNoteReference', sortable: false },
+  { title: '', key: 'contractNoteReference', sortable: false },
 ] as const
 
 async function loadItems() {
@@ -107,6 +108,9 @@ watch(
   },
   { immediate: true }
 )
+
+// Contract note download
+const { handleDownloadContractNote, isDownloading } = useContractNoteDownload()
 
 onMounted(() => {
   refStore.loadTransactionTypes()
@@ -239,6 +243,20 @@ onMounted(() => {
             >
               {{ item.instrumentName }}
             </router-link>
+          </template>
+
+          <template #item.contractNoteReference="{ item, value }">
+            <v-btn
+              v-if="value"
+              icon
+              size="small"
+              variant="text"
+              :loading="isDownloading(value)"
+              @click.stop="handleDownloadContractNote(item.id, value)"
+            >
+              <v-icon class="doc-link-icon">mdi-file-document</v-icon>
+              <v-tooltip activator="parent" location="top"> Download {{ value }}.pdf </v-tooltip>
+            </v-btn>
           </template>
 
           <template #no-data> No transactions found </template>
