@@ -15,7 +15,7 @@ const router = createRouter({
           path: 'portfolios',
           redirect: () => {
             // TODO: Redirect to first portfolio from store
-            return '/portfolios/1'
+            return '/portfolios/3'
           },
         },
         {
@@ -25,7 +25,7 @@ const router = createRouter({
           children: [
             {
               path: '',
-              redirect: 'overview',
+              redirect: (to) => ({ path: `/portfolios/${to.params.id}/overview` }),
             },
             {
               path: 'overview',
