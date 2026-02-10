@@ -170,20 +170,13 @@ const performanceHeaders = [
               </template>
 
               <template #item.performance.value="{ item }">
-                <span :class="getTrendClass(item.performance?.value)">{{
-                  formatCurrency(item.performance?.value)
-                }}</span>
+                {{ formatCurrency(item.performance?.value) }}
               </template>
               <template #item.performance.costBasis="{ item }">
-                <span :class="getTrendClass(item.performance?.costBasis)">{{
-                  formatCurrency(item.performance?.costBasis)
-                }}</span>
+                {{ formatCurrency(item.performance?.costBasis) }}
               </template>
-
               <template #item.portfolioPercentage="{ item }">
-                <span :class="getTrendClass(item.portfolioPercentage)">{{
-                  formatPercentage(item.portfolioPercentage)
-                }}</span>
+                {{ formatPercentage(item.portfolioPercentage) }}
               </template>
 
               <template #no-data> No positions</template>
