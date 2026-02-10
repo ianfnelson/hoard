@@ -14,6 +14,7 @@ import {
   formatCurrency,
   formatPercentage,
   getTrendClass,
+  formatUpdatedTime,
 } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
@@ -393,6 +394,12 @@ onMounted(() => {
                       formatPercentage(instrumentStore.instrument.quote.regularMarketChangePercent)
                     }}
                   </span>
+                </div>
+              </v-col>
+              <v-col cols="12" sm="3">
+                <div class="text-caption text-medium-emphasis">Retrieved</div>
+                <div class="text-body-1">
+                  {{ formatUpdatedTime(instrumentStore.instrument?.quote.retrievedUtc) }}
                 </div>
               </v-col>
             </v-row>
