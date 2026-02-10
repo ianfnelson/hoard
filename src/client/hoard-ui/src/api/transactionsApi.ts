@@ -41,3 +41,34 @@ export async function updateTransaction(id: number, data: TransactionWriteDto): 
 export async function deleteTransaction(id: number): Promise<void> {
   await hoardApi.delete(`/transactions/${id}`)
 }
+
+export interface ContractNoteUploadResponse {
+  reference: string
+  blobUri: string
+}
+
+export async function uploadContractNote(
+  transactionId: number,
+  file: File
+): Promise<ContractNoteUploadResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await hoardApi.post(`/transactions/${transactionId}/contractnote`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data
+}
+
+export async function downloadContractNote(transactionId: number): Promise<Blob> {
+  const response = await hoardApi.get(`/transactions/${transactionId}/contractnote`, {
+    responseType: 'blob',
+  })
+  return response.data
+}
+
+export async function deleteContractNote(transactionId: number): Promise<void> {
+  await hoardApi.delete(`/transactions/${transactionId}/contractnote`)
+}

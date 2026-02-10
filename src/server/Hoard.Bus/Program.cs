@@ -38,7 +38,7 @@ builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
     .AutoRegisterHandlersFromAssemblyOf<CalculateValuationsSaga>()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.bus")
-    .AddHoardServices()
+    .AddHoardServices(builder.Configuration)
     .AddHoardApplication()
     .AddTelemetryInitializer("hoard.bus");
 

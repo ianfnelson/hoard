@@ -30,7 +30,7 @@ builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
     .AutoRegisterHandlersFromAssemblyOf<PortfolioUpdatedSignalRHandler>()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.api")
-    .AddHoardServices()
+    .AddHoardServices(builder.Configuration)
     .AddHoardApplication()
     .AddTelemetryInitializer("hoard.api")
     .Configure<RouteOptions>(options => options.LowercaseUrls = true);

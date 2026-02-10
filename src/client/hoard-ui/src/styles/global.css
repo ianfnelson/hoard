@@ -35,6 +35,15 @@ body,
   color: #ef5350 !important; /* Light red for negative financial values in dark mode */
 }
 
+/* Document link icon color (used for contract notes, news, etc.) */
+.doc-link-icon {
+  color: #B87333 !important; /* Copper/bronze */
+}
+
+.v-theme--dark .doc-link-icon {
+  color: #D4956C !important; /* Lighter copper for dark mode */
+}
+
 /* Enhanced caption text for better readability */
 .text-caption-lg {
   font-size: 0.875rem !important; /* 14px - slightly larger than default caption (12px) */

@@ -111,7 +111,7 @@ const rows = computed(() =>
               {{ item.instrumentTicker }}</router-link
             ><template v-if="isToday(item.latestNewsPublishedUtc)"
               >&nbsp;<router-link :to="{ name: 'news', query: { instrumentId: item.instrumentId } }"
-                ><v-icon size="small" color="#B87333" style="position: relative; top: -2px"
+                ><v-icon size="small" class="doc-link-icon" style="position: relative; top: -2px"
                   >mdi-newspaper</v-icon
                 ></router-link
               ></template

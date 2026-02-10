@@ -12,6 +12,7 @@ import {
   INSTRUMENT_OPTIONAL_TYPES,
   TRADING_FIELD_TYPES,
 } from '@/constants/transactionTypes'
+import { uploadContractNote } from '@/api/transactionsApi'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -61,6 +62,7 @@ const formData = reactive({
   stampDuty: null as number | null,
   ptmLevy: null as number | null,
   fxCharge: null as number | null,
+  contractNoteFile: null as File | null,
 })
 
 // When loading transaction for edit, convert to positive values (except for corporate actions)
@@ -116,6 +118,15 @@ const isCorporateAction = computed(() => {
   return formData.transactionTypeId === TransactionTypeIds.CorporateAction
 })
 
+const showContractNoteUpload = computed(() => {
+  if (!formData.transactionTypeId) return false
+  return [
+    TransactionTypeIds.Buy,
+    TransactionTypeIds.Sell,
+    TransactionTypeIds.CorporateAction,
+  ].includes(formData.transactionTypeId)
+})
+
 // Validation
 const today = new Date().toISOString().split('T')[0]!
 const isFormValid = computed(() => {
@@ -132,6 +143,31 @@ const isFormValid = computed(() => {
 // Delete dialog
 const showDeleteDialog = ref(false)
 
+// Contract note upload state
+const isUploadingFile = ref(false)
+const uploadError = ref<string | null>(null)
+
+// Auto-populate contract note reference from filename
+function extractReferenceFromFilename(filename: string): string {
+  const nameWithoutExtension = filename.substring(0, filename.lastIndexOf('.'))
+  const underscoreIndex = nameWithoutExtension.indexOf('_')
+  return underscoreIndex > 0
+    ? nameWithoutExtension.substring(0, underscoreIndex)
+    : nameWithoutExtension
+}
+
+watch(
+  () => formData.contractNoteFile,
+  (file) => {
+    if (file) {
+      const extractedRef = extractReferenceFromFilename(file.name)
+      if (extractedRef && extractedRef.length <= 20) {
+        formData.contractNoteReference = extractedRef
+      }
+    }
+  }
+)
+
 // Actions
 async function handleSave() {
   if (!isFormValid.value) return
@@ -143,17 +179,40 @@ async function handleSave() {
     contractNoteReference: formData.contractNoteReference.trim() || null,
   }
 
-  if (isCreateMode.value) {
-    const id = await create(payload)
-    if (id) {
-      router.push({ name: 'transactions' })
+  try {
+    let transactionId: number
+
+    if (isCreateMode.value) {
+      const id = await create(payload)
+      if (!id) return
+      transactionId = id
+    } else {
+      transactionId = Number(props.id)
+      const success = await update(transactionId, payload)
+      if (!success) return
     }
-  } else {
-    const transactionId = Number(props.id)
-    const success = await update(transactionId, payload)
-    if (success) {
+
+    // Upload file if present
+    if (formData.contractNoteFile) {
+      isUploadingFile.value = true
+      uploadError.value = null
+      try {
+        await uploadContractNote(transactionId, formData.contractNoteFile)
+      } catch (err) {
+        uploadError.value = err instanceof Error ? err.message : 'Failed to upload contract note'
+        console.error('Error uploading contract note:', err)
+      } finally {
+        isUploadingFile.value = false
+      }
+    }
+
+    if (isCreateMode.value) {
+      router.push({ name: 'transactions' })
+    } else {
       router.push({ query: {} })
     }
+  } catch (err) {
+    console.error('Error saving transaction:', err)
   }
 }
 
@@ -498,6 +557,46 @@ onMounted(async () => {
                     density="compact"
                     rows="3"
                   />
+                </v-col>
+              </v-row>
+
+              <!-- Section 6: Contract Note (conditional) -->
+              <v-row v-if="showContractNoteUpload" dense>
+                <v-col cols="12" md="6">
+                  <v-file-input
+                    v-model="formData.contractNoteFile"
+                    label="Contract Note PDF"
+                    accept="application/pdf"
+                    prepend-icon="mdi-file-document"
+                    variant="outlined"
+                    density="compact"
+                    :rules="[
+                      (v) => !v || v.size < 10485760 || 'File size must be less than 10MB',
+                      (v) => !v || v.type === 'application/pdf' || 'Only PDF files allowed',
+                    ]"
+                    hint="Select PDF file (e.g., B293875534_BOUGHT_Parkmead_Group.pdf)"
+                    persistent-hint
+                    clearable
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.contractNoteReference"
+                    label="Contract Note Reference"
+                    variant="outlined"
+                    density="compact"
+                    :rules="[(v) => !v || v.length <= 20 || 'Maximum 20 characters']"
+                    hint="Auto-filled from filename, or enter manually"
+                    persistent-hint
+                  />
+                </v-col>
+              </v-row>
+
+              <v-row v-if="uploadError" dense>
+                <v-col>
+                  <v-alert type="warning" dismissible @click:close="uploadError = null">
+                    {{ uploadError }}
+                  </v-alert>
                 </v-col>
               </v-row>
             </v-form>

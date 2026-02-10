@@ -65,4 +65,90 @@ public class TransactionsController(IMediator mediator, IValidator<TransactionWr
         await mediator.SendAsync(command, ct);
         return NoContent();  // 204
     }
+
+    [HttpPost("{id:int}/contractnote")]
+    [ProducesResponseType(typeof(ContractNoteUploadResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ContractNoteUploadResponse>> UploadContractNote(
+        int id, IFormFile file, CancellationToken ct)
+    {
+        // API-level validations
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+            return BadRequest("Only PDF files are allowed");
+
+        if (file.Length > 10 * 1024 * 1024)
+            return BadRequest("File size exceeds 10MB limit");
+
+        var reference = ExtractReferenceFromFilename(file.FileName);
+        if (string.IsNullOrWhiteSpace(reference) || reference.Length > 20)
+            return BadRequest("Invalid filename format");
+
+        // Delegate to command
+        try
+        {
+            await using var stream = file.OpenReadStream();
+            var command = new UploadContractNoteCommand(id, reference, stream);
+            var blobUri = await mediator.SendAsync<UploadContractNoteCommand, string>(command, ct);
+
+            return Ok(new ContractNoteUploadResponse(reference, blobUri));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpGet("{id:int}/contractnote")]
+    [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadContractNote(int id, CancellationToken ct)
+    {
+        try
+        {
+            var query = new GetContractNoteQuery(id);
+            var result = await mediator.QueryAsync<GetContractNoteQuery, ContractNoteResult>(query, ct);
+
+            return File(result.Stream, result.ContentType, result.FileName);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == 404)
+        {
+            return NotFound("Contract note file not found in storage");
+        }
+    }
+
+    [HttpDelete("{id:int}/contractnote")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteContractNote(int id, CancellationToken ct)
+    {
+        try
+        {
+            var command = new DeleteContractNoteCommand(id);
+            await mediator.SendAsync(command, ct);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    private static string ExtractReferenceFromFilename(string filename)
+    {
+        var nameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+        var underscoreIndex = nameWithoutExtension.IndexOf('_');
+        return underscoreIndex > 0
+            ? nameWithoutExtension[..underscoreIndex]
+            : nameWithoutExtension;
+    }
 }
+
+public record ContractNoteUploadResponse(string Reference, string BlobUri);
