@@ -28,6 +28,11 @@ const vuetify = createVuetify({
           // Can add custom colors here if needed
         },
       },
+      dark: {
+        colors: {
+          // Can add custom dark theme colors here if needed
+        },
+      },
     },
   },
   defaults: {

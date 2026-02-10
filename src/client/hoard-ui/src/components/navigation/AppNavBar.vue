@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import PortfolioSelector from './PortfolioSelector.vue'
+import { useTheme } from '@/composables/useTheme'
+
+const { isDark, toggleTheme } = useTheme()
 </script>
 
 <template>
@@ -23,5 +26,15 @@ import PortfolioSelector from './PortfolioSelector.vue'
         </v-list-item>
       </v-list>
     </v-menu>
+
+    <v-spacer />
+
+    <v-btn
+      icon
+      :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+      @click="toggleTheme"
+    >
+      <v-icon>{{ isDark ? 'mdi-lightbulb-off-outline' : 'mdi-lightbulb-on' }}</v-icon>
+    </v-btn>
   </v-app-bar>
 </template>
