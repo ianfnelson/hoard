@@ -120,11 +120,7 @@ const isCorporateAction = computed(() => {
 
 const showContractNoteUpload = computed(() => {
   if (!formData.transactionTypeId) return false
-  return [
-    TransactionTypeIds.Buy,
-    TransactionTypeIds.Sell,
-    TransactionTypeIds.CorporateAction,
-  ].includes(formData.transactionTypeId)
+  return TRADING_FIELD_TYPES.includes(formData.transactionTypeId)
 })
 
 // Validation
