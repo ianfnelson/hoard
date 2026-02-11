@@ -1,3 +1,4 @@
+using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Holdings;
 using Hoard.Core.Application.Positions;
@@ -33,8 +34,11 @@ public class HoldingsEventHandler(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand = new ProcessCalculatePositionsCommand(Guid.NewGuid(), message.PipelineMode);
-            await mediator.SendAsync(appCommand);
+            if (message.AsOfDate == DateOnlyHelper.TodayLocal())
+            {
+                var appCommand = new ProcessCalculatePositionsCommand(Guid.NewGuid(), message.PipelineMode);
+                await mediator.SendAsync(appCommand);
+            }
         }
     }
 }
