@@ -48,8 +48,11 @@ public class ValuationsEventHandler(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            var appCommand = new ProcessCalculateSnapshotCommand(Guid.NewGuid(), message.PipelineMode, message.PortfolioId, message.AsOfDate.Year);
-            await mediator.SendAsync(appCommand);
+            if (message.AsOfDate == DateOnlyHelper.TodayLocal())
+            {
+                var appCommand = new ProcessCalculateSnapshotCommand(Guid.NewGuid(), message.PipelineMode, message.PortfolioId, message.AsOfDate.Year);
+                await mediator.SendAsync(appCommand);
+            }
         }
     }
 }
