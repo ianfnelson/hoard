@@ -45,4 +45,19 @@ internal static class TransactionTypeSets
         TransactionType.Withdrawal,
         TransactionType.Fee
     ];
+
+    internal static readonly int[] PositionCashflows =
+    [
+        TransactionType.Buy,
+        TransactionType.Sell,
+        TransactionType.CorporateAction,
+        TransactionType.IncomeDividend,
+        TransactionType.IncomeLoyaltyBonus
+    ];
+    
+    internal static readonly int[] PortfolioCashflows =
+    [
+        ..Deposit,
+        TransactionType.Withdrawal
+    ];
 }
