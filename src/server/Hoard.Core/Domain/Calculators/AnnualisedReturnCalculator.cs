@@ -2,7 +2,7 @@ namespace Hoard.Core.Domain.Calculators;
 
 public static class AnnualisedReturnCalculator
 {
-    public static decimal? Calculate(decimal? returnPercentage, DateOnly startDate, DateOnly endDate)
+    public static decimal? Annualise(decimal? returnPercentage, DateOnly startDate, DateOnly endDate)
     {
         if (!returnPercentage.HasValue)
         {
@@ -43,4 +43,27 @@ public static class AnnualisedReturnCalculator
         return (decimal)annualisedReturn;
     }
 
+    public static decimal? Deannualise(decimal? returnPercentage, DateOnly startDate, DateOnly endDate)
+    {
+        if (!returnPercentage.HasValue)
+        {
+            return null;
+        }
+        
+        var days = endDate.DayNumber - startDate.DayNumber;
+        var years = days / 365.25;
+
+        if (years <= 0.0)
+        {
+            return null;
+        }
+        
+        var annualisedGrowth = 1 + (double)returnPercentage.Value / 100.0;
+        var periodGrowth = Math.Pow(annualisedGrowth, years);
+        
+        var periodReturn = (periodGrowth - 1.0) * 100.0;
+        
+        return (decimal)periodReturn;
+    }
+    
 }

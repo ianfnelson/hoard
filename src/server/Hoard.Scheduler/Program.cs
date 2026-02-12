@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Hoard.Core.Application;
+using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
 using Hoard.Scheduler;
 using Microsoft.AspNetCore.Builder;
@@ -25,6 +26,7 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
     .AddHoardApplication()
+    .AddHoardCalculators()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.scheduler")
     .AddTelemetryInitializer("hoard.scheduler");
 

@@ -13,7 +13,7 @@ public record ProcessCalculateSnapshotCommand(Guid SnapshotsRunId, PipelineMode 
     : ICommand;
 
 public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculateSnapshotHandler> logger,
-    HoardContext context)
+    HoardContext context, IReturnCalculator returnCalculator)
     : ICommandHandler<ProcessCalculateSnapshotCommand>
 {
     public async Task HandleAsync(ProcessCalculateSnapshotCommand command, CancellationToken ct = default)
@@ -35,8 +35,7 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
     {
         var snapshot = await LoadOrCreate(portfolio, year, ct);
         
-        CalculateTransactionMetrics(snapshot, transactions);
-        CalculateValuationMetrics(snapshot, valuations);
+        CalculateInitialMetrics(snapshot, transactions, valuations);
         CalculateDerivedMetrics(snapshot);
         
         snapshot.UpdatedUtc = DateTime.UtcNow;
@@ -44,7 +43,7 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
         await context.SaveChangesAsync(ct);
     }
 
-    private static void CalculateTransactionMetrics(PortfolioSnapshot snapshot, List<Transaction> t)
+    private void CalculateInitialMetrics(PortfolioSnapshot snapshot, List<Transaction> t, Dictionary<DateOnly, PortfolioValuation> valuations)
     {
         snapshot.CountTrades =
             t.Count(x => x.TransactionTypeId is TransactionType.Buy or TransactionType.Sell);
@@ -78,17 +77,7 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
         snapshot.TotalDepositPersonal = GetTransactionTotal(t, TransactionType.DepositPersonal);
         
         snapshot.TotalWithdrawals = GetTransactionTotal(t, TransactionType.Withdrawal);
-    }
-
-    private static decimal GetTransactionTotal(List<Transaction> transactions, int transactionTypeId)
-    {
-        return transactions
-            .Where(x => x.TransactionTypeId == transactionTypeId)
-            .Sum(x => x.Value);
-    }
-
-    private static void CalculateValuationMetrics(PortfolioSnapshot snapshot, Dictionary<DateOnly, PortfolioValuation> valuations)
-    {
+        
         var earliestDate = valuations.Keys.Min();
         var latestDate = valuations.Keys.Max();
         
@@ -100,13 +89,20 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
         snapshot.AverageValue = valuations
             .Where(kvp => kvp.Key != earliestDate)
             .Average(kvp => kvp.Value.Value);
+        
+        snapshot.Return = returnCalculator.Calculate(snapshot.StartValue, snapshot.EndValue, 
+            earliestDate, latestDate, t, PerformanceScope.Portfolio) ?? decimal.Zero;
     }
 
+    private static decimal GetTransactionTotal(List<Transaction> transactions, int transactionTypeId)
+    {
+        return transactions
+            .Where(x => x.TransactionTypeId == transactionTypeId)
+            .Sum(x => x.Value);
+    }
+    
     private static void CalculateDerivedMetrics(PortfolioSnapshot snapshot)
     {
-        snapshot.Return = SimpleReturnCalculator.Calculate(snapshot.StartValue, snapshot.EndValue,
-            snapshot.TotalWithdrawals, snapshot.TotalDepositEmployer + snapshot.TotalDepositPersonal + snapshot.TotalDepositIncomeTaxReclaim + snapshot.TotalDepositTransferIn);
-
         snapshot.Churn = 100.0M * Math.Max(snapshot.TotalBuys, snapshot.TotalSells) / snapshot.AverageValue;
 
         var totalIncome = snapshot.TotalIncomeDividends + snapshot.TotalIncomeInterest + snapshot.TotalIncomeLoyaltyBonus;

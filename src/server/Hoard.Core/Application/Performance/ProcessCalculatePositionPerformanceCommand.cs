@@ -12,7 +12,9 @@ namespace Hoard.Core.Application.Performance;
 
 public record ProcessCalculatePositionPerformanceCommand(Guid PerformanceRunId, int InstrumentId, PipelineMode PipelineMode) : ICommand;
 
-public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculatePositionPerformanceHandler> logger, HoardContext context, IBus bus)
+public class ProcessCalculatePositionPerformanceHandler(
+    ILogger<ProcessCalculatePositionPerformanceHandler> logger, 
+    HoardContext context, IBus bus, IReturnCalculator returnCalculator)
 : ICommandHandler<ProcessCalculatePositionPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePositionPerformanceCommand command, CancellationToken ct = default)
@@ -60,7 +62,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         await context.SaveChangesAsync(ct);
     }
 
-    private static void CalculateReturns(PositionPerformance perf, PositionContext ctx)
+    private void CalculateReturns(PositionPerformance perf, PositionContext ctx)
     {
         var (position, a, h, t, today, previousDay) = ctx;
 
@@ -77,9 +79,12 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
 
         // Calculate absolute value change for 1-year period
         perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
-
-        perf.ReturnAllTime = SimpleReturnCalculator.CalculateForPosition(decimal.Zero, perf.Value, t);
-        perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, position.OpenDate, ctx.Position.CloseDate ?? ctx.Today);
+        
+        var startDate = t.Select(x => x.Date).Min().AddDays(-1);
+        var endDate = ctx.Position.CloseDate ?? ctx.Today;
+        
+        perf.ReturnAllTime = returnCalculator.Calculate(decimal.Zero, perf.Value, startDate, endDate, t, PerformanceScope.Position);
+        perf.AnnualisedReturn = returnCalculator.Calculate(decimal.Zero, perf.Value, startDate, endDate, t, PerformanceScope.Position, annualised: true);
     }
 
     private async Task<PositionPerformance> LoadOrCreate(Position position, CancellationToken ct)
@@ -146,7 +151,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
         perf.UnrealisedGain = perf.Value - perf.CostBasis;
     }
 
-    private static decimal? CalculatePeriodReturn(PositionContext ctx, DateOnly startDate, DateOnly endDate)
+    private decimal? CalculatePeriodReturn(PositionContext ctx, DateOnly startDate, DateOnly endDate)
     {
         var (position, accountIds, holdings, transactions, _, _) = ctx;
 
@@ -162,12 +167,12 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             return null;
         }
 
-        var valueStart = GetValueForDate(startDate, holdings, accountIds) ?? 0M;
-        var valueEnd = GetValueForDate(endDate, holdings, accountIds) ?? 0M;
+        var startValue = GetValueForDate(startDate, holdings, accountIds) ?? 0M;
+        var endValue = GetValueForDate(endDate, holdings, accountIds) ?? 0M;
 
         var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
 
-        return SimpleReturnCalculator.CalculateForPosition(valueStart, valueEnd, periodTransactions);
+        return returnCalculator.Calculate(startValue, endValue, startDate, endDate, periodTransactions, PerformanceScope.Position);
     }
 
     private static decimal? CalculateAbsoluteValueChange(PositionContext ctx, DateOnly startDate, DateOnly endDate)
@@ -186,10 +191,10 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             return null;
         }
 
-        var valueStart = GetValueForDate(startDate, holdings, accountIds);
-        var valueEnd = GetValueForDate(endDate, holdings, accountIds);
+        var startValue = GetValueForDate(startDate, holdings, accountIds);
+        var endValue = GetValueForDate(endDate, holdings, accountIds);
 
-        if (!valueStart.HasValue || !valueEnd.HasValue)
+        if (!startValue.HasValue || !endValue.HasValue)
         {
             return null;
         }
@@ -210,7 +215,7 @@ public class ProcessCalculatePositionPerformanceHandler(ILogger<ProcessCalculate
             .Sum(t => -t.Value);
 
         // Absolute change = end value + withdrawals - contributions - start value
-        return valueEnd.Value + periodWithdrawals - periodContributions - valueStart.Value;
+        return endValue.Value + periodWithdrawals - periodContributions - startValue.Value;
     }
 
     private static decimal? GetUnitsForDate(DateOnly date, Dictionary<DateOnly, Holding[]> holdings, int[] accountIds)

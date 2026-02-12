@@ -1,5 +1,6 @@
 ﻿using Hoard.Bus.Valuations;
 using Hoard.Core.Application;
+using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
 using Hoard.Messages.Holdings;
@@ -40,6 +41,7 @@ builder.Services
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.bus")
     .AddHoardServices(builder.Configuration)
     .AddHoardApplication()
+    .AddHoardCalculators()
     .AddTelemetryInitializer("hoard.bus");
 
 var app = builder.Build();

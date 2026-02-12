@@ -13,8 +13,9 @@ namespace Hoard.Core.Application.Performance;
 
 public record ProcessCalculatePortfolioPerformanceCommand(Guid PerformanceRunId, int PortfolioId, PipelineMode PipelineMode) : ICommand;
 
-public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculatePortfolioPerformanceHandler> logger, HoardContext context,
-    IBus bus) : ICommandHandler<ProcessCalculatePortfolioPerformanceCommand>
+public class ProcessCalculatePortfolioPerformanceHandler(
+    ILogger<ProcessCalculatePortfolioPerformanceHandler> logger, HoardContext context,
+    IBus bus, IReturnCalculator returnCalculator) : ICommandHandler<ProcessCalculatePortfolioPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePortfolioPerformanceCommand command, CancellationToken ct = default)
     {
@@ -133,7 +134,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         perf.CashValue = await GetCash(portfolio, today, ct);
     }
 
-    private static void CalculateReturns(PortfolioPerformance perf, PortfolioContext ctx)
+    private void CalculateReturns(PortfolioPerformance perf, PortfolioContext ctx)
     {
         var (_, transactions, _, _, today, previousDay) = ctx;
 
@@ -151,10 +152,10 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
         // Calculate absolute value change for 1-year period
         perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
 
-        var startDate = transactions.Select(x => x.Date).Min();
+        var startDate = transactions.Select(x => x.Date).Min().AddDays(-1);
 
-        perf.ReturnAllTime = SimpleReturnCalculator.CalculateForPortfolio(decimal.Zero, perf.Value, transactions);
-        perf.AnnualisedReturn = AnnualisedReturnCalculator.Calculate(perf.ReturnAllTime, startDate, today);
+        perf.ReturnAllTime = returnCalculator.Calculate(decimal.Zero, perf.Value, startDate, today, transactions, PerformanceScope.Portfolio);
+        perf.AnnualisedReturn = returnCalculator.Calculate(decimal.Zero, perf.Value, startDate, today, transactions, PerformanceScope.Portfolio, annualised: true);
 
         // Calculate 1-year rolling yield
         var oneYearAgo = today.AddYears(-1);
@@ -165,26 +166,26 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
             : decimal.Zero;
     }
     
-    private static decimal? CalculatePeriodReturn(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
+    private decimal? CalculatePeriodReturn(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
     {
         var (_, transactions, valuations, _, _, _) = ctx;
 
-        var valueStart = GetValueForDate(startDate, valuations) ?? 0M;
-        var valueEnd = GetValueForDate(endDate, valuations) ?? 0M;
+        var startValue = GetValueForDate(startDate, valuations) ?? 0M;
+        var endValue = GetValueForDate(endDate, valuations) ?? 0M;
 
         var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date < endDate).ToList();
 
-        return SimpleReturnCalculator.CalculateForPortfolio(valueStart, valueEnd, periodTransactions);
+        return returnCalculator.Calculate(startValue, endValue, startDate, endDate, periodTransactions, PerformanceScope.Portfolio);
     }
 
     private static decimal? CalculateAbsoluteValueChange(PortfolioContext ctx, DateOnly startDate, DateOnly endDate)
     {
         var (_, transactions, valuations, _, _, _) = ctx;
 
-        var valueStart = GetValueForDate(startDate, valuations);
-        var valueEnd = GetValueForDate(endDate, valuations);
+        var startValue = GetValueForDate(startDate, valuations);
+        var endValue = GetValueForDate(endDate, valuations);
 
-        if (!valueStart.HasValue || !valueEnd.HasValue)
+        if (!startValue.HasValue || !endValue.HasValue)
         {
             return null;
         }
@@ -202,7 +203,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(ILogger<ProcessCalculat
 
         // Absolute change = end value + withdrawals - contributions - start value
         // This represents the actual gain/loss from investments
-        return valueEnd.Value + periodWithdrawals - periodContributions - valueStart.Value;
+        return endValue.Value + periodWithdrawals - periodContributions - startValue.Value;
     }
 
     private static decimal CalculatePeriodIncome(List<Transaction> transactions, DateOnly startDate, DateOnly endDate)

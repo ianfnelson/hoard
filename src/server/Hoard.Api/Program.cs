@@ -1,6 +1,7 @@
 using Hoard.Api.EventHandlers;
 using Hoard.Api.Hubs;
 using Hoard.Core.Application;
+using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Services;
 using Hoard.Messages.Performance;
@@ -32,6 +33,7 @@ builder.Services
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.api")
     .AddHoardServices(builder.Configuration)
     .AddHoardApplication()
+    .AddHoardCalculators()
     .AddTelemetryInitializer("hoard.api")
     .Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
