@@ -56,8 +56,8 @@ public class ReferenceDataSeeder
         {
             new AssetClass { Id = 0, Name = "Unknown"},
             new AssetClass { Id = 1, Name = "Equities" },
-            new AssetClass { Id = 2, Name = "Defensives" },
-            new AssetClass { Id = 3, Name = "Alternatives" },
+            new AssetClass { Id = 2, Name = "Bonds" },
+            new AssetClass { Id = 3, Name = "Diversifiers" },
             new AssetClass { Id = 4, Name = "Cash" },
             new AssetClass { Id = 5, Name = "FX / Currency" }
         };
@@ -78,7 +78,7 @@ public class ReferenceDataSeeder
             new AssetSubclass { Id = 7, AssetClassId = 2, Name = "Corporate Bonds" },
             new AssetSubclass { Id = 8, AssetClassId = 2, Name = "Gilts" },
             new AssetSubclass { Id = 9, AssetClassId = 2, Name = "Global Govt. Bonds" },
-            new AssetSubclass { Id = 10, AssetClassId = 2, Name = "Precious Metals" },
+            new AssetSubclass { Id = 10, AssetClassId = 3, Name = "Precious Metals" },
             new AssetSubclass { Id = 11, AssetClassId = 3, Name = "Property" },
             new AssetSubclass { Id = 12, AssetClassId = 3, Name = "Commodities" },
             new AssetSubclass { Id = 13, AssetClassId = 3, Name = "Private Equity" },
