@@ -11,9 +11,11 @@ public class HoardContext : DbContext
     public DbSet<AssetClass> AssetClasses => Set<AssetClass>();
     public DbSet<AssetSubclass> AssetSubclasses => Set<AssetSubclass>();
     public DbSet<Currency> Currencies => Set<Currency>();
+    public DbSet<DataFeed> DataFeeds => Set<DataFeed>();
     public DbSet<Holding> Holdings => Set<Holding>();
     public DbSet<HoldingValuation> HoldingValuations => Set<HoldingValuation>();
     public DbSet<Instrument> Instruments => Set<Instrument>();
+    public DbSet<InstrumentDataFeed> InstrumentDataFeeds => Set<InstrumentDataFeed>();
     public DbSet<InstrumentType> InstrumentTypes => Set<InstrumentType>();
     public DbSet<NewsArticle> NewsArticles => Set<NewsArticle>();
     public DbSet<Portfolio> Portfolios => Set<Portfolio>();

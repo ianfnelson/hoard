@@ -19,7 +19,14 @@ import {
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
 import type { PriceSummaryDto } from '@/api/dtos/Instruments/PriceSummaryDto'
+import type { InstrumentDataFeedWriteDto } from '@/api/dtos/Instruments/InstrumentDataFeedWriteDto'
 import { useContractNoteDownload } from '@/composables/useContractNoteDownload'
+
+// Data feed constants (must match backend DataFeed.cs)
+const DATA_FEED_NEWS = 1
+const DATA_FEED_PRICES = 2
+const DATA_FEED_QUOTES = 3
+const TICKER_MAX_LENGTH = 20
 
 const route = useRoute()
 const router = useRouter()
@@ -63,6 +70,7 @@ const formData = reactive({
   currencyId: null as string | null,
   tickerDisplay: '',
   isin: '',
+  dataFeeds: [] as InstrumentDataFeedWriteDto[],
 })
 
 // Asset class/subclass interdependency
@@ -70,6 +78,82 @@ const availableSubclasses = computed(() => {
   if (!formData.assetClassId) return []
   const ac = refStore.assetClasses.find((c) => c.id === formData.assetClassId)
   return ac?.subclasses ?? []
+})
+
+// Data feed helpers
+function initializeDataFeeds() {
+  formData.dataFeeds = [
+    { dataFeedId: DATA_FEED_NEWS, enabled: false, ticker: null, importStartUtc: null },
+    { dataFeedId: DATA_FEED_PRICES, enabled: false, ticker: null, importStartUtc: null },
+    { dataFeedId: DATA_FEED_QUOTES, enabled: false, ticker: null, importStartUtc: null },
+  ]
+}
+
+function getFeed(feedId: number) {
+  return formData.dataFeeds.find((f) => f.dataFeedId === feedId)
+}
+
+// Validation rules for data feed ticker (required when feed is enabled)
+const dataFeedTickerRules = [
+  (v: string) => !!v?.trim() || 'Ticker is required',
+  (v: string) => !v || v.length <= TICKER_MAX_LENGTH || `Maximum ${TICKER_MAX_LENGTH} characters`,
+]
+
+// Computed accessors for each feed (for v-model binding)
+const newsEnabled = computed({
+  get: () => getFeed(DATA_FEED_NEWS)?.enabled ?? false,
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_NEWS)
+    if (feed) feed.enabled = val
+  },
+})
+
+const newsTicker = computed({
+  get: () => getFeed(DATA_FEED_NEWS)?.ticker ?? '',
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_NEWS)
+    if (feed) feed.ticker = val
+  },
+})
+
+const newsImportStart = computed({
+  get: () => getFeed(DATA_FEED_NEWS)?.importStartUtc ?? null,
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_NEWS)
+    if (feed) feed.importStartUtc = val
+  },
+})
+
+const pricesEnabled = computed({
+  get: () => getFeed(DATA_FEED_PRICES)?.enabled ?? false,
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_PRICES)
+    if (feed) feed.enabled = val
+  },
+})
+
+const pricesTicker = computed({
+  get: () => getFeed(DATA_FEED_PRICES)?.ticker ?? '',
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_PRICES)
+    if (feed) feed.ticker = val
+  },
+})
+
+const quotesEnabled = computed({
+  get: () => getFeed(DATA_FEED_QUOTES)?.enabled ?? false,
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_QUOTES)
+    if (feed) feed.enabled = val
+  },
+})
+
+const quotesTicker = computed({
+  get: () => getFeed(DATA_FEED_QUOTES)?.ticker ?? '',
+  set: (val) => {
+    const feed = getFeed(DATA_FEED_QUOTES)
+    if (feed) feed.ticker = val
+  },
 })
 
 // When asset class changes, clear subclass if it's not in the new list
@@ -97,14 +181,35 @@ watch(
       formData.currencyId = inst.currencyId
       formData.tickerDisplay = inst.tickerDisplay
       formData.isin = inst.isin ?? ''
+
+      // Initialize data feeds
+      initializeDataFeeds()
+
+      // Load existing feed configurations
+      inst.dataFeeds?.forEach((df) => {
+        const feed = getFeed(df.dataFeedId)
+        if (feed) {
+          feed.enabled = true
+          feed.ticker = df.ticker
+          if (df.dataFeedId === DATA_FEED_NEWS) {
+            feed.importStartUtc = df.importStartUtc ?? null
+          }
+        }
+      })
     }
   },
   { immediate: true }
 )
 
+// In create mode, initialize empty feeds
+watch(isCreateMode, (creating) => {
+  if (creating) {
+    initializeDataFeeds()
+  }
+})
+
 // Field length constraints (matching server validation)
 const NAME_MAX_LENGTH = 100
-const TICKER_MAX_LENGTH = 20
 const ISIN_MAX_LENGTH = 12
 
 // Validation rules
@@ -125,7 +230,8 @@ const isinRules = [
 ]
 
 const isFormValid = computed(() => {
-  return (
+  // Validate basic fields
+  const basicFieldsValid =
     formData.name.trim() !== '' &&
     formData.name.length <= NAME_MAX_LENGTH &&
     formData.instrumentTypeId !== null &&
@@ -134,7 +240,14 @@ const isFormValid = computed(() => {
     formData.tickerDisplay.trim() !== '' &&
     formData.tickerDisplay.length <= TICKER_MAX_LENGTH &&
     (!formData.isin || formData.isin.length <= ISIN_MAX_LENGTH)
-  )
+
+  // Validate data feeds - if enabled, ticker is required
+  const dataFeedsValid = formData.dataFeeds.every((feed) => {
+    if (!feed.enabled) return true
+    return feed.ticker && feed.ticker.trim() !== '' && feed.ticker.length <= TICKER_MAX_LENGTH
+  })
+
+  return basicFieldsValid && dataFeedsValid
 })
 
 // Delete dialog
@@ -151,6 +264,12 @@ async function handleSave() {
     currencyId: formData.currencyId,
     tickerDisplay: formData.tickerDisplay.trim(),
     isin: formData.isin.trim() || null,
+    dataFeeds: formData.dataFeeds.map((feed) => ({
+      dataFeedId: feed.dataFeedId,
+      enabled: feed.enabled,
+      ticker: feed.ticker?.trim() || null,
+      importStartUtc: feed.importStartUtc || null,
+    })),
   }
 
   if (isCreateMode.value) {
@@ -444,6 +563,29 @@ onMounted(() => {
                 </div>
               </v-col>
             </v-row>
+            <!-- Active Data Feeds -->
+            <div v-if="instrumentStore.instrument?.dataFeeds?.length">
+              <v-divider class="my-3" />
+              <v-row dense>
+                <v-col cols="12">
+                  <div class="text-caption text-medium-emphasis mb-1">Active Data Feeds</div>
+                  <v-chip-group>
+                    <v-chip
+                      v-for="feed in instrumentStore.instrument.dataFeeds"
+                      :key="feed.dataFeedId"
+                      size="small"
+                      variant="tonal"
+                      style="cursor: default"
+                    >
+                      <strong>{{ feed.dataFeedName }}:</strong> {{ feed.ticker }}
+                      <span v-if="feed.importStartUtc" class="ml-1">
+                        (from {{ new Date(feed.importStartUtc).toLocaleDateString() }})
+                      </span>
+                    </v-chip>
+                  </v-chip-group>
+                </v-col>
+              </v-row>
+            </div>
           </v-card-text>
           <v-card-actions>
             <v-btn
@@ -720,6 +862,101 @@ onMounted(() => {
                     hint="Optional - International Securities Identification Number"
                     persistent-hint
                   />
+                </v-col>
+              </v-row>
+
+              <!-- Data Feeds Configuration -->
+              <v-row dense>
+                <v-col cols="12">
+                  <v-card variant="outlined" class="mt-4">
+                    <v-card-title class="text-h6">Data Feeds</v-card-title>
+                    <v-card-subtitle class="text-caption">
+                      Configure automatic data refresh from external sources
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <v-row dense>
+                        <!-- News Feed -->
+                        <v-col cols="12" md="4">
+                          <v-card variant="tonal" class="pa-3">
+                            <v-checkbox
+                              v-model="newsEnabled"
+                              label="Enable News Updates"
+                              density="compact"
+                              hide-details
+                            />
+                            <v-text-field
+                              v-if="newsEnabled"
+                              v-model="newsTicker"
+                              label="News Ticker"
+                              :rules="dataFeedTickerRules"
+                              :counter="TICKER_MAX_LENGTH"
+                              density="compact"
+                              variant="outlined"
+                              class="mt-2"
+                              required
+                            />
+                            <v-text-field
+                              v-if="newsEnabled"
+                              v-model="newsImportStart"
+                              label="Import Start Date (UTC)"
+                              type="datetime-local"
+                              density="compact"
+                              variant="outlined"
+                              hint="Optional - only import news from this date onwards"
+                              persistent-hint
+                              class="mt-2"
+                            />
+                          </v-card>
+                        </v-col>
+
+                        <!-- Prices Feed -->
+                        <v-col cols="12" md="4">
+                          <v-card variant="tonal" class="pa-3">
+                            <v-checkbox
+                              v-model="pricesEnabled"
+                              label="Enable Price Updates"
+                              density="compact"
+                              hide-details
+                            />
+                            <v-text-field
+                              v-if="pricesEnabled"
+                              v-model="pricesTicker"
+                              label="Prices Ticker"
+                              :rules="dataFeedTickerRules"
+                              :counter="TICKER_MAX_LENGTH"
+                              density="compact"
+                              variant="outlined"
+                              class="mt-2"
+                              required
+                            />
+                          </v-card>
+                        </v-col>
+
+                        <!-- Quotes Feed -->
+                        <v-col cols="12" md="4">
+                          <v-card variant="tonal" class="pa-3">
+                            <v-checkbox
+                              v-model="quotesEnabled"
+                              label="Enable Quote Updates"
+                              density="compact"
+                              hide-details
+                            />
+                            <v-text-field
+                              v-if="quotesEnabled"
+                              v-model="quotesTicker"
+                              label="Quotes Ticker"
+                              :rules="dataFeedTickerRules"
+                              :counter="TICKER_MAX_LENGTH"
+                              density="compact"
+                              variant="outlined"
+                              class="mt-2"
+                              required
+                            />
+                          </v-card>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
                 </v-col>
               </v-row>
             </v-form>

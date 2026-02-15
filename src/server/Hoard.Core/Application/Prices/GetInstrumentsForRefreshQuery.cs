@@ -1,4 +1,5 @@
 using Hoard.Core.Data;
+using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -14,10 +15,9 @@ public class GetInstrumentsForRefreshHandler(HoardContext context, ILogger<GetIn
         if (!query.InstrumentId.HasValue)
         {
             return await context.Instruments
-                .Include(x => x.InstrumentType)
-                .Where(x => x.EnablePriceUpdates)
-                .Where(x => x.TickerPriceUpdates != null)
-                .Select(x => x.Id)
+                .Where(i => i.DataFeeds.Any(df =>
+                    df.DataFeedId == DataFeed.Prices || df.DataFeedId == DataFeed.Quotes))
+                .Select(i => i.Id)
                 .ToListAsync(cancellationToken: ct);
         }
         

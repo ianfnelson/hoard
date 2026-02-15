@@ -27,21 +27,23 @@ public class ProcessRefreshPricesBatchHandler(
     {
         var instrument = await context.Instruments
             .Include(i => i.InstrumentType)
+            .Include(i => i.DataFeeds)
             .FirstOrDefaultAsync(c => c.Id == command.InstrumentId, ct);
-        
+
         if (instrument == null)
         {
             logger.LogWarning("Received RefreshPricesBatchCommand with unknown Instrument {InstrumentId}", command.InstrumentId);
             return;
         }
 
-        if (instrument.TickerPriceUpdates == null || !instrument.EnablePriceUpdates)
+        var priceFeed = instrument.DataFeeds.FirstOrDefault(df => df.DataFeedId == DataFeed.Prices);
+        if (priceFeed == null)
         {
             logger.LogWarning("Price updates not possible for Instrument {InstrumentId}", command.InstrumentId);
             return;
         }
-        
-        var prices = await priceService.GetPricesAsync(instrument.TickerPriceUpdates!, command.StartDate, command.EndDate, ct);
+
+        var prices = await priceService.GetPricesAsync(priceFeed.Configuration.Ticker, command.StartDate, command.EndDate, ct);
         var now = DateTime.UtcNow;
 
         var changed = new List<DateOnly>();

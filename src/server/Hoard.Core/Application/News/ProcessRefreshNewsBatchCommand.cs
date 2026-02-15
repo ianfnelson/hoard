@@ -24,6 +24,7 @@ public class ProcessRefreshNewsBatchHandler(
     public async Task HandleAsync(ProcessRefreshNewsBatchCommand command, CancellationToken ct = default)
     {
         var instrument = await context.Instruments
+            .Include(i => i.DataFeeds)
             .FirstOrDefaultAsync(i => i.Id == command.InstrumentId, ct);
 
         if (instrument == null)
@@ -33,7 +34,8 @@ public class ProcessRefreshNewsBatchHandler(
             return;
         }
 
-        if (instrument.TickerNewsUpdates == null || !instrument.EnableNewsUpdates)
+        var newsFeed = instrument.DataFeeds.FirstOrDefault(df => df.DataFeedId == DataFeed.News);
+        if (newsFeed == null)
         {
             logger.LogWarning("News updates not possible for Instrument {InstrumentId}",
                 command.InstrumentId);
@@ -42,14 +44,14 @@ public class ProcessRefreshNewsBatchHandler(
 
         var now = DateTime.UtcNow;
 
-        var articleSummaries = await GetArticleSummariesAsync(instrument, ct);
+        var articleSummaries = await GetArticleSummariesAsync(newsFeed, ct);
         var existingSourceIds = await GetExistingArticleKeysAsync(command.InstrumentId, ct);
         var newSummaries = FilterNewSummaries(articleSummaries, existingSourceIds);
 
         logger.LogDebug(
             "Found {TotalCount} articles for {Ticker}, {NewCount} are new",
             articleSummaries.Count,
-            instrument.TickerNewsUpdates,
+            newsFeed.Configuration.Ticker,
             newSummaries.Count);
 
         await FetchAndCreateNewArticlesAsync(newSummaries, instrument.Id, now, ct);
@@ -66,14 +68,14 @@ public class ProcessRefreshNewsBatchHandler(
             newSummaries.Count);
     }
 
-    private async Task<IReadOnlyList<Clarion.Models.ArticleSummary>> GetArticleSummariesAsync(Instrument instrument, CancellationToken ct)
+    private async Task<IReadOnlyList<Clarion.Models.ArticleSummary>> GetArticleSummariesAsync(InstrumentDataFeed newsFeed, CancellationToken ct)
     {
-        var articleSummaries = await clarionClient.GetArticlesAsync(instrument.TickerNewsUpdates!, ct);
+        var articleSummaries = await clarionClient.GetArticlesAsync(newsFeed.Configuration.Ticker, ct);
 
-        if (instrument.NewsImportStartUtc.HasValue)
+        if (newsFeed.Configuration.ImportStartUtc.HasValue)
         {
             articleSummaries = articleSummaries
-                .Where(a => a.PublishedUtc >= instrument.NewsImportStartUtc.Value)
+                .Where(a => a.PublishedUtc >= newsFeed.Configuration.ImportStartUtc.Value)
                 .ToList();
         }
 

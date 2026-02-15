@@ -19,6 +19,7 @@ public class ReferenceDataSeeder
     {
         _logger.LogInformation("Seeding reference data...");
 
+        await SeedDataFeedsAsync();
         await SeedCurrenciesAsync();
         await SeedAssetClassesAsync();
         await SeedAssetSubclassesAsync();
@@ -31,9 +32,24 @@ public class ReferenceDataSeeder
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        await SeedInstrumentDataFeedsAsync();
+
+        await _context.SaveChangesAsync(cancellationToken);
+
         _logger.LogInformation("Reference data seeding complete.");
     }
-    
+
+    private async Task SeedDataFeedsAsync()
+    {
+        var items = new[]
+        {
+            new DataFeed { Id = DataFeed.News, Name = "News" },
+            new DataFeed { Id = DataFeed.Prices, Name = "Prices" },
+            new DataFeed { Id = DataFeed.Quotes, Name = "Quotes" },
+        };
+        await UpsertAsync(_context.DataFeeds, items, x => x.Id);
+    }
+
     private async Task SeedCurrenciesAsync()
     {
         var items = new[]
@@ -135,25 +151,19 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new Instrument { Id = Instrument.Cash, Name = "Cash (GBP)", InstrumentTypeId = InstrumentType.Cash, 
-                CurrencyId = Currency.Gbp, EnablePriceUpdates = false,
-                TickerDisplay = "CASH", AssetSubclassId = 15},
+            new Instrument { Id = Instrument.Cash, Name = "Cash (GBP)", InstrumentTypeId = InstrumentType.Cash,
+                CurrencyId = Currency.Gbp, TickerDisplay = "CASH", AssetSubclassId = 15},
 
-            new Instrument { Id = Instrument.GbpUsd, Name = "GBP/USD", InstrumentTypeId = InstrumentType.FxPair, 
-                CurrencyId = Currency.Usd, TickerDisplay = "GBPUSD", 
-                TickerPriceUpdates = "GBPUSD=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = Instrument.GbpEur, Name = "GBP/EUR", InstrumentTypeId = InstrumentType.FxPair, 
-                CurrencyId = Currency.Eur, TickerDisplay = "GBPEUR", 
-                TickerPriceUpdates = "GBPEUR=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = Instrument.GbpJpy, Name = "GBP/JPY", InstrumentTypeId = 6, 
-                CurrencyId = Currency.Jpy, TickerDisplay = "GBPJPY", 
-                TickerPriceUpdates = "GBPJPY=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = Instrument.GbpDkk, Name = "GBP/DKK", InstrumentTypeId = 6, 
-                CurrencyId = Currency.Dkk, TickerDisplay = "GBPDKK", 
-                TickerPriceUpdates = "GBPDKK=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
-            new Instrument { Id = Instrument.GbpSek, Name = "GBP/SEK", InstrumentTypeId = 6, 
-                CurrencyId = Currency.Sek, TickerDisplay = "GBPSEK", 
-                TickerPriceUpdates = "GBPSEK=X", EnablePriceUpdates = true, AssetSubclassId = 16 },
+            new Instrument { Id = Instrument.GbpUsd, Name = "GBP/USD", InstrumentTypeId = InstrumentType.FxPair,
+                CurrencyId = Currency.Usd, TickerDisplay = "GBPUSD", AssetSubclassId = 16},
+            new Instrument { Id = Instrument.GbpEur, Name = "GBP/EUR", InstrumentTypeId = InstrumentType.FxPair,
+                CurrencyId = Currency.Eur, TickerDisplay = "GBPEUR", AssetSubclassId = 16},
+            new Instrument { Id = Instrument.GbpJpy, Name = "GBP/JPY", InstrumentTypeId = 6,
+                CurrencyId = Currency.Jpy, TickerDisplay = "GBPJPY", AssetSubclassId = 16},
+            new Instrument { Id = Instrument.GbpDkk, Name = "GBP/DKK", InstrumentTypeId = 6,
+                CurrencyId = Currency.Dkk, TickerDisplay = "GBPDKK", AssetSubclassId = 16},
+            new Instrument { Id = Instrument.GbpSek, Name = "GBP/SEK", InstrumentTypeId = 6,
+                CurrencyId = Currency.Sek, TickerDisplay = "GBPSEK", AssetSubclassId = 16},
         };
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -165,7 +175,61 @@ public class ReferenceDataSeeder
         await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Instrument OFF");
         await transaction.CommitAsync();
     }
-    
+
+    private async Task SeedInstrumentDataFeedsAsync()
+    {
+        // Define the data feeds for each FX pair instrument
+        var feedConfigs = new Dictionary<int, (int feedId, string ticker)[]>
+        {
+            [Instrument.GbpUsd] = [
+                (DataFeed.Prices, "GBPUSD=X"),
+                (DataFeed.Quotes, "GBPUSD=X")
+            ],
+            [Instrument.GbpEur] = [
+                (DataFeed.Prices, "GBPEUR=X"),
+                (DataFeed.Quotes, "GBPEUR=X")
+            ],
+            [Instrument.GbpJpy] = [
+                (DataFeed.Prices, "GBPJPY=X"),
+                (DataFeed.Quotes, "GBPJPY=X")
+            ],
+            [Instrument.GbpDkk] = [
+                (DataFeed.Prices, "GBPDKK=X"),
+                (DataFeed.Quotes, "GBPDKK=X")
+            ],
+            [Instrument.GbpSek] = [
+                (DataFeed.Prices, "GBPSEK=X"),
+                (DataFeed.Quotes, "GBPSEK=X")
+            ]
+        };
+
+        // Get existing data feeds to avoid duplicates
+        var existingFeeds = await _context.InstrumentDataFeeds
+            .Select(idf => new { idf.InstrumentId, idf.DataFeedId })
+            .ToListAsync();
+        var existingSet = existingFeeds.ToHashSet();
+
+        // Insert missing data feeds
+        foreach (var (instrumentId, feeds) in feedConfigs)
+        {
+            foreach (var (feedId, ticker) in feeds)
+            {
+                if (!existingSet.Contains(new { InstrumentId = instrumentId, DataFeedId = feedId }))
+                {
+                    _context.InstrumentDataFeeds.Add(new InstrumentDataFeed
+                    {
+                        InstrumentId = instrumentId,
+                        DataFeedId = feedId,
+                        Configuration = new DataFeedConfiguration
+                        {
+                            Ticker = ticker
+                        }
+                    });
+                }
+            }
+        }
+    }
+
     private static async Task UpsertAsync<TEntity, TKey>(
         DbSet<TEntity> dbSet,
         IEnumerable<TEntity> seedItems,

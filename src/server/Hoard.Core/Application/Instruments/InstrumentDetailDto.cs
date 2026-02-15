@@ -21,6 +21,8 @@ public class InstrumentDetailDto
     
     public required string CurrencyId { get; set; }
     public required string CurrencyName { get; set; }
-    
+
     public InstrumentQuoteDto? Quote { get; set; }
+
+    public List<InstrumentDataFeedDto> DataFeeds { get; set; } = [];
 }

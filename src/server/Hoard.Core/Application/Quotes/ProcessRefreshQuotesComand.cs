@@ -1,4 +1,5 @@
 using Hoard.Core.Data;
+using Hoard.Core.Domain.Entities;
 using Hoard.Core.Extensions;
 using Hoard.Messages.Quotes;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +35,7 @@ public class ProcessRefreshQuotesHandler(
     {
         return await context
             .Instruments
-            .Where(i => i.EnablePriceUpdates)
-            .Where(i => i.TickerPriceUpdates != null)
+            .Where(i => i.DataFeeds.Any(df => df.DataFeedId == DataFeed.Quotes))
             .Select(x => x.Id)
             .ToListAsync(ct);
     }
