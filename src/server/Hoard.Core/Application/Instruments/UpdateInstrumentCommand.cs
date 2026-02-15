@@ -1,5 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Core.Application.Instruments;
 
@@ -22,7 +23,8 @@ public class UpdateInstrumentHandler(HoardContext context, IMapper mapper)
     private async Task<Instrument> GetExistingInstrument(int id, CancellationToken ct = default)
     {
         var tx = await context.Instruments
-            .FindAsync(new object?[]{id}, ct);
+            .Include(i => i.DataFeeds)
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
 
         return tx ?? throw new InvalidOperationException($"Instrument {id} not found.");
     }

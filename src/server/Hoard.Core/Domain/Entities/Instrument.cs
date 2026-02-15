@@ -14,16 +14,12 @@ public partial class Instrument : Entity<int>
     public Currency Currency { get; set; } = null!;
     
     public required string TickerDisplay { get; set; }
-    public string? TickerPriceUpdates { get; set; }
-    public string? TickerNewsUpdates { get; set; }
     public string? Isin { get; set; }
-    public bool EnablePriceUpdates  { get; set; }
-    public bool EnableNewsUpdates { get; set; }
-    public DateTime? NewsImportStartUtc { get; set; }
-    
+
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     
     public Quote? Quote { get; set; }
 
     public ICollection<NewsArticle> NewsArticles { get; set; } = [];
+    public ICollection<InstrumentDataFeed> DataFeeds { get; set; } = [];
 }

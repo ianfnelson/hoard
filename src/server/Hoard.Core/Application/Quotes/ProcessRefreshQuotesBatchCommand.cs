@@ -54,7 +54,8 @@ public class ProcessRefreshQuotesBatchHandler(
     {
         foreach (var instrument in instruments)
         {
-            if (!freshQuotes.TryGetValue(instrument.TickerPriceUpdates!, out var dto))
+            var quoteFeed = instrument.DataFeeds.FirstOrDefault(df => df.DataFeedId == DataFeed.Quotes);
+            if (quoteFeed == null || !freshQuotes.TryGetValue(quoteFeed.Configuration.Ticker, out var dto))
                 continue;
 
             if (instrument.Quote == null)
@@ -85,12 +86,14 @@ public class ProcessRefreshQuotesBatchHandler(
         var instruments = await context.Instruments
             .Include(x => x.Quote)
             .Include(x => x.InstrumentType)
+            .Include(x => x.DataFeeds)
             .Where(x => command.InstrumentIds.Contains(x.Id))
-            .Where(x => x.EnablePriceUpdates)
-            .Where(x => x.TickerPriceUpdates != null)
-            .ToDictionaryAsync(x => x.TickerPriceUpdates!, ct);
-        
-        return instruments;
+            .Where(x => x.DataFeeds.Any(df => df.DataFeedId == DataFeed.Quotes))
+            .ToListAsync(ct);
+
+        return instruments
+            .Where(x => x.DataFeeds.Any(df => df.DataFeedId == DataFeed.Quotes))
+            .ToDictionary(x => x.DataFeeds.First(df => df.DataFeedId == DataFeed.Quotes).Configuration.Ticker);
     }
 
 }

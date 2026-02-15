@@ -102,6 +102,22 @@ namespace Hoard.Core.Data.Migrations
                     b.ToTable("Currency", (string)null);
                 });
 
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.DataFeed", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("DataFeedId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataFeed", (string)null);
+                });
+
             modelBuilder.Entity("Hoard.Core.Domain.Entities.Holding", b =>
                 {
                     b.Property<int>("Id")
@@ -189,16 +205,6 @@ namespace Hoard.Core.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(3)");
 
-                    b.Property<bool>("EnableNewsUpdates")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("EnablePriceUpdates")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<int>("InstrumentTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -212,19 +218,8 @@ namespace Hoard.Core.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("NewsImportStartUtc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("TickerDisplay")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("TickerNewsUpdates")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("TickerPriceUpdates")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -241,6 +236,36 @@ namespace Hoard.Core.Data.Migrations
                         .HasFilter("[Isin] IS NOT NULL");
 
                     b.ToTable("Instrument", (string)null);
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentDataFeed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("InstrumentDataFeedId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(3)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int>("DataFeedId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InstrumentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataFeedId");
+
+                    b.HasIndex("InstrumentId", "DataFeedId")
+                        .IsUnique();
+
+                    b.ToTable("InstrumentDataFeed", (string)null);
                 });
 
             modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentType", b =>
@@ -986,6 +1011,50 @@ namespace Hoard.Core.Data.Migrations
                     b.Navigation("InstrumentType");
                 });
 
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentDataFeed", b =>
+                {
+                    b.HasOne("Hoard.Core.Domain.Entities.DataFeed", "DataFeed")
+                        .WithMany()
+                        .HasForeignKey("DataFeedId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hoard.Core.Domain.Entities.Instrument", "Instrument")
+                        .WithMany("DataFeeds")
+                        .HasForeignKey("InstrumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Hoard.Core.Domain.Entities.DataFeedConfiguration", "Configuration", b1 =>
+                        {
+                            b1.Property<int>("InstrumentDataFeedId");
+
+                            b1.Property<DateTime?>("ImportStartUtc");
+
+                            b1.Property<string>("Ticker")
+                                .IsRequired()
+                                .HasMaxLength(20);
+
+                            b1.HasKey("InstrumentDataFeedId");
+
+                            b1.ToTable("InstrumentDataFeed");
+
+                            b1
+                                .ToJson("Configuration")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InstrumentDataFeedId");
+                        });
+
+                    b.Navigation("Configuration")
+                        .IsRequired();
+
+                    b.Navigation("DataFeed");
+
+                    b.Navigation("Instrument");
+                });
+
             modelBuilder.Entity("Hoard.Core.Domain.Entities.NewsArticle", b =>
                 {
                     b.HasOne("Hoard.Core.Domain.Entities.Instrument", "Instrument")
@@ -1154,6 +1223,8 @@ namespace Hoard.Core.Data.Migrations
 
             modelBuilder.Entity("Hoard.Core.Domain.Entities.Instrument", b =>
                 {
+                    b.Navigation("DataFeeds");
+
                     b.Navigation("NewsArticles");
 
                     b.Navigation("Quote");

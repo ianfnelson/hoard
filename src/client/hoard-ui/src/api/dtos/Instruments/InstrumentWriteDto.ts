@@ -1,3 +1,5 @@
+import type { InstrumentDataFeedWriteDto } from './InstrumentDataFeedWriteDto'
+
 export interface InstrumentWriteDto {
   name: string | null
   instrumentTypeId: number | null
@@ -5,4 +7,5 @@ export interface InstrumentWriteDto {
   currencyId: string | null
   tickerDisplay: string | null
   isin: string | null
+  dataFeeds?: InstrumentDataFeedWriteDto[] | null
 }

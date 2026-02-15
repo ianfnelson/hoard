@@ -1,4 +1,5 @@
 using Hoard.Core.Data;
+using Hoard.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Core.Application.News;
@@ -11,8 +12,7 @@ public class GetInstrumentsForNewsRefreshHandler(HoardContext context)
     public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForNewsRefreshQuery query, CancellationToken ct = default)
     {
         var instrumentsQuery = context.Instruments
-            .Where(i => i.EnableNewsUpdates)
-            .Where(i => i.TickerNewsUpdates != null);
+            .Where(i => i.DataFeeds.Any(df => df.DataFeedId == DataFeed.News));
 
         if (query.InstrumentId.HasValue)
         {

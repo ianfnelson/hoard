@@ -1,4 +1,5 @@
 import type { InstrumentQuoteDto } from './InstrumentQuoteDto'
+import type { InstrumentDataFeedDto } from './InstrumentDataFeedDto'
 
 export interface InstrumentDetailDto {
   id: number
@@ -15,4 +16,5 @@ export interface InstrumentDetailDto {
   currencyId: string
   currencyName: string
   quote: InstrumentQuoteDto | null
+  dataFeeds: InstrumentDataFeedDto[]
 }

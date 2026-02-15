@@ -8,4 +8,5 @@ public class InstrumentWriteDto
     public string? CurrencyId { get; set; }
     public string? TickerDisplay { get; set; }
     public string? Isin { get; set; }
+    public List<InstrumentDataFeedWriteDto>? DataFeeds { get; set; }
 }

@@ -60,5 +60,31 @@ public class InstrumentWriteDtoValidator : AbstractValidator<InstrumentWriteDto>
                     .AnyAsync(i => i.Isin == isin && i.Id != currentId, ct);
             })
             .WithMessage("An instrument with this ISIN already exists");
+
+        When(x => x.DataFeeds != null, () =>
+        {
+            RuleForEach(x => x.DataFeeds).ChildRules(df =>
+            {
+                df.RuleFor(f => f.DataFeedId)
+                    .NotNull()
+                    .When(f => f.Enabled == true)
+                    .MustAsync(async (id, ct) =>
+                        await context.DataFeeds.AnyAsync(d => d.Id == id!.Value, ct))
+                    .WithMessage("Invalid DataFeedId");
+
+                df.RuleFor(f => f.Ticker)
+                    .NotEmpty()
+                    .When(f => f.Enabled == true)
+                    .WithMessage("Ticker is required when feed is enabled")
+                    .MaximumLength(20)
+                    .WithMessage("Ticker cannot exceed 20 characters");
+            });
+
+            // Ensure no duplicate feeds
+            RuleFor(x => x.DataFeeds)
+                .Must(feeds => feeds!.Where(f => f.Enabled == true)
+                    .GroupBy(f => f.DataFeedId).All(g => g.Count() == 1))
+                .WithMessage("Duplicate data feeds are not allowed");
+        });
     }
 }

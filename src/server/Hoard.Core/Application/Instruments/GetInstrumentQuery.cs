@@ -39,7 +39,14 @@ public sealed class GetInstrumentHandler(HoardContext context, ILogger<GetInstru
                     RegularMarketPrice = i.Quote.RegularMarketPrice,
                     RegularMarketChange = i.Quote.RegularMarketChange,
                     RegularMarketChangePercent = i.Quote.RegularMarketChangePercent
-                }
+                },
+                DataFeeds = i.DataFeeds.Select(df => new InstrumentDataFeedDto
+                {
+                    DataFeedId = df.DataFeedId,
+                    DataFeedName = df.DataFeed.Name,
+                    Ticker = df.Configuration.Ticker,
+                    ImportStartUtc = df.Configuration.ImportStartUtc
+                }).ToList()
             }).SingleOrDefaultAsync(ct);
         
         if (dto == null)
