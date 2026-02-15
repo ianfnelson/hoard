@@ -890,6 +890,122 @@
       "id": "aad0180f-6e09-4f10-8cb2-a779512b657d"
     },
     {
+      "name": "Prices",
+      "item": [
+        {
+          "name": "Price",
+          "id": "f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{BaseUrl}}prices/1",
+              "host": [
+                "{{BaseUrl}}prices"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Price",
+          "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"instrumentId\": 10,\n    \"asOfDate\": \"2026-02-14\",\n    \"source\": \"Manual\",\n    \"isLocked\": false,\n    \"open\": 100.50,\n    \"high\": 102.75,\n    \"low\": 99.25,\n    \"close\": 101.00,\n    \"volume\": 1000000,\n    \"adjustedClose\": 101.00\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}prices",
+              "host": [
+                "{{BaseUrl}}prices"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Price",
+          "id": "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"instrumentId\": 10,\n    \"asOfDate\": \"2026-02-14\",\n    \"source\": \"Manual\",\n    \"isLocked\": true,\n    \"open\": 100.50,\n    \"high\": 102.75,\n    \"low\": 99.25,\n    \"close\": 101.50,\n    \"volume\": 1000000,\n    \"adjustedClose\": 101.50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}prices/1",
+              "host": [
+                "{{BaseUrl}}prices"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Price",
+          "id": "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{BaseUrl}}prices/1",
+              "host": [
+                "{{BaseUrl}}prices"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "412db755-9cd8-420a-be78-907f99d74d24"
+    },
+    {
       "name": "Reference",
       "item": [
         {

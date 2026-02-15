@@ -18,14 +18,4 @@ public class Price : Entity<int>
     public decimal Close { get; set; }
     public long? Volume { get; set; }
     public decimal AdjustedClose { get; set; }
-
-    public void UpdateFrom(PriceDto dto)
-    {
-        AdjustedClose = dto.AdjustedClose;
-        Close = dto.Close;
-        High = dto.High;
-        Low = dto.Low;
-        Open = dto.Open;
-        Volume = dto.Volume;
-    }
 }
