@@ -481,8 +481,13 @@ onMounted(() => {
               :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               density="compact"
             >
-              <template #item.date="{ value }">
-                <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+              <template #item.date="{ item, value }">
+                <router-link
+                  :to="{ name: 'transaction-detail', params: { id: item.id } }"
+                  class="text-decoration-none"
+                >
+                  <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+                </router-link>
               </template>
 
               <template #item.value="{ value }">
@@ -586,8 +591,13 @@ onMounted(() => {
               :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               density="compact"
             >
-              <template #item.publishedUtc="{ value }">
-                <span style="white-space: nowrap">{{ formatDateTime(value) }}</span>
+              <template #item.publishedUtc="{ item, value }">
+                <router-link
+                  :to="{ name: 'news-article-detail', params: { id: item.id } }"
+                  class="text-decoration-none"
+                >
+                  <span style="white-space: nowrap">{{ formatDateTime(value) }}</span>
+                </router-link>
               </template>
 
               <template #item.headline="{ item }">
