@@ -18,6 +18,7 @@ import {
 } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDto'
+import type { PriceSummaryDto } from '@/api/dtos/Instruments/PriceSummaryDto'
 import { useContractNoteDownload } from '@/composables/useContractNoteDownload'
 
 const route = useRoute()
@@ -202,6 +203,19 @@ const newsHeaders = [
 
 function viewArticle(item: NewsArticleSummaryDto) {
   router.push({ name: 'news-article-detail', params: { id: item.id } })
+}
+
+function viewPrice(item: PriceSummaryDto) {
+  router.push({ name: 'price-detail', params: { id: item.id } })
+}
+
+function createNewPrice() {
+  if (!instrumentId.value) return
+  router.push({
+    name: 'price-detail',
+    params: { id: 'new' },
+    query: { mode: 'create', instrumentId: instrumentId.value.toString() },
+  })
 }
 
 watch(
@@ -513,8 +527,10 @@ onMounted(() => {
               :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
               density="compact"
             >
-              <template #item.asOfDate="{ value }">
-                <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+              <template #item.asOfDate="{ item, value }">
+                <a href="#" class="text-decoration-none" @click.prevent="viewPrice(item)">
+                  <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+                </a>
               </template>
 
               <template #item.open="{ value }">
@@ -531,6 +547,22 @@ onMounted(() => {
 
               <template #item.volume="{ value }">
                 <span v-if="value !== null">{{ value }}</span>
+              </template>
+
+              <template #footer.prepend>
+                <div class="d-flex" style="flex: 1">
+                  <v-btn
+                    v-if="isViewMode"
+                    color="primary"
+                    variant="flat"
+                    size="small"
+                    prepend-icon="mdi-plus"
+                    class="ml-2"
+                    @click="createNewPrice"
+                  >
+                    New Price
+                  </v-btn>
+                </div>
               </template>
 
               <template #no-data> No prices found </template>

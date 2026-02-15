@@ -84,7 +84,12 @@ public class ProcessRefreshPricesBatchHandler(
                     changed.Add(priceDto.Date);
                 }
 
-                price.UpdateFrom(priceDto);
+                price.Open = priceDto.Open;
+                price.High = priceDto.High;
+                price.Low = priceDto.Low;
+                price.Close = priceDto.Close;
+                price.Volume = priceDto.Volume;
+                price.AdjustedClose = priceDto.AdjustedClose;
                 price.RetrievedUtc = now;
             }
         }
