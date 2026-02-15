@@ -339,7 +339,14 @@ onMounted(async () => {
                 <v-col>
                   <div class="text-caption text-medium-emphasis">Instrument</div>
                   <div class="text-body-1">
-                    {{ transaction.instrumentName }}
+                    <router-link
+                      v-if="transaction.instrumentId"
+                      :to="{ name: 'instrument-detail', params: { id: transaction.instrumentId } }"
+                      class="text-decoration-none"
+                    >
+                      {{ transaction.instrumentName }}
+                    </router-link>
+                    <span v-else>{{ transaction.instrumentName }}</span>
                     <span v-if="transaction.instrumentTicker" class="text-medium-emphasis">
                       ({{ transaction.instrumentTicker }})
                     </span>
