@@ -5,7 +5,7 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.News;
 
-public class NewsEventHandler(IMediator mediator) : 
+public class RefreshNewsCommandHandler(IMediator mediator) :
     IHandleMessages<RefreshNewsBatchBusCommand>
 {
     public async Task Handle(RefreshNewsBatchBusCommand message)

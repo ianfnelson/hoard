@@ -5,14 +5,14 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Snapshots;
 
-public class SnapshotsEventHandler(IMediator mediator)
+public class CalculateSnapshotCommandHandler(IMediator mediator)
     : IHandleMessages<CalculateSnapshotBusCommand>
 {
     public Task Handle(CalculateSnapshotBusCommand message)
     {
         var appCommand = new ProcessCalculateSnapshotCommand(message.SnapshotsRunId, message.PipelineMode,
             message.PortfolioId, message.Year);
-        
+
         return mediator.SendAsync(appCommand);
     }
 }

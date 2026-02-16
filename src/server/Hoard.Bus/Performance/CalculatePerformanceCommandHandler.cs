@@ -5,8 +5,8 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Performance;
 
-public class PerformanceEventHandler(IMediator mediator)
-    : 
+public class CalculatePerformanceCommandHandler(IMediator mediator)
+    :
         IHandleMessages<CalculatePositionPerformanceBusCommand>,
         IHandleMessages<CalculatePortfolioPerformanceBusCommand>
 {
@@ -18,7 +18,7 @@ public class PerformanceEventHandler(IMediator mediator)
 
         await mediator.SendAsync(appCommand);
     }
-    
+
     public async Task Handle(CalculatePortfolioPerformanceBusCommand message)
     {
         var appCommand =

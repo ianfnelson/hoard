@@ -1,5 +1,4 @@
 using Hoard.Core.Application;
-using Hoard.Core.Application.Prices;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
@@ -8,23 +7,9 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Prices;
 
-public class PricesEventHandler(IMediator mediator) : 
-    IHandleMessages<RefreshPricesBatchBusCommand>,
+public class PriceChangePropagator(IMediator mediator) :
     IHandleMessages<PriceChangedEvent>
 {
-    public async Task Handle(RefreshPricesBatchBusCommand message)
-    {
-        var appCommand = new ProcessRefreshPricesBatchCommand(
-            message.PricesRunId,
-            message.PipelineMode,
-            message.InstrumentId,
-            message.StartDate,
-            message.EndDate
-        );
-
-        await mediator.SendAsync(appCommand);
-    }
-    
     public async Task Handle(PriceChangedEvent message)
     {
         if (message is { PipelineMode: PipelineMode.DaytimeReactive, InstrumentTypeId: not InstrumentType.FxPair })
