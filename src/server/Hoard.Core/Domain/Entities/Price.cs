@@ -1,5 +1,3 @@
-using Hoard.Core.Services;
-
 namespace Hoard.Core.Domain.Entities;
 
 public class Price : Entity<int>

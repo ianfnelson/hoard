@@ -1,5 +1,5 @@
 using Hoard.Core.Data;
-using Hoard.Core.Services;
+using Hoard.Core.Infrastructure.Integrations;
 
 namespace Hoard.Core.Application.Transactions;
 

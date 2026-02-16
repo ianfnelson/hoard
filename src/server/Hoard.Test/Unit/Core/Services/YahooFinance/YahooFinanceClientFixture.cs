@@ -1,4 +1,4 @@
-using Hoard.Core.Services.YahooFinance;
+using Hoard.Core.Infrastructure.Integrations;
 
 namespace Hoard.Test.Unit.Core.Services.YahooFinance;
 
@@ -8,7 +8,7 @@ public class YahooFinanceClientFixture
     public async Task GetQuotesAsync_CanGetMultipleQuotes()
     {
         // Arrange
-        var sut = new YahooFinanceClient();
+        var sut = new Hoard.Core.Infrastructure.Integrations.YahooFinance();
 
         // Act
         var quotes = await sut.GetQuotesAsync(["AAPL", "MSFT"]);
@@ -29,7 +29,7 @@ public class YahooFinanceClientFixture
     public async Task GetQuotesAsync_CanGetLondonQuotes()
     {
         // Arrange
-        var sut = new YahooFinanceClient();
+        var sut = new Hoard.Core.Infrastructure.Integrations.YahooFinance();
 
         // Act
         var quotes = await sut.GetQuotesAsync(["FWRG.L"]);
@@ -44,7 +44,7 @@ public class YahooFinanceClientFixture
     public async Task GetHistoricalAsync_CanGetHistoricalPrices()
     {
         // Arrange
-        var sut = new YahooFinanceClient();
+        var sut = new Hoard.Core.Infrastructure.Integrations.YahooFinance();
 
         // Act
         var prices = await sut.GetPricesAsync("FWRG.L", new DateOnly(2025, 10, 1), new DateOnly(2025, 10, 8));

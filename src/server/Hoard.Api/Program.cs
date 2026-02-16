@@ -3,7 +3,7 @@ using Hoard.Api.Hubs;
 using Hoard.Core.Application;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
-using Hoard.Core.Services;
+using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages.Performance;
 using Hoard.Messages.Quotes;
 using Rebus.Bus;
@@ -31,7 +31,7 @@ builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
     .AutoRegisterHandlersFromAssemblyOf<PortfolioUpdatedSignalRHandler>()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.api")
-    .AddHoardServices(builder.Configuration)
+    .AddIntegrations(builder.Configuration)
     .AddHoardApplication()
     .AddHoardCalculators()
     .AddTelemetryInitializer("hoard.api")

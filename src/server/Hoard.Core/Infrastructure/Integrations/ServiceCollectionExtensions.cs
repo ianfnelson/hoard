@@ -1,16 +1,15 @@
 using Clarion;
-using Hoard.Core.Services.YahooFinance;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hoard.Core.Services;
+namespace Hoard.Core.Infrastructure.Integrations;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHoardServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIntegrations(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<QuoteService, YahooFinanceClient>();
-        services.AddScoped<PriceService, YahooFinanceClient>();
+        services.AddScoped<IQuoteService, YahooFinance>();
+        services.AddScoped<IPriceService, YahooFinance>();
         services.AddScoped<ClarionClient>(_ => ClarionClient.Create());
 
         // Azure Blob Storage
@@ -19,7 +18,7 @@ public static class ServiceCollectionExtensions
         var containerName = configuration["BlobStorage:ContainerName"] ?? "documents";
 
         services.AddSingleton<IBlobStorageService>(sp =>
-            new BlobStorageService(blobConnectionString, containerName));
+            new AzureBlobStorage(blobConnectionString, containerName));
 
         return services;
     }

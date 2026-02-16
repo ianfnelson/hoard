@@ -1,7 +1,7 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
-namespace Hoard.Core.Services;
+namespace Hoard.Core.Infrastructure.Integrations;
 
 public interface IBlobStorageService
 {
@@ -11,12 +11,12 @@ public interface IBlobStorageService
     Task<bool> ContractNoteExistsAsync(string reference, CancellationToken ct = default);
 }
 
-public class BlobStorageService : IBlobStorageService
+public class AzureBlobStorage : IBlobStorageService
 {
     private readonly BlobContainerClient _containerClient;
     private const string ContractNotesFolder = "contractnotes";
 
-    public BlobStorageService(string connectionString, string containerName)
+    public AzureBlobStorage(string connectionString, string containerName)
     {
         var blobServiceClient = new BlobServiceClient(connectionString);
         _containerClient = blobServiceClient.GetBlobContainerClient(containerName);

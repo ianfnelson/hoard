@@ -1,4 +1,3 @@
-using Hoard.Core.Application;
 using Hoard.Core.Domain.Entities;
 
 namespace Hoard.Core.Application.Prices;

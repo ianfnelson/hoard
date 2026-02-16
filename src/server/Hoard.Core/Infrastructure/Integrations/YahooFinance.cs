@@ -1,9 +1,45 @@
 using YahooFinanceApi;
 
-namespace Hoard.Core.Services.YahooFinance;
+namespace Hoard.Core.Infrastructure.Integrations;
 
-public class YahooFinanceClient
-    : PriceService, QuoteService
+public interface IPriceService
+{
+    Task<IReadOnlyList<PriceDto>> GetPricesAsync(string ticker, DateOnly from, DateOnly to, CancellationToken ct = default);
+}
+
+public class PriceDto
+{
+    public DateOnly Date { get; set; }
+    public decimal Open { get; set; }
+    public decimal High { get; set; }
+    public decimal Low { get; set; }
+    public decimal Close { get; set; }
+    public long Volume { get; set; }
+    public decimal AdjustedClose { get; set; }
+    public required string Source { get; set; }
+}
+
+public interface IQuoteService
+{
+    Task<Dictionary<string, QuoteDto>> GetQuotesAsync(IEnumerable<string> tickers);
+}
+
+public class QuoteDto
+{
+    public required string Symbol { get; set; }
+    public required string Name { get; set; }
+    public decimal Bid { get; set; }
+    public decimal Ask { get; set; }
+    public decimal FiftyTwoWeekHigh { get; set; }
+    public decimal FiftyTwoWeekLow { get; set; }
+    public decimal RegularMarketPrice { get; set; }
+    public decimal RegularMarketChange { get; set; }
+    public decimal RegularMarketChangePercent { get; set; }
+    public required string Source { get; set; }
+}
+
+public class YahooFinance
+    : IPriceService, IQuoteService
 {
     private const string Source = "Yahoo! Finance";
 
