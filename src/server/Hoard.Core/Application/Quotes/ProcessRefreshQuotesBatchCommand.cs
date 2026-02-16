@@ -1,6 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Hoard.Core.Services;
+using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages.Quotes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,7 @@ public record ProcessRefreshQuotesBatchCommand(IReadOnlyList<int> InstrumentIds)
 public class ProcessRefreshQuotesBatchHandler(
     IBus bus, HoardContext context, 
     ILogger<ProcessRefreshQuotesBatchHandler> logger,
-    QuoteService quoteService) : ICommandHandler<ProcessRefreshQuotesBatchCommand>
+    IQuoteService quoteService) : ICommandHandler<ProcessRefreshQuotesBatchCommand>
 {
     public async Task HandleAsync(ProcessRefreshQuotesBatchCommand command, CancellationToken ct = default)
     {
@@ -66,7 +66,14 @@ public class ProcessRefreshQuotesBatchHandler(
 
             var hasNotableChange = HasNotableChange(instrument.Quote!, dto);
 
-            instrument.Quote.UpdateFrom(dto);
+            instrument.Quote.Bid = dto.Bid;
+            instrument.Quote.Ask = dto.Ask;
+            instrument.Quote.FiftyTwoWeekHigh = dto.FiftyTwoWeekHigh;
+            instrument.Quote.FiftyTwoWeekLow = dto.FiftyTwoWeekLow;
+            instrument.Quote.RegularMarketChange = dto.RegularMarketChange;
+            instrument.Quote.RegularMarketChangePercent = dto.RegularMarketChangePercent;
+            instrument.Quote.RegularMarketPrice = dto.RegularMarketPrice;
+            instrument.Quote.Source = dto.Source;
             instrument.Quote.RetrievedUtc = now;
 
             if (hasNotableChange)

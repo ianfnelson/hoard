@@ -1,6 +1,6 @@
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Hoard.Core.Services;
+using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages;
 using Hoard.Messages.Prices;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ public record ProcessRefreshPricesBatchCommand(
 public class ProcessRefreshPricesBatchHandler(
     IBus bus,
     HoardContext context,
-    PriceService priceService,
+    IPriceService priceService,
     ILogger<ProcessRefreshPricesBatchHandler> logger)
 : ICommandHandler<ProcessRefreshPricesBatchCommand>
 {

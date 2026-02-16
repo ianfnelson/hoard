@@ -1,5 +1,3 @@
-using Hoard.Core.Services;
-
 namespace Hoard.Core.Domain.Entities;
 
 public class Quote : Entity<int>
@@ -17,16 +15,4 @@ public class Quote : Entity<int>
     public decimal RegularMarketChange { get; set; }
     public decimal RegularMarketChangePercent { get; set; }
     public required string Source { get; set; }
-
-    public void UpdateFrom(QuoteDto dto)
-    {
-        Bid = dto.Bid;
-        Ask = dto.Ask;
-        FiftyTwoWeekHigh = dto.FiftyTwoWeekHigh;
-        FiftyTwoWeekLow = dto.FiftyTwoWeekLow;
-        RegularMarketChange = dto.RegularMarketChange;
-        RegularMarketChangePercent = dto.RegularMarketChangePercent;
-        RegularMarketPrice = dto.RegularMarketPrice;
-        Source = dto.Source;
-    }
 }

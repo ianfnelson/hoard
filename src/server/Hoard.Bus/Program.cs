@@ -2,7 +2,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
-using Hoard.Core.Services;
+using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages.Holdings;
 using Hoard.Messages.News;
 using Hoard.Messages.Performance;
@@ -39,7 +39,7 @@ builder.Services
     .AddHoardLogging(applicationInsightsConnectionString)
     .AutoRegisterHandlersFromAssemblyOf<CalculateValuationsSaga>()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.bus")
-    .AddHoardServices(builder.Configuration)
+    .AddIntegrations(builder.Configuration)
     .AddHoardApplication()
     .AddHoardCalculators()
     .AddTelemetryInitializer("hoard.bus");
