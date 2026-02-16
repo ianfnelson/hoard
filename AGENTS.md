@@ -61,14 +61,16 @@ dotnet ef database update --project Hoard.Core --startup-project Hoard.Api
 The solution follows a Clean Architecture pattern with event-driven processing:
 
 - **Hoard.Api** - ASP.NET Core Web API with REST endpoints, SignalR hubs for real-time updates
-- **Hoard.Bus** - Message handler worker service that processes domain events (Rebus/RabbitMQ)
+- **Hoard.Bus** - Message handler worker service that processes domain events (Rebus/RabbitMQ). Handlers are split by concern:
+  - `CommandHandlers` - Receive bus commands and dispatch to the mediator
+  - `Propagators` - Handle domain events and trigger downstream bus commands
 - **Hoard.Scheduler** - Hangfire-based job scheduler for recurring tasks (e.g., price refresh, daily calculations)
 - **Hoard.Core** - Shared business logic and domain:
   - `Application/` - CQRS handlers organized by domain (Commands, Queries per entity type)
-  - `Domain/Entities/` - Domain entities (Portfolio, Holding, Transaction, Price, etc.)
+  - `Domain/Entities/` - Domain entities (Portfolio, Holding, Transaction, Price, DataFeed, InstrumentDataFeed, etc.)
   - `Domain/Calculators/` - Business calculation logic
   - `Data/` - EF Core DbContext, migrations, and entity configurations
-  - `Infrastructure/` - Service registration, Rebus configuration
+  - `Infrastructure/` - Service registration, Rebus configuration, and `Integrations/` (external service adapters for Yahoo Finance, Azure Blob Storage, Clarion)
 - **Hoard.Messages** - Shared message contracts for pub/sub (events and bus commands)
 - **Hoard.Test** - xUnit tests organized by project (Unit/Api, Unit/Bus, Unit/Core, Integration)
 
@@ -79,8 +81,12 @@ Vue 3 SPA with Vuetify UI framework:
 - `src/pages/` - Page components
 - `src/components/` - Reusable components
 - `src/composables/` - Composable functions (with `__tests__/` for unit tests)
+- `src/constants/` - Shared constants
+- `src/layouts/` - Layout components
 - `src/stores/` - Pinia state management
+- `src/styles/` - Global styles
 - `src/router/` - Vue Router configuration
+- `src/utils/` - Utility functions
 
 ### Frontend Code Style
 
@@ -118,7 +124,9 @@ The codebase uses a custom Mediator pattern (`Hoard.Core/Application/Mediator.cs
 - **Database:** SQL Server (EF Core)
 - **Message Bus:** RabbitMQ (Rebus)
 - **Job Scheduling:** Hangfire (SQL Server storage)
-- **Market Data:** YahooFinanceApiNext for price quotes
+- **Market Data:** YahooFinanceApiNext for price quotes, configured per instrument via the DataFeed/InstrumentDataFeed model
+- **Regulatory News:** Clarion for news ingestion
+- **Blob Storage:** Azure Blob Storage for contract note PDFs
 - **Telemetry:** Application Insights
 
 ## Configuration
@@ -126,4 +134,8 @@ The codebase uses a custom Mediator pattern (`Hoard.Core/Application/Mediator.cs
 Connection strings are configured via user secrets or appsettings:
 - `HoardDatabase` - SQL Server connection
 - `RabbitMq` - RabbitMQ connection
+- `AzureBlobStorage` - Azure Blob Storage connection
 - `ApplicationInsights` - Application Insights connection
+
+Additional settings:
+- `BlobStorage:ContainerName` - Blob container name (default: "documents")
