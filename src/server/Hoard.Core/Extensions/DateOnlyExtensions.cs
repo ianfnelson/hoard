@@ -12,6 +12,11 @@ public static class DateOnlyExtensions
         return (value ?? default).OrToday();
     }
 
+    public static bool IsWeekday(this DateOnly date)
+    {
+        return date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday;
+    }
+
     public static string ToIsoDateString(this DateOnly date)
         => date.ToString("yyyy-MM-dd");
         

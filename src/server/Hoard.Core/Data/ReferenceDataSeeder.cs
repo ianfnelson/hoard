@@ -19,6 +19,7 @@ public class ReferenceDataSeeder
     {
         _logger.LogInformation("Seeding reference data...");
 
+        await SeedAlertTypesAsync();
         await SeedDataFeedsAsync();
         await SeedCurrenciesAsync();
         await SeedAssetClassesAsync();
@@ -39,6 +40,15 @@ public class ReferenceDataSeeder
         _logger.LogInformation("Reference data seeding complete.");
     }
 
+    private async Task SeedAlertTypesAsync()
+    {
+        var items = new[]
+        {
+            new AlertType { Id = AlertType.CloseOfDayPortfolioValuation, Name = "Close of Day Portfolio Valuation" }
+        };
+        await UpsertAsync(_context.AlertTypes, items, x => x.Id);
+    }
+    
     private async Task SeedDataFeedsAsync()
     {
         var items = new[]

@@ -20,6 +20,15 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBlobStorageService>(sp =>
             new AzureBlobStorage(blobConnectionString, containerName));
 
+        // Pushover Notifications
+        var pushoverToken = configuration["Pushover:Token"]
+            ?? throw new InvalidOperationException("Pushover token not configured");
+        var pushoverUser = configuration["Pushover:User"]
+            ?? throw new InvalidOperationException("Pushover user not configured");
+
+        services.AddHttpClient<INotificationService, Pushover>((httpClient, sp) =>
+            new Pushover(httpClient, pushoverToken, pushoverUser));
+
         return services;
     }
 }

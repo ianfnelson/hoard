@@ -1,4 +1,5 @@
 using FluentValidation;
+using Hoard.Core.Application.Alerts;
 using Hoard.Core.Application.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class ServiceCollectionExtensions
         AddMapping(services);
         AddMediator(services);
         AddValidation(services);
+        AddServices(services);
 
         return services;
     }
@@ -64,6 +66,12 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddValidation(IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<TransactionWriteDtoValidator>();
+        return services;
+    }
+
+    private static IServiceCollection AddServices(IServiceCollection services)
+    {
+        services.AddScoped<IAlertService, AlertService>();
         return services;
     }
 }
