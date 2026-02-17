@@ -145,7 +145,7 @@ onMounted(() => {
 <template>
   <v-container fluid>
     <v-row dense class="mb-2">
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="3">
         <v-text-field
           v-model="searchText"
           label="Search"
@@ -156,7 +156,7 @@ onMounted(() => {
           variant="outlined"
         />
       </v-col>
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="3">
         <v-select
           v-model="selectedInstrumentTypeId"
           :items="refStore.instrumentTypes"
@@ -169,7 +169,7 @@ onMounted(() => {
           variant="outlined"
         />
       </v-col>
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="3">
         <v-select
           v-model="selectedAssetClassId"
           :items="refStore.assetClasses"
@@ -182,7 +182,7 @@ onMounted(() => {
           variant="outlined"
         />
       </v-col>
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="3">
         <v-select
           v-model="selectedAssetSubclassId"
           :items="availableSubclasses"
@@ -195,22 +195,6 @@ onMounted(() => {
           variant="outlined"
           :disabled="!selectedAssetClassId"
         />
-      </v-col>
-      <v-col cols="12" sm="6" md="2"></v-col>
-      <v-col cols="12" sm="6" md="2">
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-plus"
-          @click="
-            router.push({
-              name: 'instrument-detail',
-              params: { id: 'new' },
-              query: { mode: 'create' },
-            })
-          "
-        >
-          New Instrument
-        </v-btn>
       </v-col>
     </v-row>
     <v-row dense>
@@ -236,6 +220,27 @@ onMounted(() => {
             <router-link :to="{ name: 'instrument-detail', params: { id: item.id } }">
               {{ item.name }}</router-link
             >
+          </template>
+
+          <template #footer.prepend>
+            <div class="d-flex" style="flex: 1">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                variant="flat"
+                size="small"
+                class="ml-2"
+                @click="
+                  router.push({
+                    name: 'instrument-detail',
+                    params: { id: 'new' },
+                    query: { mode: 'create' },
+                  })
+                "
+              >
+                New Instrument
+              </v-btn>
+            </div>
           </template>
 
           <template #no-data> No instruments found </template>

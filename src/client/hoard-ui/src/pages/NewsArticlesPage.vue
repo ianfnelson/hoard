@@ -24,14 +24,9 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
 // Filter state - initialize from query params
 const initialSearch = (route.query.search as string) || ''
 const initialInstrumentId = route.query.instrumentId ? Number(route.query.instrumentId) : null
-const initialFromDate = (route.query.fromDate as string) || ''
-const initialToDate = (route.query.toDate as string) || ''
-
 const searchText = ref(initialSearch)
 const debouncedSearch = ref(initialSearch)
 const selectedInstrumentId = ref<number | null>(initialInstrumentId)
-const fromDate = ref<string>(initialFromDate)
-const toDate = ref<string>(initialToDate)
 
 // Debounce search
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
@@ -65,32 +60,27 @@ async function loadItems() {
     sortBy: sortBy.value[0]?.key,
     sortDirection: sortBy.value[0]?.order,
     instrumentId: selectedInstrumentId.value ?? undefined,
-    fromDate: fromDate.value || undefined,
-    toDate: toDate.value || undefined,
     search: debouncedSearch.value || undefined,
   }
   await fetchNewsArticles(params)
 }
 
 // Reset page when filters change
-watch([selectedInstrumentId, fromDate, toDate, debouncedSearch], () => {
+watch([selectedInstrumentId, debouncedSearch], () => {
   page.value = 1
 })
 
 // Watch filter changes and update URL
-watch([searchText, selectedInstrumentId, fromDate, toDate], () => {
+watch([searchText, selectedInstrumentId], () => {
   const query: Record<string, string> = {}
   if (searchText.value) query.search = searchText.value
   if (selectedInstrumentId.value) query.instrumentId = String(selectedInstrumentId.value)
-  if (fromDate.value) query.fromDate = fromDate.value
-  if (toDate.value) query.toDate = toDate.value
-
   router.replace({ query })
 })
 
 // Watch for changes and reload
 watch(
-  [page, itemsPerPage, sortBy, selectedInstrumentId, fromDate, toDate, debouncedSearch],
+  [page, itemsPerPage, sortBy, selectedInstrumentId, debouncedSearch],
   () => {
     loadItems()
   },
@@ -105,7 +95,7 @@ onMounted(() => {
 <template>
   <v-container fluid>
     <v-row dense class="mb-2">
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="searchText"
           label="Search"
@@ -117,35 +107,11 @@ onMounted(() => {
         />
       </v-col>
 
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="12" sm="6">
         <v-select
           v-model="selectedInstrumentId"
           :items="instrumentItems"
           label="Instrument"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="3">
-        <v-text-field
-          v-model="fromDate"
-          label="From Date"
-          type="date"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="3">
-        <v-text-field
-          v-model="toDate"
-          label="To Date"
-          type="date"
           clearable
           hide-details
           density="compact"

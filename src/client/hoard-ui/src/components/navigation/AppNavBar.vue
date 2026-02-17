@@ -34,7 +34,7 @@ const { isDark, toggleTheme } = useTheme()
       :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
       @click="toggleTheme"
     >
-      <v-icon>{{ isDark ? 'mdi-lightbulb-off-outline' : 'mdi-lightbulb-on' }}</v-icon>
+      <v-icon>{{ isDark ? 'mdi-lightbulb-on' : 'mdi-lightbulb-off-outline' }}</v-icon>
     </v-btn>
   </v-app-bar>
 </template>

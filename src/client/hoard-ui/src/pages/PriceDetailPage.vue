@@ -329,12 +329,7 @@ onMounted(async () => {
                   />
                 </v-col>
               </v-row>
-              <v-row dense>
-                <v-col cols="12" md="6">
-                  <div class="text-caption text-medium-emphasis">Instrument</div>
-                  <div class="text-body-1 mb-4">{{ instrumentName }}</div>
-                </v-col>
-              </v-row>
+
               <v-row dense>
                 <v-col cols="12" md="3">
                   <v-text-field
@@ -413,6 +408,13 @@ onMounted(async () => {
                     density="compact"
                     clearable
                   />
+                </v-col>
+              </v-row>
+
+              <v-row dense>
+                <v-col cols="12" md="6">
+                  <div class="text-caption text-medium-emphasis">Instrument</div>
+                  <div class="text-body-1 mb-4">{{ instrumentName }}</div>
                 </v-col>
               </v-row>
             </v-form>
