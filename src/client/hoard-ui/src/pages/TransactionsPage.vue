@@ -28,13 +28,9 @@ const initialAccountId = route.query.accountId ? Number(route.query.accountId) :
 const initialTransactionTypeId = route.query.transactionTypeId
   ? Number(route.query.transactionTypeId)
   : null
-const initialFromDate = (route.query.fromDate as string) || ''
-const initialToDate = (route.query.toDate as string) || ''
 
 const selectedAccountId = ref<number | null>(initialAccountId)
 const selectedTransactionTypeId = ref<number | null>(initialTransactionTypeId)
-const fromDate = ref<string>(initialFromDate)
-const toDate = ref<string>(initialToDate)
 const searchText = ref(initialSearch)
 
 const debouncedSearch = ref(initialSearch)
@@ -66,43 +62,29 @@ async function loadItems() {
     sortDirection: sortBy.value[0]?.order,
     accountId: selectedAccountId.value ?? undefined,
     transactionTypeId: selectedTransactionTypeId.value ?? undefined,
-    fromDate: fromDate.value || undefined,
-    toDate: toDate.value || undefined,
     search: debouncedSearch.value || undefined,
   }
   await fetchTransactions(params)
 }
 
 // Reset page when filters change
-watch([selectedAccountId, selectedTransactionTypeId, fromDate, toDate, debouncedSearch], () => {
+watch([selectedAccountId, selectedTransactionTypeId, debouncedSearch], () => {
   page.value = 1
 })
 
 // Watch filter changes and update URL
-watch([searchText, selectedAccountId, selectedTransactionTypeId, fromDate, toDate], () => {
+watch([searchText, selectedAccountId, selectedTransactionTypeId], () => {
   const query: Record<string, string> = {}
   if (searchText.value) query.search = searchText.value
   if (selectedAccountId.value) query.accountId = String(selectedAccountId.value)
   if (selectedTransactionTypeId.value)
     query.transactionTypeId = String(selectedTransactionTypeId.value)
-  if (fromDate.value) query.fromDate = fromDate.value
-  if (toDate.value) query.toDate = toDate.value
-
   router.replace({ query })
 })
 
 // Watch for changes and reload
 watch(
-  [
-    page,
-    itemsPerPage,
-    sortBy,
-    selectedAccountId,
-    selectedTransactionTypeId,
-    fromDate,
-    toDate,
-    debouncedSearch,
-  ],
+  [page, itemsPerPage, sortBy, selectedAccountId, selectedTransactionTypeId, debouncedSearch],
   () => {
     loadItems()
   },
@@ -122,7 +104,7 @@ onMounted(() => {
 <template>
   <v-container fluid>
     <v-row dense class="mb-2">
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="4">
         <v-text-field
           v-model="searchText"
           label="Search"
@@ -134,7 +116,7 @@ onMounted(() => {
         />
       </v-col>
 
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="4">
         <v-select
           v-model="selectedAccountId"
           :items="navStore.accounts"
@@ -148,7 +130,7 @@ onMounted(() => {
         />
       </v-col>
 
-      <v-col cols="12" sm="6" md="2">
+      <v-col cols="12" sm="4">
         <v-select
           v-model="selectedTransactionTypeId"
           :items="refStore.transactionTypes"
@@ -160,46 +142,6 @@ onMounted(() => {
           density="compact"
           variant="outlined"
         />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
-        <v-text-field
-          v-model="fromDate"
-          label="From Date"
-          type="date"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
-        <v-text-field
-          v-model="toDate"
-          label="To Date"
-          type="date"
-          clearable
-          hide-details
-          density="compact"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col cols="12" sm="6" md="2">
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-plus"
-          @click="
-            router.push({
-              name: 'transaction-detail',
-              params: { id: 'new' },
-              query: { mode: 'create' },
-            })
-          "
-        >
-          New Transaction
-        </v-btn>
       </v-col>
     </v-row>
     <v-row dense>
@@ -257,6 +199,27 @@ onMounted(() => {
               <v-icon class="doc-link-icon">mdi-file-document</v-icon>
               <v-tooltip activator="parent" location="top"> Download {{ value }}.pdf </v-tooltip>
             </v-btn>
+          </template>
+
+          <template #footer.prepend>
+            <div class="d-flex" style="flex: 1">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                variant="flat"
+                size="small"
+                class="ml-2"
+                @click="
+                  router.push({
+                    name: 'transaction-detail',
+                    params: { id: 'new' },
+                    query: { mode: 'create' },
+                  })
+                "
+              >
+                New Transaction
+              </v-btn>
+            </div>
           </template>
 
           <template #no-data> No transactions found </template>
