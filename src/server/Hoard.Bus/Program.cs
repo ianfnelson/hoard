@@ -3,6 +3,8 @@ using Hoard.Core.Application;
 using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Infrastructure.Integrations;
+using Hoard.Messages.Alerts;
+using Hoard.Messages.Chrono;
 using Hoard.Messages.Holdings;
 using Hoard.Messages.News;
 using Hoard.Messages.Performance;
@@ -83,6 +85,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<TransactionDeletedEvent>();
     await bus.Subscribe<TransactionCreatedEvent>();
     await bus.Subscribe<TransactionUpdatedEvent>();
+    await bus.Subscribe<CloseOfDayCompletedEvent>();
+    await bus.Subscribe<AlertRaisedEvent>();
 }
 
 await app.RunAsync();

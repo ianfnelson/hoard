@@ -15,12 +15,13 @@ using Hoard.Messages.Prices;
 using Hoard.Messages.Snapshots;
 using Hoard.Messages.Valuations;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
 namespace Hoard.Bus.Chrono;
 
-public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
+public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga> logger)
 : Saga<ChronoSagaData>,
     IAmInitiatedBy<StartCloseOfDaySagaCommand>,
     IHandleMessages<PricesRefreshedEvent>,
@@ -88,17 +89,15 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         }
     }
 
-    public Task Handle(PerformanceCalculatedEvent message)
+    public async Task Handle(PerformanceCalculatedEvent message)
     {
         Data.PerformanceCalculated = true;
         logger.LogInformation("CloseOfDay {ChronoRunId}: Performance calculated.", Data.ChronoRunId);
 
         if (Data.SnapshotsCalculated)
         {
-            CompleteSaga();
+            await CompleteSaga();
         }
-        
-        return Task.CompletedTask;
     }
 
     public async Task Handle(PositionsCalculatedEvent message)
@@ -125,17 +124,15 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         await DispatchSnapshots();
     }
 
-    public Task Handle(SnapshotsCalculatedEvent message)
+    public async Task Handle(SnapshotsCalculatedEvent message)
     {
         Data.SnapshotsCalculated = true;
         logger.LogInformation("CloseOfDay {ChronoRunId}: Snapshots calculated.", Data.ChronoRunId);
 
         if (Data.PerformanceCalculated)
         {
-            CompleteSaga();
+            await CompleteSaga();
         }
-        
-        return Task.CompletedTask;
     }
 
     private async Task DispatchHoldings()
@@ -189,9 +186,10 @@ public class CloseOfDaySaga(IMediator mediator, ILogger<CloseOfDaySaga> logger)
         await mediator.SendAsync(triggerValuationsCommand);
     }
 
-    private void CompleteSaga()
+    private async Task CompleteSaga()
     {
         MarkAsComplete();
+        await bus.Publish(new CloseOfDayCompletedEvent(Data.ChronoRunId, Data.Today, Data.PipelineMode));
         logger.LogInformation("CloseOfDay {ChronoRunId}: Completed {PipelineMode} for {AsOfDate}", 
             Data.ChronoRunId, Data.PipelineMode, Data.Today.ToIsoDateString());
     }

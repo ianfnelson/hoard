@@ -49,6 +49,84 @@ namespace Hoard.Core.Data.Migrations
                     b.ToTable("Account", (string)null);
                 });
 
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.Alert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("AlertId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AlertTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("datetime2(3)");
+
+                    b.Property<int?>("InstrumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PortfolioId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SuppressionKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("TriggeredDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UrlTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlertTypeId");
+
+                    b.HasIndex("CreatedUtc");
+
+                    b.HasIndex("InstrumentId");
+
+                    b.HasIndex("PortfolioId");
+
+                    b.HasIndex("SuppressionKey")
+                        .IsUnique();
+
+                    b.ToTable("Alert", (string)null);
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.AlertType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("AlertTypeId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AlertType", (string)null);
+                });
+
             modelBuilder.Entity("Hoard.Core.Domain.Entities.AssetClass", b =>
                 {
                     b.Property<int>("Id")
@@ -941,6 +1019,31 @@ namespace Hoard.Core.Data.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("PortfolioAccount");
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.Alert", b =>
+                {
+                    b.HasOne("Hoard.Core.Domain.Entities.AlertType", "AlertType")
+                        .WithMany()
+                        .HasForeignKey("AlertTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Hoard.Core.Domain.Entities.Instrument", "Instrument")
+                        .WithMany()
+                        .HasForeignKey("InstrumentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Hoard.Core.Domain.Entities.Portfolio", "Portfolio")
+                        .WithMany()
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AlertType");
+
+                    b.Navigation("Instrument");
+
+                    b.Navigation("Portfolio");
                 });
 
             modelBuilder.Entity("Hoard.Core.Domain.Entities.AssetSubclass", b =>
