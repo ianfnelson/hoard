@@ -41,7 +41,7 @@ public class YahooFinanceClientFixture
     }
 
     [Fact]
-    public async Task GetHistoricalAsync_CanGetHistoricalPrices()
+    public async Task GetPricesAsync_CanGetPrices()
     {
         // Arrange
         var sut = new Hoard.Core.Infrastructure.Integrations.YahooFinance();

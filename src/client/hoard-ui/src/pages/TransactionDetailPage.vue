@@ -125,6 +125,11 @@ const showContractNoteUpload = computed(() => {
 
 // Validation
 const today = new Date().toISOString().split('T')[0]!
+const requiredRule = (v: unknown) => !!v || 'Required'
+const requiredNumberRule = (v: unknown) => (v !== null && v !== '') || 'Required'
+const nonNegativeRule = (v: unknown) => !v || (v as number) >= 0 || 'Must be non-negative'
+const notFutureRule = (v: string) => v <= today || 'Cannot be in the future'
+const maxLength20Rule = (v: string) => !v || v.length <= 20 || 'Cannot exceed 20 characters'
 const isFormValid = computed(() => {
   return (
     formData.accountId !== null &&
@@ -399,10 +404,7 @@ onMounted(async () => {
                     label="Date"
                     type="date"
                     :max="today"
-                    :rules="[
-                      (v) => !!v || 'Date is required',
-                      (v) => v <= today || 'Future dates not allowed',
-                    ]"
+                    :rules="[requiredRule, notFutureRule]"
                     required
                     variant="outlined"
                     density="compact"
@@ -415,7 +417,7 @@ onMounted(async () => {
                     item-title="name"
                     item-value="id"
                     label="Account"
-                    :rules="[(v) => !!v || 'Account is required']"
+                    :rules="[requiredRule]"
                     required
                     variant="outlined"
                     density="compact"
@@ -428,7 +430,7 @@ onMounted(async () => {
                     item-title="name"
                     item-value="id"
                     label="Transaction Type"
-                    :rules="[(v) => !!v || 'Transaction Type is required']"
+                    :rules="[requiredRule]"
                     required
                     variant="outlined"
                     density="compact"
@@ -445,8 +447,8 @@ onMounted(async () => {
                     type="number"
                     step="0.01"
                     :rules="[
-                      (v) => (v !== null && v !== '') || 'Value is required',
-                      (v) => isCorporateAction || v >= 0 || 'Value must be positive',
+                      requiredNumberRule,
+                      (v) => isCorporateAction || v >= 0 || 'Must be non-negative',
                     ]"
                     required
                     variant="outlined"
@@ -460,7 +462,7 @@ onMounted(async () => {
                     label="Units"
                     type="number"
                     step="0.000001"
-                    :rules="[(v) => !v || isCorporateAction || v >= 0 || 'Units must be positive']"
+                    :rules="[(v) => !v || isCorporateAction || v >= 0 || 'Must be non-negative']"
                     variant="outlined"
                     density="compact"
                   />
@@ -472,7 +474,7 @@ onMounted(async () => {
                     type="number"
                     step="0.0001"
                     min="0"
-                    :rules="[(v) => !v || v >= 0 || 'Price must be positive']"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                   />
@@ -488,7 +490,7 @@ onMounted(async () => {
                     type="number"
                     step="0.01"
                     min="0"
-                    :rules="[(v) => !v || v >= 0 || 'Dealing Charge must be positive']"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     prefix="£"
@@ -501,7 +503,7 @@ onMounted(async () => {
                     type="number"
                     step="0.01"
                     min="0"
-                    :rules="[(v) => !v || v >= 0 || 'Stamp Duty must be positive']"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     prefix="£"
@@ -514,7 +516,7 @@ onMounted(async () => {
                     type="number"
                     step="0.01"
                     min="0"
-                    :rules="[(v) => !v || v >= 0 || 'PTM Levy must be positive']"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     prefix="£"
@@ -527,7 +529,7 @@ onMounted(async () => {
                     type="number"
                     step="0.01"
                     min="0"
-                    :rules="[(v) => !v || v >= 0 || 'FX Charge must be positive']"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     prefix="£"
@@ -542,7 +544,7 @@ onMounted(async () => {
                     v-model="formData.instrumentId"
                     :items="instrumentItems"
                     label="Instrument"
-                    :rules="instrumentRequired ? [(v) => !!v || 'Instrument is required'] : []"
+                    :rules="instrumentRequired ? [requiredRule] : []"
                     clearable
                     variant="outlined"
                     density="compact"
@@ -588,7 +590,7 @@ onMounted(async () => {
                     label="Contract Note Reference"
                     variant="outlined"
                     density="compact"
-                    :rules="[(v) => !v || v.length <= 20 || 'Maximum 20 characters']"
+                    :rules="[maxLength20Rule]"
                     hint="Auto-filled from filename, or enter manually"
                     persistent-hint
                   />

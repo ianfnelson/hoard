@@ -80,18 +80,14 @@ watch(
 // Field length constraints
 const SOURCE_MAX_LENGTH = 50
 
-// Validation rules
+// Validation
 const today = new Date().toISOString().split('T')[0]!
-
-const requiredRule = (v: unknown) => (v !== null && v !== '') || 'This field is required'
-const positiveNumberRule = (v: unknown) =>
-  v === null || (typeof v === 'number' && v > 0) || 'Must be greater than 0'
-const sourceRules = [
-  requiredRule,
-  (v: string) =>
-    v.length <= SOURCE_MAX_LENGTH || `Source cannot exceed ${SOURCE_MAX_LENGTH} characters`,
-]
-const dateRules = [requiredRule, (v: string) => v <= today || 'As of date cannot be in the future']
+const requiredRule = (v: unknown) => !!v || 'Required'
+const requiredNumberRule = (v: unknown) => (v !== null && v !== '') || 'Required'
+const nonNegativeRule = (v: unknown) => !v || (v as number) >= 0 || 'Must be non-negative'
+const notFutureRule = (v: string) => v <= today || 'Cannot be in the future'
+const sourceMaxLengthRule = (v: string) =>
+  !v || v.length <= SOURCE_MAX_LENGTH || `Cannot exceed ${SOURCE_MAX_LENGTH} characters`
 
 const isFormValid = computed(() => {
   return (
@@ -101,13 +97,13 @@ const isFormValid = computed(() => {
     formData.source.trim() !== '' &&
     formData.source.length <= SOURCE_MAX_LENGTH &&
     formData.close !== null &&
-    formData.close > 0 &&
+    formData.close >= 0 &&
     formData.adjustedClose !== null &&
-    formData.adjustedClose > 0 &&
-    (formData.open === null || formData.open > 0) &&
-    (formData.high === null || formData.high > 0) &&
-    (formData.low === null || formData.low > 0) &&
-    (formData.volume === null || formData.volume > 0)
+    formData.adjustedClose >= 0 &&
+    (formData.open === null || formData.open >= 0) &&
+    (formData.high === null || formData.high >= 0) &&
+    (formData.low === null || formData.low >= 0) &&
+    (formData.volume === null || formData.volume >= 0)
   )
 })
 
@@ -303,7 +299,7 @@ onMounted(async () => {
                     label="As Of Date"
                     type="date"
                     :max="today"
-                    :rules="dateRules"
+                    :rules="[requiredRule, notFutureRule]"
                     variant="outlined"
                     density="compact"
                     required
@@ -313,7 +309,7 @@ onMounted(async () => {
                   <v-text-field
                     v-model="formData.source"
                     label="Source"
-                    :rules="sourceRules"
+                    :rules="[requiredRule, sourceMaxLengthRule]"
                     :maxlength="SOURCE_MAX_LENGTH"
                     variant="outlined"
                     density="compact"
@@ -338,7 +334,7 @@ onMounted(async () => {
                     type="number"
                     step="0.0001"
                     min="0"
-                    :rules="[positiveNumberRule]"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     clearable
@@ -351,7 +347,7 @@ onMounted(async () => {
                     type="number"
                     step="0.0001"
                     min="0"
-                    :rules="[positiveNumberRule]"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     clearable
@@ -364,7 +360,7 @@ onMounted(async () => {
                     type="number"
                     step="0.0001"
                     min="0"
-                    :rules="[positiveNumberRule]"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     clearable
@@ -377,7 +373,7 @@ onMounted(async () => {
                     type="number"
                     step="0.0001"
                     min="0"
-                    :rules="[requiredRule, positiveNumberRule]"
+                    :rules="[requiredNumberRule, nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     required
@@ -390,7 +386,7 @@ onMounted(async () => {
                     type="number"
                     step="0.0001"
                     min="0"
-                    :rules="[requiredRule, positiveNumberRule]"
+                    :rules="[requiredNumberRule, nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     required
@@ -403,7 +399,7 @@ onMounted(async () => {
                     type="number"
                     step="1"
                     min="0"
-                    :rules="[positiveNumberRule]"
+                    :rules="[nonNegativeRule]"
                     variant="outlined"
                     density="compact"
                     clearable
