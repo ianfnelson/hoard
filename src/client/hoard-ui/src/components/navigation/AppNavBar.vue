@@ -12,20 +12,7 @@ const { isDark, toggleTheme } = useTheme()
     <v-btn :to="{ name: 'instruments' }" text>Instruments</v-btn>
     <v-btn :to="{ name: 'transactions' }" text>Transactions</v-btn>
     <v-btn :to="{ name: 'news' }" text>News</v-btn>
-
-    <v-menu>
-      <template #activator="{ props }">
-        <v-btn text v-bind="props">
-          System
-          <v-icon end>mdi-chevron-down</v-icon>
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item :to="{ name: 'system' }">
-          <v-list-item-title>Settings</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <v-btn :to="{ name: 'system' }" text>System</v-btn>
 
     <v-spacer />
 
