@@ -21,7 +21,7 @@ const currentPortfolioName = computed(() => {
   <v-menu>
     <template #activator="{ props }">
       <v-btn text v-bind="props">
-        {{ currentPortfolioName || 'Select Portfolio' }}
+        {{ currentPortfolioName || 'Portfolios' }}
         <v-icon end>mdi-chevron-down</v-icon>
       </v-btn>
     </template>
