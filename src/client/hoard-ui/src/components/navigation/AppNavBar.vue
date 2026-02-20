@@ -12,6 +12,7 @@ const { isDark, toggleTheme } = useTheme()
     <v-btn :to="{ name: 'instruments' }" text>Instruments</v-btn>
     <v-btn :to="{ name: 'transactions' }" text>Transactions</v-btn>
     <v-btn :to="{ name: 'news' }" text>News</v-btn>
+    <v-btn :to="{ name: 'alerts' }" text>Alerts</v-btn>
     <v-btn :to="{ name: 'system' }" text>System</v-btn>
 
     <v-spacer />
