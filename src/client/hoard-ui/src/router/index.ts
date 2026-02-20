@@ -99,6 +99,17 @@ const router = createRouter({
           props: true,
         },
         {
+          path: 'alerts',
+          name: 'alerts',
+          component: () => import('@/pages/AlertsPage.vue'),
+        },
+        {
+          path: 'alerts/:id',
+          name: 'alert-detail',
+          component: () => import('@/pages/AlertDetailPage.vue'),
+          props: true,
+        },
+        {
           path: 'system',
           name: 'system',
           component: () => import('@/pages/SystemPage.vue'),

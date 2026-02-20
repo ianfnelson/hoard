@@ -3,6 +3,7 @@ import type { InstrumentTypeDto } from './dtos/InstrumentTypes/InstrumentTypeDto
 import type { AssetClassDto } from './dtos/AssetClasses/AssetClassDto'
 import type { TransactionTypeDto } from './dtos/TransactionTypes/TransactionTypeDto'
 import type { CurrencyDto } from './dtos/Currencies/CurrencyDto'
+import type { AlertTypeDto } from './dtos/AlertTypes/AlertTypeDto'
 
 export async function getInstrumentTypes(): Promise<InstrumentTypeDto[]> {
   const response = await hoardApi.get('/reference/instrument-types/')
@@ -21,5 +22,10 @@ export async function getTransactionTypes(): Promise<TransactionTypeDto[]> {
 
 export async function getCurrencies(): Promise<CurrencyDto[]> {
   const response = await hoardApi.get('/reference/currencies/')
+  return response.data
+}
+
+export async function getAlertTypes(): Promise<AlertTypeDto[]> {
+  const response = await hoardApi.get('/reference/alert-types/')
   return response.data
 }
