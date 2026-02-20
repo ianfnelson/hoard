@@ -21,6 +21,7 @@ import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDt
 import type { PriceSummaryDto } from '@/api/dtos/Instruments/PriceSummaryDto'
 import type { InstrumentDataFeedWriteDto } from '@/api/dtos/Instruments/InstrumentDataFeedWriteDto'
 import { useContractNoteDownload } from '@/composables/useContractNoteDownload'
+import PriceChart from '@/components/PriceChart.vue'
 
 // Data feed constants (must match backend DataFeed.cs)
 const DATA_FEED_NEWS = 1
@@ -463,10 +464,10 @@ onMounted(() => {
       </v-col>
     </v-row>
 
-    <v-row v-if="isViewMode" dense>
+    <v-row v-if="isViewMode && instrumentId" align="stretch" dense>
       <!-- Instrument Details Card -->
       <v-col cols="12" lg="6">
-        <v-card>
+        <v-card class="h-100">
           <v-card-title>{{ instrumentStore.instrument?.name }}</v-card-title>
           <v-card-text>
             <v-row dense>
@@ -607,61 +608,21 @@ onMounted(() => {
           </v-card-actions>
         </v-card>
       </v-col>
-      <!-- Transactions Card -->
-      <v-col v-if="txnIsLoading || txnTotalCount > 0" cols="12" lg="6">
-        <v-card>
-          <v-card-title>Transactions</v-card-title>
+
+      <!-- Price Chart Card -->
+      <v-col cols="12" lg="6">
+        <v-card class="h-100">
+          <v-card-title>Price History</v-card-title>
           <v-card-text>
-            <v-data-table-server
-              v-model:page="txnPage"
-              v-model:items-per-page="txnItemsPerPage"
-              v-model:sort-by="txnSortBy"
-              :headers="txnHeaders"
-              :items="txnItems"
-              :items-length="txnTotalCount"
-              :loading="txnIsLoading"
-              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
-              density="compact"
-            >
-              <template #item.date="{ item, value }">
-                <router-link
-                  :to="{ name: 'transaction-detail', params: { id: item.id } }"
-                  class="text-decoration-none"
-                >
-                  <span style="white-space: nowrap">{{ formatDate(value) }}</span>
-                </router-link>
-              </template>
-
-              <template #item.value="{ value }">
-                <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
-              </template>
-
-              <template #item.contractNoteReference="{ item, value }">
-                <v-btn
-                  v-if="value"
-                  icon
-                  size="small"
-                  variant="text"
-                  :loading="isDownloading(value)"
-                  @click.stop="handleDownloadContractNote(item.id, value)"
-                >
-                  <v-icon class="doc-link-icon">mdi-file-document</v-icon>
-                  <v-tooltip activator="parent" location="top">
-                    Download {{ value }}.pdf
-                  </v-tooltip>
-                </v-btn>
-              </template>
-
-              <template #no-data> No transactions found </template>
-            </v-data-table-server>
+            <PriceChart :instrument-id="instrumentId" />
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-    <v-row v-if="isViewMode" dense>
+    <v-row v-if="isViewMode" align="stretch" dense>
       <!-- Prices Card -->
       <v-col v-if="priceIsLoading || priceTotalCount > 0" cols="12" lg="6">
-        <v-card>
+        <v-card class="h-100">
           <v-card-title>Prices</v-card-title>
           <v-card-text>
             <v-data-table-server
@@ -717,9 +678,61 @@ onMounted(() => {
           </v-card-text>
         </v-card>
       </v-col>
+      <!-- Transactions Card -->
+      <v-col v-if="txnIsLoading || txnTotalCount > 0" cols="12" lg="6">
+        <v-card class="h-100">
+          <v-card-title>Transactions</v-card-title>
+          <v-card-text>
+            <v-data-table-server
+              v-model:page="txnPage"
+              v-model:items-per-page="txnItemsPerPage"
+              v-model:sort-by="txnSortBy"
+              :headers="txnHeaders"
+              :items="txnItems"
+              :items-length="txnTotalCount"
+              :loading="txnIsLoading"
+              :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
+              density="compact"
+            >
+              <template #item.date="{ item, value }">
+                <router-link
+                  :to="{ name: 'transaction-detail', params: { id: item.id } }"
+                  class="text-decoration-none"
+                >
+                  <span style="white-space: nowrap">{{ formatDate(value) }}</span>
+                </router-link>
+              </template>
+
+              <template #item.value="{ value }">
+                <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
+              </template>
+
+              <template #item.contractNoteReference="{ item, value }">
+                <v-btn
+                  v-if="value"
+                  icon
+                  size="small"
+                  variant="text"
+                  :loading="isDownloading(value)"
+                  @click.stop="handleDownloadContractNote(item.id, value)"
+                >
+                  <v-icon class="doc-link-icon">mdi-file-document</v-icon>
+                  <v-tooltip activator="parent" location="top">
+                    Download {{ value }}.pdf
+                  </v-tooltip>
+                </v-btn>
+              </template>
+
+              <template #no-data> No transactions found </template>
+            </v-data-table-server>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row v-if="isViewMode" align="stretch" dense>
       <!-- News Card -->
       <v-col v-if="newsIsLoading || newsTotalCount > 0" cols="12" lg="6">
-        <v-card>
+        <v-card class="h-100">
           <v-card-title>News</v-card-title>
           <v-card-text>
             <v-data-table-server
