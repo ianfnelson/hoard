@@ -37,11 +37,11 @@ body,
 
 /* Document link icon color (used for contract notes, news, etc.) */
 .doc-link-icon {
-  color: #B87333 !important; /* Copper/bronze */
+  color: #b87333 !important; /* Copper/bronze */
 }
 
 .v-theme--dark .doc-link-icon {
-  color: #D4956C !important; /* Lighter copper for dark mode */
+  color: #d4956c !important; /* Lighter copper for dark mode */
 }
 
 /* Enhanced caption text for better readability */

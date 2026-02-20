@@ -41,6 +41,18 @@ public class InstrumentsController(IMediator mediator, IValidator<InstrumentWrit
     }  
     
     [HttpGet]
+    [Route("{id:int}/price-series")]
+    [ProducesResponseType(typeof(PriceSeriesDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PriceSeriesDto>> GetPriceSeries(int id, [FromQuery] GetPriceSeriesQuery query,
+        CancellationToken ct)
+    {
+        query.InstrumentId = id;
+        var dto = await mediator.QueryAsync<GetPriceSeriesQuery, PriceSeriesDto?>(query, ct);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
+    }
+
+    [HttpGet]
     [Route("{id:int}/prices")]
     [ProducesResponseType(typeof(PagedResult<PriceSummaryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
