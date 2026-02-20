@@ -30,7 +30,7 @@ public class RefreshPricesSaga(
         Data.PricesRunId = pricesRunId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForRefreshQuery, IReadOnlyList<int>>(
-            new GetInstrumentsForRefreshQuery(instrumentId));
+            new GetInstrumentsForRefreshQuery(instrumentId, pipelineMode));
 
         logger.LogInformation("Started refresh prices saga {PricesRunId} for {Count} instruments",
             Data.PricesRunId, instrumentIds.Count);
