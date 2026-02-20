@@ -101,6 +101,7 @@ public sealed class GetAlertsHandler(HoardContext context)
                 : query.OrderByDescending(a => a.Title),
 
             _ => query.OrderByDescending(a => a.CreatedUtc)
+                .ThenByDescending(a => a.Id)
         };
 
         return orderedQueryable.ThenBy(a => a.Id);
