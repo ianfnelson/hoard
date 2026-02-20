@@ -31,7 +31,7 @@ public class RefreshNewsSaga(
         Data.PipelineMode = pipelineMode;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForNewsRefreshQuery, IReadOnlyList<int>>(
-            new GetInstrumentsForNewsRefreshQuery(instrumentId));
+            new GetInstrumentsForNewsRefreshQuery(instrumentId, pipelineMode));
 
         logger.LogInformation("Started refresh news saga {NewsRunId} for {Count} instruments",
             Data.NewsRunId, instrumentIds.Count);
