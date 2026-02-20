@@ -111,7 +111,7 @@ public sealed class GetTransactionsHandler(HoardContext context)
                 ? query.OrderBy(t => t.Value)
                 : query.OrderByDescending(t => t.Value),
 
-            _ => query.OrderByDescending(t => t.Date)
+            _ => query.OrderByDescending(t => t.Date).ThenByDescending(t => t.Id)
         };
 
         return orderedQueryable.ThenBy(t => t.Id);
