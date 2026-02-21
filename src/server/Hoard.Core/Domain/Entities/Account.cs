@@ -6,6 +6,8 @@ public class Account : Entity<int>
     
     public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
 
+    public string? Colour { get; set; }
+
     public bool IsActive { get; set; } = true;
     
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
