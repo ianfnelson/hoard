@@ -14,6 +14,9 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .IsRequired()
             .HasMaxLength(100);
         
+        builder.Property(a => a.Colour)
+            .HasMaxLength(7);
+
         builder.Property(e => e.CreatedUtc)
             .HasColumnType("datetime2(3)")
             .HasDefaultValueSql("SYSUTCDATETIME()");

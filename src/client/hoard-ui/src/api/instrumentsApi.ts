@@ -4,6 +4,7 @@ import type { InstrumentSummaryDto } from './dtos/Instruments/InstrumentSummaryD
 import type { InstrumentWriteDto } from './dtos/Instruments/InstrumentWriteDto'
 import type { PriceSummaryDto } from './dtos/Instruments/PriceSummaryDto'
 import type { PriceSeriesDto } from './dtos/Instruments/PriceSeriesDto'
+import type { ValuationSeriesDto } from './dtos/Instruments/ValuationSeriesDto'
 import type { PagedResult } from '@/api/dtos/PagedResult'
 import type { LookupDto } from './dtos/LookupDto.ts'
 
@@ -61,6 +62,11 @@ export async function getPriceSeries(
   const response = await hoardApi.get(`/instruments/${instrumentId}/price-series`, {
     params: { from, to },
   })
+  return response.data
+}
+
+export async function getValuationSeries(instrumentId: number): Promise<ValuationSeriesDto> {
+  const response = await hoardApi.get(`/instruments/${instrumentId}/valuation-series`)
   return response.data
 }
 
