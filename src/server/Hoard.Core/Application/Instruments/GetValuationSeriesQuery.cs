@@ -75,8 +75,10 @@ public sealed class GetValuationSeriesHandler(HoardContext context, ILogger<GetV
             })
             .ToList();
 
-        // Normalize X coordinates so every series shares the same set of timestamps.
-        // ApexCharts stacked area charts require identical X arrays for correct stacking.
+        // Normalize X coordinates so every series shares the same timestamps within
+        // each contiguous time segment. Segments are separated by >7-day gaps in the
+        // combined timeline, preventing diagonal ramps across periods where no account
+        // holds the instrument, while ensuring correct stacking within overlapping periods.
         if (series.Count > 1)
         {
             var allX = series
@@ -85,15 +87,34 @@ public sealed class GetValuationSeriesHandler(HoardContext context, ILogger<GetV
                 .OrderBy(x => x)
                 .ToList();
 
-            foreach (var s in series)
+            if (allX.Count > 0)
             {
-                var lookup = s.Data.ToDictionary(p => p.X, p => p.Y);
-                s.Data.Clear();
-                s.Data.AddRange(allX.Select(x => new ValuationPointDto
+                const long sevenDays = 7 * 86_400_000L;
+                var segments = new List<List<long>> { new() { allX[0] } };
+                for (var i = 1; i < allX.Count; i++)
                 {
-                    X = x,
-                    Y = lookup.GetValueOrDefault(x, 0)
-                }));
+                    if (allX[i] - allX[i - 1] > sevenDays)
+                        segments.Add(new List<long>());
+                    segments[^1].Add(allX[i]);
+                }
+
+                foreach (var s in series)
+                {
+                    if (s.Data.Count == 0) continue;
+
+                    var lookup = s.Data.ToDictionary(p => p.X, p => p.Y);
+
+                    s.Data.Clear();
+                    s.Data.AddRange(segments
+                        .Where(seg => seg.Any(x =>
+                            lookup.TryGetValue(x, out var y) && y != 0))
+                        .SelectMany(seg => seg)
+                        .Select(x => new ValuationPointDto
+                        {
+                            X = x,
+                            Y = lookup.GetValueOrDefault(x, 0)
+                        }));
+                }
             }
         }
 
