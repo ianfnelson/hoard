@@ -55,6 +55,58 @@
       "id": "0de7571b-75a5-4837-ad13-791fd4c273c9"
     },
     {
+      "name": "Alerts",
+      "item": [
+        {
+          "name": "Alert",
+          "id": "f1f2f3f4-a5a6-b7b8-c9c0-d1d2d3d4d5d6",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}alerts/1",
+              "host": [
+                "{{BaseUrl}}alerts"
+              ],
+              "path": [
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Alerts",
+          "id": "e2e3e4e5-f6f7-a8a9-b0b1-c2c3c4c5c6c7",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}alerts/?page=1&pageSize=30",
+              "host": [
+                "{{BaseUrl}}alerts"
+              ],
+              "path": [
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+    },
+    {
       "name": "Instruments",
       "item": [
         {
@@ -133,63 +185,119 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}instruments/?page=1&pageSize=30&sortBy=name&sortDirection=asc&instrumentTypeId=1&search=kainos",
+              "raw": "{{BaseUrl}}instruments/10",
               "host": [
                 "{{BaseUrl}}instruments"
               ],
               "path": [
-                ""
+                "10"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Instrument — Price Series",
+          "id": "b1c2d3e4-f5a6-7b8c-9d0e-1f2a3b4c5d6e",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}instruments/10/price-series",
+              "host": [
+                "{{BaseUrl}}instruments"
               ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "30"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "name"
-                },
-                {
-                  "key": "sortDirection",
-                  "value": "asc"
-                },
-                {
-                  "key": "instrumentTypeId",
-                  "value": "1",
-                  "type": "text",
-                  "uuid": "18e09529-50fb-453e-8439-4eadad6591fc"
-                },
-                {
-                  "key": "assetClassId",
-                  "value": "1",
-                  "type": "text",
-                  "uuid": "2dc7fc2b-39b5-4e0c-8cea-2366e1293bbb",
-                  "disabled": true
-                },
-                {
-                  "key": "assetSubclassId",
-                  "value": "1",
-                  "type": "text",
-                  "uuid": "1b8198a5-ec89-4164-9f1c-7683acfc0070",
-                  "disabled": true
-                },
-                {
-                  "key": "enablePriceUpdates",
-                  "value": "true",
-                  "type": "text",
-                  "uuid": "b1c742f1-a040-462c-83ad-63ae9180e5a3",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "kainos",
-                  "type": "text",
-                  "uuid": "62e8fa28-b934-41de-879a-7888d100467c"
+              "path": [
+                "10",
+                "price-series"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Instrument — Valuation Series",
+          "id": "c2d3e4f5-a6b7-8c9d-0e1f-2a3b4c5d6e7f",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}instruments/10/valuation-series",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                "10",
+                "valuation-series"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Instrument",
+          "id": "d3e4f5a6-b7c8-9d0e-1f2a-3b4c5d6e7f8a",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"New Instrument\",\n    \"instrumentTypeId\": 1,\n    \"assetClassId\": 1,\n    \"currencyId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}instruments",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Instrument",
+          "id": "e4f5a6b7-c8d9-0e1f-2a3b-4c5d6e7f8a9b",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Instrument\",\n    \"instrumentTypeId\": 1,\n    \"assetClassId\": 1,\n    \"currencyId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}instruments/10",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                "10"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Instrument",
+          "id": "f5a6b7c8-d9e0-1f2a-3b4c-5d6e7f8a9b0c",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}instruments/10",
+              "host": [
+                "{{BaseUrl}}instruments"
+              ],
+              "path": [
+                "10"
               ]
             }
           },
@@ -867,20 +975,19 @@
           "response": []
         },
         {
-          "name": "Portfolio — Valuations — Latest",
-          "id": "63937bbd-3faa-4771-96bb-ce01ba324bd1",
+          "name": "Portfolio — Snapshots",
+          "id": "a1a2a3a4-b5b6-c7c8-d9d0-e1e2e3e4e5e6",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BaseUrl}}portfolios/3/valuations/latest",
+              "raw": "{{BaseUrl}}portfolios/3/snapshots",
               "host": [
                 "{{BaseUrl}}portfolios"
               ],
               "path": [
                 "3",
-                "valuations",
-                "latest"
+                "snapshots"
               ]
             }
           },
@@ -1008,6 +1115,24 @@
     {
       "name": "Reference",
       "item": [
+        {
+          "name": "Alert Types",
+          "id": "ab1cd2ef-3456-7890-abcd-ef1234567890",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BaseUrl}}reference/alert-types",
+              "host": [
+                "{{BaseUrl}}reference"
+              ],
+              "path": [
+                "alert-types"
+              ]
+            }
+          },
+          "response": []
+        },
         {
           "name": "Asset Classes",
           "id": "ca5022cb-70de-4aec-9551-383b78869c07",
