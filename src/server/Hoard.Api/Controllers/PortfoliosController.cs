@@ -75,12 +75,35 @@ public class PortfoliosController(IMediator mediator)
     public async Task<ActionResult<PortfolioPositionsDto>> GetPositions(int id, [FromQuery] bool? isOpen, CancellationToken ct)
     {
         var query = new GetPortfolioPositionsQuery(id, isOpen);
-        
+
         var dto = await mediator.QueryAsync<GetPortfolioPositionsQuery, PortfolioPositionsDto?>(query, ct);
-        
+
         return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
-    
+
+    [HttpGet("{id:int}/valuation")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(PortfolioValuationsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PortfolioValuationsDto>> GetValuation(
+        int id,
+        [FromQuery] DateOnly? from,
+        [FromQuery] DateOnly? to,
+        CancellationToken ct)
+    {
+        try
+        {
+            var query = new GetPortfolioValuationsQuery(id, from, to);
+
+            var dto = await mediator.QueryAsync<GetPortfolioValuationsQuery, PortfolioValuationsDto?>(query, ct);
+
+            return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
+        }
+        catch (ArgumentException ex)
+        {
+            return new BadRequestObjectResult(new { error = ex.Message });
+        }
+    }
+
     // TODO - add target allocations put endpoint
-    // TODO - valuations, for charts and export
 }

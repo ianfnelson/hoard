@@ -52,9 +52,9 @@ const router = createRouter({
               props: true,
             },
             {
-              path: 'history',
-              name: 'portfolio-history',
-              component: () => import('@/pages/PortfolioHistoryPage.vue'),
+              path: 'valuations',
+              name: 'portfolio-valuations',
+              component: () => import('@/pages/PortfolioValuationsPage.vue'),
               props: true,
             },
           ],
