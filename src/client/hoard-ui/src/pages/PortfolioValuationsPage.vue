@@ -38,22 +38,12 @@ onMounted(() => {
   loadValuations()
 })
 
-// Watch for date changes and update querystring
-watch([fromDate, toDate], ([newFrom, newTo]) => {
-  const query: Record<string, string> = {}
-  if (newFrom) query.from = newFrom
-  if (newTo) query.to = newTo
-
-  router.replace({ query })
-})
-
 // Watch querystring changes (e.g., from browser back/forward)
 watch(
   () => route.query,
   (newQuery) => {
     fromDate.value = (newQuery.from as string) || ''
     toDate.value = (newQuery.to as string) || getCurrentDate()
-    loadValuations()
   }
 )
 
@@ -99,6 +89,11 @@ async function loadValuations() {
       from: fromDate.value || undefined,
       to: toDate.value || undefined,
     })
+
+    const query: Record<string, string> = {}
+    if (fromDate.value) query.from = fromDate.value
+    if (toDate.value) query.to = toDate.value
+    router.replace({ query })
   } catch {
     validationError.value = 'Failed to load valuations'
     valuations.value = null

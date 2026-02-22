@@ -105,5 +105,18 @@ public class PortfoliosController(IMediator mediator)
         }
     }
 
+    [HttpGet("{id:int}/valuation-series")]
+    [ProducesResponseType(typeof(PortfolioValuationSeriesDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PortfolioValuationSeriesDto>> GetValuationSeries(
+        int id,
+        [FromQuery] GetPortfolioValuationSeriesQuery query,
+        CancellationToken ct)
+    {
+        query.PortfolioId = id;
+        var dto = await mediator.QueryAsync<GetPortfolioValuationSeriesQuery, PortfolioValuationSeriesDto?>(query, ct);
+        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
+    }
+
     // TODO - add target allocations put endpoint
 }

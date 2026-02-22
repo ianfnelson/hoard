@@ -13,6 +13,7 @@ const tabs = [
   { name: 'portfolio-positions', label: 'Positions', to: { name: 'portfolio-positions' } },
   { name: 'portfolio-statements', label: 'Statements', to: { name: 'portfolio-statements' } },
   { name: 'portfolio-valuations', label: 'Valuations', to: { name: 'portfolio-valuations' } },
+  { name: 'portfolio-history', label: 'History', to: { name: 'portfolio-history' } },
 ]
 
 const currentTab = computed(() => route.name)
