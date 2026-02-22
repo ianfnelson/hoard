@@ -32,18 +32,6 @@ public class PortfoliosController(IMediator mediator)
 
         return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
-    
-    [HttpGet("{id:int}/valuations/latest")]
-    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(PortfolioValuationDetailDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PortfolioValuationDetailDto>> GetLatestValuation(int id, CancellationToken ct)
-    {
-        var query = new GetPortfolioValuationQuery(id);
-        
-        var dto = await mediator.QueryAsync<GetPortfolioValuationQuery, PortfolioValuationDetailDto?>(query, ct);
-
-        return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
-    }
 
     [HttpGet("{id:int}/instrument-types")]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
