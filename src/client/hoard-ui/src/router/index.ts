@@ -57,6 +57,12 @@ const router = createRouter({
               component: () => import('@/pages/PortfolioValuationsPage.vue'),
               props: true,
             },
+            {
+              path: 'history',
+              name: 'portfolio-history',
+              component: () => import('@/pages/PortfolioHistoryPage.vue'),
+              props: true,
+            },
           ],
         },
         {

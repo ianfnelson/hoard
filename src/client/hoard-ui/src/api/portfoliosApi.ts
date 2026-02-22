@@ -6,6 +6,7 @@ import type { PortfolioInstrumentTypesDto } from './dtos/Portfolios/PortfolioIns
 import type { PortfolioSummaryDto } from './dtos/Portfolios/PortfolioSummaryDto'
 import type { PortfolioStatementsDto } from './dtos/Portfolios/PortfolioStatementsDto'
 import type { PortfolioValuationsDto } from './dtos/Portfolios/PortfolioValuationsDto'
+import type { PortfolioValuationSeriesDto } from './dtos/Portfolios/PortfolioValuationSeriesDto'
 
 export interface GetPortfolioPositionsParams {
   isOpen?: boolean
@@ -14,6 +15,19 @@ export interface GetPortfolioPositionsParams {
 export interface GetPortfolioValuationsParams {
   from?: string
   to?: string
+}
+
+export type DisaggregateBy =
+  | 'none'
+  | 'accounts'
+  | 'assetClasses'
+  | 'assetSubclasses'
+  | 'instrumentTypes'
+
+export interface GetPortfolioValuationSeriesParams {
+  from?: string
+  to?: string
+  disaggregateBy?: DisaggregateBy
 }
 
 export async function getPortfolioList(): Promise<PortfolioSummaryDto[]> {
@@ -58,6 +72,16 @@ export async function getPortfolioValuations(
   params?: GetPortfolioValuationsParams
 ): Promise<PortfolioValuationsDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation`, {
+    params,
+  })
+  return response.data
+}
+
+export async function getPortfolioValuationSeries(
+  portfolioId: number,
+  params?: GetPortfolioValuationSeriesParams
+): Promise<PortfolioValuationSeriesDto> {
+  const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation-series`, {
     params,
   })
   return response.data
