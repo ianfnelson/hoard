@@ -4,6 +4,8 @@ import { computed } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
+import ExposurePieChart from '@/components/ExposurePieChart.vue'
+import type { PieChartData } from '@/components/ExposurePieChart.vue'
 
 const store = usePortfolioStore()
 
@@ -14,28 +16,32 @@ const pageTitle = computed(() => {
 usePageTitle(pageTitle)
 
 const instrumentTypesHeaders = [
+  { title: '', key: 'colour', width: '40px', sortable: false },
   { title: 'Name', key: 'name' },
   { title: 'Value', key: 'value', align: 'end' },
   { title: '%', key: 'percentage', align: 'end' },
 ] as const
 
 const assetClassHeaders = [
-  { title: 'Name', key: 'assetClassName' },
+  { title: '', key: 'colour', width: '40px', sortable: false },
+  { title: 'Name', key: 'name' },
   { title: 'Target %', key: 'targetPercentage', align: 'end' },
-  { title: 'Actual %', key: 'actualPercentage', align: 'end' },
-  { title: 'Actual Value', key: 'actualValue', align: 'end' },
+  { title: 'Actual %', key: 'percentage', align: 'end' },
+  { title: 'Actual Value', key: 'value', align: 'end' },
   { title: 'Deviation', key: 'deviationValue', align: 'end' },
 ] as const
 
 const assetSubclassHeaders = [
-  { title: 'Name', key: 'assetSubclassName' },
+  { title: '', key: 'colour', width: '40px', sortable: false },
+  { title: 'Name', key: 'name' },
   { title: 'Target %', key: 'targetPercentage', align: 'end' },
-  { title: 'Actual %', key: 'actualPercentage', align: 'end' },
-  { title: 'Actual Value', key: 'actualValue', align: 'end' },
+  { title: 'Actual %', key: 'percentage', align: 'end' },
+  { title: 'Actual Value', key: 'value', align: 'end' },
   { title: 'Deviation', key: 'deviationValue', align: 'end' },
 ] as const
 
 const rebalanceHeaders = [
+  { title: '', key: 'colour', width: '40px', sortable: false },
   { title: 'Action', key: 'action' },
   { title: 'Subclass', key: 'assetSubclassName' },
   { title: 'Value', key: 'amount', align: 'end' },
@@ -49,18 +55,93 @@ const assetSubclassRows = computed(() => store.exposure?.assetSubclasses ?? [])
 
 const rebalanceRows = computed(() =>
   (store.exposure?.rebalanceActions ?? []).map((r) => ({
+    colour: r.colour,
     action: r.rebalanceAction === 1 ? 'Sell' : 'Buy',
     assetSubclassName: r.assetSubclassName,
     amount: r.amount,
+  }))
+)
+
+const assetClassPieData = computed<PieChartData[]>(() =>
+  (store.exposure?.assetClasses ?? []).map((ac) => ({
+    name: ac.name,
+    colour: ac.colour,
+    percentage: ac.percentage,
+  }))
+)
+
+const assetSubclassPieData = computed<PieChartData[]>(() =>
+  (store.exposure?.assetSubclasses ?? []).map((asc) => ({
+    name: asc.name,
+    colour: asc.colour,
+    percentage: asc.percentage,
+  }))
+)
+
+const instrumentTypePieData = computed<PieChartData[]>(() =>
+  (store.instrumentTypes?.instrumentTypes ?? []).map((it) => ({
+    name: it.name,
+    colour: it.colour,
+    percentage: it.percentage,
   }))
 )
 </script>
 
 <template>
   <v-container fluid>
-    <v-row dense class="mt-0">
+    <!-- Asset classes row -->
+    <v-row dense>
       <v-col cols="12" md="6">
-        <v-card>
+        <v-card class="h-100">
+          <v-card-title>Asset Classes</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="assetClassHeaders"
+              :items="assetClassRows"
+              :items-per-page="-1"
+              :loading="store.isLoading"
+              density="compact"
+              hide-default-footer
+            >
+              <template #item.colour="{ value }">
+                <v-icon :color="value" size="small">mdi-circle</v-icon>
+              </template>
+
+              <template #item.targetPercentage="{ value }">
+                <span>{{ formatPercentage(value) }}</span>
+              </template>
+
+              <template #item.percentage="{ value }">
+                <span>{{ formatPercentage(value) }}</span>
+              </template>
+
+              <template #item.value="{ value }">
+                <span>{{ formatCurrency(value) }}</span>
+              </template>
+
+              <template #item.deviationValue="{ value }">
+                <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
+              </template>
+
+              <template #no-data> No asset classes </template>
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-card class="h-100">
+          <v-card-title>Asset Classes</v-card-title>
+          <v-card-text>
+            <ExposurePieChart :data="assetClassPieData" :is-loading="store.isLoading" />
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Asset subclasses row -->
+    <v-row dense>
+      <v-col cols="12" md="6">
+        <v-card class="h-100">
           <v-card-title>Asset Subclasses</v-card-title>
           <v-card-text>
             <v-data-table
@@ -71,15 +152,19 @@ const rebalanceRows = computed(() =>
               density="compact"
               hide-default-footer
             >
+              <template #item.colour="{ value }">
+                <v-icon :color="value" size="small">mdi-circle</v-icon>
+              </template>
+
               <template #item.targetPercentage="{ value }">
                 <span>{{ formatPercentage(value) }}</span>
               </template>
 
-              <template #item.actualPercentage="{ value }">
+              <template #item.percentage="{ value }">
                 <span>{{ formatPercentage(value) }}</span>
               </template>
 
-              <template #item.actualValue="{ value }">
+              <template #item.value="{ value }">
                 <span>{{ formatCurrency(value) }}</span>
               </template>
 
@@ -92,40 +177,20 @@ const rebalanceRows = computed(() =>
           </v-card-text>
         </v-card>
       </v-col>
-
       <v-col cols="12" md="6">
-        <v-card class="mb-2">
-          <v-card-title>Asset Classes</v-card-title>
+        <v-card class="h-100">
+          <v-card-title>Asset Subclasses</v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="assetClassHeaders"
-              :items="assetClassRows"
-              :items-per-page="-1"
-              :loading="store.isLoading"
-              density="compact"
-              hide-default-footer
-            >
-              <template #item.targetPercentage="{ value }">
-                <span>{{ formatPercentage(value) }}</span>
-              </template>
-
-              <template #item.actualPercentage="{ value }">
-                <span>{{ formatPercentage(value) }}</span>
-              </template>
-
-              <template #item.actualValue="{ value }">
-                <span>{{ formatCurrency(value) }}</span>
-              </template>
-
-              <template #item.deviationValue="{ value }">
-                <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
-              </template>
-
-              <template #no-data> No asset classes </template>
-            </v-data-table>
+            <ExposurePieChart :data="assetSubclassPieData" :is-loading="store.isLoading" />
           </v-card-text>
         </v-card>
-        <v-card class="mb-2">
+      </v-col>
+    </v-row>
+
+    <!-- Instrument types row -->
+    <v-row dense>
+      <v-col cols="12" md="6">
+        <v-card class="h-100">
           <v-card-title>Instrument Types</v-card-title>
           <v-card-text>
             <v-data-table
@@ -136,6 +201,10 @@ const rebalanceRows = computed(() =>
               density="compact"
               hide-default-footer
             >
+              <template #item.colour="{ value }">
+                <v-icon :color="value" size="small">mdi-circle</v-icon>
+              </template>
+
               <template #item.value="{ value }">
                 <span>{{ formatCurrency(value) }}</span>
               </template>
@@ -148,7 +217,21 @@ const rebalanceRows = computed(() =>
             </v-data-table>
           </v-card-text>
         </v-card>
-        <v-card v-if="rebalanceRows.length > 0" class="mb-2">
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-card class="h-100">
+          <v-card-title>Instrument Types</v-card-title>
+          <v-card-text>
+            <ExposurePieChart :data="instrumentTypePieData" :is-loading="store.isLoading" />
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Provisional rebalancing row -->
+    <v-row v-if="rebalanceRows.length > 0" dense>
+      <v-col cols="12" md="6">
+        <v-card>
           <v-card-title>Provisional Rebalancing Trades</v-card-title>
           <v-card-text>
             <v-data-table
@@ -159,6 +242,10 @@ const rebalanceRows = computed(() =>
               density="compact"
               hide-default-footer
             >
+              <template #item.colour="{ value }">
+                <v-icon :color="value" size="small">mdi-circle</v-icon>
+              </template>
+
               <template #item.amount="{ value }">
                 <span>{{ formatCurrency(value) }}</span>
               </template>

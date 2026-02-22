@@ -1,7 +1,11 @@
 export interface AssetClassExposureDto {
-  assetClassName: string
+  id: number
+  name: string
+  colour: string
+  value: number
+  percentage: number
+  targetValue: number
   targetPercentage: number | null
-  actualPercentage: number
-  actualValue: number
   deviationValue: number | null
+  deviationPercentage: number
 }

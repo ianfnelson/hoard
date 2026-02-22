@@ -40,8 +40,10 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             {
                 sc.Id,
                 sc.Name,
+                sc.Colour,
                 sc.AssetClassId,
-                AssetClassName = sc.AssetClass.Name
+                AssetClassName = sc.AssetClass.Name,
+                AssetClassColour = sc.AssetClass.Colour
             })
             .ToListAsync(ct);
 
@@ -91,9 +93,11 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             {
                 sc.Id,
                 sc.Name,
+                sc.Colour,
 
                 sc.AssetClassId,
                 sc.AssetClassName,
+                sc.AssetClassColour,
 
                 ActualValue = actualValue,
                 TargetPercentage = targetPct
@@ -113,16 +117,18 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
             {
                 x.AssetClassId,
                 x.AssetClassName,
+                x.AssetClassColour,
 
                 AssetSubclassId = x.Id,
                 AssetSubclassName = x.Name,
+                AssetSubclassColour = x.Colour,
 
                 ActualValue = x.ActualValue,
                 ActualPercentage = actualPct,
-                
+
                 TargetValue = totalValue * x.TargetPercentage / 100.0m,
                 TargetPercentage = x.TargetPercentage,
-                
+
                 DeviationValue = totalValue * (actualPct - x.TargetPercentage) / 100.0m,
                 DeviationPercentage = x.TargetPercentage == 0.0M ? 0.0M : 100.0M * (actualPct - x.TargetPercentage) / x.TargetPercentage
             };
@@ -136,14 +142,16 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
         var subclassExposureDtos = subclassExposureRaw
             .Select(x => new AssetSubclassExposureDto
             {
+                Id = x.AssetSubclassId,
+                Name = x.AssetSubclassName,
+                Colour = x.AssetSubclassColour,
+
                 AssetClassId = x.AssetClassId,
                 AssetClassName = x.AssetClassName,
+                AssetClassColour = x.AssetClassColour,
 
-                AssetSubclassId = x.AssetSubclassId,
-                AssetSubclassName = x.AssetSubclassName,
-
-                ActualValue = x.ActualValue.RoundTo2Dp(),
-                ActualPercentage = x.ActualPercentage,
+                Value = x.ActualValue.RoundTo2Dp(),
+                Percentage = x.ActualPercentage,
 
                 TargetValue = x.TargetValue.RoundTo2Dp(),
                 TargetPercentage = x.TargetPercentage,
@@ -151,7 +159,7 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
                 DeviationValue = x.DeviationValue.RoundTo2Dp(),
                 DeviationPercentage = x.DeviationPercentage
             })
-            .OrderByDescending(x => x.ActualPercentage)
+            .OrderByDescending(x => x.Percentage)
             .ToList();
 
         // ------------------------------------------------------------------
@@ -162,35 +170,37 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
                 .GroupBy(x => new
                 {
                     x.AssetClassId,
-                    x.AssetClassName
+                    x.AssetClassName,
+                    x.AssetClassColour
                 })
                 .Select(g =>
                 {
                     var actualValue = g.Sum(x => x.ActualValue);
                     var actualPct = g.Sum(x => x.ActualPercentage);
-                    
+
                     var targetValue = g.Sum(x => x.TargetValue);
                     var targetPct = g.Sum(x => x.TargetPercentage);
-                    
+
                     var deviationValue = g.Sum(x => x.DeviationValue);
                     var deviationPct = targetPct == 0.0M ? 0.0M : 100.0M * (actualPct - targetPct) / targetPct;
 
                     return new AssetClassExposureDto
                     {
-                        AssetClassId = g.Key.AssetClassId,
-                        AssetClassName = g.Key.AssetClassName,
+                        Id = g.Key.AssetClassId,
+                        Name = g.Key.AssetClassName,
+                        Colour = g.Key.AssetClassColour,
 
-                        ActualValue = actualValue.RoundTo2Dp(),
-                        ActualPercentage = actualPct,
+                        Value = actualValue.RoundTo2Dp(),
+                        Percentage = actualPct,
 
                         TargetValue = targetValue.RoundTo2Dp(),
                         TargetPercentage = targetPct,
-                        
+
                         DeviationValue = deviationValue.RoundTo2Dp(),
                         DeviationPercentage = deviationPct
                     };
                 })
-                .OrderByDescending(x => x.ActualPercentage)
+                .OrderByDescending(x => x.Percentage)
                 .ToList();
 
         var rebalanceActions = DeriveRebalanceActions(totalValue, subclassExposureDtos);
@@ -219,38 +229,40 @@ public class GetPortfolioExposureHandler(HoardContext context, ILogger<GetPortfo
         var addDeviance = RebalanceAddPortfolioPercentage * totalValue / 100.0M;
         
         var cash = subclassExposureDtos
-            .SingleOrDefault(x => x.AssetSubclassId == AssetSubclass.Cash)?.ActualValue ?? 0m;
+            .SingleOrDefault(x => x.Id == AssetSubclass.Cash)?.Value ?? 0m;
 
         var subclassesToSell = subclassExposureDtos
-            .Where(x => x.AssetSubclassId != AssetSubclass.Cash)
+            .Where(x => x.Id != AssetSubclass.Cash)
             .Where(x => x.DeviationValue >= reduceDeviance);
 
         foreach (var subclassToSell in subclassesToSell)
         {
             actions.Add(new RebalanceActionDto
             {
-                AssetSubclassId = subclassToSell.AssetSubclassId,
-                AssetSubclassName = subclassToSell.AssetSubclassName,
+                AssetSubclassId = subclassToSell.Id,
+                AssetSubclassName = subclassToSell.Name,
+                Colour = subclassToSell.Colour,
                 RebalanceAction = RebalanceActionType.Reduce,
                 Amount = subclassToSell.DeviationValue
             });
-            
+
             cash += subclassToSell.DeviationValue;
         }
 
         var subclassesToAdd = subclassExposureDtos
-            .Where(x => x.AssetSubclassId != AssetSubclass.Cash)
+            .Where(x => x.Id != AssetSubclass.Cash)
             .Where(x => x.DeviationValue <= addDeviance)
             .OrderBy(x => x.DeviationValue);
 
         foreach (var subclassToAdd in subclassesToAdd)
         {
             var amount = Math.Min(-subclassToAdd.DeviationValue, cash);
-            
+
             actions.Add(new RebalanceActionDto
             {
-                AssetSubclassName = subclassToAdd.AssetSubclassName,
+                AssetSubclassName = subclassToAdd.Name,
                 AssetSubclassId = subclassToAdd.AssetClassId,
+                Colour = subclassToAdd.Colour,
                 RebalanceAction = RebalanceActionType.Add,
                 Amount = amount
             });

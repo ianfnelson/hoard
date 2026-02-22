@@ -16,11 +16,13 @@ public class GetAssetClassesHandler(HoardContext context)
             {
                 Id = ac.Id,
                 Name = ac.Name,
+                Colour = ac.Colour,
                 Subclasses = ac.Subclasses
                     .Select(s => new AssetSubclassDto
                     {
                         Id = s.Id,
-                        Name = s.Name
+                        Name = s.Name,
+                        Colour = s.Colour
                     })
                     .OrderBy(s => s.Name)
                     .ToList()
