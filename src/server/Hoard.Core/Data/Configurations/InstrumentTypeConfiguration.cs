@@ -13,7 +13,11 @@ public class InstrumentTypeConfiguration : IEntityTypeConfiguration<InstrumentTy
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id)
             .ValueGeneratedNever();
-        
+
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
+
+        builder.Property(t => t.Colour)
+            .IsRequired()
+            .HasMaxLength(7);
     }
 }

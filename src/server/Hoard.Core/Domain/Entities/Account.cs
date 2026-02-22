@@ -3,10 +3,10 @@ namespace Hoard.Core.Domain.Entities;
 public class Account : Entity<int>
 {
     public required string Name { get; set; }
-    
+
     public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
 
-    public string? Colour { get; set; }
+    public required string Colour { get; set; }
 
     public bool IsActive { get; set; } = true;
     

@@ -1,9 +1,13 @@
 namespace Hoard.Core.Application.Portfolios;
 
-public abstract class ExposureDto
+public class ExposureDto
 {
-    public decimal ActualValue { get; init; }
-    public decimal ActualPercentage { get; init; }
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public required string Colour { get; init; }
+
+    public decimal Value { get; init; }
+    public decimal Percentage { get; init; }
 
     public decimal TargetValue { get; init; }
     public decimal TargetPercentage { get; init; }

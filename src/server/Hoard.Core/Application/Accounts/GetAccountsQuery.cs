@@ -31,6 +31,7 @@ public class GetAccountsHandler(HoardContext context)
             {
                 Id = a.Id,
                 Name = a.Name,
+                Colour = a.Colour,
                 IsActive = a.IsActive,
                 CreatedUtc = a.CreatedUtc
             })

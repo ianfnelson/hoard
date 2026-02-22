@@ -80,12 +80,12 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new AssetClass { Id = 0, Name = "Unknown"},
-            new AssetClass { Id = 1, Name = "Equities" },
-            new AssetClass { Id = 2, Name = "Bonds" },
-            new AssetClass { Id = 3, Name = "Diversifiers" },
-            new AssetClass { Id = 4, Name = "Cash" },
-            new AssetClass { Id = 5, Name = "FX / Currency" }
+            new AssetClass { Id = 0, Name = "Unknown", Colour = "#808080" },
+            new AssetClass { Id = 1, Name = "Equities", Colour = "#B23A48" },
+            new AssetClass { Id = 2, Name = "Bonds", Colour = "#2F6FAB" },
+            new AssetClass { Id = 3, Name = "Diversifiers", Colour = "#C48A00" },
+            new AssetClass { Id = 4, Name = "Cash", Colour = "#2E8B57" },
+            new AssetClass { Id = 5, Name = "FX / Currency", Colour = "#D32F2F" }
         };
         await UpsertAsync(_context.AssetClasses, items, x => x.Id);
     }
@@ -94,28 +94,28 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new AssetSubclass { Id = 0, AssetClassId = 0, Name = "Unknown" },
-            new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK Large-Cap" },
-            new AssetSubclass { Id = 2, AssetClassId = 1, Name = "Global" },
-            new AssetSubclass { Id = 3, AssetClassId = 1, Name = "USA" },
-            new AssetSubclass { Id = 4, AssetClassId = 1, Name = "Europe" },
-            new AssetSubclass { Id = 5, AssetClassId = 1, Name = "Emerging Markets" },
-            new AssetSubclass { Id = 6, AssetClassId = 1, Name = "Japan" },
-            new AssetSubclass { Id = 7, AssetClassId = 2, Name = "Corporate Bonds" },
-            new AssetSubclass { Id = 8, AssetClassId = 2, Name = "Gilts" },
-            new AssetSubclass { Id = 9, AssetClassId = 2, Name = "Global Govt. Bonds" },
-            new AssetSubclass { Id = 10, AssetClassId = 3, Name = "Precious Metals" },
-            new AssetSubclass { Id = 11, AssetClassId = 3, Name = "Property" },
-            new AssetSubclass { Id = 12, AssetClassId = 3, Name = "Commodities" },
-            new AssetSubclass { Id = 13, AssetClassId = 3, Name = "Private Equity" },
-            new AssetSubclass { Id = 14, AssetClassId = 3, Name = "Infrastructure" },
-            new AssetSubclass { Id = AssetSubclass.Cash, AssetClassId = 4, Name = "Cash" },
-            new AssetSubclass { Id = 16, AssetClassId = 5, Name = "FX / Currency" },
-            new AssetSubclass { Id = 17, AssetClassId = 1, Name = "UK Mid-Cap" },
-            new AssetSubclass { Id = 18, AssetClassId = 1, Name = "UK Small-Cap" },
-            new AssetSubclass { Id = 19, AssetClassId = 3, Name = "Multi-Asset" },
-            new AssetSubclass { Id = 20, AssetClassId = 3, Name = "Cryptocurrencies" },
-            new AssetSubclass { Id = 21, AssetClassId = 3, Name = "Derivatives" },
+            new AssetSubclass { Id = 0, AssetClassId = 0, Name = "Unknown", Colour = "#808080" },
+            new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK Large-Cap", Colour = "#7A1E2C" },
+            new AssetSubclass { Id = 2, AssetClassId = 1, Name = "Global", Colour = "#B23A48" },
+            new AssetSubclass { Id = 3, AssetClassId = 1, Name = "USA", Colour = "#8E2433" },
+            new AssetSubclass { Id = 4, AssetClassId = 1, Name = "Europe", Colour = "#A22B3A" },
+            new AssetSubclass { Id = 5, AssetClassId = 1, Name = "Emerging Markets", Colour = "#C5535E" },
+            new AssetSubclass { Id = 6, AssetClassId = 1, Name = "Japan", Colour = "#D76C74" },
+            new AssetSubclass { Id = 7, AssetClassId = 2, Name = "Corporate Bonds", Colour = "#5E97D1" },
+            new AssetSubclass { Id = 8, AssetClassId = 2, Name = "Gilts", Colour = "#1F4F7A" },
+            new AssetSubclass { Id = 9, AssetClassId = 2, Name = "Global Govt. Bonds", Colour = "#2F6FAB" },
+            new AssetSubclass { Id = 10, AssetClassId = 3, Name = "Precious Metals", Colour = "#7A5600" },
+            new AssetSubclass { Id = 11, AssetClassId = 3, Name = "Property", Colour = "#936800" },
+            new AssetSubclass { Id = 12, AssetClassId = 3, Name = "Commodities", Colour = "#AC7A00" },
+            new AssetSubclass { Id = 13, AssetClassId = 3, Name = "Private Equity", Colour = "#D69D1F" },
+            new AssetSubclass { Id = 14, AssetClassId = 3, Name = "Infrastructure", Colour = "#C48A00" },
+            new AssetSubclass { Id = AssetSubclass.Cash, AssetClassId = 4, Name = "Cash", Colour = "#2E8B57" },
+            new AssetSubclass { Id = 16, AssetClassId = 5, Name = "FX / Currency", Colour = "#D81B60" },
+            new AssetSubclass { Id = 17, AssetClassId = 1, Name = "UK Mid-Cap", Colour = "#E78C90" },
+            new AssetSubclass { Id = 18, AssetClassId = 1, Name = "UK Small-Cap", Colour = "#F2B5B7" },
+            new AssetSubclass { Id = 19, AssetClassId = 3, Name = "Multi-Asset", Colour = "#E2B24D" },
+            new AssetSubclass { Id = 20, AssetClassId = 3, Name = "Cryptocurrencies", Colour = "#ECC980" },
+            new AssetSubclass { Id = 21, AssetClassId = 3, Name = "Derivatives", Colour = "#F6E1B8" },
         };
         await UpsertAsync(_context.AssetSubclasses, items, x => x.Id);
     }
@@ -124,14 +124,14 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new InstrumentType { Id = 0, Name = "Unknown" },
-            new InstrumentType { Id = 1, Name = "Share" },
-            new InstrumentType { Id = 2, Name = "ETF" },
-            new InstrumentType { Id = 3, Name = "OEIC" },
-            new InstrumentType { Id = 4, Name = "IT" },
-            new InstrumentType { Id = 5, Name = "Cash" },
-            new InstrumentType { Id = 6, Name = "FX"},
-            new InstrumentType { Id = 7,  Name = "Gilt" }
+            new InstrumentType { Id = 0, Name = "Unknown", Colour = "#808080" },
+            new InstrumentType { Id = 1, Name = "Share", Colour = "#3B3B3B" },
+            new InstrumentType { Id = 2, Name = "ETF", Colour = "#6A4C93" },
+            new InstrumentType { Id = 3, Name = "OEIC", Colour = "#1F7A7A" },
+            new InstrumentType { Id = 4, Name = "IT", Colour = "#3F51B5" },
+            new InstrumentType { Id = 5, Name = "Cash", Colour = "#2E8B57" },
+            new InstrumentType { Id = 6, Name = "FX", Colour = "#D32F2F" },
+            new InstrumentType { Id = 7, Name = "Gilt", Colour = "#5A6C7D" }
         };
         await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);
     }

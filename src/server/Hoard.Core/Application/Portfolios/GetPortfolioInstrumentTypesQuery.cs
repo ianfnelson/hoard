@@ -35,6 +35,7 @@ public class GetPortfolioInstrumentTypesHandler(HoardContext context, ILogger<Ge
             {
                 Id = g.Key.Id,
                 Name = g.Key.Name,
+                Colour = g.Key.Colour,
                 Value = g.Sum(hv => hv.Value)
             })
             .OrderByDescending(g => g.Value)

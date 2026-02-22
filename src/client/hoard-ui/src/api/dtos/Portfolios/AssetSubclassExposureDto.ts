@@ -1,7 +1,14 @@
 export interface AssetSubclassExposureDto {
-  assetSubclassName: string
+  id: number
+  name: string
+  colour: string
+  assetClassId: number
+  assetClassName: string
+  assetClassColour: string
+  value: number
+  percentage: number
+  targetValue: number
   targetPercentage: number | null
-  actualPercentage: number
-  actualValue: number
   deviationValue: number | null
+  deviationPercentage: number
 }

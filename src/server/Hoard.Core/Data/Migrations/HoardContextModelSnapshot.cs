@@ -32,6 +32,7 @@ namespace Hoard.Core.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Colour")
+                        .IsRequired()
                         .HasMaxLength(7)
                         .HasColumnType("nvarchar(7)");
 
@@ -137,6 +138,11 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("int")
                         .HasColumnName("AssetClassId");
 
+                    b.Property<string>("Colour")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -155,6 +161,11 @@ namespace Hoard.Core.Data.Migrations
 
                     b.Property<int>("AssetClassId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Colour")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -355,6 +366,11 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int")
                         .HasColumnName("InstrumentTypeId");
+
+                    b.Property<string>("Colour")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
 
                     b.Property<string>("Name")
                         .IsRequired()

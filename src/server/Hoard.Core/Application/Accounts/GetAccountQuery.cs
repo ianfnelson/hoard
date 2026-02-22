@@ -19,6 +19,7 @@ public class GetAccountHandler(HoardContext context, ILogger<GetAccountHandler> 
             {
                 Id = a.Id,
                 Name = a.Name,
+                Colour = a.Colour,
                 IsActive = a.IsActive,
                 CreatedUtc = a.CreatedUtc,
                 Portfolios = a.Portfolios.Select(p => new PortfolioSummaryDto

@@ -13,8 +13,9 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(a => a.Name)
             .IsRequired()
             .HasMaxLength(100);
-        
+
         builder.Property(a => a.Colour)
+            .IsRequired()
             .HasMaxLength(7);
 
         builder.Property(e => e.CreatedUtc)
