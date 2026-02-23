@@ -20,11 +20,33 @@ public class UpdateTransactionHandler(
 
         var tx = await GetExistingTransaction(transactionId, ct);
 
+        // Capture original values of fields that affect holdings calculation
+        var originalAccountId = tx.AccountId;
+        var originalInstrumentId = tx.InstrumentId;
+        var originalTransactionTypeId = tx.TransactionTypeId;
+        var originalDate = tx.Date;
+        var originalUnits = tx.Units;
+        var originalValue = tx.Value;
+
         mapper.Map(dto, tx);
 
         await context.SaveChangesAsync(ct);
 
-        await bus.Publish(new TransactionUpdatedEvent(pipelineMode, tx.Id, tx.Date));
+        // Only trigger holdings recalculation if material fields changed
+        var holdingsAffectingFieldsChanged =
+            tx.AccountId != originalAccountId ||
+            tx.InstrumentId != originalInstrumentId ||
+            tx.TransactionTypeId != originalTransactionTypeId ||
+            tx.Date != originalDate ||
+            tx.Units != originalUnits ||
+            tx.Value != originalValue;
+
+        if (holdingsAffectingFieldsChanged)
+        {
+            // Use the earlier date to ensure all affected days are recalculated
+            var effectiveDate = tx.Date < originalDate ? tx.Date : originalDate;
+            await bus.Publish(new TransactionUpdatedEvent(pipelineMode, tx.Id, effectiveDate));
+        }
     }
 
     private async Task<Transaction> GetExistingTransaction(int id, CancellationToken ct = default)
