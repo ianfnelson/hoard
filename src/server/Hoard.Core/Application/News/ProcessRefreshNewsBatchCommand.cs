@@ -23,29 +23,30 @@ public class ProcessRefreshNewsBatchHandler(
 {
     public async Task HandleAsync(ProcessRefreshNewsBatchCommand command, CancellationToken ct = default)
     {
+        var (newsRunId, pipelineMode, instrumentId) = command;
+        
         var instrument = await context.Instruments
             .Include(i => i.DataFeeds)
-            .FirstOrDefaultAsync(i => i.Id == command.InstrumentId, ct);
+            .FirstOrDefaultAsync(i => i.Id == instrumentId, ct);
 
         if (instrument == null)
         {
             logger.LogWarning("Received RefreshNewsBatchCommand with unknown Instrument {InstrumentId}",
-                command.InstrumentId);
+                instrumentId);
             return;
         }
 
         var newsFeed = instrument.DataFeeds.FirstOrDefault(df => df.DataFeedId == DataFeed.News);
         if (newsFeed == null)
         {
-            logger.LogWarning("News updates not possible for Instrument {InstrumentId}",
-                command.InstrumentId);
+            logger.LogWarning("News updates not possible for Instrument {InstrumentId}", instrumentId);
             return;
         }
 
         var now = DateTime.UtcNow;
 
         var articleSummaries = await GetArticleSummariesAsync(newsFeed, ct);
-        var existingSourceIds = await GetExistingArticleKeysAsync(command.InstrumentId, ct);
+        var existingSourceIds = await GetExistingArticleKeysAsync(instrumentId, ct);
         var newSummaries = FilterNewSummaries(articleSummaries, existingSourceIds);
 
         logger.LogDebug(
@@ -54,13 +55,9 @@ public class ProcessRefreshNewsBatchHandler(
             newsFeed.Configuration.Ticker,
             newSummaries.Count);
 
-        await FetchAndCreateNewArticlesAsync(newSummaries, instrument.Id, now, ct);
+        await FetchAndCreateNewArticlesAsync(newsRunId, pipelineMode, instrumentId, newSummaries, now, ct);
 
-        await bus.Publish(new NewsRefreshedEvent(
-            command.NewsRunId,
-            command.PipelineMode,
-            instrument.Id,
-            now));
+        await bus.Publish(new NewsRefreshedEvent(newsRunId, pipelineMode, instrumentId, now));
 
         logger.LogInformation(
             "News refreshed for Instrument {InstrumentId}, inserted {Count} new articles",
@@ -100,8 +97,10 @@ public class ProcessRefreshNewsBatchHandler(
     }
 
     private async Task FetchAndCreateNewArticlesAsync(
-        List<Clarion.Models.ArticleSummary> newSummaries,
+        Guid newsRunId,
+        PipelineMode pipelineMode,
         int instrumentId,
+        List<Clarion.Models.ArticleSummary> newSummaries,
         DateTime retrievedUtc,
         CancellationToken ct)
     {
@@ -131,6 +130,9 @@ public class ProcessRefreshNewsBatchHandler(
 
                 context.Add(newsArticle);
                 await context.SaveChangesAsync(ct);
+
+                await bus.Publish(new NewsArticleCreatedEvent(
+                    newsRunId, pipelineMode, newsArticle.Id, newsArticle.PublishedUtc, newsArticle.Headline));
             }
             catch (Exception ex)
             {

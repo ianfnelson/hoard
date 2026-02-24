@@ -44,7 +44,8 @@ public class ReferenceDataSeeder
     {
         var items = new[]
         {
-            new AlertType { Id = AlertType.CloseOfDayPortfolioValuation, Name = "Close of Day Portfolio Valuation" }
+            new AlertType { Id = AlertType.CloseOfDayPortfolioValuation, Name = "Close of Day Portfolio Valuation" },
+            new AlertType { Id = AlertType.NewsArticle, Name = "News Article" }
         };
         await UpsertAsync(_context.AlertTypes, items, x => x.Id);
     }
