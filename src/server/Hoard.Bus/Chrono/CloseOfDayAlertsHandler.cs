@@ -5,7 +5,7 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Chrono;
 
-public class CloseOfDayCompletedHandler(IMediator mediator)
+public class CloseOfDayAlertsHandler(IMediator mediator)
     : IHandleMessages<CloseOfDayCompletedEvent>
 {
     public async Task Handle(CloseOfDayCompletedEvent message)

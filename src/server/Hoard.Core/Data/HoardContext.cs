@@ -20,6 +20,7 @@ public class HoardContext : DbContext
     public DbSet<InstrumentDataFeed> InstrumentDataFeeds => Set<InstrumentDataFeed>();
     public DbSet<InstrumentType> InstrumentTypes => Set<InstrumentType>();
     public DbSet<NewsArticle> NewsArticles => Set<NewsArticle>();
+    public DbSet<NewsAlertSuppressionRule> NewsAlertSuppressionRules => Set<NewsAlertSuppressionRule>();
     public DbSet<Portfolio> Portfolios => Set<Portfolio>();
     public DbSet<TargetAllocation> TargetAllocations => Set<TargetAllocation>();
     public DbSet<PortfolioPerformance> PortfolioPerformances => Set<PortfolioPerformance>();

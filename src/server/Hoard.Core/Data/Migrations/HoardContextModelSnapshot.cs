@@ -382,6 +382,30 @@ namespace Hoard.Core.Data.Migrations
                     b.ToTable("InstrumentType", (string)null);
                 });
 
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.NewsAlertSuppressionRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("NewsAlertSuppressionRuleId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(3)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("HeadlineContains")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsAlertSuppressionRule", (string)null);
+                });
+
             modelBuilder.Entity("Hoard.Core.Domain.Entities.NewsArticle", b =>
                 {
                     b.Property<int>("Id")
@@ -401,7 +425,8 @@ namespace Hoard.Core.Data.Migrations
 
                     b.Property<string>("Headline")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("InstrumentId")
                         .HasColumnType("int");

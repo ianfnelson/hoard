@@ -1,5 +1,6 @@
 using FluentValidation;
 using Hoard.Core.Application.Alerts;
+using Hoard.Core.Application.News;
 using Hoard.Core.Application.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,15 @@ public static class ServiceCollectionExtensions
         AddMediator(services);
         AddValidation(services);
         AddServices(services);
+        AddProviders(services);
 
+        return services;
+    }
+
+    private static IServiceCollection AddProviders(IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddSingleton<INewsAlertSuppressionRuleProvider, NewsAlertSuppressionRuleProvider>();
         return services;
     }
 

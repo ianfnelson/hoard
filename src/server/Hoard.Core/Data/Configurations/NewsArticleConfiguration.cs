@@ -23,6 +23,9 @@ public class NewsArticleConfiguration : IEntityTypeConfiguration<NewsArticle>
             .IsRequired()
             .HasColumnType("datetime2");
 
+        builder.Property(na => na.Headline)
+            .IsRequired().HasMaxLength(200);
+        
         builder.Property(p => p.Source)
             .IsRequired().HasMaxLength(50);
 

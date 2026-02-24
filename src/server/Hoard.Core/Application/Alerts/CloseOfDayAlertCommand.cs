@@ -40,7 +40,7 @@ public class CloseOfDayAlertHandler(HoardContext hoardContext, IAlertService ale
         return portfolioPerformances.Select(p => BuildAlertRequest(p, asOfDate));
     }
 
-    private static AlertRequest BuildAlertRequest( PortfolioPerformance portfolioPerformance, DateOnly asOfDate)
+    private static AlertRequest BuildAlertRequest(PortfolioPerformance portfolioPerformance, DateOnly asOfDate)
     {
         return new AlertRequest
         {
