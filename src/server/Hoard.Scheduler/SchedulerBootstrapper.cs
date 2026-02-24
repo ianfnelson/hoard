@@ -76,7 +76,7 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "close-of-day",
             () => TriggerCloseOfDayCommand(),
-            "45 16 * * *" // daily at 16:45
+            "0 17 * * *" // daily at 17:00
         );
     }
     
