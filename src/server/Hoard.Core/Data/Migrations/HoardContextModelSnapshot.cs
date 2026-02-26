@@ -343,14 +343,14 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<DateOnly>("AsOfDate")
                         .HasColumnType("date");
 
-                    b.Property<decimal>("FiftyTwoWeekHighClose")
+                    b.Property<decimal?>("FiftyTwoWeekHighClose")
                         .HasColumnType("decimal(18,4)");
 
-                    b.Property<decimal>("FiftyTwoWeekLowClose")
+                    b.Property<decimal?>("FiftyTwoWeekLowClose")
                         .HasColumnType("decimal(18,4)");
 
-                    b.Property<decimal>("FiftyTwoWeekVolatility")
-                        .HasColumnType("decimal(18,6)");
+                    b.Property<decimal?>("FiftyTwoWeekVolatility")
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<int>("InstrumentId")
                         .HasColumnType("int");

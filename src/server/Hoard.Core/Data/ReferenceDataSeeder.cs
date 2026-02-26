@@ -48,7 +48,8 @@ public class ReferenceDataSeeder
             new AlertType { Id = AlertType.NewsArticle, Name = "News Article" },
             new AlertType { Id = AlertType.FiftyTwoWeekHigh, Name = "52-Week High" },
             new AlertType { Id = AlertType.FiftyTwoWeekLow, Name = "52-Week Low" },
-            new AlertType { Id = AlertType.AbnormalVolume, Name = "Abnormal Volume" }
+            new AlertType { Id = AlertType.AbnormalVolume, Name = "Abnormal Volume" },
+            new AlertType { Id = AlertType.QuoteMovement, Name = "Quote Movement" }
         };
         await UpsertAsync(_context.AlertTypes, items, x => x.Id);
     }
