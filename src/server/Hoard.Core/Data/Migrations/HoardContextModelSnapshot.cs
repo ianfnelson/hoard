@@ -331,6 +331,45 @@ namespace Hoard.Core.Data.Migrations
                     b.ToTable("Instrument", (string)null);
                 });
 
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentAnalysis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("InstrumentAnalysisId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("AsOfDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("FiftyTwoWeekHighClose")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("FiftyTwoWeekLowClose")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("FiftyTwoWeekVolatility")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<int>("InstrumentId")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("ThirtyDayMedianVolume")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedUtc")
+                        .HasPrecision(3)
+                        .HasColumnType("datetime2(3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstrumentId")
+                        .IsUnique();
+
+                    b.ToTable("InstrumentAnalysis", (string)null);
+                });
+
             modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentDataFeed", b =>
                 {
                     b.Property<int>("Id")
@@ -1157,6 +1196,17 @@ namespace Hoard.Core.Data.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("InstrumentType");
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentAnalysis", b =>
+                {
+                    b.HasOne("Hoard.Core.Domain.Entities.Instrument", "Instrument")
+                        .WithOne()
+                        .HasForeignKey("Hoard.Core.Domain.Entities.InstrumentAnalysis", "InstrumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Instrument");
                 });
 
             modelBuilder.Entity("Hoard.Core.Domain.Entities.InstrumentDataFeed", b =>
