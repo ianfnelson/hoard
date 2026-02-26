@@ -21,6 +21,16 @@ public class InstrumentAnalysisAlertHandler(
 {
     public async Task HandleAsync(InstrumentAnalysisAlertCommand command, CancellationToken ct = default)
     {
+        if (command.AsOfDate != DateOnlyHelper.TodayLocal())
+        {
+            return;
+        }
+
+        if (!command.AsOfDate.IsWeekday())
+        {
+            return;
+        }
+
         var instrument = await context.Instruments
             .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == command.InstrumentId, ct);
@@ -28,49 +38,65 @@ public class InstrumentAnalysisAlertHandler(
         if (instrument == null)
             return;
 
-        if (command.IsNewFiftyTwoWeekHigh)
-        {
-            await alertService.TryRaiseAsync(new AlertRequest
-            {
-                AlertTypeId = AlertType.FiftyTwoWeekHigh,
-                TriggeredDate = command.AsOfDate,
-                InstrumentId = command.InstrumentId,
-                SuppressionKey = $"{AlertType.FiftyTwoWeekHigh}:{command.InstrumentId}:{command.AsOfDate}",
-                Title = $"{instrument.Name} — New 52-Week High",
-                Message = $"{instrument.Name} ({instrument.TickerDisplay}) closed at a new 52-week high on {command.AsOfDate.ToIsoDateString()}.",
-                Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
-                UrlTitle = instrument.Name
-            }, ct);
-        }
+        await EvaluateFiftyTwoWeekHigh(command, instrument, ct);
+        await EvaluateFiftyTwoWeekLow(command, instrument, ct);
+        await EvaluateAbnormalVolume(command, instrument, ct);
+    }
 
-        if (command.IsNewFiftyTwoWeekLow)
-        {
-            await alertService.TryRaiseAsync(new AlertRequest
-            {
-                AlertTypeId = AlertType.FiftyTwoWeekLow,
-                TriggeredDate = command.AsOfDate,
-                InstrumentId = command.InstrumentId,
-                SuppressionKey = $"{AlertType.FiftyTwoWeekLow}:{command.InstrumentId}:{command.AsOfDate}",
-                Title = $"{instrument.Name} — New 52-Week Low",
-                Message = $"{instrument.Name} ({instrument.TickerDisplay}) closed at a new 52-week low on {command.AsOfDate.ToIsoDateString()}.",
-                Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
-                UrlTitle = instrument.Name
-            }, ct);
-        }
+    private async Task EvaluateFiftyTwoWeekHigh(
+        InstrumentAnalysisAlertCommand command, Instrument instrument, CancellationToken ct)
+    {
+        if (!command.IsNewFiftyTwoWeekHigh)
+            return;
 
-        if (command.IsAbnormalVolume)
+        await alertService.TryRaiseAsync(new AlertRequest
         {
-            await alertService.TryRaiseAsync(new AlertRequest
-            {
-                AlertTypeId = AlertType.AbnormalVolume,
-                TriggeredDate = command.AsOfDate,
-                InstrumentId = command.InstrumentId,
-                SuppressionKey = $"{AlertType.AbnormalVolume}:{command.InstrumentId}:{command.AsOfDate}",
-                Title = $"{instrument.Name} — Abnormal Volume",
-                Message = $"{instrument.Name} ({instrument.TickerDisplay}) traded with abnormally high volume on {command.AsOfDate.ToIsoDateString()}.",
-                Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
-                UrlTitle = instrument.Name
-            }, ct);
-        }
+            AlertTypeId = AlertType.FiftyTwoWeekHigh,
+            TriggeredDate = command.AsOfDate,
+            InstrumentId = command.InstrumentId,
+            SuppressionKey = $"{AlertType.FiftyTwoWeekHigh}:{command.InstrumentId}:{command.AsOfDate}",
+            Title = $"{instrument.TickerDisplay} — New 52-Week High",
+            Message = $"{instrument.Name} closed at a new 52-week high.",
+            Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
+            UrlTitle = instrument.Name
+        }, ct);
+    }
+
+    private async Task EvaluateFiftyTwoWeekLow(
+        InstrumentAnalysisAlertCommand command, Instrument instrument, CancellationToken ct)
+    {
+        if (!command.IsNewFiftyTwoWeekLow)
+            return;
+
+        await alertService.TryRaiseAsync(new AlertRequest
+        {
+            AlertTypeId = AlertType.FiftyTwoWeekLow,
+            TriggeredDate = command.AsOfDate,
+            InstrumentId = command.InstrumentId,
+            SuppressionKey = $"{AlertType.FiftyTwoWeekLow}:{command.InstrumentId}:{command.AsOfDate}",
+            Title = $"{instrument.TickerDisplay} — New 52-Week Low",
+            Message = $"{instrument.Name} closed at a new 52-week low.",
+            Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
+            UrlTitle = instrument.Name
+        }, ct);
+    }
+
+    private async Task EvaluateAbnormalVolume(
+        InstrumentAnalysisAlertCommand command, Instrument instrument, CancellationToken ct)
+    {
+        if (!command.IsAbnormalVolume)
+            return;
+
+        await alertService.TryRaiseAsync(new AlertRequest
+        {
+            AlertTypeId = AlertType.AbnormalVolume,
+            TriggeredDate = command.AsOfDate,
+            InstrumentId = command.InstrumentId,
+            SuppressionKey = $"{AlertType.AbnormalVolume}:{command.InstrumentId}:{command.AsOfDate}",
+            Title = $"{instrument.TickerDisplay} — Abnormal Volume",
+            Message = $"{instrument.Name} traded with abnormally high volume.",
+            Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
+            UrlTitle = instrument.Name
+        }, ct);
     }
 }
