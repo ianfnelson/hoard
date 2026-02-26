@@ -17,6 +17,7 @@ public class HoardContext : DbContext
     public DbSet<Holding> Holdings => Set<Holding>();
     public DbSet<HoldingValuation> HoldingValuations => Set<HoldingValuation>();
     public DbSet<Instrument> Instruments => Set<Instrument>();
+    public DbSet<InstrumentAnalysis> InstrumentAnalyses => Set<InstrumentAnalysis>();
     public DbSet<InstrumentDataFeed> InstrumentDataFeeds => Set<InstrumentDataFeed>();
     public DbSet<InstrumentType> InstrumentTypes => Set<InstrumentType>();
     public DbSet<NewsArticle> NewsArticles => Set<NewsArticle>();

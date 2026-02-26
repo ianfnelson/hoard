@@ -1,4 +1,5 @@
 using Hoard.Core.Application;
+using Hoard.Core.Application.Analysis;
 using Hoard.Core.Application.Holdings;
 using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Positions;
@@ -7,6 +8,7 @@ using Hoard.Core.Application.Snapshots;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Extensions;
 using Hoard.Messages;
+using Hoard.Messages.Analysis;
 using Hoard.Messages.Chrono;
 using Hoard.Messages.Holdings;
 using Hoard.Messages.Performance;
@@ -29,7 +31,8 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     IHandleMessages<PositionsCalculatedEvent>,
     IHandleMessages<ValuationsBackfilledEvent>,
     IHandleMessages<PerformanceCalculatedEvent>,
-    IHandleMessages<SnapshotsCalculatedEvent>
+    IHandleMessages<SnapshotsCalculatedEvent>,
+    IHandleMessages<InstrumentsAnalysedEvent>
 {
     protected override void CorrelateMessages(ICorrelationConfig<ChronoSagaData> config)
     {
@@ -41,6 +44,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         config.Correlate<ValuationsBackfilledEvent>(m => m.ValuationsRunId, d => d.ValuationsRunId);
         config.Correlate<PerformanceCalculatedEvent>(m => m.PerformanceRunId, d => d.PerformanceRunId);
         config.Correlate<SnapshotsCalculatedEvent>(m => m.SnapshotsRunId, d => d.SnapshotsRunId);
+        config.Correlate<InstrumentsAnalysedEvent>(m => m.AnalysisRunId, d => d.AnalysisRunId);
     }
 
     public async Task Handle(StartCloseOfDaySagaCommand message)
@@ -87,6 +91,11 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         {
             await DispatchValuations();
         }
+
+        if (!Data.AnalysisCompleted)
+        {
+            await DispatchAnalysis();
+        }
     }
 
     public async Task Handle(PerformanceCalculatedEvent message)
@@ -94,7 +103,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         Data.PerformanceCalculated = true;
         logger.LogInformation("CloseOfDay {ChronoRunId}: Performance calculated.", Data.ChronoRunId);
 
-        if (Data.SnapshotsCalculated)
+        if (Data.SnapshotsCalculated && Data.AnalysisCompleted)
         {
             await CompleteSaga();
         }
@@ -129,7 +138,18 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         Data.SnapshotsCalculated = true;
         logger.LogInformation("CloseOfDay {ChronoRunId}: Snapshots calculated.", Data.ChronoRunId);
 
-        if (Data.PerformanceCalculated)
+        if (Data.PerformanceCalculated && Data.AnalysisCompleted)
+        {
+            await CompleteSaga();
+        }
+    }
+
+    public async Task Handle(InstrumentsAnalysedEvent message)
+    {
+        Data.AnalysisCompleted = true;
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Analysis completed.", Data.ChronoRunId);
+
+        if (Data.PerformanceCalculated && Data.SnapshotsCalculated)
         {
             await CompleteSaga();
         }
@@ -177,6 +197,14 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         await mediator.SendAsync(triggerSnapshotsCommand);
     }
 
+    private async Task DispatchAnalysis()
+    {
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Analysis", Data.ChronoRunId);
+        var triggerAnalysisCommand = new TriggerAnalyseInstrumentsCommand(Data.Today, Data.PipelineMode);
+        Data.AnalysisRunId = triggerAnalysisCommand.AnalysisRunId;
+        await mediator.SendAsync(triggerAnalysisCommand);
+    }
+
     private async Task DispatchValuations()
     {
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Valuations", Data.ChronoRunId);
@@ -204,6 +232,7 @@ public class ChronoSagaData : SagaData
     public Guid ValuationsRunId { get; set; }
     public Guid SnapshotsRunId { get; set; }
     public Guid PerformanceRunId { get; set; }
+    public Guid AnalysisRunId { get; set; }
     
     public DateOnly RebuildStartDate { get; set; }
     public DateOnly Today { get; set; }
@@ -216,4 +245,5 @@ public class ChronoSagaData : SagaData
     public bool ValuationsCalculated { get; set; }
     public bool SnapshotsCalculated { get; set; }
     public bool PerformanceCalculated { get; set; }
+    public bool AnalysisCompleted { get; set; }
 }
