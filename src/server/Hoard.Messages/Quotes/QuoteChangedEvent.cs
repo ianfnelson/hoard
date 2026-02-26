@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Quotes;
 
-public record QuoteChangedEvent(int InstrumentId, int InstrumentTypeId, DateTime RetrievedUtc);
+public record QuoteChangedEvent(int InstrumentId, int InstrumentTypeId, DateTime RetrievedUtc, decimal? RegularMarketChangePercent);

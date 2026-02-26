@@ -7,4 +7,5 @@ public partial class AlertType
     public const int FiftyTwoWeekHigh = 3;
     public const int FiftyTwoWeekLow = 4;
     public const int AbnormalVolume = 5;
+    public const int QuoteMovement = 6;
 }

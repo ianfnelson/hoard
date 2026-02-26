@@ -14,7 +14,7 @@ public class InstrumentAnalysisConfiguration : IEntityTypeConfiguration<Instrume
 
         builder.Property(a => a.FiftyTwoWeekHighClose).HasColumnType("decimal(18,4)");
         builder.Property(a => a.FiftyTwoWeekLowClose).HasColumnType("decimal(18,4)");
-        builder.Property(a => a.FiftyTwoWeekVolatility).HasColumnType("decimal(18,6)");
+        builder.Property(a => a.FiftyTwoWeekVolatility).HasColumnType("decimal(18,4)");
         builder.Property(a => a.UpdatedUtc).HasPrecision(3);
 
         builder.HasOne(a => a.Instrument)

@@ -67,19 +67,19 @@ public class ProcessAnalyseInstrumentHandlerTests
     }
 
     [Fact]
-    public void CalculateVolatility_ConstantPrices_ReturnsZero()
+    public void CalculateVolatility_FewerThan250Prices_ReturnsNull()
     {
-        var prices = CreatePricesWithCloses([100, 100, 100, 100]);
+        var prices = CreatePricesWithCloses(Enumerable.Repeat(100m, 249).ToArray());
 
         var result = ProcessAnalyseInstrumentHandler.CalculateVolatility(prices);
 
-        Assert.Equal(0m, result);
+        Assert.Null(result);
     }
 
     [Fact]
-    public void CalculateVolatility_SinglePrice_ReturnsZero()
+    public void CalculateVolatility_ConstantPrices_ReturnsZero()
     {
-        var prices = CreatePricesWithCloses([100]);
+        var prices = CreatePricesWithCloses(Enumerable.Repeat(100m, 250).ToArray());
 
         var result = ProcessAnalyseInstrumentHandler.CalculateVolatility(prices);
 
@@ -89,36 +89,25 @@ public class ProcessAnalyseInstrumentHandlerTests
     [Fact]
     public void CalculateVolatility_KnownValues_ReturnsCorrectStdDev()
     {
-        // Prices: 100, 102, 101, 103, 100
-        // Returns: 0.02, -0.0098039..., 0.0198019..., -0.0291262...
-        var prices = CreatePricesWithCloses([100, 102, 101, 103, 100]);
+        var closes = Enumerable.Repeat(100m, 248).Concat([102, 101, 103, 100]).ToArray();
+        var prices = CreatePricesWithCloses(closes);
 
         var result = ProcessAnalyseInstrumentHandler.CalculateVolatility(prices);
 
+        Assert.NotNull(result);
         Assert.True(result > 0m);
-        Assert.True(result < 0.1m);
-    }
-
-    [Fact]
-    public void CalculateVolatility_TwoPrices_ReturnsZeroStdDev()
-    {
-        // With only 2 prices, there's 1 return, and std dev of 1 value = 0
-        var prices = CreatePricesWithCloses([100, 110]);
-
-        var result = ProcessAnalyseInstrumentHandler.CalculateVolatility(prices);
-
-        Assert.Equal(0m, result);
+        Assert.True(result < 10m);
     }
 
     [Fact]
     public void CalculateVolatility_SkipsZeroCloses()
     {
-        var prices = CreatePricesWithCloses([0, 100, 102]);
+        var closes = new[] { 0m }.Concat(Enumerable.Repeat(100m, 250)).Concat([102]).ToArray();
+        var prices = CreatePricesWithCloses(closes);
 
         var result = ProcessAnalyseInstrumentHandler.CalculateVolatility(prices);
 
-        // Only one return (100->102 = 0.02), std dev of single value = 0
-        Assert.Equal(0m, result);
+        Assert.NotNull(result);
     }
 
     private static List<Price> CreatePricesWithVolumes(long[] volumes)

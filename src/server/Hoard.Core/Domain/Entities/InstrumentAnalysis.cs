@@ -7,10 +7,10 @@ public class InstrumentAnalysis : Entity<int>
 
     public DateOnly AsOfDate { get; set; }
 
-    public decimal FiftyTwoWeekHighClose { get; set; }
-    public decimal FiftyTwoWeekLowClose { get; set; }
+    public decimal? FiftyTwoWeekHighClose { get; set; }
+    public decimal? FiftyTwoWeekLowClose { get; set; }
     public long? ThirtyDayMedianVolume { get; set; }
-    public decimal FiftyTwoWeekVolatility { get; set; }
+    public decimal? FiftyTwoWeekVolatility { get; set; }
 
     public DateTime UpdatedUtc { get; set; }
 }

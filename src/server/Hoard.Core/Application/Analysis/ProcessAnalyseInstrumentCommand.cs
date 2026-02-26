@@ -57,23 +57,37 @@ public class ProcessAnalyseInstrumentHandler(
     {
         var today = prices.Last();
         var prior = prices.Where(p => p.AsOfDate < today.AsOfDate).ToList();
+        var hasSufficientHistory = prices.Count >= 250;
 
-        var prior52WHigh = prior.Count > 0 ? prior.Max(p => p.Close) : today.Close;
-        var prior52WLow = prior.Count > 0 ? prior.Min(p => p.Close) : today.Close;
+        decimal? fiftyTwoWeekHigh = null;
+        decimal? fiftyTwoWeekLow = null;
+        bool isNewHigh = false;
+        bool isNewLow = false;
+
+        if (hasSufficientHistory)
+        {
+            var prior52WHigh = prior.Max(p => p.Close);
+            var prior52WLow = prior.Min(p => p.Close);
+
+            fiftyTwoWeekHigh = Math.Max(prior52WHigh, today.Close);
+            fiftyTwoWeekLow = Math.Min(prior52WLow, today.Close);
+            isNewHigh = today.Close > prior52WHigh;
+            isNewLow = today.Close < prior52WLow;
+        }
 
         var last30Prior = prior.TakeLast(30).ToList();
         var medianVolume = CalculateMedianVolume(last30Prior);
         var volatility = CalculateVolatility(prices);
 
         var metrics = new AnalysisMetrics(
-            FiftyTwoWeekHighClose: Math.Max(prior52WHigh, today.Close),
-            FiftyTwoWeekLowClose: Math.Min(prior52WLow, today.Close),
+            FiftyTwoWeekHighClose: fiftyTwoWeekHigh,
+            FiftyTwoWeekLowClose: fiftyTwoWeekLow,
             ThirtyDayMedianVolume: medianVolume,
             FiftyTwoWeekVolatility: volatility);
 
         var flags = new AnalysisFlags(
-            IsNewHigh: prior.Count > 0 && today.Close > prior52WHigh,
-            IsNewLow: prior.Count > 0 && today.Close < prior52WLow,
+            IsNewHigh: isNewHigh,
+            IsNewLow: isNewLow,
             IsAbnormalVolume: medianVolume.HasValue && today.Volume.HasValue
                 && medianVolume.Value > 0 && today.Volume.Value > 3 * medianVolume.Value);
 
@@ -143,10 +157,10 @@ public class ProcessAnalyseInstrumentHandler(
             : volumes[mid];
     }
 
-    public static decimal CalculateVolatility(List<Price> prices)
+    public static decimal? CalculateVolatility(List<Price> prices)
     {
-        if (prices.Count < 2)
-            return 0m;
+        if (prices.Count < 250)
+            return null;
 
         var returns = new List<decimal>();
         for (var i = 1; i < prices.Count; i++)
@@ -163,17 +177,17 @@ public class ProcessAnalyseInstrumentHandler(
 
         var mean = returns.Average();
         var sumSquaredDiffs = returns.Sum(r => (r - mean) * (r - mean));
-        var variance = sumSquaredDiffs / returns.Count;
+        var variance = sumSquaredDiffs / (returns.Count - 1);
 
-        return (decimal)Math.Sqrt((double)variance);
+        return (decimal)Math.Sqrt((double)variance) * 100m;
     }
 }
 
 internal record AnalysisMetrics(
-    decimal FiftyTwoWeekHighClose,
-    decimal FiftyTwoWeekLowClose,
+    decimal? FiftyTwoWeekHighClose,
+    decimal? FiftyTwoWeekLowClose,
     long? ThirtyDayMedianVolume,
-    decimal FiftyTwoWeekVolatility);
+    decimal? FiftyTwoWeekVolatility);
 
 internal record AnalysisFlags(
     bool IsNewHigh,
