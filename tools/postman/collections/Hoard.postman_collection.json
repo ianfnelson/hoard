@@ -476,6 +476,37 @@
       "name": "Operations",
       "item": [
         {
+          "name": "Analysis — Analyse",
+          "id": "b3c4d5e6-f7a8-9b0c-1d2e-3f4a5b6c7d8e",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    //\"AsOfDate\": \"2026-02-25\"    // Optional date - defaults to today\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}operations/analysis/analyse",
+              "host": [
+                "{{BaseUrl}}operations"
+              ],
+              "path": [
+                "analysis",
+                "analyse"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Chrono — Close Of Day",
           "id": "186bf074-e8b8-48ec-8e4d-49c82355e00d",
           "request": {

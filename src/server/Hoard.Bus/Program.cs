@@ -4,6 +4,7 @@ using Hoard.Core.Domain.Calculators;
 using Hoard.Core.Infrastructure;
 using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages.Alerts;
+using Hoard.Messages.Analysis;
 using Hoard.Messages.Chrono;
 using Hoard.Messages.Holdings;
 using Hoard.Messages.News;
@@ -67,6 +68,9 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<PriceChangedEvent>();
     await bus.Subscribe<PriceRefreshedEvent>();
     await bus.Subscribe<PricesRefreshedEvent>();
+
+    await bus.Subscribe<InstrumentAnalysedEvent>();
+    await bus.Subscribe<InstrumentsAnalysedEvent>();
 
     await bus.Subscribe<PositionsCalculatedEvent>();
 

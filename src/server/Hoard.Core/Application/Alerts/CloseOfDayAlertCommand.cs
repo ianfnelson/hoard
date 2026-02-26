@@ -67,7 +67,7 @@ public class CloseOfDayAlertHandler(HoardContext hoardContext, IAlertService ale
 
     private static string BuildSuppressionKey(PortfolioPerformance portfolioPerformance, DateOnly asOfDate)
     {
-        return $"{AlertType.CloseOfDayPortfolioValuation}:{portfolioPerformance.PortfolioId}:{asOfDate}";
+        return $"{AlertType.CloseOfDayPortfolioValuation}:{portfolioPerformance.PortfolioId}:{asOfDate.ToIsoDateString()}";
     }
     
     private static string BuildTitle(PortfolioPerformance portfolioPerformance, DateOnly asOfDate)
