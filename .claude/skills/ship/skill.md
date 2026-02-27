@@ -16,6 +16,21 @@ This skill handles the complete workflow of committing staged/unstaged changes, 
 3. **Push** - Push the current feature branch to origin
 4. **Raise PR** - Create a Pull Request targeting `main`
 
+## Branch Requirements
+
+**Never push directly to main.** All work must be done on feature branches.
+
+If the skill is invoked while on `main`, it will automatically:
+1. Analyze the changes to determine the commit type (feat/fix/refactor)
+2. Generate a branch name: `<type>/<short-description>` (derived from changes)
+3. Create and switch to the new feature branch
+4. Continue with the commit/push/PR workflow
+
+Example branch names:
+- `feat/create-prices-from-trades`
+- `fix/transaction-price-validation`
+- `refactor/simplify-price-handler`
+
 ## Commit Message Format
 
 Use Conventional Commits format:
@@ -52,15 +67,21 @@ Use this template for the PR body:
 
 ## Execution Steps
 
-1. Run `git status` and `git diff` to understand all pending changes
-2. Analyse the changes to determine the appropriate commit type and craft a meaningful message
-3. Stage all changes with `git add -A`
-4. Commit with the crafted message
-5. Push the branch with `git push -u origin HEAD`
-6. Create the PR using `gh pr create --base develop --title "<commit first line>" --body "<PR body>"`
+1. Check current branch with `git branch --show-current`
+2. If on `main`:
+   - Analyze changes to determine commit type (feat/fix/refactor)
+   - Generate branch name: `<type>/<short-description>` (extracted from commit message, spaces replaced with hyphens)
+   - Create and switch: `git checkout -b <branch-name>`
+3. Run `git status` and `git diff` to understand all pending changes
+4. Analyse the changes to determine the appropriate commit type and craft a meaningful message
+5. Stage all changes with `git add -A`
+6. Commit with the crafted message
+7. Push the branch with `git push -u origin HEAD`
+8. Create the PR using `gh pr create --base main --title "<commit first line>" --body "<PR body>"`
 
 ## Important Notes
 
+- **Never push directly to main** - the skill will automatically create a feature branch if invoked while on main
 - Derive the commit message and PR content entirely from analysing the actual changes - do not ask the user to describe them
 - The test plan should contain **specific, actionable** test cases derived from the changes, not generic placeholders
 - If changes span multiple concerns and would benefit from separate commits, note this to the user but proceed with a single commit unless instructed otherwise
