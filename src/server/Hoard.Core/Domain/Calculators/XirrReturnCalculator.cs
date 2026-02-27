@@ -5,7 +5,7 @@ namespace Hoard.Core.Domain.Calculators;
 
 public class XirrReturnCalculator : IReturnCalculator
 {
-    public decimal? Calculate(
+    public virtual decimal? Calculate(
         decimal startValue,
         decimal endValue,
         DateOnly startDate,
