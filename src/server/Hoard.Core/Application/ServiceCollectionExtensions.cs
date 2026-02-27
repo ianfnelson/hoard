@@ -1,6 +1,7 @@
 using FluentValidation;
 using Hoard.Core.Application.Alerts;
 using Hoard.Core.Application.News;
+using Hoard.Core.Application.Portfolios;
 using Hoard.Core.Application.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -81,6 +82,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddServices(IServiceCollection services)
     {
         services.AddScoped<IAlertService, AlertService>();
+        services.AddScoped<IRebalanceService, RebalanceService>();
         return services;
     }
 }
