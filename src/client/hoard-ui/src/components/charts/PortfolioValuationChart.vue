@@ -20,8 +20,8 @@ const totalDataPoints = computed(() => series.value.reduce((sum, s) => sum + s.d
 
 const sortedSeries = computed(() =>
   [...series.value].sort((a, b) => {
-    const aLast = a.data.at(-1)?.y ?? 0
-    const bLast = b.data.at(-1)?.y ?? 0
+    const aLast = a.data.length > 0 ? a.data[a.data.length - 1]!.y : 0
+    const bLast = b.data.length > 0 ? b.data[b.data.length - 1]!.y : 0
     return bLast - aLast
   })
 )
