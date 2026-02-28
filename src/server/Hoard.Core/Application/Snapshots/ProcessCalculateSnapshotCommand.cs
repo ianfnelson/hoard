@@ -83,8 +83,8 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
         
         snapshot.StartValue = earliestDate.Year == latestDate.Year ? decimal.Zero : valuations[earliestDate].Value;
         snapshot.EndValue = valuations[latestDate].Value;
-        
-        snapshot.ValueChange = snapshot.EndValue - snapshot.StartValue;
+
+        snapshot.ValueChange = CalculateAbsoluteValueChange(t, earliestDate, latestDate, snapshot.StartValue, snapshot.EndValue);
         
         snapshot.AverageValue = valuations
             .Where(kvp => kvp.Key != earliestDate)
@@ -160,5 +160,23 @@ public class ProcessCalculateSnapshotHandler( IBus bus, ILogger<ProcessCalculate
         
         return valuations.GroupBy(x => x.AsOfDate)
             .ToDictionary(g => g.Key, g => g.First());
+    }
+    
+    private static decimal CalculateAbsoluteValueChange(List<Transaction> transactions, DateOnly startDate, DateOnly endDate, decimal startValue, decimal endValue)
+    {
+        // Get deposits/withdrawals in the period
+        var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
+
+        var periodWithdrawals = periodTransactions
+            .Where(t => t.TransactionTypeId == TransactionType.Withdrawal)
+            .Sum(t => -t.Value);
+
+        var periodContributions = periodTransactions
+            .Where(t => TransactionTypeSets.Deposit.Contains(t.TransactionTypeId))
+            .Sum(t => t.Value);
+
+        // Absolute change = end value + withdrawals - contributions - start value
+        // This represents the actual gain/loss from investments
+        return endValue + periodWithdrawals - periodContributions - startValue;
     }
 }

@@ -77,7 +77,8 @@ public class ProcessCalculatePositionPerformanceHandler(
         perf.Return10Y = CalculatePeriodReturn(ctx, today.AddYears(-10), today);
         perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
 
-        // Calculate absolute value change for 1-year period
+        // Calculate absolute value change for 1-day and 1-year period
+        perf.ValueChange1D = CalculateAbsoluteValueChange(ctx, today.AddDays(-1), today);
         perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
         
         var startDate = t.Select(x => x.Date).Min().AddDays(-1);
@@ -136,17 +137,12 @@ public class ProcessCalculatePositionPerformanceHandler(
         {
             perf.Units = 0;
             perf.Value = 0;
-            perf.PreviousValue = 0;
-            perf.ValueChange = 0;
             perf.UnrealisedGain = 0;
             return;
         }
         
         perf.Units = GetUnitsForDate(today, h, a) ?? decimal.Zero;
         perf.Value = GetValueForDate(today, h, a) ?? decimal.Zero;
-        
-        perf.PreviousValue = GetValueForDate(previousDay, h, a) ?? decimal.Zero;
-        perf.ValueChange = perf.Value - perf.PreviousValue;
         
         perf.UnrealisedGain = perf.Value - perf.CostBasis;
     }

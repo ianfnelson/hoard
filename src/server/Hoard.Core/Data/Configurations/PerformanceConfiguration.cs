@@ -12,10 +12,7 @@ public abstract class PerformanceConfiguration<TEntity> : IEntityTypeConfigurati
         builder.Property(p => p.Value)
             .HasColumnType("decimal(18,2)");
 
-        builder.Property(p => p.PreviousValue)
-            .HasColumnType("decimal(18,2)");
-
-        builder.Property(p => p.ValueChange)
+        builder.Property(p => p.ValueChange1D)
             .HasColumnType("decimal(18,2)");
         
         builder.Property(p => p.ValueChange1Y)

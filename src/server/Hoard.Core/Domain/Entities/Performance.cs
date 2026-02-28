@@ -5,8 +5,6 @@ public abstract class
 {
     // Valuation snapshot
     public decimal Value { get; set; }
-    public decimal PreviousValue { get; set; }
-    public decimal ValueChange { get; set; }
 
     // Gains breakdown
     public decimal UnrealisedGain { get; set; }
@@ -14,6 +12,7 @@ public abstract class
     public decimal Income { get; set; }
 
     // Absolute value changes
+    public decimal? ValueChange1D { get; set; }
     public decimal? ValueChange1Y { get; set; }
 
     // Returns

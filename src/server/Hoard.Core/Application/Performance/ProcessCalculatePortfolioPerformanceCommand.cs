@@ -108,7 +108,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(
             "Portfolio {PortfolioId,5} | Value {Value,12:N2} | Δ {Change,10:N2} | 1Y {Return1Y,8:N2}%",
             portfolio.Id,
             perf.Value,
-            perf.ValueChange,
+            perf.ValueChange1D,
             perf.Return1Y
         );
        
@@ -120,9 +120,6 @@ public class ProcessCalculatePortfolioPerformanceHandler(
         var (portfolio, transactions, valuations, positionPerformances, today, previousDay) = ctx;
 
         perf.Value = GetValueForDate(today, valuations) ?? decimal.Zero;
-        perf.PreviousValue = GetValueForDate(previousDay, valuations) ?? decimal.Zero;
-        perf.ValueChange = perf.Value - perf.PreviousValue;
-
         perf.UnrealisedGain = positionPerformances.Sum(x => x.UnrealisedGain);
         perf.RealisedGain = positionPerformances.Sum(x => x.RealisedGain);
 
@@ -149,7 +146,8 @@ public class ProcessCalculatePortfolioPerformanceHandler(
         perf.Return10Y = CalculatePeriodReturn(ctx, today.AddYears(-10), today);
         perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
 
-        // Calculate absolute value change for 1-year period
+        // Calculate absolute value changes for 1 day and 1 year
+        perf.ValueChange1D = CalculateAbsoluteValueChange(ctx, today.AddDays(-1), today);
         perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
 
         var startDate = transactions.Select(x => x.Date).Min().AddDays(-1);

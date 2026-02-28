@@ -17,7 +17,7 @@ usePageTitle(pageTitle)
 const header_data = [
   { title: 'Ticker', key: 'instrumentTicker' },
   { title: 'Value', key: 'value', align: 'end' },
-  { title: 'Change', key: 'valueChange', align: 'end' },
+  { title: 'Change', key: 'valueChange1D', align: 'end' },
   { title: '1D', key: 'return1D', align: 'end' },
   { title: 'Profit', key: 'profit', align: 'end' },
   { title: 'All', key: 'returnAllTime', align: 'end' },
@@ -45,7 +45,7 @@ const rows = computed(() =>
     instrumentName: p.instrumentName,
     latestNewsPublishedUtc: p.latestNewsPublishedUtc,
     value: p.performance?.value,
-    valueChange: p.performance?.valueChange,
+    valueChange1D: p.performance?.valueChange1D,
     return1D: p.performance?.return1D,
     returnAllTime: p.performance?.returnAllTime,
     annualisedReturn: p.performance?.annualisedReturn,
@@ -78,9 +78,9 @@ const rows = computed(() =>
       <v-col cols="6" sm="3">
         <summary-card
           title="Day change"
-          :value="store.portfolio?.performance?.valueChange"
+          :value="store.portfolio?.performance?.valueChange1D ?? undefined"
           :percentage="store.portfolio?.performance?.return1D ?? undefined"
-          :trend="store.portfolio?.performance?.valueChange"
+          :trend="store.portfolio?.performance?.valueChange1D ?? undefined"
         />
       </v-col>
 
@@ -125,7 +125,7 @@ const rows = computed(() =>
             <span>{{ formatCurrency(value) }}</span>
           </template>
 
-          <template #item.valueChange="{ value }">
+          <template #item.valueChange1D="{ value }">
             <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
           </template>
 

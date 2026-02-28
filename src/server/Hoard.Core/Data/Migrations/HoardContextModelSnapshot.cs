@@ -549,9 +549,6 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<int>("PortfolioId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("PreviousValue")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("RealisedGain")
                         .HasColumnType("decimal(18,2)");
 
@@ -599,7 +596,7 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("ValueChange")
+                    b.Property<decimal?>("ValueChange1D")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("ValueChange1Y")
@@ -802,9 +799,6 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("PreviousValue")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("RealisedGain")
                         .HasColumnType("decimal(18,2)");
 
@@ -855,7 +849,7 @@ namespace Hoard.Core.Data.Migrations
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("ValueChange")
+                    b.Property<decimal?>("ValueChange1D")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("ValueChange1Y")

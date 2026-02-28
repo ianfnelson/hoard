@@ -3,8 +3,6 @@ export interface PortfolioPerformanceDto {
   value: number
   cashValue: number
   cashPercentage: number
-  previousValue: number
-  valueChange: number
   yield: number
 
   // Gains
@@ -13,6 +11,7 @@ export interface PortfolioPerformanceDto {
   income: number
 
   // Absolute value changes
+  valueChange1D: number | null
   valueChange1Y: number | null
 
   // Returns (nullable = not enough data yet)
