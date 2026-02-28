@@ -8,7 +8,7 @@ namespace Hoard.Api.Controllers;
 [Route("api/operations/chrono/")]
 [Tags("Operations")]
 [Produces("application/json")]
-public class ChronoController(IMediator mediator) : ControllerBase
+public class ChronoOperationsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("trigger-close-of-day")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
