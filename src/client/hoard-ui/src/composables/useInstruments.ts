@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getInstruments, type GetInstrumentsParams } from '@/api/instrumentsApi.ts'
+import { getInstruments, type GetInstrumentsParams } from '@/api/instrumentsApi'
 import type { InstrumentSummaryDto } from '@/api/dtos/Instruments/InstrumentSummaryDto'
 
 export function useInstruments() {

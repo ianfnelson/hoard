@@ -1,4 +1,4 @@
-export interface PortfolioStatementDto {
+export interface PortfolioSnapshotDto {
   year: number
 
   // Performance metrics

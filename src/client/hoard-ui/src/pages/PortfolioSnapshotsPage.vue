@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { usePortfolioStatements } from '@/composables/usePortfolioStatements'
+import { usePortfolioSnapshots } from '@/composables/usePortfolioSnapshots'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
@@ -10,12 +10,12 @@ const props = defineProps<{
   id: string
 }>()
 
-const { items, isLoading, error, fetchStatements } = usePortfolioStatements()
+const { items, isLoading, error, fetchSnapshots } = usePortfolioSnapshots()
 const store = usePortfolioStore()
 
 const pageTitle = computed(() => {
   const portfolioName = store.portfolio?.name
-  return portfolioName ? `${portfolioName} : Statements` : null
+  return portfolioName ? `${portfolioName} : Snapshots` : null
 })
 usePageTitle(pageTitle)
 
@@ -66,7 +66,7 @@ watch(
   () => props.id,
   async (newId) => {
     if (newId) {
-      await fetchStatements(Number(newId))
+      await fetchSnapshots(Number(newId))
     }
   },
   { immediate: true }
@@ -74,7 +74,7 @@ watch(
 
 onMounted(async () => {
   if (props.id) {
-    await fetchStatements(Number(props.id))
+    await fetchSnapshots(Number(props.id))
   }
 })
 </script>
@@ -128,7 +128,7 @@ onMounted(async () => {
                 <span>{{ formatPercentage(value) }}</span>
               </template>
 
-              <template #no-data> No statement data available </template>
+              <template #no-data> No snapshot data available </template>
             </v-data-table>
           </v-window-item>
 
@@ -170,7 +170,7 @@ onMounted(async () => {
                 <span>{{ formatPercentage(value) }}</span>
               </template>
 
-              <template #no-data> No statement data available </template>
+              <template #no-data> No snapshot data available </template>
             </v-data-table>
           </v-window-item>
 
@@ -224,7 +224,7 @@ onMounted(async () => {
                 <span :class="getTrendClass(-value)">{{ formatCurrency(value) }}</span>
               </template>
 
-              <template #no-data> No statement data available </template>
+              <template #no-data> No snapshot data available </template>
             </v-data-table>
           </v-window-item>
         </v-window>
