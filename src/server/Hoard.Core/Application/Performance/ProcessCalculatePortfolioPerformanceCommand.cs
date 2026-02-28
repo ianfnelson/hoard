@@ -147,7 +147,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(
         perf.ReturnYtd = CalculatePeriodReturn(ctx, new DateOnly(today.Year-1,12,31), today);
 
         // Calculate absolute value changes for 1 day and 1 year
-        perf.ValueChange1D = CalculateAbsoluteValueChange(ctx, today.AddDays(-1), today);
+        perf.ValueChange1D = CalculateAbsoluteValueChange(ctx, previousDay, today);
         perf.ValueChange1Y = CalculateAbsoluteValueChange(ctx, today.AddYears(-1), today);
 
         var startDate = transactions.Select(x => x.Date).Min().AddDays(-1);
