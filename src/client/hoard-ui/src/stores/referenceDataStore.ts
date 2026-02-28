@@ -13,7 +13,7 @@ import type { TransactionTypeDto } from '@/api/dtos/TransactionTypes/Transaction
 import type { CurrencyDto } from '@/api/dtos/Currencies/CurrencyDto'
 import type { AlertTypeDto } from '@/api/dtos/AlertTypes/AlertTypeDto'
 import { getInstrumentsLookup } from '@/api/instrumentsApi'
-import type { LookupDto } from '@/api/dtos/LookupDto.ts'
+import type { LookupDto } from '@/api/dtos/LookupDto'
 
 export const useReferenceDataStore = defineStore('referenceData', () => {
   const instrumentTypes = ref<InstrumentTypeDto[]>([])

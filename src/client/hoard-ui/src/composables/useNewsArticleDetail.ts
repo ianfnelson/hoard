@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getNewsArticleDetail } from '@/api/newsArticlesApi.ts'
+import { getNewsArticleDetail } from '@/api/newsArticlesApi'
 import type { NewsArticleDetailDto } from '@/api/dtos/News/NewsArticleDetailDto'
 
 export function useNewsArticleDetail() {

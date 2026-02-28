@@ -6,7 +6,7 @@ import type { PriceSummaryDto } from './dtos/Instruments/PriceSummaryDto'
 import type { PriceSeriesDto } from './dtos/Instruments/PriceSeriesDto'
 import type { ValuationSeriesDto } from './dtos/Instruments/ValuationSeriesDto'
 import type { PagedResult } from '@/api/dtos/PagedResult'
-import type { LookupDto } from './dtos/LookupDto.ts'
+import type { LookupDto } from './dtos/LookupDto'
 
 export interface GetInstrumentsParams {
   instrumentTypeId?: number

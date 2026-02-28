@@ -4,7 +4,7 @@ import type { PortfolioPositionsDto } from './dtos/Portfolios/PortfolioPositions
 import type { PortfolioExposureDto } from './dtos/Portfolios/PortfolioExposureDto'
 import type { PortfolioInstrumentTypesDto } from './dtos/Portfolios/PortfolioInstrumentTypesDto'
 import type { PortfolioSummaryDto } from './dtos/Portfolios/PortfolioSummaryDto'
-import type { PortfolioStatementsDto } from './dtos/Portfolios/PortfolioStatementsDto'
+import type { PortfolioSnapshotsDto } from './dtos/Portfolios/PortfolioSnapshotsDto'
 import type { PortfolioValuationsDto } from './dtos/Portfolios/PortfolioValuationsDto'
 import type { PortfolioValuationSeriesDto } from './dtos/Portfolios/PortfolioValuationSeriesDto'
 
@@ -62,7 +62,7 @@ export async function getPortfolioInstrumentTypes(
   return response.data
 }
 
-export async function getPortfolioStatements(portfolioId: number): Promise<PortfolioStatementsDto> {
+export async function getPortfolioSnapshots(portfolioId: number): Promise<PortfolioSnapshotsDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/snapshots`)
   return response.data
 }

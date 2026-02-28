@@ -46,9 +46,9 @@ const router = createRouter({
               props: true,
             },
             {
-              path: 'statements',
-              name: 'portfolio-statements',
-              component: () => import('@/pages/PortfolioStatementsPage.vue'),
+              path: 'snapshots',
+              name: 'portfolio-snapshots',
+              component: () => import('@/pages/PortfolioSnapshotsPage.vue'),
               props: true,
             },
             {

@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getTransactions, type GetTransactionsParams } from '@/api/transactionsApi.ts'
+import { getTransactions, type GetTransactionsParams } from '@/api/transactionsApi'
 import type { TransactionSummaryDto } from '@/api/dtos/Transactions/TransactionSummaryDto'
 
 export function useTransactions() {
