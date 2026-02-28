@@ -49,6 +49,20 @@
     "vitest": "^4.0.18",
     "vue-tsc": "^3.1.4"
   },
+  "overrides": {
+    "eslint": {
+      "minimatch": "3.1.5"
+    },
+    "editorconfig": {
+      "minimatch": "9.0.9"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "9.0.9"
+    },
+    "glob": {
+      "minimatch": "9.0.9"
+    }
+  },
   "lint-staged": {
     "*.{ts,tsx,vue}": [
       "eslint --fix"
