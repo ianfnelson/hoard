@@ -6,8 +6,7 @@ public class PortfolioPerformanceDto
     public decimal Value { get; init; }
     public decimal CashValue { get; init; }
     public decimal CashPercentage { get; set; }
-    public decimal PreviousValue { get; init; }
-    public decimal ValueChange { get; init; }
+    
     public decimal Yield { get; init; }
 
     // Gains
@@ -16,6 +15,7 @@ public class PortfolioPerformanceDto
     public decimal Income { get; init; }
 
     // Absolute value changes
+    public decimal? ValueChange1D { get; init; }
     public decimal? ValueChange1Y { get; init; }
 
     // Returns (nullable = not enough data yet)

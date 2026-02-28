@@ -7,8 +7,6 @@ public class PositionPerformanceDto
     
     // Valuation snapshot
     public decimal Value { get; set; }
-    public decimal PreviousValue { get; set; }
-    public decimal ValueChange { get; set; }
     
     // Gains breakdown and total
     public decimal UnrealisedGain { get; set; }
@@ -18,6 +16,7 @@ public class PositionPerformanceDto
     public decimal Profit { get; set; }
 
     // Absolute value changes
+    public decimal? ValueChange1D { get; set; }
     public decimal? ValueChange1Y { get; set; }
 
     // Returns

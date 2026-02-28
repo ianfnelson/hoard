@@ -4,8 +4,6 @@ export interface PositionPerformanceDto {
 
   // Valuation snapshot
   value: number
-  previousValue: number
-  valueChange: number
 
   // Gains breakdown
   unrealisedGain: number
@@ -15,6 +13,7 @@ export interface PositionPerformanceDto {
   profit: number
 
   // Absolute value changes
+  valueChange1D: number | null
   valueChange1Y: number | null
 
   // Returns (nullable = insufficient history)

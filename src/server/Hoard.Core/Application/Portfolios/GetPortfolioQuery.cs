@@ -26,11 +26,10 @@ public class GetPortfolioHandler(HoardContext context, ILogger<GetPortfolioHandl
                     {
                         Value = p.Performance.Value,
                         CashValue = p.Performance.CashValue,
-                        PreviousValue = p.Performance.PreviousValue,
-                        ValueChange = p.Performance.ValueChange,
                         UnrealisedGain = p.Performance.UnrealisedGain,
                         RealisedGain = p.Performance.RealisedGain,
                         Income = p.Performance.Income,
+                        ValueChange1D = p.Performance.ValueChange1D,
                         ValueChange1Y = p.Performance.ValueChange1Y,
                         Return1D = p.Performance.Return1D,
                         Return1W = p.Performance.Return1W,

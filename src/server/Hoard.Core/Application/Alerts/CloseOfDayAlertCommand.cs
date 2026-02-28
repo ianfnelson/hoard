@@ -80,7 +80,7 @@ public class CloseOfDayAlertHandler(HoardContext hoardContext, IAlertService ale
         var sb = new StringBuilder();
 
         sb.AppendLine($"Valuation: £{portfolioPerformance.Value:F2}");
-        sb.AppendLine($"Change: £{portfolioPerformance.ValueChange:F2}");
+        sb.AppendLine($"Change: £{portfolioPerformance.ValueChange1D:F2}");
         sb.AppendLine($"Day: {portfolioPerformance.Return1D:F2}%");
         sb.AppendLine($"Year: {portfolioPerformance.Return1Y:F2}%");
         
