@@ -57,7 +57,6 @@ await using (var scope = app.Services.CreateAsyncScope())
     await bus.Subscribe<HoldingsBackfilledEvent>();
 
     await bus.Subscribe<NewsRefreshedEvent>();
-    await bus.Subscribe<AllNewsRefreshedEvent>();
     await bus.Subscribe<NewsArticleCreatedEvent>();
 
     await bus.Subscribe<PositionPerformanceCalculatedEvent>();
