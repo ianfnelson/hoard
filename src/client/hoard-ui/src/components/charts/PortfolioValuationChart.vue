@@ -18,7 +18,17 @@ const { series, isLoading, fetchSeries } = usePortfolioValuationSeries()
 
 const totalDataPoints = computed(() => series.value.reduce((sum, s) => sum + s.data.length, 0))
 
-const chartColors = computed(() => series.value.map((s) => s.color ?? undefined).filter(Boolean))
+const sortedSeries = computed(() =>
+  [...series.value].sort((a, b) => {
+    const aLast = a.data.at(-1)?.y ?? 0
+    const bLast = b.data.at(-1)?.y ?? 0
+    return bLast - aLast
+  })
+)
+
+const chartColors = computed(() =>
+  sortedSeries.value.map((s) => s.color ?? undefined).filter(Boolean)
+)
 
 const chartOptions = computed(() => ({
   chart: {
@@ -57,7 +67,7 @@ const chartOptions = computed(() => ({
 }))
 
 const chartSeries = computed(() =>
-  series.value.map((s) => ({
+  sortedSeries.value.map((s) => ({
     name: s.name,
     data: s.data,
   }))

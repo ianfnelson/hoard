@@ -4,8 +4,8 @@ import { computed } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
-import ExposurePieChart from '@/components/ExposurePieChart.vue'
-import type { PieChartData } from '@/components/ExposurePieChart.vue'
+import ExposurePieChart from '@/components/charts/ExposurePieChart.vue'
+import type { PieChartData } from '@/components/charts/ExposurePieChart.vue'
 
 const store = usePortfolioStore()
 
