@@ -117,8 +117,23 @@ const router = createRouter({
         },
         {
           path: 'system',
-          name: 'system',
-          component: () => import('@/pages/SystemPage.vue'),
+          component: () => import('@/layouts/LayoutSystem.vue'),
+          children: [
+            {
+              path: '',
+              redirect: '/system/status',
+            },
+            {
+              path: 'status',
+              name: 'system-status',
+              component: () => import('@/pages/SystemStatusPage.vue'),
+            },
+            {
+              path: 'operations',
+              name: 'system-operations',
+              component: () => import('@/pages/SystemOperationsPage.vue'),
+            },
+          ],
         },
       ],
     },
