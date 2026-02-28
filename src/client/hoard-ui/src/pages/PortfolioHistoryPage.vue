@@ -3,7 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
-import PortfolioValuationChart from '@/components/PortfolioValuationChart.vue'
+import PortfolioValuationChart from '@/components/charts/PortfolioValuationChart.vue'
 import type { DisaggregateBy } from '@/api/portfoliosApi'
 
 const props = defineProps<{ id: string }>()
