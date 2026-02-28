@@ -132,7 +132,7 @@ public class ProcessRefreshNewsBatchHandler(
                 await context.SaveChangesAsync(ct);
 
                 await bus.Publish(new NewsArticleCreatedEvent(
-                    newsRunId, pipelineMode, newsArticle.Id, newsArticle.PublishedUtc, newsArticle.Headline));
+                    newsRunId, pipelineMode, instrumentId, newsArticle.Id, newsArticle.PublishedUtc, newsArticle.Headline));
             }
             catch (Exception ex)
             {
