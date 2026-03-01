@@ -11,7 +11,7 @@ public class InstrumentMapper
         {
             Name = source.Name!,
             CurrencyId = source.CurrencyId!,
-            TickerDisplay = source.TickerDisplay!
+            Ticker = source.Ticker!
         };
         Map(source, instrument);
         return instrument;
@@ -24,7 +24,7 @@ public class InstrumentMapper
         destination.InstrumentTypeId = source.InstrumentTypeId!.Value;
         destination.Isin = source.Isin;
         destination.Name = source.Name!;
-        destination.TickerDisplay = source.TickerDisplay!;
+        destination.Ticker = source.Ticker!;
 
         // Handle data feeds
         if (source.DataFeeds != null)

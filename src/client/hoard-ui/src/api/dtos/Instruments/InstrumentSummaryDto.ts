@@ -1,6 +1,6 @@
 export interface InstrumentSummaryDto {
   id: number
-  tickerDisplay: string
+  ticker: string
   name: string
   instrumentTypeName: string
   assetClassName: string

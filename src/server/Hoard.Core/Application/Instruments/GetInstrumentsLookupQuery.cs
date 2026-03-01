@@ -18,7 +18,7 @@ public class GetInstrumentsLookupQueryHandler(HoardContext context)
             .Select(i => new LookupDto(                          
                 i.Id,                                            
                 i.Name,                                          
-                i.TickerDisplay                                                        
+                i.Ticker                                                        
             )) 
             .ToListAsync(ct);                                    
     }

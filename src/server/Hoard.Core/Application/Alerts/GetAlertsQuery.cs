@@ -76,7 +76,7 @@ public sealed class GetAlertsHandler(HoardContext context)
         return query.Where(a =>
             a.Title.Contains(term) ||
             a.Message.Contains(term) ||
-            (a.Instrument != null && (a.Instrument.TickerDisplay.Contains(term) || a.Instrument.Name.Contains(term))) ||
+            (a.Instrument != null && (a.Instrument.Ticker.Contains(term) || a.Instrument.Name.Contains(term))) ||
             (a.Portfolio != null && a.Portfolio.Name.Contains(term)));
     }
 

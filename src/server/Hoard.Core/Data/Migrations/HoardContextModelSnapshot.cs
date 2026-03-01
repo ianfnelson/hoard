@@ -311,7 +311,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("TickerDisplay")
+                    b.Property<string>("Ticker")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");

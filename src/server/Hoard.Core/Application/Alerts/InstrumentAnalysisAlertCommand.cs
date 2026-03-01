@@ -55,7 +55,7 @@ public class InstrumentAnalysisAlertHandler(
             TriggeredDate = command.AsOfDate,
             InstrumentId = command.InstrumentId,
             SuppressionKey = $"{AlertType.FiftyTwoWeekHigh}:{command.InstrumentId}:{command.AsOfDate.ToIsoDateString()}",
-            Title = $"{instrument.TickerDisplay} — New 52-Week High",
+            Title = $"{instrument.Ticker} — New 52-Week High",
             Message = $"{instrument.Name} closed at a new 52-week high.",
             Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
             UrlTitle = instrument.Name
@@ -74,7 +74,7 @@ public class InstrumentAnalysisAlertHandler(
             TriggeredDate = command.AsOfDate,
             InstrumentId = command.InstrumentId,
             SuppressionKey = $"{AlertType.FiftyTwoWeekLow}:{command.InstrumentId}:{command.AsOfDate.ToIsoDateString()}",
-            Title = $"{instrument.TickerDisplay} — New 52-Week Low",
+            Title = $"{instrument.Ticker} — New 52-Week Low",
             Message = $"{instrument.Name} closed at a new 52-week low.",
             Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
             UrlTitle = instrument.Name
@@ -93,7 +93,7 @@ public class InstrumentAnalysisAlertHandler(
             TriggeredDate = command.AsOfDate,
             InstrumentId = command.InstrumentId,
             SuppressionKey = $"{AlertType.AbnormalVolume}:{command.InstrumentId}:{command.AsOfDate.ToIsoDateString()}",
-            Title = $"{instrument.TickerDisplay} — Abnormal Volume",
+            Title = $"{instrument.Ticker} — Abnormal Volume",
             Message = $"{instrument.Name} traded with abnormally high volume.",
             Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
             UrlTitle = instrument.Name

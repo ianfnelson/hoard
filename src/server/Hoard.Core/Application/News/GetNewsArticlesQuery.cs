@@ -75,7 +75,7 @@ public sealed class GetNewsArticlesHandler(HoardContext context)
 
         return query.Where(n =>
             n.Headline.Contains(term) ||
-            n.Instrument.TickerDisplay.Contains(term) ||
+            n.Instrument.Ticker.Contains(term) ||
             n.Instrument.Name.Contains(term));
     }
 
@@ -88,8 +88,8 @@ public sealed class GetNewsArticlesHandler(HoardContext context)
                 : query.OrderByDescending(n => n.PublishedUtc).ThenBy(n => n.Instrument.Name),
     
             "instrumentticker" => request.SortDirection == SortDirection.Asc
-                ? query.OrderBy(n => n.Instrument.TickerDisplay).ThenBy(n => n.Headline)
-                : query.OrderByDescending(n => n.Instrument.TickerDisplay).ThenBy(n => n.Headline),
+                ? query.OrderBy(n => n.Instrument.Ticker).ThenBy(n => n.Headline)
+                : query.OrderByDescending(n => n.Instrument.Ticker).ThenBy(n => n.Headline),
             
             "instrumentname" => request.SortDirection == SortDirection.Asc
                 ? query.OrderBy(n => n.Instrument.Name).ThenBy(n => n.Headline)
@@ -115,7 +115,7 @@ public sealed class GetNewsArticlesHandler(HoardContext context)
             Headline = n.Headline,
             InstrumentId = n.InstrumentId,
             InstrumentName = n.Instrument.Name,
-            InstrumentTicker = n.Instrument.TickerDisplay
+            InstrumentTicker = n.Instrument.Ticker
         };
     }
 }

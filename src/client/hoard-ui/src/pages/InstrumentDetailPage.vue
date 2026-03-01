@@ -70,7 +70,7 @@ const formData = reactive({
   assetClassId: null as number | null,
   assetSubclassId: null as number | null,
   currencyId: null as string | null,
-  tickerDisplay: '',
+  ticker: '',
   isin: '',
   dataFeeds: [] as InstrumentDataFeedWriteDto[],
 })
@@ -181,7 +181,7 @@ watch(
       formData.assetClassId = inst.assetClassId
       formData.assetSubclassId = inst.assetSubclassId
       formData.currencyId = inst.currencyId
-      formData.tickerDisplay = inst.tickerDisplay
+      formData.ticker = inst.ticker
       formData.isin = inst.isin ?? ''
 
       // Initialize data feeds
@@ -239,8 +239,8 @@ const isFormValid = computed(() => {
     formData.instrumentTypeId !== null &&
     formData.assetSubclassId !== null &&
     formData.currencyId !== null &&
-    formData.tickerDisplay.trim() !== '' &&
-    formData.tickerDisplay.length <= TICKER_MAX_LENGTH &&
+    formData.ticker.trim() !== '' &&
+    formData.ticker.length <= TICKER_MAX_LENGTH &&
     (!formData.isin || formData.isin.length <= ISIN_MAX_LENGTH)
 
   // Validate data feeds - if enabled, ticker is required
@@ -264,7 +264,7 @@ async function handleSave() {
     instrumentTypeId: formData.instrumentTypeId,
     assetSubclassId: formData.assetSubclassId,
     currencyId: formData.currencyId,
-    tickerDisplay: formData.tickerDisplay.trim(),
+    ticker: formData.ticker.trim(),
     isin: formData.isin.trim() || null,
     dataFeeds: formData.dataFeeds.map((feed) => ({
       dataFeedId: feed.dataFeedId,
@@ -474,7 +474,7 @@ onMounted(() => {
             <v-row dense>
               <v-col cols="12" sm="3">
                 <div class="text-caption text-medium-emphasis">Ticker</div>
-                <div class="text-body-1">{{ instrumentStore.instrument?.tickerDisplay }}</div>
+                <div class="text-body-1">{{ instrumentStore.instrument?.ticker }}</div>
               </v-col>
               <v-col cols="12" sm="3">
                 <div class="text-caption text-medium-emphasis">ISIN</div>
@@ -801,7 +801,7 @@ onMounted(() => {
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="formData.tickerDisplay"
+                    v-model="formData.ticker"
                     label="Ticker"
                     :rules="tickerRules"
                     :counter="TICKER_MAX_LENGTH"

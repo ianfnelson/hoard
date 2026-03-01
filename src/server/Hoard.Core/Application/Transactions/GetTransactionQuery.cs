@@ -21,7 +21,7 @@ public sealed class GetTransactionHandler(HoardContext context, ILogger<GetTrans
                 AccountName = t.Account.Name,
                 InstrumentId = t.InstrumentId,
                 InstrumentName = t.Instrument == null ? null : t.Instrument.Name,
-                InstrumentTicker = t.Instrument == null ? null : t.Instrument.TickerDisplay,
+                InstrumentTicker = t.Instrument == null ? null : t.Instrument.Ticker,
                 ContractNoteReference = t.ContractNoteReference,
                 TransactionTypeId = t.TransactionTypeId,
                 TransactionTypeName = t.TransactionType.Name,
