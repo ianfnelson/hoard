@@ -1,14 +1,5 @@
 namespace Hoard.Core.Application.Portfolios;
 
-public enum DisaggregateBy
-{
-    None,
-    Accounts,
-    AssetClasses,
-    AssetSubclasses,
-    InstrumentTypes
-}
-
 public class PortfolioValuationSeriesDto
 {
     public List<PortfolioValuationSeriesGroupDto> Series { get; init; } = [];

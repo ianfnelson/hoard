@@ -22,7 +22,7 @@ public sealed class GetNewsArticlesQuery
     
     // Sorting
     public string SortBy { get; init; } = "publishedUtc";
-    public SortDirection SortDirection { get; init; } = SortDirection.Desc;
+    public string SortDirection { get; init; } = "desc";
 }
 
 public sealed class GetNewsArticlesHandler(HoardContext context)
@@ -83,19 +83,19 @@ public sealed class GetNewsArticlesHandler(HoardContext context)
     {
         var orderedQueryable = request.SortBy.ToLowerInvariant() switch
         {
-            "publishedutc" => request.SortDirection == SortDirection.Asc
+            "publishedutc" => request.SortDirection == "asc"
                 ? query.OrderBy(n => n.PublishedUtc).ThenBy(n => n.Instrument.Name)
                 : query.OrderByDescending(n => n.PublishedUtc).ThenBy(n => n.Instrument.Name),
     
-            "instrumentticker" => request.SortDirection == SortDirection.Asc
+            "instrumentticker" => request.SortDirection == "asc"
                 ? query.OrderBy(n => n.Instrument.Ticker).ThenBy(n => n.Headline)
                 : query.OrderByDescending(n => n.Instrument.Ticker).ThenBy(n => n.Headline),
             
-            "instrumentname" => request.SortDirection == SortDirection.Asc
+            "instrumentname" => request.SortDirection == "asc"
                 ? query.OrderBy(n => n.Instrument.Name).ThenBy(n => n.Headline)
                 : query.OrderByDescending(n => n.Instrument.Name).ThenBy(n => n.Headline),
             
-            "headline" => request.SortDirection == SortDirection.Asc
+            "headline" => request.SortDirection == "asc"
                 ? query.OrderBy(n => n.Headline).ThenBy(n => n.PublishedUtc)
                 : query.OrderByDescending(n => n.Headline).ThenBy(n => n.PublishedUtc),
 

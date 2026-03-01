@@ -24,7 +24,7 @@ public sealed class GetTransactionsQuery
 
     // Sorting
     public string SortBy { get; init; } = "date";
-    public SortDirection SortDirection { get; init; } = SortDirection.Desc;
+    public string SortDirection { get; init; } = "desc";
 }
 
 public sealed class GetTransactionsHandler(HoardContext context)
@@ -95,19 +95,19 @@ public sealed class GetTransactionsHandler(HoardContext context)
     {
         var orderedQueryable = request.SortBy.ToLowerInvariant() switch
         {
-            "date" => request.SortDirection == SortDirection.Asc
+            "date" => request.SortDirection == "asc"
                 ? query.OrderBy(t => t.Date)
                 : query.OrderByDescending(t => t.Date),
 
-            "instrumentname" => request.SortDirection == SortDirection.Asc
+            "instrumentname" => request.SortDirection == "asc"
                 ? query.OrderBy(t => t.Instrument != null ? t.Instrument.Name : "")
                 : query.OrderByDescending(t => t.Instrument != null ? t.Instrument.Name : ""),
             
-            "instrumentticker" => request.SortDirection == SortDirection.Asc
+            "instrumentticker" => request.SortDirection == "asc"
                 ? query.OrderBy(t => t.Instrument != null ? t.Instrument.Ticker : "")
                 : query.OrderByDescending(t => t.Instrument != null ? t.Instrument.Ticker : ""),
             
-            "value" => request.SortDirection == SortDirection.Asc
+            "value" => request.SortDirection == "asc"
                 ? query.OrderBy(t => t.Value)
                 : query.OrderByDescending(t => t.Value),
 

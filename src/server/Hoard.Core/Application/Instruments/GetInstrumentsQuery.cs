@@ -22,7 +22,7 @@ public sealed class GetInstrumentsQuery
 
     // Sorting
     public string SortBy { get; init; } = "name";
-    public SortDirection SortDirection { get; init; } = SortDirection.Asc;
+    public string SortDirection { get; init; } = "asc";
 }
 
 public sealed class GetInstrumentsHandler(HoardContext context)
@@ -93,11 +93,11 @@ public sealed class GetInstrumentsHandler(HoardContext context)
     {
         var orderedQueryable = request.SortBy.ToLowerInvariant() switch
         {
-            "name" => request.SortDirection == SortDirection.Asc
+            "name" => request.SortDirection == "asc"
                 ? query.OrderBy(i => i.Name)
                 : query.OrderByDescending(i => i.Name),
 
-            "tickerDisplay" => request.SortDirection == SortDirection.Asc
+            "tickerDisplay" => request.SortDirection == "asc"
                 ? query.OrderBy(i => i.Ticker)
                 : query.OrderByDescending(i => i.Ticker),
 

@@ -22,7 +22,7 @@ public sealed class GetAlertsQuery
 
     // Sorting
     public string SortBy { get; init; } = "createdUtc";
-    public SortDirection SortDirection { get; init; } = SortDirection.Desc;
+    public string SortDirection { get; init; } = "desc";
 }
 
 public sealed class GetAlertsHandler(HoardContext context)
@@ -84,19 +84,19 @@ public sealed class GetAlertsHandler(HoardContext context)
     {
         var orderedQueryable = request.SortBy.ToLowerInvariant() switch
         {
-            "createdutc" => request.SortDirection == SortDirection.Asc
+            "createdutc" => request.SortDirection == "asc"
                 ? query.OrderBy(a => a.CreatedUtc)
                 : query.OrderByDescending(a => a.CreatedUtc),
 
-            "triggereddate" => request.SortDirection == SortDirection.Asc
+            "triggereddate" => request.SortDirection == "asc"
                 ? query.OrderBy(a => a.TriggeredDate)
                 : query.OrderByDescending(a => a.TriggeredDate),
 
-            "alerttypename" => request.SortDirection == SortDirection.Asc
+            "alerttypename" => request.SortDirection == "asc"
                 ? query.OrderBy(a => a.AlertType.Name)
                 : query.OrderByDescending(a => a.AlertType.Name),
 
-            "title" => request.SortDirection == SortDirection.Asc
+            "title" => request.SortDirection == "asc"
                 ? query.OrderBy(a => a.Title)
                 : query.OrderByDescending(a => a.Title),
 

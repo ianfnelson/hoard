@@ -112,7 +112,7 @@ public class PortfoliosController(IMediator mediator)
         int id,
         DateOnly? from,
         DateOnly? to,
-        DisaggregateBy disaggregateBy = DisaggregateBy.None,
+        string? disaggregateBy = null,
         CancellationToken ct = default)
     {
         var query = new GetPortfolioValuationSeriesQuery(id) { From = from, To = to, DisaggregateBy = disaggregateBy };

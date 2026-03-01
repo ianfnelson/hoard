@@ -9,7 +9,7 @@ public sealed class GetPortfolioValuationSeriesQuery(int portfolioId) : IQuery<P
     public int PortfolioId { get; } = portfolioId;
     public DateOnly? From { get; init; }
     public DateOnly? To { get; init; }
-    public DisaggregateBy DisaggregateBy { get; init; } = DisaggregateBy.None;
+    public string? DisaggregateBy { get; init; }
 }
 
 public sealed class GetPortfolioValuationSeriesHandler(
@@ -52,12 +52,12 @@ public sealed class GetPortfolioValuationSeriesHandler(
 
         var series = query.DisaggregateBy switch
         {
-            DisaggregateBy.Accounts => holdings
+            "accounts" => holdings
                 .GroupBy(h => new { Id = h.AccountId, h.Account.Name, h.Account.Colour })
                 .Select(g => BuildGroup(g.Key.Name, g.Key.Colour, g))
                 .ToList(),
 
-            DisaggregateBy.AssetClasses => holdings
+            "asset-classes" => holdings
                 .GroupBy(h => new
                 {
                     Id = h.Instrument.AssetSubclass.AssetClassId,
@@ -67,7 +67,7 @@ public sealed class GetPortfolioValuationSeriesHandler(
                 .Select(g => BuildGroup(g.Key.Name, g.Key.Colour, g))
                 .ToList(),
 
-            DisaggregateBy.AssetSubclasses => holdings
+            "asset-subclasses" => holdings
                 .GroupBy(h => new
                 {
                     Id = h.Instrument.AssetSubclassId,
@@ -77,7 +77,7 @@ public sealed class GetPortfolioValuationSeriesHandler(
                 .Select(g => BuildGroup(g.Key.Name, g.Key.Colour, g))
                 .ToList(),
 
-            DisaggregateBy.InstrumentTypes => holdings
+            "instrument-types" => holdings
                 .GroupBy(h => new
                 {
                     Id = h.Instrument.InstrumentTypeId,

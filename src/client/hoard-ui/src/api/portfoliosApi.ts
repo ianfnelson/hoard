@@ -20,9 +20,9 @@ export interface GetPortfolioValuationsParams {
 export type DisaggregateBy =
   | 'none'
   | 'accounts'
-  | 'assetClasses'
-  | 'assetSubclasses'
-  | 'instrumentTypes'
+  | 'asset-classes'
+  | 'asset-subclasses'
+  | 'instrument-types'
 
 export interface GetPortfolioValuationSeriesParams {
   from?: string
