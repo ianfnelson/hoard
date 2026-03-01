@@ -10,7 +10,7 @@ namespace Hoard.Api.Controllers;
 [Tags("Operations")]
 public class AnalysisOperationsController(IMediator mediator) : ControllerBase
 {
-    [HttpPost("analyse")]
+    [HttpPost("analyse-instruments")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> AnalyseInstrumentsAsync([FromBody] AnalyseInstrumentsRequest request)
     {

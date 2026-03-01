@@ -964,6 +964,53 @@ namespace Hoard.Core.Data.Migrations
                     b.ToTable("Quote", (string)null);
                 });
 
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.RunLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("RunLogId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAtUtc")
+                        .HasColumnType("datetime2(3)");
+
+                    b.Property<Guid>("RunId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RunTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAtUtc")
+                        .HasColumnType("datetime2(3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RunId")
+                        .IsUnique();
+
+                    b.HasIndex("RunTypeId");
+
+                    b.ToTable("RunLog", (string)null);
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.RunType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("RunTypeId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RunType", (string)null);
+                });
+
             modelBuilder.Entity("Hoard.Core.Domain.Entities.TargetAllocation", b =>
                 {
                     b.Property<int>("Id")
@@ -1341,6 +1388,17 @@ namespace Hoard.Core.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Instrument");
+                });
+
+            modelBuilder.Entity("Hoard.Core.Domain.Entities.RunLog", b =>
+                {
+                    b.HasOne("Hoard.Core.Domain.Entities.RunType", "RunType")
+                        .WithMany()
+                        .HasForeignKey("RunTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RunType");
                 });
 
             modelBuilder.Entity("Hoard.Core.Domain.Entities.TargetAllocation", b =>

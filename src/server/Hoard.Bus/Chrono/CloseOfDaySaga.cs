@@ -160,7 +160,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Holdings", Data.ChronoRunId);
         var triggerHoldingsCommand =
             new TriggerBackfillHoldingsCommand(Data.RebuildStartDate, Data.Tomorrow, Data.PipelineMode);
-        Data.HoldingsRunId = triggerHoldingsCommand.HoldingsRunId;
+        Data.HoldingsRunId = triggerHoldingsCommand.RunId;
         await mediator.SendAsync(triggerHoldingsCommand);
     }
 
@@ -169,7 +169,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Prices", Data.ChronoRunId);
         var triggerPricesCommand =
             new TriggerRefreshPricesCommand(null, Data.RebuildStartDate, Data.Today, Data.PipelineMode);
-        Data.PricesRunId = triggerPricesCommand.PricesRunId;
+        Data.PricesRunId = triggerPricesCommand.RunId;
         await mediator.SendAsync(triggerPricesCommand);
     }
 
@@ -177,7 +177,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     {
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Performance", Data.ChronoRunId);
         var triggerPerformanceCommand = new TriggerCalculatePerformanceCommand(null, Data.PipelineMode);
-        Data.PerformanceRunId = triggerPerformanceCommand.PerformanceRunId;
+        Data.PerformanceRunId = triggerPerformanceCommand.RunId;
         await mediator.SendAsync(triggerPerformanceCommand);
     }
 
@@ -185,7 +185,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     {
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Positions", Data.ChronoRunId);
         var positionsCommand = new TriggerCalculatePositionsCommand(Data.PipelineMode);
-        Data.PositionsRunId = positionsCommand.PositionsRunId;
+        Data.PositionsRunId = positionsCommand.RunId;
         await mediator.SendAsync(positionsCommand);
     }
 
@@ -193,7 +193,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     {
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Snapshots", Data.ChronoRunId);
         var triggerSnapshotsCommand = new TriggerCalculateSnapshotsCommand(Data.Today.Year, Data.PipelineMode);
-        Data.SnapshotsRunId = triggerSnapshotsCommand.SnapshotsRunId;
+        Data.SnapshotsRunId = triggerSnapshotsCommand.RunId;
         await mediator.SendAsync(triggerSnapshotsCommand);
     }
 
@@ -201,7 +201,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     {
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Analysis", Data.ChronoRunId);
         var triggerAnalysisCommand = new TriggerAnalyseInstrumentsCommand(Data.Today, Data.PipelineMode);
-        Data.AnalysisRunId = triggerAnalysisCommand.AnalysisRunId;
+        Data.AnalysisRunId = triggerAnalysisCommand.RunId;
         await mediator.SendAsync(triggerAnalysisCommand);
     }
 
@@ -210,7 +210,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
         logger.LogInformation("CloseOfDay {ChronoRunId}: Dispatching Valuations", Data.ChronoRunId);
         var triggerValuationsCommand =
             new TriggerBackfillValuationsCommand(null, Data.RebuildStartDate, Data.Tomorrow, Data.PipelineMode);
-        Data.ValuationsRunId = triggerValuationsCommand.ValuationsRunId;
+        Data.ValuationsRunId = triggerValuationsCommand.RunId;
         await mediator.SendAsync(triggerValuationsCommand);
     }
 

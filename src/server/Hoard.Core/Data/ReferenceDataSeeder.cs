@@ -26,6 +26,7 @@ public class ReferenceDataSeeder
         await SeedAssetSubclassesAsync();
         await SeedInstrumentTypesAsync();
         await SeedTransactionTypesAsync();
+        await SeedRunTypesAsync();
         
         await _context.SaveChangesAsync(cancellationToken);
         
@@ -141,6 +142,28 @@ public class ReferenceDataSeeder
         await UpsertAsync(_context.InstrumentTypes, items, x => x.Id);
     }
     
+    private async Task SeedRunTypesAsync()
+    {
+        var items = new[]
+        {
+            new RunType { Id = RunType.CloseOfDay, Name = "Close of Day" },
+            new RunType { Id = RunType.RefreshPrices, Name = "Refresh Prices" },
+            new RunType { Id = RunType.BackfillPrices, Name = "Backfill Prices" },
+            new RunType { Id = RunType.BackfillHoldings, Name = "Backfill Holdings" },
+            new RunType { Id = RunType.CalculateHoldings, Name = "Calculate Holdings" },
+            new RunType { Id = RunType.CalculatePositions, Name = "Calculate Positions" },
+            new RunType { Id = RunType.BackfillValuations, Name = "Backfill Valuations" },
+            new RunType { Id = RunType.CalculateValuations, Name = "Calculate Valuations" },
+            new RunType { Id = RunType.CalculatePerformance, Name = "Calculate Performance" },
+            new RunType { Id = RunType.BackfillSnapshots, Name = "Backfill Snapshots" },
+            new RunType { Id = RunType.CalculateSnapshots, Name = "Calculate Snapshots" },
+            new RunType { Id = RunType.AnalyseInstruments, Name = "Analyse Instruments" },
+            new RunType { Id = RunType.RefreshNews, Name = "Refresh News" },
+            new RunType { Id = RunType.RefreshQuotes, Name = "Refresh Quotes" },
+        };
+        await UpsertAsync(_context.RunTypes, items, x => x.Id);
+    }
+
     private async Task SeedTransactionTypesAsync()
     {
         var items = new[]

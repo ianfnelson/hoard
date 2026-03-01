@@ -3,6 +3,7 @@ using Hoard.Core.Application.News;
 using Hoard.Messages;
 using Hoard.Messages.News;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
@@ -10,6 +11,7 @@ namespace Hoard.Bus.News;
 
 public class RefreshNewsSaga(
     IMediator mediator,
+    IBus bus,
     ILogger<RefreshNewsSaga> logger) :
     Saga<RnSagaData>,
     IAmInitiatedBy<StartRefreshNewsSagaCommand>,
@@ -46,6 +48,7 @@ public class RefreshNewsSaga(
         {
             logger.LogInformation("News refresh saga {NewsRunId} complete", Data.NewsRunId);
             MarkAsComplete();
+            await bus.Publish(new AllNewsRefreshedEvent(Data.NewsRunId, Data.PipelineMode));
         }
     }
 }

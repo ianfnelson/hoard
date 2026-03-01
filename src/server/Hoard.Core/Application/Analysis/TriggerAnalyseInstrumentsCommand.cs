@@ -1,3 +1,4 @@
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Analysis;
 
@@ -7,8 +8,9 @@ public sealed record TriggerAnalyseInstrumentsCommand(
     DateOnly AsOfDate,
     PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
 {
-    public Guid AnalysisRunId { get; } = Guid.NewGuid();
+    public Guid RunId { get; } = Guid.NewGuid();
+    public int RunTypeId => RunType.AnalyseInstruments;
 
     public object ToBusCommand() => new StartAnalyseInstrumentsSagaCommand(
-        AnalysisRunId, PipelineMode, AsOfDate);
+        RunId, PipelineMode, AsOfDate);
 }

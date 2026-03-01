@@ -3,6 +3,7 @@ using Hoard.Core.Application.Snapshots;
 using Hoard.Messages;
 using Hoard.Messages.Snapshots;
 using Microsoft.Extensions.Logging;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Rebus.Sagas;
 
@@ -10,6 +11,7 @@ namespace Hoard.Bus.Snapshots;
 
 public class BackfillSnapshotsSaga(
     IMediator mediator,
+    IBus bus,
     ILogger<BackfillSnapshotsSaga> logger)
     : 
         Saga<BfSagaData>,
@@ -43,16 +45,15 @@ public class BackfillSnapshotsSaga(
         await mediator.SendAsync(new DispatchBackfillSnapshotsCommand(snapshotsRunId, pipelineMode, portfolioId, years));
     }
 
-    public Task Handle(SnapshotsCalculatedEvent message)
+    public async Task Handle(SnapshotsCalculatedEvent message)
     {
         Data.PendingYears.Remove(message.Year);
         if (Data.PendingYears.Count == 0)
         {
             logger.LogInformation("All snapshots recomputed. Done!");
             MarkAsComplete();
+            await bus.Publish(new SnapshotsBackfilledEvent(Data.SnapshotsRunId, Data.PipelineMode));
         }
-        
-        return Task.CompletedTask;
     }
 }
 

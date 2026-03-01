@@ -1,3 +1,3 @@
 namespace Hoard.Messages.Quotes;
 
-public record RefreshQuotesBusCommand();
+public record RefreshQuotesBusCommand(Guid QuotesRunId);

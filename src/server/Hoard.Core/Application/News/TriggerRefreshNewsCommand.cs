@@ -1,3 +1,4 @@
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.News;
 
@@ -7,8 +8,9 @@ public sealed record TriggerRefreshNewsCommand(
     int? InstrumentId,
     PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
 {
-    public Guid NewsRunId { get; } = Guid.NewGuid();
+    public Guid RunId { get; } = Guid.NewGuid();
+    public int RunTypeId => RunType.RefreshNews;
 
     public object ToBusCommand() => new StartRefreshNewsSagaCommand(
-        NewsRunId, PipelineMode, InstrumentId);
+        RunId, PipelineMode, InstrumentId);
 }

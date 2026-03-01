@@ -1,3 +1,4 @@
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Prices;
 
@@ -9,8 +10,9 @@ public sealed record TriggerRefreshPricesCommand(
     DateOnly? EndDate,
     PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ITriggerCommand
 {
-    public Guid PricesRunId { get; } = Guid.NewGuid();
+    public Guid RunId { get; } = Guid.NewGuid();
+    public int RunTypeId => RunType.RefreshPrices;
     
     public object ToBusCommand() => new StartRefreshPricesSagaCommand(
-        PricesRunId, PipelineMode, InstrumentId, StartDate, EndDate);
+        RunId, PipelineMode, InstrumentId, StartDate, EndDate);
 }
