@@ -11,7 +11,7 @@ public record GetPortfolioValuationsQuery(int PortfolioId, DateOnly? FromDate, D
 public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPortfolioValuationsHandler> logger)
     : IQueryHandler<GetPortfolioValuationsQuery, PortfolioValuationsDto?>
 {
-    private record InstrumentValuation(int InstrumentId, string InstrumentName, decimal Value);
+    private record InstrumentValuation(int InstrumentId, string InstrumentName, string InstrumentTicker, decimal Units, decimal Value);
 
     public async Task<PortfolioValuationsDto?> HandleAsync(
         GetPortfolioValuationsQuery query,
@@ -72,6 +72,8 @@ public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPort
                 g => new InstrumentValuation(
                     g.Key,
                     g.First().Instrument.Name,
+                    g.First().Instrument.Ticker,
+                    g.Sum(h => h.Units),
                     g.Sum(h => h.Valuation!.Value)));
     }
 
@@ -124,8 +126,11 @@ public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPort
         {
             InstrumentId = instrumentId,
             InstrumentName = instrumentName,
+            InstrumentTicker = (to ?? from)!.InstrumentTicker,
+            ToUnits = to?.Units,
             ToValue = toValue,
             ToPercentage = toPercentage,
+            FromUnits = from?.Units,
             FromValue = fromValue,
             FromPercentage = fromPercentage,
             ChangeValue = changeValue,

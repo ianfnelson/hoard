@@ -69,6 +69,7 @@ const statusItems = [
 ]
 
 const holdingsHeaders = [
+  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
   { title: 'Instrument', key: 'instrumentName', sortable: true },
   { title: 'Open Date', key: 'openDate', sortable: true },
   { title: 'Close Date', key: 'closeDate', sortable: true },
@@ -79,6 +80,7 @@ const holdingsHeaders = [
 ] as const
 
 const gainsHeaders = [
+  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
   { title: 'Instrument', key: 'instrumentName', sortable: true },
   { title: 'Unrealised', key: 'performance.unrealisedGain', sortable: true, align: 'end' },
   { title: 'Realised', key: 'performance.realisedGain', sortable: true, align: 'end' },
@@ -88,6 +90,7 @@ const gainsHeaders = [
 ] as const
 
 const performanceHeaders = [
+  { title: 'Ticker', key: 'instrumentTicker', sortable: true },
   { title: 'Instrument', key: 'instrumentName', sortable: true },
   { title: '1D', key: 'performance.return1D', sortable: true, align: 'end' },
   { title: '1W', key: 'performance.return1W', sortable: true, align: 'end' },
@@ -148,6 +151,15 @@ const performanceHeaders = [
               :loading="store.isLoading"
               density="compact"
             >
+              <template #item.instrumentTicker="{ item }">
+                <router-link
+                  v-if="item.instrumentId"
+                  :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
+                  class="text-decoration-none"
+                >
+                  {{ item.instrumentTicker }}
+                </router-link>
+              </template>
               <template #item.instrumentName="{ item }">
                 <router-link
                   v-if="item.instrumentId"
@@ -192,6 +204,16 @@ const performanceHeaders = [
               :loading="store.isLoading"
               density="compact"
             >
+              <template #item.instrumentTicker="{ item }">
+                <router-link
+                  v-if="item.instrumentId"
+                  :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
+                  class="text-decoration-none"
+                >
+                  {{ item.instrumentTicker }}
+                </router-link>
+              </template>
+
               <template #item.instrumentName="{ item }">
                 <router-link
                   v-if="item.instrumentId"
@@ -245,6 +267,16 @@ const performanceHeaders = [
               :loading="store.isLoading"
               density="compact"
             >
+              <template #item.instrumentTicker="{ item }">
+                <router-link
+                  v-if="item.instrumentId"
+                  :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
+                  class="text-decoration-none"
+                >
+                  {{ item.instrumentTicker }}
+                </router-link>
+              </template>
+
               <template #item.instrumentName="{ item }">
                 <router-link
                   v-if="item.instrumentId"
