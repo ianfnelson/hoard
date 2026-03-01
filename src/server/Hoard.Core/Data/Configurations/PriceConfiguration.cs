@@ -19,6 +19,7 @@ public class PriceConfiguration : IEntityTypeConfiguration<Price>
         builder.Property(p => p.Volume);
         builder.Property(p => p.AdjustedClose).HasColumnType("decimal(18,4)");
         
+        builder.Property(p => p.RetrievedUtc).HasColumnType("datetime2(3)");
         builder.Property(p => p.Source).IsRequired().HasMaxLength(50);
 
         builder.HasOne(p => p.Instrument)
