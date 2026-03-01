@@ -44,10 +44,10 @@ public class InstrumentsController(IMediator mediator, IValidator<InstrumentWrit
     [Route("{id:int}/price-series")]
     [ProducesResponseType(typeof(PriceSeriesDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PriceSeriesDto>> GetPriceSeries(int id, [FromQuery] GetPriceSeriesQuery query,
+    public async Task<ActionResult<PriceSeriesDto>> GetPriceSeries(int id, DateOnly? from, DateOnly? to,
         CancellationToken ct)
     {
-        query.InstrumentId = id;
+        var query = new GetPriceSeriesQuery(id) { From = from, To = to };
         var dto = await mediator.QueryAsync<GetPriceSeriesQuery, PriceSeriesDto?>(query, ct);
         return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
@@ -56,10 +56,10 @@ public class InstrumentsController(IMediator mediator, IValidator<InstrumentWrit
     [Route("{id:int}/valuation-series")]
     [ProducesResponseType(typeof(ValuationSeriesDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ValuationSeriesDto>> GetValuationSeries(int id,
-        [FromQuery] GetValuationSeriesQuery query, CancellationToken ct)
+    public async Task<ActionResult<ValuationSeriesDto>> GetValuationSeries(int id, DateOnly? from, DateOnly? to,
+        CancellationToken ct)
     {
-        query.InstrumentId = id;
+        var query = new GetValuationSeriesQuery(id) { From = from, To = to };
         var dto = await mediator.QueryAsync<GetValuationSeriesQuery, ValuationSeriesDto?>(query, ct);
         return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }
@@ -68,10 +68,10 @@ public class InstrumentsController(IMediator mediator, IValidator<InstrumentWrit
     [Route("{id:int}/prices")]
     [ProducesResponseType(typeof(PagedResult<PriceSummaryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PagedResult<PriceSummaryDto>>> GetPrices(int id, [FromQuery] GetPricesQuery query,
-        CancellationToken ct)
+    public async Task<ActionResult<PagedResult<PriceSummaryDto>>> GetPrices(int id, int pageNumber = 1,
+        int pageSize = 10, CancellationToken ct = default)
     {
-        query.InstrumentId = id;
+        var query = new GetPricesQuery(id) { PageNumber = pageNumber, PageSize = pageSize };
         var dtos = await mediator.QueryAsync<GetPricesQuery, PagedResult<PriceSummaryDto>?>(query, ct);
         return dtos == null ? new NotFoundResult() : new OkObjectResult(dtos);
     }
