@@ -77,6 +77,17 @@ export async function getPortfolioValuations(
   return response.data
 }
 
+export async function downloadPortfolioValuationsPdf(
+  portfolioId: number,
+  params?: GetPortfolioValuationsParams
+) {
+  const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation/export`, {
+    params,
+    responseType: 'blob',
+  })
+  return response
+}
+
 export async function getPortfolioValuationSeries(
   portfolioId: number,
   params?: GetPortfolioValuationSeriesParams

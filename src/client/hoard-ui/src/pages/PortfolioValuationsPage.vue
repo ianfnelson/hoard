@@ -5,12 +5,15 @@ import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, formatUnits, getTrendClass } from '@/utils/formatters'
 import { getPortfolioValuations } from '@/api/portfoliosApi'
+import { usePortfolioValuationsPdfExport } from '@/composables/usePortfolioValuationsPdfExport'
 import type { PortfolioValuationsDto } from '@/api/dtos/Portfolios/PortfolioValuationsDto'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
 const router = useRouter()
 const portfolioStore = usePortfolioStore()
+
+const { exportPdf, isExporting } = usePortfolioValuationsPdfExport()
 
 const pageTitle = computed(() => {
   const portfolioName = portfolioStore.portfolio?.name
@@ -102,6 +105,13 @@ async function loadValuations() {
   }
 }
 
+function handleExportPdf() {
+  exportPdf(parseInt(props.id), {
+    from: fromDate.value || undefined,
+    to: toDate.value || undefined,
+  })
+}
+
 // Computed headers based on whether fromDate is set
 const headers = computed(() => {
   const baseHeaders = [
@@ -162,8 +172,17 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
           required
         />
       </v-col>
-      <v-col cols="12" md="3" class="d-flex align-center">
+      <v-col cols="12" md="6" class="d-flex align-center ga-2">
         <v-btn color="primary" :loading="isLoading" @click="loadValuations">Load</v-btn>
+        <v-btn
+          variant="outlined"
+          prepend-icon="mdi-file-export"
+          :loading="isExporting"
+          :disabled="!valuations"
+          @click="handleExportPdf"
+        >
+          Export to PDF
+        </v-btn>
       </v-col>
     </v-row>
 

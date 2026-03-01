@@ -8,7 +8,7 @@ namespace Hoard.Api.Controllers;
 [Route("api/portfolios/")]
 [Tags("Portfolios")]
 [Produces("application/json")]
-public class PortfoliosController(IMediator mediator)
+public class PortfoliosController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(List<PortfolioSummaryDto>), StatusCodes.Status200OK)]
@@ -118,6 +118,33 @@ public class PortfoliosController(IMediator mediator)
         var query = new GetPortfolioValuationSeriesQuery(id) { From = from, To = to, DisaggregateBy = disaggregateBy };
         var dto = await mediator.QueryAsync<GetPortfolioValuationSeriesQuery, PortfolioValuationSeriesDto?>(query, ct);
         return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
+    }
+
+    [HttpGet("{id:int}/valuation/export")]
+    [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExportValuationPdf(
+        int id,
+        [FromQuery] DateOnly? from,
+        [FromQuery] DateOnly? to,
+        CancellationToken ct)
+    {
+        try
+        {
+            var query = new ExportPortfolioValuationsPdfQuery(id, from, to);
+            var result = await mediator
+                .QueryAsync<ExportPortfolioValuationsPdfQuery, PortfolioValuationsPdfResult?>(query, ct);
+
+            if (result == null)
+                return NotFound();
+
+            return File(result.Stream, result.ContentType, result.FileName);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 
     // TODO - add target allocations put endpoint

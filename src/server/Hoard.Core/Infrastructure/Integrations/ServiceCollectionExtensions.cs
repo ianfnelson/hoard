@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IQuoteService, YahooFinance>();
         services.AddScoped<IPriceService, YahooFinance>();
+        services.AddScoped<IPortfolioValuationsPdfService, PortfolioValuationsPdfService>();
         services.AddScoped<ClarionClient>(_ => ClarionClient.Create());
 
         // Azure Blob Storage
