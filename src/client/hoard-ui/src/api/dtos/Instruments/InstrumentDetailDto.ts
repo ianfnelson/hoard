@@ -4,7 +4,7 @@ import type { InstrumentDataFeedDto } from './InstrumentDataFeedDto'
 export interface InstrumentDetailDto {
   id: number
   name: string
-  tickerDisplay: string
+  ticker: string
   isin: string | null
   createdUtc: string
   instrumentTypeId: number

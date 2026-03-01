@@ -24,7 +24,7 @@ public sealed class GetNewsArticleHandler(HoardContext context, ILogger<GetNewsA
                 Url = n.Url,
                 InstrumentId = n.InstrumentId,
                 InstrumentName = n.Instrument.Name,
-                InstrumentTicker = n.Instrument.TickerDisplay
+                InstrumentTicker = n.Instrument.Ticker
             }).SingleOrDefaultAsync(ct);
 
         if (dto == null)

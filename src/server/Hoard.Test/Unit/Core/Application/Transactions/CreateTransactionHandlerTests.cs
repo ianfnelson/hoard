@@ -43,7 +43,7 @@ public class CreateTransactionHandlerTests : IDisposable
             InstrumentTypeId = 1,
             AssetSubclassId = 1,
             Name = "Test Stock",
-            TickerDisplay = "TEST",
+            Ticker = "TEST",
             CurrencyId = "GBP"
         };
         _context.Instruments.Add(instrument);
@@ -108,7 +108,7 @@ public class CreateTransactionHandlerTests : IDisposable
             InstrumentTypeId = 1,
             AssetSubclassId = 1,
             Name = "Test Stock",
-            TickerDisplay = "TEST",
+            Ticker = "TEST",
             CurrencyId = "GBP"
         };
         _context.Instruments.Add(instrument);
@@ -167,7 +167,7 @@ public class CreateTransactionHandlerTests : IDisposable
             InstrumentTypeId = 1,
             AssetSubclassId = 1,
             Name = "Test Stock",
-            TickerDisplay = "TEST",
+            Ticker = "TEST",
             CurrencyId = "GBP"
         };
         _context.Instruments.Add(instrument);
@@ -241,7 +241,7 @@ public class CreateTransactionHandlerTests : IDisposable
             InstrumentTypeId = 1,
             AssetSubclassId = 1,
             Name = "Test Stock",
-            TickerDisplay = "TEST",
+            Ticker = "TEST",
             CurrencyId = "GBP"
         };
         _context.Instruments.Add(instrument);

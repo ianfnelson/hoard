@@ -19,7 +19,7 @@ public class GetPriceQueryHandler(HoardContext context, ILogger<GetPriceQueryHan
                 Id = p.Id,
                 InstrumentId = p.InstrumentId,
                 InstrumentName = p.Instrument.Name,
-                InstrumentTicker = p.Instrument.TickerDisplay,
+                InstrumentTicker = p.Instrument.Ticker,
                 AsOfDate = p.AsOfDate,
                 RetrievedUtc = p.RetrievedUtc,
                 Source = p.Source,

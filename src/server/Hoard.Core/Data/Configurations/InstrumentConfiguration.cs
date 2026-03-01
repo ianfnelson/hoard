@@ -11,7 +11,7 @@ public class InstrumentConfiguration : IEntityTypeConfiguration<Instrument>
         builder.ToTable("Instrument");
 
         builder.Property(i => i.Name).IsRequired().HasMaxLength(100);
-        builder.Property(i => i.TickerDisplay).IsRequired().HasMaxLength(20);
+        builder.Property(i => i.Ticker).IsRequired().HasMaxLength(20);
         builder.Property(i => i.Isin).HasColumnType("char(12)");
 
         builder.Property(i => i.AssetSubclassId)

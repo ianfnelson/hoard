@@ -78,7 +78,7 @@ watch(searchText, (val) => {
 })
 
 const headers = [
-  { title: 'Ticker', key: 'tickerDisplay', sortable: true, width: '160px' },
+  { title: 'Ticker', key: 'ticker', sortable: true, width: '160px' },
   { title: 'Name', key: 'name', sortable: true },
   { title: 'Instrument Type', key: 'instrumentTypeName', sortable: false },
   { title: 'Asset Class', key: 'assetClassName', sortable: true },
@@ -210,9 +210,9 @@ onMounted(() => {
           :items-per-page-options="TABLE_ITEMS_PER_PAGE_OPTIONS"
           density="compact"
         >
-          <template #item.tickerDisplay="{ item }">
+          <template #item.ticker="{ item }">
             <router-link :to="{ name: 'instrument-detail', params: { id: item.id } }">
-              {{ item.tickerDisplay }}</router-link
+              {{ item.ticker }}</router-link
             >
           </template>
 

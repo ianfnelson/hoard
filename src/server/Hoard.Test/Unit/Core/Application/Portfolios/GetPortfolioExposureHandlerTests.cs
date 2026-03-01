@@ -92,7 +92,7 @@ public class GetPortfolioExposureHandlerTests
         {
             Id = 1,
             Name = "Test Stock",
-            TickerDisplay = "TST",
+            Ticker = "TST",
             Isin = "GB0000000000",
             AssetSubclassId = 10,
             InstrumentTypeId = 1,
@@ -190,7 +190,7 @@ public class GetPortfolioExposureHandlerTests
         {
             Id = 1,
             Name = "Stock Fund",
-            TickerDisplay = "STK",
+            Ticker = "STK",
             AssetSubclassId = 10,
             InstrumentTypeId = 1,
             CurrencyId = "GBP"
@@ -199,7 +199,7 @@ public class GetPortfolioExposureHandlerTests
         {
             Id = 2,
             Name = "Bond Fund",
-            TickerDisplay = "BND",
+            Ticker = "BND",
             AssetSubclassId = 20,
             InstrumentTypeId = 1,
             CurrencyId = "GBP"
@@ -291,7 +291,7 @@ public class GetPortfolioExposureHandlerTests
             {
                 Id = i,
                 Name = $"Instrument {i}",
-                TickerDisplay = $"TST{i}",
+                Ticker = $"TST{i}",
                 AssetSubclassId = i,
                 InstrumentTypeId = 1,
                 CurrencyId = "GBP"

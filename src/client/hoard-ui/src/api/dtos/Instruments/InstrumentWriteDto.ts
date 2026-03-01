@@ -5,7 +5,7 @@ export interface InstrumentWriteDto {
   instrumentTypeId: number | null
   assetSubclassId: number | null
   currencyId: string | null
-  tickerDisplay: string | null
+  ticker: string | null
   isin: string | null
   dataFeeds?: InstrumentDataFeedWriteDto[] | null
 }

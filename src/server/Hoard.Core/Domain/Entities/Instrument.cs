@@ -13,7 +13,7 @@ public partial class Instrument : Entity<int>
     public required string CurrencyId { get; set; }
     public Currency Currency { get; set; } = null!;
     
-    public required string TickerDisplay { get; set; }
+    public required string Ticker { get; set; }
     public string? Isin { get; set; }
 
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;

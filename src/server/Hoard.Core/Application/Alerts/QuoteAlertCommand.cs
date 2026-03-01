@@ -49,7 +49,7 @@ public class QuoteAlertHandler(
             TriggeredDate = today,
             InstrumentId = command.InstrumentId,
             SuppressionKey = $"{AlertType.QuoteMovement}:{command.InstrumentId}:{today.ToIsoDateString()}",
-            Title = $"{instrument.TickerDisplay} {direction} {absPct:F2}%",
+            Title = $"{instrument.Ticker} {direction} {absPct:F2}%",
             Message = $"{instrument.Name} is {direction} {absPct:F2}%",
             Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
             UrlTitle = instrument.Name

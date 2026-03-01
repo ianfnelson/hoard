@@ -33,11 +33,11 @@ public class InstrumentWriteDtoValidator : AbstractValidator<InstrumentWriteDto>
             .MustAsync(async(id, ct) => await context.Currencies.AnyAsync(x => x.Id == id, ct))
             .WithMessage(x => $"Currency with ID {x.CurrencyId} does not exist");
 
-        RuleFor(x => x.TickerDisplay)
+        RuleFor(x => x.Ticker)
             .NotEmpty()
-            .WithMessage("TickerDisplay is required")
+            .WithMessage("Ticker is required")
             .MaximumLength(20)
-            .WithMessage("TickerDisplay cannot exceed 20 characters");
+            .WithMessage("Ticker cannot exceed 20 characters");
 
         RuleFor(x => x.Isin)
             .MaximumLength(12)

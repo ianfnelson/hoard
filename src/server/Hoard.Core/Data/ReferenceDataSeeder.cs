@@ -167,18 +167,18 @@ public class ReferenceDataSeeder
         var items = new[]
         {
             new Instrument { Id = Instrument.Cash, Name = "Cash (GBP)", InstrumentTypeId = InstrumentType.Cash,
-                CurrencyId = Currency.Gbp, TickerDisplay = "CASH", AssetSubclassId = 15},
+                CurrencyId = Currency.Gbp, Ticker = "CASH", AssetSubclassId = 15},
 
             new Instrument { Id = Instrument.GbpUsd, Name = "GBP/USD", InstrumentTypeId = InstrumentType.FxPair,
-                CurrencyId = Currency.Usd, TickerDisplay = "GBPUSD", AssetSubclassId = 16},
+                CurrencyId = Currency.Usd, Ticker = "GBPUSD", AssetSubclassId = 16},
             new Instrument { Id = Instrument.GbpEur, Name = "GBP/EUR", InstrumentTypeId = InstrumentType.FxPair,
-                CurrencyId = Currency.Eur, TickerDisplay = "GBPEUR", AssetSubclassId = 16},
+                CurrencyId = Currency.Eur, Ticker = "GBPEUR", AssetSubclassId = 16},
             new Instrument { Id = Instrument.GbpJpy, Name = "GBP/JPY", InstrumentTypeId = 6,
-                CurrencyId = Currency.Jpy, TickerDisplay = "GBPJPY", AssetSubclassId = 16},
+                CurrencyId = Currency.Jpy, Ticker = "GBPJPY", AssetSubclassId = 16},
             new Instrument { Id = Instrument.GbpDkk, Name = "GBP/DKK", InstrumentTypeId = 6,
-                CurrencyId = Currency.Dkk, TickerDisplay = "GBPDKK", AssetSubclassId = 16},
+                CurrencyId = Currency.Dkk, Ticker = "GBPDKK", AssetSubclassId = 16},
             new Instrument { Id = Instrument.GbpSek, Name = "GBP/SEK", InstrumentTypeId = 6,
-                CurrencyId = Currency.Sek, TickerDisplay = "GBPSEK", AssetSubclassId = 16},
+                CurrencyId = Currency.Sek, Ticker = "GBPSEK", AssetSubclassId = 16},
         };
 
         await using var transaction = await _context.Database.BeginTransactionAsync();

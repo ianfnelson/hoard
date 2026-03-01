@@ -18,7 +18,7 @@ public sealed class GetInstrumentHandler(HoardContext context, ILogger<GetInstru
             {
                 Id = i.Id,
                 Name = i.Name,
-                TickerDisplay = i.TickerDisplay,
+                Ticker = i.Ticker,
                 Isin = i.Isin,
                 CreatedUtc = i.CreatedUtc,
                 InstrumentTypeId = i.InstrumentTypeId,

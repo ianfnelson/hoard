@@ -83,7 +83,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
 
         return query.Where(i =>
             i.Name.Contains(term) ||
-            i.TickerDisplay.Contains(term) ||
+            i.Ticker.Contains(term) ||
             (i.Isin != null && i.Isin.Contains(term)));
     }
     
@@ -98,8 +98,8 @@ public sealed class GetInstrumentsHandler(HoardContext context)
                 : query.OrderByDescending(i => i.Name),
 
             "tickerDisplay" => request.SortDirection == SortDirection.Asc
-                ? query.OrderBy(i => i.TickerDisplay)
-                : query.OrderByDescending(i => i.TickerDisplay),
+                ? query.OrderBy(i => i.Ticker)
+                : query.OrderByDescending(i => i.Ticker),
 
             _ => query.OrderBy(i => i.Name)
         };
@@ -113,7 +113,7 @@ public sealed class GetInstrumentsHandler(HoardContext context)
         {
             Id = i.Id,
             Name = i.Name,
-            TickerDisplay = i.TickerDisplay,
+            Ticker = i.Ticker,
             Isin = i.Isin,
             CreatedUtc = i.CreatedUtc,
 

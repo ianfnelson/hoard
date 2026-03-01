@@ -5,7 +5,7 @@ public class InstrumentSummaryDto
     public int Id { get; set; }
     public required string Name { get; set; }
     
-    public required string TickerDisplay { get; set; }
+    public required string Ticker { get; set; }
     public string? Isin { get; set; }
     
     public DateTime CreatedUtc { get; set; }
