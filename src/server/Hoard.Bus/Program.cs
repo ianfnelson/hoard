@@ -85,6 +85,10 @@ await using (var scope = app.Services.CreateAsyncScope())
     
     await bus.Subscribe<SnapshotCalculatedEvent>();
     await bus.Subscribe<SnapshotsCalculatedEvent>();
+    await bus.Subscribe<SnapshotsBackfilledEvent>();
+    
+    await bus.Subscribe<AllNewsRefreshedEvent>();
+    await bus.Subscribe<QuotesRefreshedEvent>();
     
     await bus.Subscribe<TransactionDeletedEvent>();
     await bus.Subscribe<TransactionCreatedEvent>();

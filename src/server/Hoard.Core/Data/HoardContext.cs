@@ -28,6 +28,8 @@ public class HoardContext : DbContext
     public DbSet<PortfolioSnapshot> PortfolioSnapshots => Set<PortfolioSnapshot>();
     public DbSet<PortfolioValuation> PortfolioValuations => Set<PortfolioValuation>();
     public DbSet<Position> Positions => Set<Position>();
+    public DbSet<RunLog> RunLogs => Set<RunLog>();
+    public DbSet<RunType> RunTypes => Set<RunType>();
     public DbSet<PositionPerformance> PositionPerformances => Set<PositionPerformance>();
     public DbSet<Price> Prices => Set<Price>();
     public DbSet<Transaction> Transactions => Set<Transaction>();

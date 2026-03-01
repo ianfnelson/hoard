@@ -1,3 +1,4 @@
+using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Messages.Snapshots;
 
@@ -10,6 +11,7 @@ public record TriggerBackfillSnapshotsCommand(
     PipelineMode PipelineMode = PipelineMode.Backfill)
     : ITriggerCommand
 {
-    public Guid SnapshotsRunId { get; } = Guid.NewGuid();
-    public object ToBusCommand() => new StartBackfillSnapshotsSagaCommand(SnapshotsRunId, PipelineMode, PortfolioId, StartYear, EndYear);
+    public Guid RunId { get; } = Guid.NewGuid();
+    public int RunTypeId => RunType.BackfillSnapshots;
+    public object ToBusCommand() => new StartBackfillSnapshotsSagaCommand(RunId, PipelineMode, PortfolioId, StartYear, EndYear);
 }
