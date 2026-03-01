@@ -474,7 +474,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("datetime2(0)");
 
                     b.Property<DateTime>("RetrievedUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(3)");
 
                     b.Property<string>("Source")
                         .IsRequired()
@@ -897,7 +897,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<DateTime>("RetrievedUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(3)");
 
                     b.Property<string>("Source")
                         .IsRequired()
@@ -949,7 +949,7 @@ namespace Hoard.Core.Data.Migrations
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<DateTime>("RetrievedUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2(3)");
 
                     b.Property<string>("Source")
                         .IsRequired()

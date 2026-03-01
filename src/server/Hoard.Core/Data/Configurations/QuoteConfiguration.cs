@@ -19,6 +19,7 @@ public class QuoteConfiguration : IEntityTypeConfiguration<Quote>
         builder.Property(q => q.RegularMarketPrice).HasColumnType("decimal(18,4)");
         builder.Property(q => q.RegularMarketChange).HasColumnType("decimal(18,4)");
         builder.Property(q => q.RegularMarketChangePercent).HasColumnType("decimal(9,4)");
+        builder.Property(q => q.RetrievedUtc).HasColumnType("datetime2(3)");
         builder.Property(p => p.Source).IsRequired().HasMaxLength(50);
         
         builder.HasOne(q => q.Instrument)

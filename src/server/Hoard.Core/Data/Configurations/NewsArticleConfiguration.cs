@@ -21,7 +21,7 @@ public class NewsArticleConfiguration : IEntityTypeConfiguration<NewsArticle>
 
         builder.Property(na => na.RetrievedUtc)
             .IsRequired()
-            .HasColumnType("datetime2");
+            .HasColumnType("datetime2(3)");
 
         builder.Property(na => na.Headline)
             .IsRequired().HasMaxLength(200);
