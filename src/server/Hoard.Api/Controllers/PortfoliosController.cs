@@ -110,10 +110,12 @@ public class PortfoliosController(IMediator mediator)
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PortfolioValuationSeriesDto>> GetValuationSeries(
         int id,
-        [FromQuery] GetPortfolioValuationSeriesQuery query,
-        CancellationToken ct)
+        DateOnly? from,
+        DateOnly? to,
+        DisaggregateBy disaggregateBy = DisaggregateBy.None,
+        CancellationToken ct = default)
     {
-        query.PortfolioId = id;
+        var query = new GetPortfolioValuationSeriesQuery(id) { From = from, To = to, DisaggregateBy = disaggregateBy };
         var dto = await mediator.QueryAsync<GetPortfolioValuationSeriesQuery, PortfolioValuationSeriesDto?>(query, ct);
         return dto == null ? new NotFoundResult() : new OkObjectResult(dto);
     }

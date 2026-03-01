@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Instruments;
 
-public sealed class GetPricesQuery
+public sealed class GetPricesQuery(int instrumentId)
     : IQuery<PagedResult<PriceSummaryDto>?>, IPagedQuery
 {
-    public int InstrumentId { get; set; }
-    
+    public int InstrumentId { get; } = instrumentId;
+
     // Paging
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;

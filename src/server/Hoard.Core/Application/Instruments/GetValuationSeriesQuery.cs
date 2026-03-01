@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Instruments;
 
-public sealed class GetValuationSeriesQuery : IQuery<ValuationSeriesDto?>
+public sealed class GetValuationSeriesQuery(int instrumentId) : IQuery<ValuationSeriesDto?>
 {
-    public int InstrumentId { get; set; }
+    public int InstrumentId { get; } = instrumentId;
     public DateOnly? From { get; init; }
     public DateOnly? To { get; init; }
 }

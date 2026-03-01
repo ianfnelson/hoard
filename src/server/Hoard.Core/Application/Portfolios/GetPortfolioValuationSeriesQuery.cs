@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hoard.Core.Application.Portfolios;
 
-public sealed class GetPortfolioValuationSeriesQuery : IQuery<PortfolioValuationSeriesDto?>
+public sealed class GetPortfolioValuationSeriesQuery(int portfolioId) : IQuery<PortfolioValuationSeriesDto?>
 {
-    public int PortfolioId { get; set; }
+    public int PortfolioId { get; } = portfolioId;
     public DateOnly? From { get; init; }
     public DateOnly? To { get; init; }
     public DisaggregateBy DisaggregateBy { get; init; } = DisaggregateBy.None;
