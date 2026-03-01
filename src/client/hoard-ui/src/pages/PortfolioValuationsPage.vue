@@ -3,7 +3,7 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
+import { formatCurrency, formatPercentage, formatUnits, getTrendClass } from '@/utils/formatters'
 import { getPortfolioValuations } from '@/api/portfoliosApi'
 import type { PortfolioValuationsDto } from '@/api/dtos/Portfolios/PortfolioValuationsDto'
 
@@ -104,13 +104,18 @@ async function loadValuations() {
 
 // Computed headers based on whether fromDate is set
 const headers = computed(() => {
-  const baseHeaders = [{ title: 'Instrument', key: 'instrumentName', sortable: true }] as const
+  const baseHeaders = [
+    { title: 'Ticker', key: 'instrumentTicker', sortable: true },
+    { title: 'Instrument', key: 'instrumentName', sortable: true },
+  ] as const
 
   if (fromDate.value) {
     return [
       ...baseHeaders,
+      { title: 'From Units', key: 'fromUnits', sortable: true, align: 'end' },
       { title: 'From Value', key: 'fromValue', sortable: true, align: 'end' },
       { title: 'From %', key: 'fromPercentage', sortable: true, align: 'end' },
+      { title: 'To Units', key: 'toUnits', sortable: true, align: 'end' },
       { title: 'To Value', key: 'toValue', sortable: true, align: 'end' },
       { title: 'To %', key: 'toPercentage', sortable: true, align: 'end' },
       { title: 'Change Value', key: 'changeValue', sortable: true, align: 'end' },
@@ -120,8 +125,9 @@ const headers = computed(() => {
 
   return [
     ...baseHeaders,
-    { title: 'To Value', key: 'toValue', sortable: true, align: 'end' },
-    { title: 'To %', key: 'toPercentage', sortable: true, align: 'end' },
+    { title: 'Units', key: 'toUnits', sortable: true, align: 'end' },
+    { title: 'Value', key: 'toValue', sortable: true, align: 'end' },
+    { title: '%', key: 'toPercentage', sortable: true, align: 'end' },
   ] as const
 })
 
@@ -178,6 +184,15 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
           density="compact"
           hide-default-footer
         >
+          <template #item.instrumentTicker="{ item }">
+            <router-link
+              :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
+              class="text-decoration-none"
+            >
+              {{ item.instrumentTicker }}
+            </router-link>
+          </template>
+
           <template #item.instrumentName="{ item }">
             <router-link
               :to="{ name: 'instrument-detail', params: { id: item.instrumentId } }"
@@ -187,12 +202,20 @@ const sortBy = ref<Array<{ key: string; order: 'asc' | 'desc' }>>([
             </router-link>
           </template>
 
+          <template #item.toUnits="{ value }">
+            <span>{{ value !== null ? formatUnits(value) : '-' }}</span>
+          </template>
+
           <template #item.toValue="{ value }">
             <span>{{ value !== null ? formatCurrency(value) : '-' }}</span>
           </template>
 
           <template #item.toPercentage="{ value }">
             <span>{{ value !== null ? formatPercentage(value) : '-' }}</span>
+          </template>
+
+          <template #item.fromUnits="{ value }">
+            <span>{{ value !== null ? formatUnits(value) : '-' }}</span>
           </template>
 
           <template #item.fromValue="{ value }">
