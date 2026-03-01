@@ -20,9 +20,9 @@ usePageTitle(pageTitle)
 const disaggregateOptions: { value: DisaggregateBy; label: string }[] = [
   { value: 'none', label: 'Total' },
   { value: 'accounts', label: 'Accounts' },
-  { value: 'assetClasses', label: 'Asset Classes' },
-  { value: 'assetSubclasses', label: 'Asset Subclasses' },
-  { value: 'instrumentTypes', label: 'Instrument Types' },
+  { value: 'asset-classes', label: 'Asset Classes' },
+  { value: 'asset-subclasses', label: 'Asset Subclasses' },
+  { value: 'instrument-types', label: 'Instrument Types' },
 ]
 
 // Form state
