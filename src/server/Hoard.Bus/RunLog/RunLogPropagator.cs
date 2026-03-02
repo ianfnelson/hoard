@@ -1,6 +1,7 @@
 using Hoard.Core.Application;
 using Hoard.Core.Application.RunLog;
 using Hoard.Core.Domain.Entities;
+using Hoard.Messages;
 using Hoard.Messages.Analysis;
 using Hoard.Messages.Chrono;
 using Hoard.Messages.Holdings;
@@ -34,10 +35,22 @@ public class RunLogPropagator(IMediator mediator) :
         Complete(message.ChronoRunId, RunType.CloseOfDay);
 
     public Task Handle(PricesRefreshedEvent message) =>
-        Complete(message.PricesRunId, message.PipelineMode == Hoard.Messages.PipelineMode.Backfill
-            ? RunType.BackfillPrices
-            : RunType.RefreshPrices);
+        Complete(message.PricesRunId, GetRunTypeForPricesRefreshedEvent(message.PipelineMode));
 
+    private static int GetRunTypeForPricesRefreshedEvent(PipelineMode pipelineMode)
+    {
+        switch (pipelineMode)
+        {
+            case PipelineMode.Backfill:
+                return RunType.BackfillPrices;
+            case PipelineMode.DaytimeReactive:
+            case PipelineMode.CloseOfDay:
+                return RunType.RefreshPrices;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(pipelineMode), pipelineMode, null);
+        }
+    }
+    
     public Task Handle(HoldingsBackfilledEvent message) =>
         Complete(message.HoldingsRunId, RunType.BackfillHoldings);
 
