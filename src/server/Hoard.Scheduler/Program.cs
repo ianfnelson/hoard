@@ -24,6 +24,7 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 // });
 
 builder.Services
+    .AddHoardData(sqlConnectionString)
     .AddHoardLogging(applicationInsightsConnectionString)
     .AddHoardApplication()
     .AddHoardCalculators()
