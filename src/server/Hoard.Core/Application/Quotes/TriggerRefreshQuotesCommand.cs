@@ -7,5 +7,5 @@ public sealed record TriggerRefreshQuotesCommand : ITriggerCommand
 {
     public Guid RunId { get; } = Guid.NewGuid();
     public int RunTypeId => RunType.RefreshQuotes;
-    public object ToBusCommand() => new RefreshQuotesBusCommand(RunId);
+    public object ToBusCommand() => new StartRefreshQuotesSagaCommand(RunId);
 }

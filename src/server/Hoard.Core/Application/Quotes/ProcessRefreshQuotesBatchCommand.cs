@@ -8,7 +8,7 @@ using Rebus.Bus;
 
 namespace Hoard.Core.Application.Quotes;
 
-public record ProcessRefreshQuotesBatchCommand(IReadOnlyList<int> InstrumentIds)
+public record ProcessRefreshQuotesBatchCommand(Guid QuotesRunId, int BatchIndex, IReadOnlyList<int> InstrumentIds)
     : ICommand;
 
 public class ProcessRefreshQuotesBatchHandler(
@@ -18,31 +18,38 @@ public class ProcessRefreshQuotesBatchHandler(
 {
     public async Task HandleAsync(ProcessRefreshQuotesBatchCommand command, CancellationToken ct = default)
     {
-        if (command.InstrumentIds.Count == 0)
+        try
         {
-            logger.LogWarning("Received RefreshQuotesBatchCommand with no instrument IDs.");
-            return;
+            if (command.InstrumentIds.Count == 0)
+            {
+                logger.LogWarning("Received RefreshQuotesBatchCommand with no instrument IDs.");
+                return;
+            }
+
+            var instruments = await GetInstrumentsToBeQuoted(command, ct);
+            if (instruments.Count == 0)
+            {
+                logger.LogInformation("No instruments found to update quotes for.");
+                return;
+            }
+
+            var freshQuotes = await quoteService.GetQuotesAsync(instruments.Keys);
+            var now = DateTime.UtcNow;
+
+            var changed = new List<Instrument>();
+            UpsertQuotes(instruments.Values, freshQuotes, now, changed);
+
+            await context.SaveChangesAsync(ct);
+
+            foreach (var instrument in changed)
+            {
+                await bus.Publish(new QuoteChangedEvent(instrument.Id, instrument.InstrumentTypeId, now, instrument.Quote?.RegularMarketChangePercent));
+                logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
+            }
         }
-
-        var instruments = await GetInstrumentsToBeQuoted(command, ct);
-        if (instruments.Count == 0)
+        finally
         {
-            logger.LogInformation("No instruments found to update quotes for.");
-            return;
-        }
-
-        var freshQuotes = await quoteService.GetQuotesAsync(instruments.Keys);
-        var now = DateTime.UtcNow;
-
-        var changed = new List<Instrument>();
-        UpsertQuotes(instruments.Values, freshQuotes, now, changed);
-
-        await context.SaveChangesAsync(ct);
-
-        foreach (var instrument in changed)
-        {
-            await bus.Publish(new QuoteChangedEvent(instrument.Id, instrument.InstrumentTypeId, now, instrument.Quote?.RegularMarketChangePercent));
-            logger.LogInformation("Quote updated for instrument {InstrumentId}", instrument.Id);
+            await bus.Publish(new QuoteBatchRefreshedEvent(command.QuotesRunId, command.BatchIndex));
         }
     }
     
