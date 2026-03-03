@@ -28,6 +28,7 @@ public class RefreshPricesSaga(
         var (pricesRunId, pipelineMode, instrumentId, startDate, endDate) = message;
         
         Data.PricesRunId = pricesRunId;
+        Data.PipelineMode = pipelineMode;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForRefreshQuery, IReadOnlyList<int>>(
             new GetInstrumentsForRefreshQuery(instrumentId, pipelineMode));
