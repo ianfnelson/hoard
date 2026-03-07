@@ -47,7 +47,7 @@ const instrumentItems = computed(() => {
 
 // Custom filter function that searches both name and context
 function customFilter(
-  itemTitle: string,
+  _itemTitle: string,
   queryText: string,
   item?: { raw: { searchText: string } }
 ) {

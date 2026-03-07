@@ -147,7 +147,7 @@ async function confirm() {
             <!-- Instrument selector -->
             <InstrumentSelect
               v-else-if="field.type === 'instrument'"
-              v-model="formData[field.name]"
+              v-model="formData[field.name] as number | null"
               :label="field.label"
               variant="outlined"
               density="compact"
