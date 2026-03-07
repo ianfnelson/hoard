@@ -17,13 +17,4 @@ public class RunLogsController(IMediator mediator) : ControllerBase
         var result = await mediator.QueryAsync<GetRunLogsQuery, PagedResult<RunLogDto>>(query, ct);
         return Ok(result);
     }
-
-    [HttpGet("types")]
-    [ProducesResponseType<IReadOnlyList<RunTypeDto>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetRunTypesAsync(CancellationToken ct)
-    {
-        var result = await mediator.QueryAsync<GetRunTypesQuery, IReadOnlyList<RunTypeDto>>(
-            new GetRunTypesQuery(), ct);
-        return Ok(result);
-    }
 }

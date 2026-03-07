@@ -1,6 +1,5 @@
 import { hoardApi } from './hoardApi'
 import type { RunLogDto } from './dtos/System/RunLogDto'
-import type { RunTypeDto } from './dtos/System/RunTypeDto'
 import type { PagedResult } from './dtos/PagedResult'
 
 export interface GetRunLogsParams {
@@ -13,10 +12,5 @@ export interface GetRunLogsParams {
 
 export async function getRunLogs(params?: GetRunLogsParams): Promise<PagedResult<RunLogDto>> {
   const response = await hoardApi.get<PagedResult<RunLogDto>>('/run-logs', { params })
-  return response.data
-}
-
-export async function getRunTypes(): Promise<RunTypeDto[]> {
-  const response = await hoardApi.get<RunTypeDto[]>('/run-logs/types')
   return response.data
 }
