@@ -26,7 +26,7 @@ public class RefreshPricesSaga(
     public async Task Handle(StartRefreshPricesSagaCommand message)
     {
         var (pricesRunId, pipelineMode, instrumentId, startDate, endDate) = message;
-        
+
         Data.PricesRunId = pricesRunId;
         Data.PipelineMode = pipelineMode;
 
@@ -35,10 +35,18 @@ public class RefreshPricesSaga(
 
         logger.LogInformation("Started refresh prices saga {PricesRunId} for {Count} instruments",
             Data.PricesRunId, instrumentIds.Count);
-        
+
         Data.PendingInstruments = instrumentIds.ToHashSet();
-        
+
         await mediator.SendAsync(new DispatchRefreshPricesCommand(pricesRunId, pipelineMode, instrumentIds, startDate, endDate));
+
+        // If there are no instruments to process, complete immediately
+        if (instrumentIds.Count == 0)
+        {
+            logger.LogInformation("Price refresh saga {PricesRunId} complete (no instruments to process)", Data.PricesRunId);
+            MarkAsComplete();
+            await bus.Publish(new PricesRefreshedEvent(Data.PricesRunId, Data.PipelineMode));
+        }
     }
     
     public async Task Handle(PriceRefreshedEvent message)

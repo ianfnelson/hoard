@@ -26,17 +26,41 @@ public class CalculatePerformanceSaga(IMediator mediator, IBus bus, ILogger<Calc
     public async Task Handle(StartCalculatePerformanceSagaCommand message)
     {
         var (performanceRunId, instrumentId, pipelineMode) = message;
-        
+
         Data.PerformanceRunId = performanceRunId;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForPerformanceQuery, IReadOnlyList<int>>(
             new GetInstrumentsForPerformanceQuery(instrumentId));
-        
+
         logger.LogInformation("Starting position performance calculation for {InstrumentIdsCount} instruments", instrumentIds.Count);
-        
+
         Data.PendingInstruments = instrumentIds.ToHashSet();
-        
+
         await mediator.SendAsync(new DispatchCalculatePositionPerformanceCommand(performanceRunId, instrumentIds, pipelineMode));
+
+        // If there are no instruments to process, skip to portfolio calculation
+        if (instrumentIds.Count == 0)
+        {
+            logger.LogInformation("No instruments to process, proceeding to portfolio performance calculation");
+
+            var portfolioIds =
+                await mediator.QueryAsync<GetPortfolioIdsQuery, IReadOnlyList<int>>(
+                    new GetPortfolioIdsQuery());
+
+            logger.LogInformation("Starting portfolio performance calculation for {PortfolioIdsCount} portfolios", portfolioIds.Count);
+
+            Data.PendingPortfolios = portfolioIds.ToHashSet();
+
+            await mediator.SendAsync(new DispatchCalculatePortfolioPerformanceCommand(performanceRunId, portfolioIds, pipelineMode));
+
+            // If there are also no portfolios to process, complete immediately
+            if (portfolioIds.Count == 0)
+            {
+                logger.LogInformation("Calculate performance saga {PerformanceRunId} complete (no work to do)", Data.PerformanceRunId);
+                MarkAsComplete();
+                await bus.Publish(new PerformanceCalculatedEvent(Data.PerformanceRunId, pipelineMode));
+            }
+        }
     }
 
     public async Task Handle(PositionPerformanceCalculatedEvent message)

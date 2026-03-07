@@ -40,7 +40,9 @@ public class CalculateSnapshotsSaga(ILogger<CalculateSnapshotsSaga> logger, IMed
 
         if (portfolioIds.Count == 0)
         {
+            logger.LogInformation("Calculate snapshots saga {CorrelationKey} complete (no portfolios to process)", Data.CorrelationKey);
             MarkAsComplete();
+            await bus.Publish(new SnapshotsCalculatedEvent(snapshotsRunId, pipelineMode, year));
             return;
         }
         
