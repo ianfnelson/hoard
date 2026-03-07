@@ -49,9 +49,13 @@ public class PortfolioValuationsPdfService : IPortfolioValuationsPdfService
                     col.Item().Text(portfolioName)
                         .Bold().FontSize(16);
 
+                    var totalValue = valuations.Items
+                        .Where(i => i.ToValue.HasValue)
+                        .Sum(i => i.ToValue!.Value);
+
                     var dateRange = hasFromDate
-                        ? $"{valuations.FromDate:dd MMM yyyy} to {valuations.ToDate:dd MMM yyyy}"
-                        : $"As at {valuations.ToDate:dd MMM yyyy}";
+                        ? $"{valuations.FromDate:dd MMMM yyyy} to {valuations.ToDate:dd MMMM yyyy}"
+                        : $"Total valuation as at {valuations.ToDate:dd MMMM yyyy}: £{totalValue:N2}";
                     col.Item().Text(dateRange).FontSize(10);
                     col.Item().PaddingBottom(8);
                 });
