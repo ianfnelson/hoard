@@ -7,6 +7,7 @@ import { useNavigationStore } from '@/stores/navigationStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDateTime } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+import InstrumentSelect from '@/components/InstrumentSelect.vue'
 
 const pageTitle = ref('Alerts')
 usePageTitle(pageTitle)
@@ -33,13 +34,6 @@ const selectedInstrumentId = ref<number | null>(initialInstrumentId)
 const selectedPortfolioId = ref<number | null>(initialPortfolioId)
 
 // Computed properties for filter items
-const instrumentItems = computed(() => {
-  return refStore.instruments.map((i) => ({
-    title: i.context ? `${i.name} (${i.context})` : i.name,
-    value: i.id,
-  }))
-})
-
 const portfolioItems = computed(() => {
   return navStore.portfolios.map((p) => ({
     title: p.name,
@@ -132,9 +126,8 @@ onMounted(() => {
       </v-col>
 
       <v-col cols="12" sm="4">
-        <v-select
+        <InstrumentSelect
           v-model="selectedInstrumentId"
-          :items="instrumentItems"
           label="Instrument"
           clearable
           hide-details

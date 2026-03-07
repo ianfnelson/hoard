@@ -14,6 +14,7 @@ import {
   UNITS_REQUIRED_TYPES,
 } from '@/constants/transactionTypes'
 import { uploadContractNote } from '@/api/transactionsApi'
+import InstrumentSelect from '@/components/InstrumentSelect.vue'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -86,14 +87,6 @@ watch([() => transaction.value, isEditMode], ([txn, editMode]) => {
     formData.ptmLevy = txn.ptmLevy ?? null
     formData.fxCharge = txn.fxCharge ?? null
   }
-})
-
-// Instruments with context for dropdown
-const instrumentItems = computed(() => {
-  return refStore.instruments.map((i) => ({
-    title: i.context ? `${i.name} (${i.context})` : i.name,
-    value: i.id,
-  }))
 })
 
 // Conditional field visibility
@@ -551,11 +544,11 @@ onMounted(async () => {
               <!-- Section 4: Instrument (conditional) -->
               <v-row v-if="showInstrumentField" dense>
                 <v-col>
-                  <v-select
+                  <InstrumentSelect
                     v-model="formData.instrumentId"
-                    :items="instrumentItems"
                     label="Instrument"
                     :rules="instrumentRequired ? [requiredRule] : []"
+                    :required="instrumentRequired"
                     clearable
                     variant="outlined"
                     density="compact"
