@@ -58,7 +58,7 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "refresh-news",
             () => TriggerRefreshNewsCommand(),
-            "10 7-18 * * 1-5" // 10 minutes past every hour, 7am-6pm, weekdays
+            "10 7-17 * * 1-5" // 10 minutes past every hour, 7am-5pm, weekdays
         );
     }
 
