@@ -11,6 +11,7 @@ import {
   INSTRUMENT_REQUIRED_TYPES,
   INSTRUMENT_OPTIONAL_TYPES,
   TRADING_FIELD_TYPES,
+  UNITS_REQUIRED_TYPES,
 } from '@/constants/transactionTypes'
 import { uploadContractNote } from '@/api/transactionsApi'
 
@@ -118,6 +119,11 @@ const isCorporateAction = computed(() => {
   return formData.transactionTypeId === TransactionTypeIds.CorporateAction
 })
 
+const unitsRequired = computed(() => {
+  if (!formData.transactionTypeId) return false
+  return UNITS_REQUIRED_TYPES.includes(formData.transactionTypeId)
+})
+
 const showContractNoteUpload = computed(() => {
   if (!formData.transactionTypeId) return false
   return TRADING_FIELD_TYPES.includes(formData.transactionTypeId)
@@ -137,7 +143,8 @@ const isFormValid = computed(() => {
     formData.date !== '' &&
     formData.date <= today &&
     formData.value !== null &&
-    (!instrumentRequired.value || formData.instrumentId !== null)
+    (!instrumentRequired.value || formData.instrumentId !== null) &&
+    (!unitsRequired.value || formData.units !== null)
   )
 })
 
@@ -462,7 +469,11 @@ onMounted(async () => {
                     label="Units"
                     type="number"
                     step="0.000001"
-                    :rules="[(v) => !v || isCorporateAction || v >= 0 || 'Must be non-negative']"
+                    :rules="[
+                      ...(unitsRequired ? [requiredNumberRule] : []),
+                      (v) => !v || isCorporateAction || v >= 0 || 'Must be non-negative',
+                    ]"
+                    :required="unitsRequired"
                     variant="outlined"
                     density="compact"
                   />
