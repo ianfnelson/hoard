@@ -51,6 +51,12 @@ export async function calculatePerformance(params: { instrumentId?: number }): P
   return response.data.message
 }
 
+// Positions Operations
+export async function calculatePositions(): Promise<string> {
+  const response = await hoardApi.post<OperationResponse>('/operations/positions/calculate', {})
+  return response.data.message
+}
+
 // Prices Operations
 export async function backfillPrices(params: {
   instrumentId?: number
