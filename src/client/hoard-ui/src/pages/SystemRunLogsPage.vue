@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { getRunLogs, getRunTypes, type GetRunLogsParams } from '@/api/runLogsApi'
+import { getRunLogs, type GetRunLogsParams } from '@/api/runLogsApi'
 import type { RunLogDto } from '@/api/dtos/System/RunLogDto'
-import type { RunTypeDto } from '@/api/dtos/System/RunTypeDto'
 import { formatDateTime } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+import { useReferenceDataStore } from '@/stores/referenceDataStore'
 
 const pageTitle = ref('Run Logs')
 usePageTitle(pageTitle)
 
 const router = useRouter()
 const route = useRoute()
+const referenceDataStore = useReferenceDataStore()
 
 const items = ref<RunLogDto[]>([])
 const totalCount = ref(0)
 const isLoading = ref(false)
-const runTypes = ref<RunTypeDto[]>([])
+const runTypes = computed(() => referenceDataStore.runLogTypes)
 
 const page = ref(1)
 const itemsPerPage = ref(25)
@@ -91,7 +92,7 @@ watch(
 )
 
 onMounted(async () => {
-  runTypes.value = await getRunTypes()
+  await referenceDataStore.loadRunLogTypes()
 })
 
 // Auto-refresh every 5 seconds

@@ -6,12 +6,14 @@ import {
   getTransactionTypes,
   getCurrencies,
   getAlertTypes,
+  getRunLogTypes,
 } from '@/api/referencesApi'
 import type { InstrumentTypeDto } from '@/api/dtos/InstrumentTypes/InstrumentTypeDto'
 import type { AssetClassDto } from '@/api/dtos/AssetClasses/AssetClassDto'
 import type { TransactionTypeDto } from '@/api/dtos/TransactionTypes/TransactionTypeDto'
 import type { CurrencyDto } from '@/api/dtos/Currencies/CurrencyDto'
 import type { AlertTypeDto } from '@/api/dtos/AlertTypes/AlertTypeDto'
+import type { RunTypeDto } from '@/api/dtos/RunLogTypes/RunTypeDto'
 import { getInstrumentsLookup } from '@/api/instrumentsApi'
 import type { LookupDto } from '@/api/dtos/LookupDto'
 
@@ -21,6 +23,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
   const transactionTypes = ref<TransactionTypeDto[]>([])
   const currencies = ref<CurrencyDto[]>([])
   const alertTypes = ref<AlertTypeDto[]>([])
+  const runLogTypes = ref<RunTypeDto[]>([])
   const instruments = ref<LookupDto[]>([])
   const isLoading = ref(false)
   const lastUpdated = ref<Date | null>(null)
@@ -28,6 +31,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
   const transactionTypesLoaded = ref(false)
   const currenciesLoaded = ref(false)
   const alertTypesLoaded = ref(false)
+  const runLogTypesLoaded = ref(false)
   const instrumentsLoaded = ref(false)
   const error = ref<string | null>(null)
 
@@ -116,6 +120,23 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     }
   }
 
+  async function loadRunLogTypes() {
+    if (runLogTypesLoaded.value) return
+
+    isLoading.value = true
+    error.value = null
+    try {
+      runLogTypes.value = await getRunLogTypes()
+      runLogTypesLoaded.value = true
+    } catch (e) {
+      error.value = 'Failed to load run log types'
+      console.error('Failed to load run log types:', e)
+      runLogTypes.value = []
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function loadInstruments() {
     if (instrumentsLoaded.value) return
 
@@ -139,6 +160,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     transactionTypesLoaded.value = false
     currenciesLoaded.value = false
     alertTypesLoaded.value = false
+    runLogTypesLoaded.value = false
     instrumentsLoaded.value = false
     await Promise.all([
       loadInstrumentTypes(),
@@ -146,6 +168,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
       loadTransactionTypes(),
       loadCurrencies(),
       loadAlertTypes(),
+      loadRunLogTypes(),
       loadInstruments(),
     ])
   }
@@ -156,6 +179,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     transactionTypes,
     currencies,
     alertTypes,
+    runLogTypes,
     instruments,
     isLoading,
     lastUpdated,
@@ -165,6 +189,7 @@ export const useReferenceDataStore = defineStore('referenceData', () => {
     loadTransactionTypes,
     loadCurrencies,
     loadAlertTypes,
+    loadRunLogTypes,
     loadInstruments,
     refresh,
   }
