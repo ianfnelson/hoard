@@ -39,6 +39,14 @@ public class RefreshNewsSaga(
         Data.PendingInstruments = instrumentIds.ToHashSet();
 
         await mediator.SendAsync(new DispatchRefreshNewsCommand(newsRunId, pipelineMode, instrumentIds));
+
+        // If there are no instruments to process, complete immediately
+        if (instrumentIds.Count == 0)
+        {
+            logger.LogInformation("News refresh saga {NewsRunId} complete (no instruments to process)", Data.NewsRunId);
+            MarkAsComplete();
+            await bus.Publish(new AllNewsRefreshedEvent(Data.NewsRunId, Data.PipelineMode));
+        }
     }
 
     public async Task Handle(NewsRefreshedEvent message)

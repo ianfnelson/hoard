@@ -46,7 +46,9 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         
         if (instrumentIds.Count == 0)
         {
+            logger.LogInformation("Calculate valuations saga {CorrelationKey} complete (no instruments to process)", Data.CorrelationKey);
             MarkAsComplete();
+            await bus.Publish(new ValuationsCalculatedEvent(valuationsRunId, pipelineMode, asOfDate));
             return;
         }
 
