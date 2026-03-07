@@ -121,12 +121,12 @@ const router = createRouter({
           children: [
             {
               path: '',
-              redirect: '/system/status',
+              redirect: '/system/run-logs',
             },
             {
-              path: 'status',
-              name: 'system-status',
-              component: () => import('@/pages/SystemStatusPage.vue'),
+              path: 'run-logs',
+              name: 'system-run-logs',
+              component: () => import('@/pages/SystemRunLogsPage.vue'),
             },
             {
               path: 'operations',
