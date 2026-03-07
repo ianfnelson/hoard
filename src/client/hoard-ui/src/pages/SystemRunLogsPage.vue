@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { getRunLogs, getRunTypes, type GetRunLogsParams } from '@/api/runLogsApi'
@@ -92,6 +92,15 @@ watch(
 
 onMounted(async () => {
   runTypes.value = await getRunTypes()
+})
+
+// Auto-refresh every 5 seconds
+const refreshInterval = setInterval(() => {
+  loadItems()
+}, 5000)
+
+onUnmounted(() => {
+  clearInterval(refreshInterval)
 })
 </script>
 
