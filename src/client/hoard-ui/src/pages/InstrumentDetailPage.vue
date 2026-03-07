@@ -627,7 +627,7 @@ onMounted(() => {
 
     <v-row v-if="isViewMode && instrumentId" align="stretch" dense>
       <!-- Transactions Card -->
-      <v-col v-if="txnIsLoading || txnTotalCount > 0" cols="12" lg="6">
+      <v-col cols="12" lg="6">
         <v-card class="h-100">
           <v-card-title>Transactions</v-card-title>
           <v-card-text>
@@ -688,7 +688,7 @@ onMounted(() => {
     </v-row>
     <v-row v-if="isViewMode && instrumentId" align="stretch" dense>
       <!-- Prices Card -->
-      <v-col v-if="priceIsLoading || priceTotalCount > 0" cols="12" lg="6">
+      <v-col cols="12" lg="6">
         <v-card class="h-100">
           <v-card-title>Prices</v-card-title>
           <v-card-text>
@@ -746,7 +746,7 @@ onMounted(() => {
         </v-card>
       </v-col>
       <!-- News Card -->
-      <v-col v-if="newsIsLoading || newsTotalCount > 0" cols="12" lg="6">
+      <v-col cols="12" lg="6">
         <v-card class="h-100">
           <v-card-title>News</v-card-title>
           <v-card-text>
