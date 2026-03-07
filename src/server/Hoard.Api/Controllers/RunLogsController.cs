@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hoard.Api.Controllers;
 
 [ApiController]
-[Route("api/system")]
+[Route("api/run-logs")]
 [Produces("application/json")]
-[Tags("System")]
-public class SystemStatusController(IMediator mediator) : ControllerBase
+[Tags("Run Logs")]
+public class RunLogsController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("run-logs")]
+    [HttpGet]
     [ProducesResponseType<PagedResult<RunLogDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRunLogsAsync([FromQuery] GetRunLogsQuery query, CancellationToken ct)
     {
@@ -18,7 +18,7 @@ public class SystemStatusController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("run-types")]
+    [HttpGet("types")]
     [ProducesResponseType<IReadOnlyList<RunTypeDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRunTypesAsync(CancellationToken ct)
     {

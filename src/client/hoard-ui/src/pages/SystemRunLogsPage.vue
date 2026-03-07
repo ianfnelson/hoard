@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { getRunLogs, getRunTypes, type GetRunLogsParams } from '@/api/systemStatusApi'
+import { getRunLogs, getRunTypes, type GetRunLogsParams } from '@/api/runLogsApi'
 import type { RunLogDto } from '@/api/dtos/System/RunLogDto'
 import type { RunTypeDto } from '@/api/dtos/System/RunTypeDto'
 import { formatDateTime } from '@/utils/formatters'

@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const tabs = [
-  { name: 'system-status', label: 'Run Logs', to: { name: 'system-status' } },
+  { name: 'system-run-logs', label: 'Run Logs', to: { name: 'system-run-logs' } },
   { name: 'system-operations', label: 'Operations', to: { name: 'system-operations' } },
 ]
 
