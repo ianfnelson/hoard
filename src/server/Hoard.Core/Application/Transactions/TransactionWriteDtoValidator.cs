@@ -22,6 +22,14 @@ public class TransactionWriteDtoValidator : AbstractValidator<TransactionWriteDt
         TransactionType.IncomeLoyaltyBonus
     ];
 
+    // Transaction types requiring units
+    private static readonly int[] UnitsRequiredTypes =
+    [
+        TransactionType.Buy,
+        TransactionType.Sell,
+        TransactionType.CorporateAction
+    ];
+
     public TransactionWriteDtoValidator(HoardContext context)
     {
         // Required fields
@@ -64,6 +72,12 @@ public class TransactionWriteDtoValidator : AbstractValidator<TransactionWriteDt
                        !InstrumentRequiredTypes.Contains(x.TransactionTypeId.Value) &&
                        !InstrumentOptionalTypes.Contains(x.TransactionTypeId.Value))
             .WithMessage(x => $"InstrumentId should not be provided for transaction type {x.TransactionTypeId}");
+
+        // Units validation
+        RuleFor(x => x.Units)
+            .NotNull()
+            .When(x => x.TransactionTypeId.HasValue && UnitsRequiredTypes.Contains(x.TransactionTypeId.Value))
+            .WithMessage(x => $"Units is required for transaction type {x.TransactionTypeId}");
 
         // String length constraints
         RuleFor(x => x.ContractNoteReference)

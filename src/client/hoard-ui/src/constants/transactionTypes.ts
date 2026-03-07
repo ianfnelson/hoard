@@ -22,3 +22,6 @@ export const INSTRUMENT_OPTIONAL_TYPES = [702] // LoyaltyBonus
 
 // Types showing trading fields (units, price, fees)
 export const TRADING_FIELD_TYPES = [100, 200, 300] // Buy, Sell, CorporateAction
+
+// Types requiring units field
+export const UNITS_REQUIRED_TYPES = [100, 200, 300] // Buy, Sell, CorporateAction
