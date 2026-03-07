@@ -20,7 +20,7 @@ const selectedOperation = ref<OperationDefinition | null>(null)
 const successMessage = ref<string | null>(null)
 const isProcessing = ref(false)
 
-// Define all 14 operations
+// Define all 15 operations
 const operations: OperationDefinition[] = [
   // Analysis
   {
@@ -75,6 +75,15 @@ const operations: OperationDefinition[] = [
     section: 'Performance',
     endpoint: '/operations/performance/calculate',
     fields: [{ name: 'instrumentId', label: 'Instrument', type: 'instrument', required: false }],
+  },
+
+  // Positions
+  {
+    key: 'calculate-positions',
+    label: 'Calculate Positions',
+    section: 'Positions',
+    endpoint: '/operations/positions/calculate',
+    fields: [],
   },
 
   // Prices
@@ -158,6 +167,7 @@ const sections = [
   'Holdings',
   'News',
   'Performance',
+  'Positions',
   'Prices',
   'Quotes',
   'Snapshots',
@@ -223,6 +233,11 @@ async function handleOperationConfirm(params: Record<string, unknown>) {
         message = await operationsApi.calculatePerformance({
           instrumentId: params.instrumentId as number | undefined,
         })
+        break
+
+      // Positions
+      case 'calculate-positions':
+        message = await operationsApi.calculatePositions()
         break
 
       // Prices
