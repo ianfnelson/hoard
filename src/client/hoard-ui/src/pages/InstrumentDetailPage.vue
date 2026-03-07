@@ -204,11 +204,15 @@ watch(
 )
 
 // In create mode, initialize empty feeds
-watch(isCreateMode, (creating) => {
-  if (creating) {
-    initializeDataFeeds()
-  }
-})
+watch(
+  isCreateMode,
+  (creating) => {
+    if (creating) {
+      initializeDataFeeds()
+    }
+  },
+  { immediate: true }
+)
 
 // Field length constraints (matching server validation)
 const NAME_MAX_LENGTH = 100
