@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { OperationDefinition } from '@/types/operations'
-import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { useNavigationStore } from '@/stores/navigationStore'
+import InstrumentSelect from '@/components/InstrumentSelect.vue'
 
 const props = defineProps<{
   modelValue: boolean
@@ -14,7 +14,6 @@ const emit = defineEmits<{
   confirm: [params: Record<string, unknown>]
 }>()
 
-const refStore = useReferenceDataStore()
 const navStore = useNavigationStore()
 
 const formData = ref<Record<string, unknown>>({})
@@ -36,14 +35,6 @@ watch(
     }
   }
 )
-
-// Instrument items with context
-const instrumentItems = computed(() => {
-  return refStore.instruments.map((i) => ({
-    title: i.context ? `${i.name} (${i.context})` : i.name,
-    value: i.id,
-  }))
-})
 
 // Portfolio items
 const portfolioItems = computed(() => {
@@ -154,11 +145,10 @@ async function confirm() {
             />
 
             <!-- Instrument selector -->
-            <v-select
+            <InstrumentSelect
               v-else-if="field.type === 'instrument'"
               v-model="formData[field.name]"
               :label="field.label"
-              :items="instrumentItems"
               variant="outlined"
               density="compact"
               hide-details

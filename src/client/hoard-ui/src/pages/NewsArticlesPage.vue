@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useNewsArticles } from '@/composables/useNewsArticles'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDateTime } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
+import InstrumentSelect from '@/components/InstrumentSelect.vue'
 
 const pageTitle = ref('News')
 usePageTitle(pageTitle)
@@ -39,13 +40,6 @@ watch(searchText, (val) => {
 })
 
 // Computed properties
-const instrumentItems = computed(() => {
-  return refStore.instruments.map((i) => ({
-    title: i.context ? `${i.name} (${i.context})` : i.name,
-    value: i.id,
-  }))
-})
-
 const headers = [
   { title: 'Published', key: 'publishedUtc', sortable: true, width: '160px' },
   { title: 'Ticker', key: 'instrumentTicker', sortable: true },
@@ -108,9 +102,8 @@ onMounted(() => {
       </v-col>
 
       <v-col cols="12" sm="6">
-        <v-select
+        <InstrumentSelect
           v-model="selectedInstrumentId"
-          :items="instrumentItems"
           label="Instrument"
           clearable
           hide-details
