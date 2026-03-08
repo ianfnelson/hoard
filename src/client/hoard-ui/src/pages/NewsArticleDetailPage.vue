@@ -51,6 +51,7 @@ onMounted(() => {
           </v-card-subtitle>
           <v-divider></v-divider>
           <v-card-text>
+            <!-- eslint-disable-next-line vue/no-v-html -->
             <div v-html="article.bodyHtml"></div>
           </v-card-text>
         </v-card>
