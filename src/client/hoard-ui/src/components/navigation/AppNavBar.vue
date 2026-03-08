@@ -5,7 +5,7 @@ import PortfolioSelector from './PortfolioSelector.vue'
 import { useTheme } from '@/composables/useTheme'
 
 const { isDark, toggleTheme } = useTheme()
-const { mobile } = useDisplay()
+const { xs } = useDisplay()
 const drawer = ref(false)
 
 const navigationItems = [
@@ -20,12 +20,12 @@ const navigationItems = [
 <template>
   <v-app-bar density="comfortable" elevation="1">
     <!-- Mobile: Hamburger menu -->
-    <v-app-bar-nav-icon v-if="mobile" @click="drawer = !drawer" />
+    <v-app-bar-nav-icon v-if="xs" @click="drawer = !drawer" />
 
     <PortfolioSelector />
 
     <!-- Desktop: Show all nav buttons -->
-    <template v-if="!mobile">
+    <template v-if="!xs">
       <v-btn :to="{ name: 'instruments' }" text>Instruments</v-btn>
       <v-btn :to="{ name: 'transactions' }" text>Transactions</v-btn>
       <v-btn :to="{ name: 'news' }" text>News</v-btn>
