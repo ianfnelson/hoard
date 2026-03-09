@@ -1,0 +1,56 @@
+using Hoard.Core.Application.Portfolios;
+using Hoard.Core.Data;
+using Hoard.Core.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Hoard.Test.Unit.Core.Application.Portfolios;
+
+public class GetPortfoliosHandlerTests
+{
+    [Fact]
+    public async Task HandleAsync_ReturnsPortfoliosOrderedAlphabetically()
+    {
+        // Arrange
+        await using var context = CreateInMemoryContext();
+        context.Portfolios.AddRange(
+            new Portfolio { Id = 1, Name = "Zebra Fund" },
+            new Portfolio { Id = 2, Name = "Alpha Portfolio" },
+            new Portfolio { Id = 3, Name = "Middle Trust" }
+        );
+        await context.SaveChangesAsync();
+
+        var handler = new GetPortfoliosHandler(context);
+
+        // Act
+        var result = await handler.HandleAsync(new GetPortfoliosQuery());
+
+        // Assert
+        Assert.Equal(3, result.Count);
+        Assert.Equal("Alpha Portfolio", result[0].Name);
+        Assert.Equal("Middle Trust", result[1].Name);
+        Assert.Equal("Zebra Fund", result[2].Name);
+    }
+
+    [Fact]
+    public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
+    {
+        // Arrange
+        await using var context = CreateInMemoryContext();
+        var handler = new GetPortfoliosHandler(context);
+
+        // Act
+        var result = await handler.HandleAsync(new GetPortfoliosQuery());
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+    private static HoardContext CreateInMemoryContext()
+    {
+        var options = new DbContextOptionsBuilder<HoardContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        return new HoardContext(options);
+    }
+}

@@ -12,6 +12,7 @@ public class GetPortfoliosHandler(HoardContext context)
     {
         var dtos = await context.Portfolios
             .AsNoTracking()
+            .OrderBy(p => p.Name)
             .Select(p => new PortfolioSummaryDto
             {
                 Id = p.Id,
