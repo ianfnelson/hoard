@@ -122,6 +122,7 @@ public class ReferenceDataSeeder
             new AssetSubclass { Id = 19, AssetClassId = 3, Name = "Multi-Asset", Colour = "#E2B24D" },
             new AssetSubclass { Id = 20, AssetClassId = 3, Name = "Cryptocurrencies", Colour = "#ECC980" },
             new AssetSubclass { Id = 21, AssetClassId = 3, Name = "Derivatives", Colour = "#F6E1B8" },
+            new AssetSubclass { Id = 22, AssetClassId = 2, Name = "Money Market", Colour = "#9FB9D4" },
         };
         await UpsertAsync(_context.AssetSubclasses, items, x => x.Id);
     }
