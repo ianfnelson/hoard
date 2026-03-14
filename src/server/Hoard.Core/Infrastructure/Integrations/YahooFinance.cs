@@ -71,6 +71,8 @@ public class YahooFinance
 
         var results = history
             .Select(MapCandleToHistoricalPrice)
+            .GroupBy(p => p.Date)
+            .Select(g => g.First())
             .ToList();
 
         return results;

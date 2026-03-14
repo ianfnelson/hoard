@@ -50,16 +50,16 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     public async Task Handle(StartCloseOfDaySagaCommand message)
     {
         var (chronoRunId, nullableAsOfDate, pipelineMode) = message;
-        
+
         var asOfDate = nullableAsOfDate.OrToday();
-        
+
         Data.ChronoRunId = chronoRunId;
         Data.PipelineMode = pipelineMode;
         Data.Today = asOfDate;
         Data.Tomorrow = asOfDate.AddDays(1);
         Data.RebuildStartDate = asOfDate.AddDays(-7);
-        
-        logger.LogInformation("CloseOfDay {ChronoRunId}: Starting {PipelineMode} for {AsOfDate}", 
+
+        logger.LogInformation("CloseOfDay {ChronoRunId}: Starting {PipelineMode} for {AsOfDate}",
             chronoRunId, pipelineMode, asOfDate.ToIsoDateString());
 
         await DispatchPrices();
@@ -226,19 +226,23 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
 public class ChronoSagaData : SagaData
 {
     public Guid ChronoRunId { get; set; }
-    public Guid PositionsRunId { get; set; }
-    public Guid HoldingsRunId { get; set; }
-    public Guid PricesRunId { get; set; }
-    public Guid ValuationsRunId { get; set; }
-    public Guid SnapshotsRunId { get; set; }
-    public Guid PerformanceRunId { get; set; }
-    public Guid AnalysisRunId { get; set; }
-    
+
+    // RunIds are initialized to unique values to prevent Rebus from creating duplicate
+    // saga index entries with Guid.Empty when multiple sagas start concurrently.
+    // These get overwritten with actual RunIds when child processes are dispatched.
+    public Guid PositionsRunId { get; set; } = Guid.NewGuid();
+    public Guid HoldingsRunId { get; set; } = Guid.NewGuid();
+    public Guid PricesRunId { get; set; } = Guid.NewGuid();
+    public Guid ValuationsRunId { get; set; } = Guid.NewGuid();
+    public Guid SnapshotsRunId { get; set; } = Guid.NewGuid();
+    public Guid PerformanceRunId { get; set; } = Guid.NewGuid();
+    public Guid AnalysisRunId { get; set; } = Guid.NewGuid();
+
     public DateOnly RebuildStartDate { get; set; }
     public DateOnly Today { get; set; }
     public DateOnly Tomorrow { get; set; }
     public PipelineMode PipelineMode { get; set; }
-    
+
     public bool HoldingsCalculated { get; set; }
     public bool PositionsCalculated { get; set; }
     public bool PricesRefreshed { get; set; }
