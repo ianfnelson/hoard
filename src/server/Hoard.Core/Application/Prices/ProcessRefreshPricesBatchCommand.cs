@@ -64,7 +64,13 @@ public class ProcessRefreshPricesBatchHandler(
     {
         var changed = new List<DateOnly>();
 
-        foreach (var priceDto in priceDtos)
+        // Deduplicate by date, keeping first occurrence (defensive against bad data from external APIs)
+        var distinctPrices = priceDtos
+            .GroupBy(p => p.Date)
+            .Select(g => g.First())
+            .ToList();
+
+        foreach (var priceDto in distinctPrices)
         {
             var price = await context.Prices
                 .FirstOrDefaultAsync(x => x.InstrumentId == instrumentId && x.AsOfDate == priceDto.Date, ct);

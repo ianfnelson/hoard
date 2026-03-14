@@ -59,4 +59,19 @@ public class YahooFinanceClientFixture
         Assert.Contains(prices, x => x.Date == new DateOnly(2025, 10, 7) && x.AdjustedClose == 607.4M);
         Assert.Contains(prices, x => x.Date == new DateOnly(2025, 10, 8) && x.Volume == 1111832L);
     }
+
+    [Fact]
+    public async Task GetPricesAsync_DeduplicatesByDate()
+    {
+        // Arrange
+        var sut = new Hoard.Core.Infrastructure.Integrations.YahooFinance();
+
+        // Act
+        var prices = await sut.GetPricesAsync("AAPL", new DateOnly(2025, 10, 1), new DateOnly(2025, 10, 8));
+
+        // Assert
+        // Verify no duplicate dates exist (Yahoo Finance API has been observed to return duplicates)
+        var uniqueDates = prices.Select(p => p.Date).Distinct().Count();
+        Assert.Equal(prices.Count, uniqueDates);
+    }
 }
