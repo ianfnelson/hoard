@@ -24,6 +24,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <InternalsVisibleTo Include="Hoard.Test" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
       <PackageReference Include="Clarion" Version="1.0.2" />
       <PackageReference Include="ExcelFinancialFunctions" Version="3.2.0" />
