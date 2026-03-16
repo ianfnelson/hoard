@@ -69,13 +69,17 @@ public class YahooFinance
         Yahoo.IgnoreEmptyRows = true;
         var history = await Yahoo.GetHistoricalAsync(ticker, GetDateTime(from), GetDateTime(to), token:ct);
 
-        var results = history
-            .Select(MapCandleToHistoricalPrice)
-            .GroupBy(p => p.Date)
-            .Select(g => g.First())
-            .ToList();
+        var mapped = history.Select(MapCandleToHistoricalPrice);
 
-        return results;
+        return DeduplicatePrices(mapped);
+    }
+
+    internal static List<PriceDto> DeduplicatePrices(IEnumerable<PriceDto> prices)
+    {
+        return prices
+            .GroupBy(p => p.Date)
+            .Select(g => g.OrderByDescending(p => p.Close != 0).First())
+            .ToList();
     }
 
     private static QuoteDto MapSecurityToQuote(Security security)

@@ -74,4 +74,60 @@ public class YahooFinanceClientFixture
         var uniqueDates = prices.Select(p => p.Date).Distinct().Count();
         Assert.Equal(prices.Count, uniqueDates);
     }
+
+    [Fact]
+    public void DeduplicatePrices_PrefersNonZeroClose_WhenDuplicateDatesExist()
+    {
+        // Arrange - first entry has zero Close, second has valid Close
+        var prices = new List<PriceDto>
+        {
+            new() { Date = new DateOnly(2025, 10, 1), Open = 100, High = 110, Low = 90, Close = 0, Volume = 1000, AdjustedClose = 0, Source = "Yahoo! Finance" },
+            new() { Date = new DateOnly(2025, 10, 1), Open = 100, High = 110, Low = 90, Close = 105, Volume = 2000, AdjustedClose = 105, Source = "Yahoo! Finance" },
+            new() { Date = new DateOnly(2025, 10, 2), Open = 200, High = 210, Low = 190, Close = 205, Volume = 3000, AdjustedClose = 205, Source = "Yahoo! Finance" },
+        };
+
+        // Act
+        var result = Hoard.Core.Infrastructure.Integrations.YahooFinance.DeduplicatePrices(prices);
+
+        // Assert
+        Assert.Equal(2, result.Count);
+        var oct1 = result.Single(p => p.Date == new DateOnly(2025, 10, 1));
+        Assert.Equal(105, oct1.Close);
+        Assert.Equal(2000, oct1.Volume);
+    }
+
+    [Fact]
+    public void DeduplicatePrices_ReturnsFirst_WhenAllDuplicatesHaveZeroClose()
+    {
+        // Arrange - both entries have zero Close, should return first
+        var prices = new List<PriceDto>
+        {
+            new() { Date = new DateOnly(2025, 10, 1), Open = 100, High = 110, Low = 90, Close = 0, Volume = 1000, AdjustedClose = 0, Source = "Yahoo! Finance" },
+            new() { Date = new DateOnly(2025, 10, 1), Open = 101, High = 111, Low = 91, Close = 0, Volume = 2000, AdjustedClose = 0, Source = "Yahoo! Finance" },
+        };
+
+        // Act
+        var result = Hoard.Core.Infrastructure.Integrations.YahooFinance.DeduplicatePrices(prices);
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(1000, result[0].Volume);
+    }
+
+    [Fact]
+    public void DeduplicatePrices_ReturnsAllUnique_WhenNoDuplicatesExist()
+    {
+        // Arrange
+        var prices = new List<PriceDto>
+        {
+            new() { Date = new DateOnly(2025, 10, 1), Open = 100, High = 110, Low = 90, Close = 105, Volume = 1000, AdjustedClose = 105, Source = "Yahoo! Finance" },
+            new() { Date = new DateOnly(2025, 10, 2), Open = 200, High = 210, Low = 190, Close = 205, Volume = 2000, AdjustedClose = 205, Source = "Yahoo! Finance" },
+        };
+
+        // Act
+        var result = Hoard.Core.Infrastructure.Integrations.YahooFinance.DeduplicatePrices(prices);
+
+        // Assert
+        Assert.Equal(2, result.Count);
+    }
 }
