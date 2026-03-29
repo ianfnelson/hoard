@@ -46,11 +46,13 @@ builder.Services.AddSignalR();
 var app = builder.Build();
 await app.ApplyMigrationsAndSeedAsync();
 
+app.UsePathBase("/api");
+
 app.MapOpenApi();
 
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/openapi/v1.json", "v1");
+    options.SwaggerEndpoint("../openapi/v1.json", "v1");
 });
 
 if (!app.Environment.IsDevelopment())
