@@ -46,16 +46,14 @@ builder.Services.AddSignalR();
 var app = builder.Build();
 await app.ApplyMigrationsAndSeedAsync();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+app.MapOpenApi();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "v1");
-    });
-}
-else
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "v1");
+});
+
+if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
