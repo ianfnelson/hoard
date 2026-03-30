@@ -17,8 +17,9 @@ public class SchedulerBootstrapper : IHostedService
     private readonly IRecurringJobManager _recurring;
     private readonly IMediator _mediator;
     private readonly ILogger<SchedulerBootstrapper> _logger;
-    
+
     private static readonly ActivitySource ActivitySource = new("hoard.scheduler");
+    private static readonly TimeZoneInfo UkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/London");
 
     public SchedulerBootstrapper(
         IBackgroundJobClient jobs,
@@ -49,7 +50,8 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "refresh-quotes",
             () => TriggerRefreshQuotesCommand(),
-            "*/1 8-17 * * 1-5" // every minute during UK trading hours
+            "*/1 8-17 * * 1-5", // every minute during UK trading hours
+            new RecurringJobOptions { TimeZone = UkTimeZone }
         );
     }
 
@@ -58,7 +60,8 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "refresh-news",
             () => TriggerRefreshNewsCommand(),
-            "10 7-17 * * 1-5" // 10 minutes past every hour, 7am-5pm, weekdays
+            "10 7-17 * * 1-5", // 10 minutes past every hour, 7am-5pm, weekdays
+            new RecurringJobOptions { TimeZone = UkTimeZone }
         );
     }
 
@@ -67,16 +70,18 @@ public class SchedulerBootstrapper : IHostedService
         _recurring.AddOrUpdate(
             "start-of-day",
             () => TriggerStartOfDayCommand(),
-            "0 6 * * *" // daily at 06:00
+            "0 6 * * *", // daily at 06:00
+            new RecurringJobOptions { TimeZone = UkTimeZone }
         );
     }
-    
+
     private void RegisterCloseOfDay()
     {
         _recurring.AddOrUpdate(
             "close-of-day",
             () => TriggerCloseOfDayCommand(),
-            "0 17 * * *" // daily at 17:00
+            "0 17 * * *", // daily at 17:00
+            new RecurringJobOptions { TimeZone = UkTimeZone }
         );
     }
     
