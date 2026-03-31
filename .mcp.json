@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "hoard": {
+      "command": "dotnet",
+      "args": ["/Users/ian/dev/hoard/src/mcp/publish/Hoard.Mcp.dll"]
+    }
+  }
+}
