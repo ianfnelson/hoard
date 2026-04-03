@@ -9,8 +9,8 @@ public sealed class GetNewsArticlesQuery
     : IQuery<PagedResult<NewsArticleSummaryDto>>, IPagedQuery, ISortedQuery
 {
     // Filters
-    public DateTime? FromDate { get; init; }
-    public DateTime? ToDate { get; init; }
+    public DateOnly? FromDate { get; init; }
+    public DateOnly? ToDate { get; init; }
     public int? InstrumentId { get; init; }
     
     // Search
@@ -55,10 +55,10 @@ public sealed class GetNewsArticlesHandler(HoardContext context)
     private static IQueryable<NewsArticle> ApplyFilters(IQueryable<NewsArticle> query, GetNewsArticlesQuery request)
     {
         if (request.FromDate.HasValue)
-            query = query.Where(t => t.PublishedUtc >= request.FromDate.Value);
-        
+            query = query.Where(t => t.PublishedUtc >= request.FromDate.Value.ToDateTime(TimeOnly.MinValue));
+
         if (request.ToDate.HasValue)
-            query = query.Where(t => t.PublishedUtc <= request.ToDate.Value);
+            query = query.Where(t => t.PublishedUtc < request.ToDate.Value.AddDays(1).ToDateTime(TimeOnly.MinValue));
         
         if (request.InstrumentId.HasValue)
             query = query.Where(t => t.InstrumentId == request.InstrumentId.Value);
