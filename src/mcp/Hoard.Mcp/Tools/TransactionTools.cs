@@ -11,7 +11,7 @@ public static class TransactionTools
         HoardApiClient api,
         [Description("Filter from date in yyyy-MM-dd format")] string? fromDate,
         [Description("Filter to date in yyyy-MM-dd format")] string? toDate,
-        [Description("Filter by account ID")] int? accountId,
+        [Description("Filter by account ID (use GetAccounts to find valid IDs)")] int? accountId,
         [Description("Filter by instrument ID")] int? instrumentId,
         [Description("Filter by transaction type ID (use GetTransactionTypes for valid IDs)")] int? transactionTypeId,
         [Description("Search text")] string? search,
@@ -33,7 +33,7 @@ public static class TransactionTools
     [McpServerTool, Description("Create a new transaction. Use GetTransactionTypes to find valid transaction type IDs. Use GetInstrumentLookup to find instrument IDs.")]
     public static async Task<string> CreateTransaction(
         HoardApiClient api,
-        [Description("The account ID")] int accountId,
+        [Description("The account ID (use GetAccounts to find valid IDs)")] int accountId,
         [Description("The instrument ID (nullable for cash-only transactions like deposits)")] int? instrumentId,
         [Description("The transaction type ID (use GetTransactionTypes for valid IDs)")] int transactionTypeId,
         [Description("Transaction date in yyyy-MM-dd format")] string date,
@@ -68,7 +68,7 @@ public static class TransactionTools
     public static async Task<string> UpdateTransaction(
         HoardApiClient api,
         [Description("The transaction ID to update")] int id,
-        [Description("The account ID")] int accountId,
+        [Description("The account ID (use GetAccounts to find valid IDs)")] int accountId,
         [Description("The instrument ID (nullable for cash-only transactions)")] int? instrumentId,
         [Description("The transaction type ID")] int transactionTypeId,
         [Description("Transaction date in yyyy-MM-dd format")] string date,
