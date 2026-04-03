@@ -33,7 +33,7 @@ public class RebalanceService : IRebalanceService
                 AssetSubclassId = subclassToSell.Id,
                 AssetSubclassName = subclassToSell.Name,
                 Colour = subclassToSell.Colour,
-                RebalanceAction = RebalanceActionType.Reduce,
+                RebalanceAction = "Reduce",
                 Amount = subclassToSell.DeviationValue
             });
 
@@ -59,7 +59,7 @@ public class RebalanceService : IRebalanceService
                 AssetSubclassName = subclassToAdd.Name,
                 AssetSubclassId = subclassToAdd.AssetClassId,
                 Colour = subclassToAdd.Colour,
-                RebalanceAction = RebalanceActionType.Add,
+                RebalanceAction = "Add",
                 Amount = amount
             });
 
