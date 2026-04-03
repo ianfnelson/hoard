@@ -54,7 +54,7 @@ public static class PortfolioTools
         [Description("The portfolio ID")] int id,
         [Description("Start date in yyyy-MM-dd format")] string? from,
         [Description("End date in yyyy-MM-dd format")] string? to,
-        [Description("Disaggregate the series by a dimension, e.g. 'instrument', 'assetClass', 'assetSubclass'")] string? disaggregateBy,
+        [Description("Disaggregate the series by a dimension. Valid values: 'accounts', 'asset-classes', 'asset-subclasses', 'instrument-types'. Omit for a single total series.")] string? disaggregateBy,
         CancellationToken ct) =>
         await api.GetAsync($"api/portfolios/{id}/valuation-series" + HoardApiClient.BuildQuery(("from", from), ("to", to), ("disaggregateBy", disaggregateBy)), ct);
 
