@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Hoard.Core.Application.Portfolios;
 using Hoard.Core.Domain.Entities;
 
@@ -251,6 +252,24 @@ public class RebalanceServiceTests
 
         var reduceAction = Assert.Single(result);
         Assert.Equal(RebalanceActionType.Reduce, reduceAction.RebalanceAction);
+    }
+
+    [Theory]
+    [InlineData(RebalanceActionType.Add, "\"Add\"")]
+    [InlineData(RebalanceActionType.Reduce, "\"Reduce\"")]
+    public void RebalanceActionType_SerializesAsString(RebalanceActionType value, string expectedJson)
+    {
+        var json = JsonSerializer.Serialize(value);
+        Assert.Equal(expectedJson, json);
+    }
+
+    [Theory]
+    [InlineData("\"Add\"", RebalanceActionType.Add)]
+    [InlineData("\"Reduce\"", RebalanceActionType.Reduce)]
+    public void RebalanceActionType_DeserializesFromString(string json, RebalanceActionType expected)
+    {
+        var result = JsonSerializer.Deserialize<RebalanceActionType>(json);
+        Assert.Equal(expected, result);
     }
 
     private static AssetSubclassExposureDto CreateSubclass(

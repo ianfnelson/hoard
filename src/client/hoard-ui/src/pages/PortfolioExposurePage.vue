@@ -56,7 +56,7 @@ const assetSubclassRows = computed(() => store.exposure?.assetSubclasses ?? [])
 const rebalanceRows = computed(() =>
   (store.exposure?.rebalanceActions ?? []).map((r) => ({
     colour: r.colour,
-    action: r.rebalanceAction === 1 ? 'Sell' : 'Buy',
+    action: r.rebalanceAction === 'Reduce' ? 'Sell' : 'Buy',
     assetSubclassName: r.assetSubclassName,
     amount: r.amount,
   }))

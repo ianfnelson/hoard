@@ -25,7 +25,7 @@ public static class PortfolioTools
         CancellationToken ct) =>
         await api.GetAsync($"api/portfolios/{id}/positions" + HoardApiClient.BuildQuery(("isOpen", isOpen)), ct);
 
-    [McpServerTool, Description("Get asset class and subclass exposure breakdown for a portfolio, including rebalance actions.")]
+    [McpServerTool, Description("Get asset class and subclass exposure breakdown for a portfolio, including rebalance actions. Each rebalance action has a rebalanceAction field with value 'Add' (buy more of this subclass) or 'Reduce' (sell some of this subclass), and an amount in the portfolio's base currency.")]
     public static async Task<string> GetPortfolioExposure(
         HoardApiClient api,
         [Description("The portfolio ID")] int id,

@@ -1,5 +1,5 @@
 export interface RebalanceActionDto {
-  rebalanceAction: number
+  rebalanceAction: string
   assetSubclassName: string
   colour: string
   amount: number
