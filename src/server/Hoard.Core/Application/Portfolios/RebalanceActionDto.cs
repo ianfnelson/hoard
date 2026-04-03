@@ -6,6 +6,6 @@ public sealed class RebalanceActionDto
     public required string AssetSubclassName { get; init; }
     public required string Colour { get; init; }
 
-    public RebalanceActionType RebalanceAction { get; init; }
+    public required string RebalanceAction { get; init; }
     public decimal Amount { get; init; }
 }

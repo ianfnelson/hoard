@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Hoard.Core.Application.Portfolios;
 using Hoard.Core.Domain.Entities;
 
@@ -45,7 +44,7 @@ public class RebalanceServiceTests
         var result = _service.DeriveRebalanceActions(100000m, subclasses);
 
         var reduceAction = Assert.Single(result);
-        Assert.Equal(RebalanceActionType.Reduce, reduceAction.RebalanceAction);
+        Assert.Equal("Reduce", reduceAction.RebalanceAction);
         Assert.Equal(1, reduceAction.AssetSubclassId);
         Assert.Equal("Stocks", reduceAction.AssetSubclassName);
         Assert.Equal(2000m, reduceAction.Amount);
@@ -84,7 +83,7 @@ public class RebalanceServiceTests
         var result = _service.DeriveRebalanceActions(100000m, subclasses);
 
         var addAction = Assert.Single(result);
-        Assert.Equal(RebalanceActionType.Add, addAction.RebalanceAction);
+        Assert.Equal("Add", addAction.RebalanceAction);
         Assert.Equal(20, addAction.AssetSubclassId);
         Assert.Equal("Bonds", addAction.AssetSubclassName);
         Assert.Equal(2000m, addAction.Amount);
@@ -105,7 +104,7 @@ public class RebalanceServiceTests
         var result = _service.DeriveRebalanceActions(100000m, subclasses);
 
         var addAction = Assert.Single(result);
-        Assert.Equal(RebalanceActionType.Add, addAction.RebalanceAction);
+        Assert.Equal("Add", addAction.RebalanceAction);
         Assert.Equal(2000m, addAction.Amount); // Limited by available cash
     }
 
@@ -174,11 +173,11 @@ public class RebalanceServiceTests
 
         Assert.Equal(2, result.Count);
 
-        var reduceAction = result.First(x => x.RebalanceAction == RebalanceActionType.Reduce);
+        var reduceAction = result.First(x => x.RebalanceAction == "Reduce");
         Assert.Equal("Stocks", reduceAction.AssetSubclassName);
         Assert.Equal(3000m, reduceAction.Amount);
 
-        var addAction = result.First(x => x.RebalanceAction == RebalanceActionType.Add);
+        var addAction = result.First(x => x.RebalanceAction == "Add");
         Assert.Equal("Bonds", addAction.AssetSubclassName);
         Assert.Equal(2000m, addAction.Amount); // Can buy full amount with proceeds
     }
@@ -251,25 +250,7 @@ public class RebalanceServiceTests
         var result = _service.DeriveRebalanceActions(100000m, subclasses);
 
         var reduceAction = Assert.Single(result);
-        Assert.Equal(RebalanceActionType.Reduce, reduceAction.RebalanceAction);
-    }
-
-    [Theory]
-    [InlineData(RebalanceActionType.Add, "\"Add\"")]
-    [InlineData(RebalanceActionType.Reduce, "\"Reduce\"")]
-    public void RebalanceActionType_SerializesAsString(RebalanceActionType value, string expectedJson)
-    {
-        var json = JsonSerializer.Serialize(value);
-        Assert.Equal(expectedJson, json);
-    }
-
-    [Theory]
-    [InlineData("\"Add\"", RebalanceActionType.Add)]
-    [InlineData("\"Reduce\"", RebalanceActionType.Reduce)]
-    public void RebalanceActionType_DeserializesFromString(string json, RebalanceActionType expected)
-    {
-        var result = JsonSerializer.Deserialize<RebalanceActionType>(json);
-        Assert.Equal(expected, result);
+        Assert.Equal("Reduce", reduceAction.RebalanceAction);
     }
 
     private static AssetSubclassExposureDto CreateSubclass(
