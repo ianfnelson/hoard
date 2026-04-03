@@ -21,6 +21,9 @@ public sealed class AlertService(HoardContext db, IBus bus) : IAlertService
         ArgumentNullException.ThrowIfNull(request.Title, nameof(request.Title));
         ArgumentNullException.ThrowIfNull(request.Message, nameof(request.Message));
 
+        if (await db.Alerts.AnyAsync(a => a.SuppressionKey == request.SuppressionKey, ct))
+            return false;
+
         var alert = new Alert
         {
             AlertTypeId = request.AlertTypeId,
