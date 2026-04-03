@@ -48,7 +48,7 @@ public static class PortfolioTools
         CancellationToken ct) =>
         await api.GetAsync($"api/portfolios/{id}/valuation" + HoardApiClient.BuildQuery(("from", from), ("to", to)), ct);
 
-    [McpServerTool, Description("Get a time series of portfolio valuations over a date range, useful for charting portfolio value over time.")]
+    [McpServerTool, Description("Get a time series of portfolio valuations over a date range. Valuation is total market value (price × units held, summed across holdings), useful for charting portfolio value over time.")]
     public static async Task<string> GetPortfolioValuationSeries(
         HoardApiClient api,
         [Description("The portfolio ID")] int id,

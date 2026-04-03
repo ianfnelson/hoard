@@ -31,7 +31,7 @@ public static class InstrumentTools
     public static async Task<string> GetInstrumentLookup(HoardApiClient api, CancellationToken ct) =>
         await api.GetAsync("api/instruments/lookup", ct);
 
-    [McpServerTool, Description("Get paginated price history for an instrument, showing OHLCV data.")]
+    [McpServerTool, Description("Get paginated price history for an instrument. Returns full OHLCV (open, high, low, close, volume) candlestick data per trading day.")]
     public static async Task<string> GetInstrumentPrices(
         HoardApiClient api,
         [Description("The instrument ID")] int id,
@@ -40,7 +40,7 @@ public static class InstrumentTools
         CancellationToken ct) =>
         await api.GetAsync($"api/instruments/{id}/prices" + HoardApiClient.BuildQuery(("pageNumber", pageNumber), ("pageSize", pageSize)), ct);
 
-    [McpServerTool, Description("Get a price time series for an instrument over a date range, suitable for charting.")]
+    [McpServerTool, Description("Get a simplified price time series for an instrument over a date range. Returns date and closing price only, suitable for charting price trends.")]
     public static async Task<string> GetInstrumentPriceSeries(
         HoardApiClient api,
         [Description("The instrument ID")] int id,
@@ -49,7 +49,7 @@ public static class InstrumentTools
         CancellationToken ct) =>
         await api.GetAsync($"api/instruments/{id}/price-series" + HoardApiClient.BuildQuery(("from", from), ("to", to)), ct);
 
-    [McpServerTool, Description("Get a valuation time series for an instrument over a date range, showing how its total value has changed.")]
+    [McpServerTool, Description("Get a valuation time series for an instrument over a date range. Valuation is market value (price × units held), showing how the value of your holdings has changed over time.")]
     public static async Task<string> GetInstrumentValuationSeries(
         HoardApiClient api,
         [Description("The instrument ID")] int id,
