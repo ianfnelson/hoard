@@ -14,8 +14,8 @@ describe('useContractNoteDownload', () => {
 
     mockCreateObjectURL = vi.fn().mockReturnValue('blob:test-url')
     mockRevokeObjectURL = vi.fn()
-    window.URL.createObjectURL = mockCreateObjectURL
-    window.URL.revokeObjectURL = mockRevokeObjectURL
+    window.URL.createObjectURL = mockCreateObjectURL as typeof URL.createObjectURL
+    window.URL.revokeObjectURL = mockRevokeObjectURL as typeof URL.revokeObjectURL
 
     clickSpy = vi.fn()
     vi.spyOn(document, 'createElement').mockReturnValue({

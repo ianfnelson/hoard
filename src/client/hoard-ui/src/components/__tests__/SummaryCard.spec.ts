@@ -5,7 +5,7 @@ import SummaryCard from '../SummaryCard.vue'
 
 const vuetify = createVuetify()
 
-function mountCard(props: Record<string, unknown>) {
+function mountCard(props: { title: string; value?: number; percentage?: number; trend?: number }) {
   return mount(SummaryCard, {
     props,
     global: {

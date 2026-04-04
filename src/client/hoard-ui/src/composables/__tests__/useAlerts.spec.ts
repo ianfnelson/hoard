@@ -22,7 +22,20 @@ describe('useAlerts', () => {
 
   it('should fetch alerts successfully', async () => {
     const mockResponse: PagedResult<AlertSummaryDto> = {
-      items: [{ id: 1, message: 'Test alert' } as AlertSummaryDto],
+      items: [
+        {
+          id: 1,
+          createdUtc: '2026-01-01T00:00:00Z',
+          triggeredDate: '2026-01-01',
+          alertTypeId: 1,
+          alertTypeName: 'Price',
+          instrumentId: null,
+          instrumentName: null,
+          portfolioId: null,
+          portfolioName: null,
+          title: 'Test alert',
+        } satisfies AlertSummaryDto,
+      ],
       totalCount: 1,
     }
     vi.mocked(alertsApi.getAlerts).mockResolvedValue(mockResponse)
