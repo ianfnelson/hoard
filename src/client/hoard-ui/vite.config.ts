@@ -8,6 +8,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    css: true,
+    server: {
+      deps: {
+        inline: ['vuetify'],
+      },
+    },
   },
   resolve: {
     alias: {
