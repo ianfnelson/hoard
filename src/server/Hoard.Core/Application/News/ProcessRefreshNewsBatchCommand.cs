@@ -17,7 +17,7 @@ public record ProcessRefreshNewsBatchCommand(
 public class ProcessRefreshNewsBatchHandler(
     IBus bus,
     HoardContext context,
-    ClarionClient clarionClient,
+    IClarionClient clarionClient,
     ILogger<ProcessRefreshNewsBatchHandler> logger)
     : ICommandHandler<ProcessRefreshNewsBatchCommand>
 {
