@@ -29,7 +29,7 @@
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/jsdom": "^27.0.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.5.2",
     "@typescript-eslint/parser": "^8.26.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
