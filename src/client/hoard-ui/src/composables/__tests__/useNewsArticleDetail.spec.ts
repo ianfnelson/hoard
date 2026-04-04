@@ -19,7 +19,17 @@ describe('useNewsArticleDetail', () => {
   })
 
   it('should fetch article successfully', async () => {
-    const mockArticle = { id: 1, title: 'Annual results' } as NewsArticleDetailDto
+    const mockArticle: NewsArticleDetailDto = {
+      id: 1,
+      publishedUtc: '2026-01-01T00:00:00Z',
+      retrievedUtc: '2026-01-01T00:00:00Z',
+      headline: 'Annual results',
+      bodyHtml: '<p>Results</p>',
+      url: 'https://example.com',
+      instrumentId: 1,
+      instrumentName: 'Test Co',
+      instrumentTicker: 'TST',
+    }
     vi.mocked(newsArticlesApi.getNewsArticleDetail).mockResolvedValue(mockArticle)
 
     const { article, fetchNewsArticle } = useNewsArticleDetail()

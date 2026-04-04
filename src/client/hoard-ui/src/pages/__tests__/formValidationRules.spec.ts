@@ -148,57 +148,57 @@ describe('sourceMaxLengthRule', () => {
 
 describe('instrument nameRules', () => {
   it('should require non-empty name', () => {
-    expect(nameRules[0]('Fundsmith Equity')).toBe(true)
-    expect(nameRules[0]('')).toBe('Name is required')
-    expect(nameRules[0]('   ')).toBe('Name is required')
+    expect(nameRules[0]!('Fundsmith Equity')).toBe(true)
+    expect(nameRules[0]!('')).toBe('Name is required')
+    expect(nameRules[0]!('   ')).toBe('Name is required')
   })
 
   it('should enforce max length', () => {
-    expect(nameRules[1]('Short name')).toBe(true)
-    expect(nameRules[1]('a'.repeat(101))).toBe('Name cannot exceed 100 characters')
+    expect(nameRules[1]!('Short name')).toBe(true)
+    expect(nameRules[1]!('a'.repeat(101))).toBe('Name cannot exceed 100 characters')
   })
 })
 
 describe('instrument tickerRules', () => {
   it('should require non-empty ticker', () => {
-    expect(tickerRules[0]('SMIT')).toBe(true)
-    expect(tickerRules[0]('')).toBe('Ticker is required')
-    expect(tickerRules[0]('   ')).toBe('Ticker is required')
+    expect(tickerRules[0]!('SMIT')).toBe(true)
+    expect(tickerRules[0]!('')).toBe('Ticker is required')
+    expect(tickerRules[0]!('   ')).toBe('Ticker is required')
   })
 
   it('should enforce max length', () => {
-    expect(tickerRules[1]('SMIT')).toBe(true)
-    expect(tickerRules[1]('a'.repeat(21))).toBe('Ticker cannot exceed 20 characters')
+    expect(tickerRules[1]!('SMIT')).toBe(true)
+    expect(tickerRules[1]!('a'.repeat(21))).toBe('Ticker cannot exceed 20 characters')
   })
 })
 
 describe('instrument isinRules', () => {
   it('should allow empty ISIN', () => {
-    expect(isinRules[0]('')).toBe(true)
+    expect(isinRules[0]!('')).toBe(true)
   })
 
   it('should allow valid length ISIN', () => {
-    expect(isinRules[0]('GB00B0CNH163')).toBe(true) // 12 chars
+    expect(isinRules[0]!('GB00B0CNH163')).toBe(true) // 12 chars
   })
 
   it('should fail for ISIN longer than 12', () => {
-    expect(isinRules[0]('GB00B0CNH1631')).toBe('ISIN cannot exceed 12 characters')
+    expect(isinRules[0]!('GB00B0CNH1631')).toBe('ISIN cannot exceed 12 characters')
   })
 })
 
 describe('dataFeedTickerRules', () => {
   it('should require non-empty ticker', () => {
-    expect(dataFeedTickerRules[0]('SMIT.L')).toBe(true)
-    expect(dataFeedTickerRules[0]('')).toBe('Ticker is required')
-    expect(dataFeedTickerRules[0]('   ')).toBe('Ticker is required')
+    expect(dataFeedTickerRules[0]!('SMIT.L')).toBe(true)
+    expect(dataFeedTickerRules[0]!('')).toBe('Ticker is required')
+    expect(dataFeedTickerRules[0]!('   ')).toBe('Ticker is required')
   })
 
   it('should enforce max length', () => {
-    expect(dataFeedTickerRules[1]('SMIT.L')).toBe(true)
-    expect(dataFeedTickerRules[1]('a'.repeat(21))).toBe('Maximum 20 characters')
+    expect(dataFeedTickerRules[1]!('SMIT.L')).toBe(true)
+    expect(dataFeedTickerRules[1]!('a'.repeat(21))).toBe('Maximum 20 characters')
   })
 
   it('should pass max length check for empty value', () => {
-    expect(dataFeedTickerRules[1]('')).toBe(true)
+    expect(dataFeedTickerRules[1]!('')).toBe(true)
   })
 })

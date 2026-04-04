@@ -30,7 +30,7 @@ describe('referenceDataStore', () => {
 
   describe('loadInstrumentTypes', () => {
     it('should load instrument types', async () => {
-      const mockTypes = [{ id: 1, name: 'Equity' }]
+      const mockTypes = [{ id: 1, name: 'Equity', isCash: false, isFxPair: false }]
       vi.mocked(referencesApi.getInstrumentTypes).mockResolvedValue(mockTypes)
 
       const store = useReferenceDataStore()
@@ -67,7 +67,7 @@ describe('referenceDataStore', () => {
 
   describe('loadAssetClasses', () => {
     it('should load asset classes', async () => {
-      const mockClasses = [{ id: 1, name: 'Equities' }]
+      const mockClasses = [{ id: 1, name: 'Equities', subclasses: [] }]
       vi.mocked(referencesApi.getAssetClasses).mockResolvedValue(mockClasses)
 
       const store = useReferenceDataStore()
@@ -89,7 +89,7 @@ describe('referenceDataStore', () => {
 
   describe('loadCurrencies', () => {
     it('should load currencies', async () => {
-      const mockCurrencies = [{ id: 1, code: 'GBP', name: 'British Pound' }]
+      const mockCurrencies = [{ id: 'GBP', name: 'British Pound' }]
       vi.mocked(referencesApi.getCurrencies).mockResolvedValue(mockCurrencies)
 
       const store = useReferenceDataStore()

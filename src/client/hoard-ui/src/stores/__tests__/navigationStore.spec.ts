@@ -28,8 +28,8 @@ describe('navigationStore', () => {
   describe('loadPortfolios', () => {
     it('should load portfolios successfully', async () => {
       const mockPortfolios: PortfolioSummaryDto[] = [
-        { id: 1, name: 'ISA', accountCount: 2 },
-        { id: 2, name: 'SIPP', accountCount: 1 },
+        { id: 1, name: 'ISA', isActive: true, createdUtc: '2026-01-01T00:00:00Z' },
+        { id: 2, name: 'SIPP', isActive: true, createdUtc: '2026-01-01T00:00:00Z' },
       ]
       vi.mocked(portfoliosApi.getPortfolioList).mockResolvedValue(mockPortfolios)
 
@@ -60,7 +60,9 @@ describe('navigationStore', () => {
 
   describe('loadAccounts', () => {
     it('should load accounts successfully', async () => {
-      const mockAccounts: AccountSummaryDto[] = [{ id: 1, name: 'Trading Account', isActive: true }]
+      const mockAccounts: AccountSummaryDto[] = [
+        { id: 1, name: 'Trading Account', isActive: true, createdUtc: '2026-01-01T00:00:00Z' },
+      ]
       vi.mocked(accountsApi.getAccounts).mockResolvedValue(mockAccounts)
 
       const store = useNavigationStore()

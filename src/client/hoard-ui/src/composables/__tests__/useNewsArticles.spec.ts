@@ -22,7 +22,17 @@ describe('useNewsArticles', () => {
 
   it('should fetch news articles successfully', async () => {
     const mockResponse: PagedResult<NewsArticleSummaryDto> = {
-      items: [{ id: 1, title: 'Annual results' } as NewsArticleSummaryDto],
+      items: [
+        {
+          id: 1,
+          publishedUtc: '2026-01-01T00:00:00Z',
+          retrievedUtc: '2026-01-01T00:00:00Z',
+          headline: 'Annual results',
+          instrumentId: 1,
+          instrumentName: 'Test Co',
+          instrumentTicker: 'TST',
+        } satisfies NewsArticleSummaryDto,
+      ],
       totalCount: 1,
     }
     vi.mocked(newsArticlesApi.getNewsArticles).mockResolvedValue(mockResponse)
