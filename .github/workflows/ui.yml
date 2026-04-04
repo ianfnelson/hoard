@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
+  lint-and-test:
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,8 +37,12 @@ jobs:
       - name: Type check
         run: npm run type-check
 
+      - name: Test
+        run: npm run test:run
+
   build-and-push:
-    needs: lint
+    needs: lint-and-test
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     permissions:
