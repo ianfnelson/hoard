@@ -6,7 +6,10 @@ export interface GetAccountsParams {
   isActive?: boolean
 }
 
-export async function getAccounts(params?: GetAccountsParams): Promise<AccountSummaryDto[]> {
-  const response = await hoardApi.get('/accounts', { params })
+export async function getAccounts(
+  params?: GetAccountsParams,
+  signal?: AbortSignal
+): Promise<AccountSummaryDto[]> {
+  const response = await hoardApi.get('/accounts', { params, signal })
   return response.data
 }

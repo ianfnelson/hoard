@@ -35,8 +35,8 @@ export async function getInstruments(
   return response.data
 }
 
-export async function getInstrumentsLookup(): Promise<LookupDto[]> {
-  const response = await hoardApi.get('/instruments/lookup')
+export async function getInstrumentsLookup(signal?: AbortSignal): Promise<LookupDto[]> {
+  const response = await hoardApi.get('/instruments/lookup', { signal })
   return response.data
 }
 

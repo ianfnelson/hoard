@@ -6,32 +6,32 @@ import type { CurrencyDto } from './dtos/Currencies/CurrencyDto'
 import type { AlertTypeDto } from './dtos/AlertTypes/AlertTypeDto'
 import type { RunTypeDto } from './dtos/RunLogTypes/RunTypeDto'
 
-export async function getInstrumentTypes(): Promise<InstrumentTypeDto[]> {
-  const response = await hoardApi.get('/reference/instrument-types/')
+export async function getInstrumentTypes(signal?: AbortSignal): Promise<InstrumentTypeDto[]> {
+  const response = await hoardApi.get('/reference/instrument-types/', { signal })
   return response.data
 }
 
-export async function getAssetClasses(): Promise<AssetClassDto[]> {
-  const response = await hoardApi.get('/reference/asset-classes/')
+export async function getAssetClasses(signal?: AbortSignal): Promise<AssetClassDto[]> {
+  const response = await hoardApi.get('/reference/asset-classes/', { signal })
   return response.data
 }
 
-export async function getTransactionTypes(): Promise<TransactionTypeDto[]> {
-  const response = await hoardApi.get('/reference/transaction-types/')
+export async function getTransactionTypes(signal?: AbortSignal): Promise<TransactionTypeDto[]> {
+  const response = await hoardApi.get('/reference/transaction-types/', { signal })
   return response.data
 }
 
-export async function getCurrencies(): Promise<CurrencyDto[]> {
-  const response = await hoardApi.get('/reference/currencies/')
+export async function getCurrencies(signal?: AbortSignal): Promise<CurrencyDto[]> {
+  const response = await hoardApi.get('/reference/currencies/', { signal })
   return response.data
 }
 
-export async function getAlertTypes(): Promise<AlertTypeDto[]> {
-  const response = await hoardApi.get('/reference/alert-types/')
+export async function getAlertTypes(signal?: AbortSignal): Promise<AlertTypeDto[]> {
+  const response = await hoardApi.get('/reference/alert-types/', { signal })
   return response.data
 }
 
-export async function getRunLogTypes(): Promise<RunTypeDto[]> {
-  const response = await hoardApi.get('/reference/run-log-types/')
+export async function getRunLogTypes(signal?: AbortSignal): Promise<RunTypeDto[]> {
+  const response = await hoardApi.get('/reference/run-log-types/', { signal })
   return response.data
 }
