@@ -70,7 +70,8 @@ public class ProcessRefreshQuotesBatchHandlerTests : IDisposable
         ICollection<Instrument> changed)
     {
         var method = typeof(ProcessRefreshQuotesBatchHandler)
-            .GetMethod("UpsertQuotes", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            .GetMethod("UpsertQuotes", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("Method 'UpsertQuotes' not found — was it renamed?");
         method.Invoke(_handler, [instruments, freshQuotes, now, changed]);
     }
 
@@ -193,11 +194,7 @@ public class ProcessRefreshQuotesBatchHandlerTests : IDisposable
     [Fact]
     public void UpsertQuotes_NoQuoteFeedOnInstrument_SkipsIt()
     {
-        var instrument = new Instrument
-        {
-            Id = 1, Name = "Test", Ticker = "TST", CurrencyId = "GBP",
-            InstrumentTypeId = 1, AssetSubclassId = 1
-        };
+        var instrument = TestData.Instrument();
 
         var freshQuotes = new Dictionary<string, QuoteDto>
         {
@@ -218,11 +215,7 @@ public class ProcessRefreshQuotesBatchHandlerTests : IDisposable
     [Fact]
     public void UpsertQuotes_TickerNotInResponse_SkipsIt()
     {
-        var instrument = new Instrument
-        {
-            Id = 1, Name = "Test", Ticker = "TST", CurrencyId = "GBP",
-            InstrumentTypeId = 1, AssetSubclassId = 1
-        };
+        var instrument = TestData.Instrument();
         instrument.DataFeeds.Add(new InstrumentDataFeed
         {
             InstrumentId = 1, DataFeedId = DataFeed.Quotes,
@@ -287,7 +280,8 @@ public class ProcessRefreshQuotesBatchHandlerTests : IDisposable
     private static bool InvokeHasNotableChange(Quote quote, QuoteDto dto)
     {
         var method = typeof(ProcessRefreshQuotesBatchHandler)
-            .GetMethod("HasNotableChange", BindingFlags.NonPublic | BindingFlags.Static)!;
+            .GetMethod("HasNotableChange", BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new InvalidOperationException("Method 'HasNotableChange' not found — was it renamed?");
         return (bool)method.Invoke(null, [quote, dto])!;
     }
 

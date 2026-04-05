@@ -61,6 +61,9 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
 
         _priceService.Verify(s => s.GetPricesAsync(
             It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()), Times.Never);
+        // Unlike the quotes handler, the prices handler has no finally block — no events on early exit
+        _bus.Verify(b => b.Publish(It.IsAny<PriceRefreshedEvent>(), null), Times.Never);
+        _bus.Verify(b => b.Publish(It.IsAny<PriceChangedEvent>(), null), Times.Never);
     }
 
     #endregion
@@ -70,7 +73,8 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
     private async Task<List<DateOnly>> InvokeUpsertPrices(int instrumentId, IReadOnlyList<PriceDto> priceDtos, DateTime now)
     {
         var method = typeof(ProcessRefreshPricesBatchHandler)
-            .GetMethod("UpsertPrices", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            .GetMethod("UpsertPrices", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("Method 'UpsertPrices' not found — was it renamed?");
         return await (Task<List<DateOnly>>)method.Invoke(_handler, [instrumentId, priceDtos, now, CancellationToken.None])!;
     }
 
@@ -88,6 +92,7 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
         };
 
         var changed = await InvokeUpsertPrices(1, priceDtos, now);
+        // UpsertPrices only adds to change tracker; SaveChanges verifies DB state
         await _context.SaveChangesAsync();
 
         Assert.Equal(2, changed.Count);
@@ -120,6 +125,8 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
         Assert.Single(changed);
         var price = await _context.Prices.SingleAsync();
         Assert.Equal(105m, price.Close);
+        Assert.Equal(105m, price.AdjustedClose);
+        Assert.Equal(now, price.RetrievedUtc);
     }
 
     [Fact]
@@ -201,6 +208,27 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task UpsertPrices_OnlyAdjustedCloseChanges_UpdatesButDoesNotReturnAsChanged()
+    {
+        var date = new DateOnly(2024, 1, 15);
+        _context.Prices.Add(new Price
+        {
+            InstrumentId = 1, AsOfDate = date, Close = 100m, Open = 98m, High = 102m, Low = 97m,
+            Volume = 1000, AdjustedClose = 100m, Source = "Yahoo", RetrievedUtc = DateTime.UtcNow
+        });
+        await _context.SaveChangesAsync();
+
+        var changed = await InvokeUpsertPrices(1, new List<PriceDto>
+        {
+            new() { Date = date, Open = 98m, High = 102m, Low = 97m, Close = 100m, Volume = 1000, AdjustedClose = 95m, Source = "Yahoo" }
+        }, DateTime.UtcNow);
+
+        Assert.Empty(changed);
+        var price = await _context.Prices.SingleAsync();
+        Assert.Equal(95m, price.AdjustedClose);
+    }
+
+    [Fact]
     public async Task UpsertPrices_OnlyVolumeChanges_UpdatesButDoesNotReturnAsChanged()
     {
         var date = new DateOnly(2024, 1, 15);
@@ -228,7 +256,8 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
     private bool InvokeIsSpuriousPrice(Price price, PriceDto dto, int instrumentId)
     {
         var method = typeof(ProcessRefreshPricesBatchHandler)
-            .GetMethod("IsSpuriousPrice", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            .GetMethod("IsSpuriousPrice", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("Method 'IsSpuriousPrice' not found — was it renamed?");
         return (bool)method.Invoke(_handler, [price, dto, instrumentId])!;
     }
 
@@ -277,6 +306,15 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
         Assert.False(InvokeIsSpuriousPrice(price, dto, 1));
     }
 
+    [Fact]
+    public void IsSpuriousPrice_JustAboveThreshold_ReturnsTrue()
+    {
+        var price = new Price { Close = 100m, InstrumentId = 1, AsOfDate = DateOnly.MinValue, Source = "Yahoo", RetrievedUtc = DateTime.UtcNow };
+        var dto = new PriceDto { Close = 121m, Source = "Yahoo", Date = DateOnly.MinValue };
+
+        Assert.True(InvokeIsSpuriousPrice(price, dto, 1));
+    }
+
     #endregion
 
     #region TryUpdateExistingPrice
@@ -284,7 +322,8 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
     private bool InvokeTryUpdateExistingPrice(Price price, PriceDto dto, DateTime now, int instrumentId)
     {
         var method = typeof(ProcessRefreshPricesBatchHandler)
-            .GetMethod("TryUpdateExistingPrice", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            .GetMethod("TryUpdateExistingPrice", BindingFlags.NonPublic | BindingFlags.Instance)
+            ?? throw new InvalidOperationException("Method 'TryUpdateExistingPrice' not found — was it renamed?");
         return (bool)method.Invoke(_handler, [price, dto, now, instrumentId])!;
     }
 
@@ -381,14 +420,16 @@ public class ProcessRefreshPricesBatchHandlerTests : IDisposable
     private static bool InvokeHasAnyFieldChanged(Price price, PriceDto dto)
     {
         var method = typeof(ProcessRefreshPricesBatchHandler)
-            .GetMethod("HasAnyFieldChanged", BindingFlags.NonPublic | BindingFlags.Static)!;
+            .GetMethod("HasAnyFieldChanged", BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new InvalidOperationException("Method 'HasAnyFieldChanged' not found — was it renamed?");
         return (bool)method.Invoke(null, [price, dto])!;
     }
 
     private static bool InvokeHasNotableChange(Price price, PriceDto dto)
     {
         var method = typeof(ProcessRefreshPricesBatchHandler)
-            .GetMethod("HasNotableChange", BindingFlags.NonPublic | BindingFlags.Static)!;
+            .GetMethod("HasNotableChange", BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new InvalidOperationException("Method 'HasNotableChange' not found — was it renamed?");
         return (bool)method.Invoke(null, [price, dto])!;
     }
 
