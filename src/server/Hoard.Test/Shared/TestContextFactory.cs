@@ -51,7 +51,7 @@ public static class TestData
     {
         AccountId = accountId,
         InstrumentId = instrumentId,
-        TransactionTypeId = TransactionType.Buy,
+        TransactionTypeId = Hoard.Core.Domain.Entities.TransactionType.Buy,
         Date = date ?? new DateOnly(2024, 1, 15),
         Price = price,
         Units = units,
@@ -68,7 +68,7 @@ public static class TestData
     {
         AccountId = accountId,
         InstrumentId = instrumentId,
-        TransactionTypeId = TransactionType.Sell,
+        TransactionTypeId = Hoard.Core.Domain.Entities.TransactionType.Sell,
         Date = date ?? new DateOnly(2024, 1, 15),
         Price = price,
         Units = units,
@@ -89,4 +89,53 @@ public static class TestData
         IsLocked = false,
         RetrievedUtc = DateTime.UtcNow
     };
+
+    public static AssetClass AssetClass(int id = 1, string name = "Test Asset Class", string colour = "#0000FF") => new()
+    {
+        Id = id,
+        Name = name,
+        Colour = colour
+    };
+
+    public static AssetSubclass AssetSubclass(int id = 1, string name = "Test Subclass", int assetClassId = 1, string colour = "#0000AA") => new()
+    {
+        Id = id,
+        Name = name,
+        AssetClassId = assetClassId,
+        Colour = colour
+    };
+
+    public static Currency Currency(string id = "GBP", string name = "British Pound") => new()
+    {
+        Id = id,
+        Name = name
+    };
+
+    public static InstrumentType InstrumentType(int id = 1, string name = "Test Type", string colour = "#FF0000") => new()
+    {
+        Id = id,
+        Name = name,
+        Colour = colour
+    };
+
+    public static TransactionType TransactionType(
+        int id = Hoard.Core.Domain.Entities.TransactionType.Buy,
+        string name = "Buy") => new()
+    {
+        Id = id,
+        Name = name
+    };
+
+    /// <summary>
+    /// Populates a context with a coherent, minimal set of reference data:
+    /// one asset class, one subclass, one currency (GBP), one instrument type, and one transaction type (Buy).
+    /// </summary>
+    public static void SeedReferenceData(HoardContext context)
+    {
+        context.AssetClasses.Add(AssetClass());
+        context.AssetSubclasses.Add(AssetSubclass());
+        context.Currencies.Add(Currency());
+        context.InstrumentTypes.Add(InstrumentType());
+        context.TransactionTypes.Add(TransactionType());
+    }
 }

@@ -1,8 +1,6 @@
 using Hoard.Core.Application.Instruments;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Test.Unit.Core.Application.Instruments;
 
@@ -13,7 +11,7 @@ public class GetInstrumentsHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        SeedReferenceData(context);
+        TestData.SeedReferenceData(context);
         for (var i = 1; i <= 5; i++)
         {
             context.Instruments.Add(new Instrument
@@ -40,7 +38,7 @@ public class GetInstrumentsHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        SeedReferenceData(context);
+        TestData.SeedReferenceData(context);
         context.Instruments.AddRange(
             new Instrument { Id = 1, Name = "Stock", Ticker = "STK", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 },
             new Instrument { Id = 2, Name = "Cash GBP", Ticker = "GBP", CurrencyId = "GBP", InstrumentTypeId = InstrumentType.Cash, AssetSubclassId = 1 }
@@ -62,8 +60,8 @@ public class GetInstrumentsHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        SeedReferenceData(context);
-        context.InstrumentTypes.Add(new InstrumentType { Id = 2, Name = "ETF", Colour = "#00FF00" });
+        TestData.SeedReferenceData(context);
+        context.InstrumentTypes.Add(TestData.InstrumentType(id: 2, name: "ETF", colour: "#00FF00"));
         context.Instruments.AddRange(
             new Instrument { Id = 1, Name = "Stock A", Ticker = "SA", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 },
             new Instrument { Id = 2, Name = "ETF B", Ticker = "EB", CurrencyId = "GBP", InstrumentTypeId = 2, AssetSubclassId = 1 }
@@ -85,7 +83,7 @@ public class GetInstrumentsHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        SeedReferenceData(context);
+        TestData.SeedReferenceData(context);
         context.Instruments.AddRange(
             new Instrument { Id = 1, Name = "Fundsmith Equity", Ticker = "FUND", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 },
             new Instrument { Id = 2, Name = "Vanguard FTSE", Ticker = "VUKE", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 }
@@ -107,7 +105,7 @@ public class GetInstrumentsHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        SeedReferenceData(context);
+        TestData.SeedReferenceData(context);
         context.Instruments.AddRange(
             new Instrument { Id = 1, Name = "Zebra Corp", Ticker = "ZEB", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 },
             new Instrument { Id = 2, Name = "Alpha Inc", Ticker = "ALP", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 }
@@ -136,12 +134,4 @@ public class GetInstrumentsHandlerTests
         Assert.Empty(result.Items);
     }
 
-    private static void SeedReferenceData(HoardContext context)
-    {
-        context.InstrumentTypes.Add(new InstrumentType { Id = 1, Name = "Stock", Colour = "#FF0000" });
-        context.Currencies.Add(new Currency { Id = "GBP", Name = "British Pound" });
-        var assetClass = new AssetClass { Id = 1, Name = "Equities", Colour = "#0000FF" };
-        assetClass.Subclasses.Add(new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK", Colour = "#0000AA" });
-        context.AssetClasses.Add(assetClass);
-    }
 }

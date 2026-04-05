@@ -1,7 +1,6 @@
 using Hoard.Core.Application.News;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.News;
 
@@ -11,7 +10,7 @@ public class GetNewsArticlesHandlerTests
     public async Task HandleAsync_ToDateIncludesArticlesPublishedOnThatDay()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var instrument = new Instrument { Id = 1, Name = "Test Co", Ticker = "TST", CurrencyId = "GBP" };
         context.Instruments.Add(instrument);
         context.NewsArticles.AddRange(
@@ -40,7 +39,7 @@ public class GetNewsArticlesHandlerTests
     public async Task HandleAsync_FromDateIncludesArticlesPublishedOnThatDay()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var instrument = new Instrument { Id = 1, Name = "Test Co", Ticker = "TST", CurrencyId = "GBP" };
         context.Instruments.Add(instrument);
         context.NewsArticles.AddRange(
@@ -67,7 +66,7 @@ public class GetNewsArticlesHandlerTests
     public async Task HandleAsync_NoDateFilters_ReturnsAllArticles()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var instrument = new Instrument { Id = 1, Name = "Test Co", Ticker = "TST", CurrencyId = "GBP" };
         context.Instruments.Add(instrument);
         context.NewsArticles.AddRange(
@@ -105,12 +104,4 @@ public class GetNewsArticlesHandlerTests
         };
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        return new HoardContext(options);
-    }
 }

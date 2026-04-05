@@ -1,5 +1,4 @@
 using Hoard.Core.Application.Instruments;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,7 +12,7 @@ public class GetInstrumentHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        SeedReferenceData(context);
+        TestData.SeedReferenceData(context);
         context.Instruments.Add(new Instrument
         {
             Id = 1, Name = "Fundsmith Equity", Ticker = "FUND", Isin = "GB123456",
@@ -31,8 +30,8 @@ public class GetInstrumentHandlerTests
         Assert.Equal("Fundsmith Equity", result.Name);
         Assert.Equal("FUND", result.Ticker);
         Assert.Equal("GB123456", result.Isin);
-        Assert.Equal("Stock", result.InstrumentTypeName);
-        Assert.Equal("UK Equities", result.AssetSubclassName);
+        Assert.Equal("Test Type", result.InstrumentTypeName);
+        Assert.Equal("Test Subclass", result.AssetSubclassName);
     }
 
     [Fact]
@@ -46,12 +45,4 @@ public class GetInstrumentHandlerTests
         Assert.Null(result);
     }
 
-    private static void SeedReferenceData(HoardContext context)
-    {
-        context.InstrumentTypes.Add(new InstrumentType { Id = 1, Name = "Stock", Colour = "#FF0000" });
-        context.Currencies.Add(new Currency { Id = "GBP", Name = "British Pound" });
-        var assetClass = new AssetClass { Id = 1, Name = "Equities", Colour = "#0000FF" };
-        assetClass.Subclasses.Add(new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK Equities", Colour = "#0000AA" });
-        context.AssetClasses.Add(assetClass);
-    }
 }

@@ -1,6 +1,7 @@
 using Hoard.Core.Application.Alerts;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Test.Shared;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Rebus.Bus;
@@ -15,11 +16,7 @@ public class AlertServiceTests : IDisposable
 
     public AlertServiceTests()
     {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new HoardContext(options);
+        _context = TestContextFactory.Create();
         _bus = new Mock<IBus>();
         _sut = new AlertService(_context, _bus.Object);
     }

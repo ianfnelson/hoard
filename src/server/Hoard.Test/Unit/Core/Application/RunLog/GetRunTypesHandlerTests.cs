@@ -1,6 +1,5 @@
 using Hoard.Core.Application.RunLog;
-using Hoard.Core.Data;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 using RunType = Hoard.Core.Domain.Entities.RunType;
 
 namespace Hoard.Test.Unit.Core.Application.RunLog;
@@ -11,7 +10,7 @@ public class GetRunTypesHandlerTests
     public async Task HandleAsync_ReturnsRunTypesOrderedByName()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.RunTypes.AddRange(
             new RunType { Id = 1, Name = "Refresh Quotes" },
             new RunType { Id = 2, Name = "Close Of Day" },
@@ -34,7 +33,7 @@ public class GetRunTypesHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetRunTypesHandler(context);
 
         var result = await handler.HandleAsync(new GetRunTypesQuery());
@@ -42,11 +41,4 @@ public class GetRunTypesHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

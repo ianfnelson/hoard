@@ -1,7 +1,6 @@
 using Hoard.Core.Application.Currencies;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.Currencies;
 
@@ -11,7 +10,7 @@ public class GetCurrenciesHandlerTests
     public async Task HandleAsync_ReturnsCurrenciesOrderedByName()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.Currencies.AddRange(
             new Currency { Id = "USD", Name = "US Dollar" },
             new Currency { Id = "GBP", Name = "British Pound" },
@@ -34,7 +33,7 @@ public class GetCurrenciesHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetCurrenciesHandler(context);
 
         var result = await handler.HandleAsync(new GetCurrenciesQuery());
@@ -42,11 +41,4 @@ public class GetCurrenciesHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

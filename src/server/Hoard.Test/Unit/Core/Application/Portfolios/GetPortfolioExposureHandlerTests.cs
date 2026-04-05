@@ -1,8 +1,7 @@
 using Hoard.Core;
 using Hoard.Core.Application.Portfolios;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -23,7 +22,7 @@ public class GetPortfolioExposureHandlerTests
     public async Task HandleAsync_PortfolioNotFound_ReturnsNull()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
 
         // Act
@@ -45,11 +44,10 @@ public class GetPortfolioExposureHandlerTests
     public async Task HandleAsync_EmptyPortfolio_ReturnsZeroValues()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
 
-        var portfolio = new Portfolio { Id = 1, Name = "Test Portfolio" };
-        context.Portfolios.Add(portfolio);
+        context.Portfolios.Add(TestData.Portfolio());
         await context.SaveChangesAsync();
 
         // Act
@@ -68,26 +66,24 @@ public class GetPortfolioExposureHandlerTests
     public async Task HandleAsync_SingleHolding_ReturnsCorrectExposure()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
 
         var today = DateOnlyHelper.TodayLocal();
 
-        // Setup taxonomy
-        var assetClass = new AssetClass { Id = 1, Name = "Equity", Colour = "#FF0000" };
-        var assetSubclass = new AssetSubclass { Id = 10, Name = "Stocks", AssetClassId = 1, Colour = "#FF5555" };
-        context.AssetClasses.Add(assetClass);
-        context.AssetSubclasses.Add(assetSubclass);
+        // Setup reference data
+        context.AssetClasses.Add(TestData.AssetClass(1, "Equity"));
+        context.AssetSubclasses.Add(TestData.AssetSubclass(10, "Stocks", 1));
+        context.InstrumentTypes.Add(TestData.InstrumentType());
+        context.Currencies.Add(TestData.Currency());
 
         // Setup portfolio and account
-        var account = new Account { Id = 1, Name = "Test Account", Colour = "#000000" };
-        var portfolio = new Portfolio { Id = 1, Name = "Test Portfolio" };
+        var account = TestData.Account();
+        var portfolio = TestData.Portfolio();
         portfolio.Accounts.Add(account);
         context.Portfolios.Add(portfolio);
 
         // Setup instrument and holding
-        var instrumentType = new InstrumentType { Id = 1, Name = "Stock", Colour = "#000000" };
-        var currency = new Currency { Id = "GBP", Name = "British Pound" };
         var instrument = new Instrument
         {
             Id = 1,
@@ -98,8 +94,6 @@ public class GetPortfolioExposureHandlerTests
             InstrumentTypeId = 1,
             CurrencyId = "GBP"
         };
-        context.InstrumentTypes.Add(instrumentType);
-        context.Currencies.Add(currency);
         context.Instruments.Add(instrument);
 
         var holding = new Holding
@@ -111,23 +105,8 @@ public class GetPortfolioExposureHandlerTests
         };
         context.Holdings.Add(holding);
 
-        // Setup valuation
-        var valuation = new HoldingValuation
-        {
-            Id = 1,
-            HoldingId = 1,
-            Value = 10000m
-        };
-        context.HoldingValuations.Add(valuation);
-
-        // Setup target allocation
-        var targetAllocation = new TargetAllocation
-        {
-            PortfolioId = 1,
-            AssetSubclassId = 10,
-            Target = 100m
-        };
-        context.TargetAllocations.Add(targetAllocation);
+        context.HoldingValuations.Add(new HoldingValuation { Id = 1, HoldingId = 1, Value = 10000m });
+        context.TargetAllocations.Add(new TargetAllocation { PortfolioId = 1, AssetSubclassId = 10, Target = 100m });
 
         await context.SaveChangesAsync();
 
@@ -162,64 +141,43 @@ public class GetPortfolioExposureHandlerTests
     public async Task HandleAsync_MultipleSubclasses_CalculatesExposureCorrectly()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
 
         var today = DateOnlyHelper.TodayLocal();
 
-        // Setup taxonomy
-        var equityClass = new AssetClass { Id = 1, Name = "Equity", Colour = "#FF0000" };
-        var bondClass = new AssetClass { Id = 2, Name = "Fixed Income", Colour = "#00FF00" };
-        var stocksSubclass = new AssetSubclass { Id = 10, Name = "Stocks", AssetClassId = 1, Colour = "#FF5555" };
-        var bondsSubclass = new AssetSubclass { Id = 20, Name = "Bonds", AssetClassId = 2, Colour = "#55FF55" };
-        context.AssetClasses.AddRange(equityClass, bondClass);
-        context.AssetSubclasses.AddRange(stocksSubclass, bondsSubclass);
+        // Setup reference data
+        context.AssetClasses.AddRange(
+            TestData.AssetClass(1, "Equity"),
+            TestData.AssetClass(2, "Fixed Income", "#00FF00"));
+        context.AssetSubclasses.AddRange(
+            TestData.AssetSubclass(10, "Stocks", 1),
+            TestData.AssetSubclass(20, "Bonds", 2, "#55FF55"));
+        context.InstrumentTypes.Add(TestData.InstrumentType());
+        context.Currencies.Add(TestData.Currency());
 
         // Setup portfolio and account
-        var account = new Account { Id = 1, Name = "Test Account", Colour = "#000000" };
-        var portfolio = new Portfolio { Id = 1, Name = "Test Portfolio" };
+        var account = TestData.Account();
+        var portfolio = TestData.Portfolio();
         portfolio.Accounts.Add(account);
         context.Portfolios.Add(portfolio);
 
-        var instrumentType = new InstrumentType { Id = 1, Name = "Fund", Colour = "#000000" };
-        var currency = new Currency { Id = "GBP", Name = "British Pound" };
-        context.InstrumentTypes.Add(instrumentType);
-        context.Currencies.Add(currency);
-
-        var stockInstrument = new Instrument
-        {
-            Id = 1,
-            Name = "Stock Fund",
-            Ticker = "STK",
-            AssetSubclassId = 10,
-            InstrumentTypeId = 1,
-            CurrencyId = "GBP"
-        };
-        var bondInstrument = new Instrument
-        {
-            Id = 2,
-            Name = "Bond Fund",
-            Ticker = "BND",
-            AssetSubclassId = 20,
-            InstrumentTypeId = 1,
-            CurrencyId = "GBP"
-        };
-        context.Instruments.AddRange(stockInstrument, bondInstrument);
+        context.Instruments.AddRange(
+            new Instrument { Id = 1, Name = "Stock Fund", Ticker = "STK", AssetSubclassId = 10, InstrumentTypeId = 1, CurrencyId = "GBP" },
+            new Instrument { Id = 2, Name = "Bond Fund", Ticker = "BND", AssetSubclassId = 20, InstrumentTypeId = 1, CurrencyId = "GBP" });
 
         // Setup holdings and valuations
-        var stockHolding = new Holding { Id = 1, AccountId = 1, InstrumentId = 1, AsOfDate = today };
-        var bondHolding = new Holding { Id = 2, AccountId = 1, InstrumentId = 2, AsOfDate = today };
-        context.Holdings.AddRange(stockHolding, bondHolding);
+        context.Holdings.AddRange(
+            new Holding { Id = 1, AccountId = 1, InstrumentId = 1, AsOfDate = today },
+            new Holding { Id = 2, AccountId = 1, InstrumentId = 2, AsOfDate = today });
         context.HoldingValuations.AddRange(
             new HoldingValuation { Id = 1, HoldingId = 1, Value = 60000m },
-            new HoldingValuation { Id = 2, HoldingId = 2, Value = 40000m }
-        );
+            new HoldingValuation { Id = 2, HoldingId = 2, Value = 40000m });
 
         // Setup target allocations (50/50 split)
         context.TargetAllocations.AddRange(
             new TargetAllocation { PortfolioId = 1, AssetSubclassId = 10, Target = 50m },
-            new TargetAllocation { PortfolioId = 1, AssetSubclassId = 20, Target = 50m }
-        );
+            new TargetAllocation { PortfolioId = 1, AssetSubclassId = 20, Target = 50m });
 
         await context.SaveChangesAsync();
 
@@ -260,29 +218,24 @@ public class GetPortfolioExposureHandlerTests
     public async Task HandleAsync_OrdersSubclassesByPercentageDescending()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
 
         var today = DateOnlyHelper.TodayLocal();
 
-        // Setup taxonomy
-        var assetClass = new AssetClass { Id = 1, Name = "Mixed", Colour = "#000000" };
-        context.AssetClasses.Add(assetClass);
+        // Setup reference data
+        context.AssetClasses.Add(TestData.AssetClass(1, "Mixed", "#000000"));
         context.AssetSubclasses.AddRange(
-            new AssetSubclass { Id = 1, Name = "Large Holdings", AssetClassId = 1, Colour = "#111" },
-            new AssetSubclass { Id = 2, Name = "Medium Holdings", AssetClassId = 1, Colour = "#222" },
-            new AssetSubclass { Id = 3, Name = "Small Holdings", AssetClassId = 1, Colour = "#333" }
-        );
+            TestData.AssetSubclass(1, "Large Holdings", 1, "#111"),
+            TestData.AssetSubclass(2, "Medium Holdings", 1, "#222"),
+            TestData.AssetSubclass(3, "Small Holdings", 1, "#333"));
+        context.InstrumentTypes.Add(TestData.InstrumentType());
+        context.Currencies.Add(TestData.Currency());
 
-        var account = new Account { Id = 1, Name = "Test Account", Colour = "#000000" };
-        var portfolio = new Portfolio { Id = 1, Name = "Test Portfolio" };
+        var account = TestData.Account();
+        var portfolio = TestData.Portfolio();
         portfolio.Accounts.Add(account);
         context.Portfolios.Add(portfolio);
-
-        var instrumentType = new InstrumentType { Id = 1, Name = "Fund", Colour = "#000000" };
-        var currency = new Currency { Id = "GBP", Name = "British Pound" };
-        context.InstrumentTypes.Add(instrumentType);
-        context.Currencies.Add(currency);
 
         // Create instruments with different values
         for (int i = 1; i <= 3; i++)
@@ -297,16 +250,14 @@ public class GetPortfolioExposureHandlerTests
                 CurrencyId = "GBP"
             });
 
-            var holding = new Holding { Id = i, AccountId = 1, InstrumentId = i, AsOfDate = today };
-            context.Holdings.Add(holding);
+            context.Holdings.Add(new Holding { Id = i, AccountId = 1, InstrumentId = i, AsOfDate = today });
         }
 
         // Values: Large=50k, Medium=30k, Small=20k
         context.HoldingValuations.AddRange(
             new HoldingValuation { Id = 1, HoldingId = 1, Value = 50000m },
             new HoldingValuation { Id = 2, HoldingId = 2, Value = 30000m },
-            new HoldingValuation { Id = 3, HoldingId = 3, Value = 20000m }
-        );
+            new HoldingValuation { Id = 3, HoldingId = 3, Value = 20000m });
 
         await context.SaveChangesAsync();
 
@@ -321,14 +272,5 @@ public class GetPortfolioExposureHandlerTests
         Assert.Equal("Large Holdings", result.AssetSubclasses[0].Name);
         Assert.Equal("Medium Holdings", result.AssetSubclasses[1].Name);
         Assert.Equal("Small Holdings", result.AssetSubclasses[2].Name);
-    }
-
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        return new HoardContext(options);
     }
 }

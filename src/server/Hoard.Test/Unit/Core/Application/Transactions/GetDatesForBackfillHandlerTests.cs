@@ -1,8 +1,5 @@
 using Hoard.Core.Application.Transactions;
-using Hoard.Core.Data;
-using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hoard.Test.Unit.Core.Application.Transactions;
 
@@ -52,7 +49,7 @@ public class GetDatesForBackfillHandlerTests
         // Arrange
         await using var context = TestContextFactory.Create();
         context.Accounts.Add(TestData.Account());
-        context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         context.Transactions.AddRange(
             TestData.BuyTransaction(date: new DateOnly(2024, 3, 10)),
             TestData.BuyTransaction(date: new DateOnly(2024, 3, 5))
@@ -70,11 +67,4 @@ public class GetDatesForBackfillHandlerTests
         Assert.Equal(3, result.Count);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

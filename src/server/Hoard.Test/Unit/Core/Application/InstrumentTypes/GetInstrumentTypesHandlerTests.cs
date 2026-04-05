@@ -1,7 +1,6 @@
 using Hoard.Core.Application.InstrumentTypes;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.InstrumentTypes;
 
@@ -11,7 +10,7 @@ public class GetInstrumentTypesHandlerTests
     public async Task HandleAsync_ReturnsInstrumentTypesOrderedByName()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.InstrumentTypes.AddRange(
             new InstrumentType { Id = 1, Name = "Stock", Colour = "#FF0000" },
             new InstrumentType { Id = 2, Name = "ETF", Colour = "#00FF00" },
@@ -34,7 +33,7 @@ public class GetInstrumentTypesHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetInstrumentTypesHandler(context);
 
         var result = await handler.HandleAsync(new GetInstrumentTypesQuery());
@@ -42,11 +41,4 @@ public class GetInstrumentTypesHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }
