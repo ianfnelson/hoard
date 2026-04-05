@@ -16,7 +16,7 @@ const router = createRouter({
           path: 'portfolios',
           redirect: async () => {
             const navStore = useNavigationStore()
-            if (!navStore.portfolios.length) await navStore.loadPortfolios()
+            await navStore.loadPortfolios()
             return navStore.portfolios.length
               ? `/portfolios/${navStore.portfolios[0].id}`
               : '/instruments'
