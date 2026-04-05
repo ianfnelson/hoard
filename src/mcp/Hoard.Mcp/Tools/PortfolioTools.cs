@@ -21,8 +21,8 @@ public static class PortfolioTools
     public static async Task<string> GetPortfolioPositions(
         HoardApiClient api,
         [Description("The portfolio ID")] int id,
-        [Description("Filter by open/closed positions. True for open only, false for closed only, omit for all.")] bool? isOpen,
-        CancellationToken ct) =>
+        [Description("Filter by open/closed positions. True for open only, false for closed only, omit for all.")] bool? isOpen = null,
+        CancellationToken ct = default) =>
         await api.GetAsync($"api/portfolios/{id}/positions" + HoardApiClient.BuildQuery(("isOpen", isOpen)), ct);
 
     [McpServerTool, Description("Get asset class and subclass exposure breakdown for a portfolio, including rebalance actions. Each rebalance action has a rebalanceAction field with value 'Add' (buy more of this subclass) or 'Reduce' (sell some of this subclass), and an amount in the portfolio's base currency.")]
@@ -43,19 +43,19 @@ public static class PortfolioTools
     public static async Task<string> GetPortfolioValuation(
         HoardApiClient api,
         [Description("The portfolio ID")] int id,
-        [Description("Start date for comparison in yyyy-MM-dd format. Omit for current valuation only.")] string? from,
-        [Description("End date in yyyy-MM-dd format. Defaults to today.")] string? to,
-        CancellationToken ct) =>
+        [Description("Start date for comparison in yyyy-MM-dd format. Omit for current valuation only.")] string? from = null,
+        [Description("End date in yyyy-MM-dd format. Defaults to today.")] string? to = null,
+        CancellationToken ct = default) =>
         await api.GetAsync($"api/portfolios/{id}/valuation" + HoardApiClient.BuildQuery(("from", from), ("to", to)), ct);
 
     [McpServerTool, Description("Get a time series of portfolio valuations over a date range. Valuation is total market value (price × units held, summed across holdings), useful for charting portfolio value over time.")]
     public static async Task<string> GetPortfolioValuationSeries(
         HoardApiClient api,
         [Description("The portfolio ID")] int id,
-        [Description("Start date in yyyy-MM-dd format")] string? from,
-        [Description("End date in yyyy-MM-dd format")] string? to,
-        [Description("Disaggregate the series by a dimension. Valid values: 'accounts', 'asset-classes', 'asset-subclasses', 'instrument-types'. Omit for a single total series.")] string? disaggregateBy,
-        CancellationToken ct) =>
+        [Description("Start date in yyyy-MM-dd format")] string? from = null,
+        [Description("End date in yyyy-MM-dd format")] string? to = null,
+        [Description("Disaggregate the series by a dimension. Valid values: 'accounts', 'asset-classes', 'asset-subclasses', 'instrument-types'. Omit for a single total series.")] string? disaggregateBy = null,
+        CancellationToken ct = default) =>
         await api.GetAsync($"api/portfolios/{id}/valuation-series" + HoardApiClient.BuildQuery(("from", from), ("to", to), ("disaggregateBy", disaggregateBy)), ct);
 
     [McpServerTool, Description("Get a breakdown of instrument types held in a portfolio (e.g. shares, funds, ETFs) with counts and values.")]

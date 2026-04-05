@@ -9,9 +9,9 @@ public static class AccountTools
     [McpServerTool, Description("List accounts. An account represents a real account held with a financial institution (e.g. an ISA, SIPP, or trading account). Transactions belong to accounts. Accounts can be grouped into portfolios for cross-account analysis and reporting. Returns id, name, colour, and active status.")]
     public static async Task<string> GetAccounts(
         HoardApiClient api,
-        [Description("Filter by portfolio ID")] int? portfolioId,
-        [Description("Filter by active status (true/false)")] bool? isActive,
-        CancellationToken ct) =>
+        [Description("Filter by portfolio ID")] int? portfolioId = null,
+        [Description("Filter by active status (true/false)")] bool? isActive = null,
+        CancellationToken ct = default) =>
         await api.GetAsync("api/accounts" + HoardApiClient.BuildQuery(
             ("PortfolioId", portfolioId), ("IsActive", isActive)), ct);
 
