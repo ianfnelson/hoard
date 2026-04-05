@@ -9,13 +9,13 @@ public static class InstrumentTools
     [McpServerTool, Description("Search and list instruments (stocks, funds, ETFs, etc.). Results are paged.")]
     public static async Task<string> GetInstruments(
         HoardApiClient api,
-        [Description("Search by name or ticker")] string? search,
-        [Description("Filter by instrument type ID (use GetInstrumentTypes for valid IDs)")] int? instrumentTypeId,
-        [Description("Filter by asset class ID (use GetAssetClasses for valid IDs)")] int? assetClassId,
-        [Description("Filter by asset subclass ID")] int? assetSubclassId,
-        [Description("Page number (default 1)")] int? pageNumber,
-        [Description("Page size (default 10)")] int? pageSize,
-        CancellationToken ct) =>
+        [Description("Search by name or ticker")] string? search = null,
+        [Description("Filter by instrument type ID (use GetInstrumentTypes for valid IDs)")] int? instrumentTypeId = null,
+        [Description("Filter by asset class ID (use GetAssetClasses for valid IDs)")] int? assetClassId = null,
+        [Description("Filter by asset subclass ID")] int? assetSubclassId = null,
+        [Description("Page number (default 1)")] int? pageNumber = null,
+        [Description("Page size (default 10)")] int? pageSize = null,
+        CancellationToken ct = default) =>
         await api.GetAsync("api/instruments" + HoardApiClient.BuildQuery(
             ("Search", search), ("InstrumentTypeId", instrumentTypeId), ("AssetClassId", assetClassId),
             ("AssetSubclassId", assetSubclassId), ("PageNumber", pageNumber), ("PageSize", pageSize)), ct);
@@ -35,26 +35,26 @@ public static class InstrumentTools
     public static async Task<string> GetInstrumentPrices(
         HoardApiClient api,
         [Description("The instrument ID")] int id,
-        [Description("Page number (default 1)")] int? pageNumber,
-        [Description("Page size (default 10)")] int? pageSize,
-        CancellationToken ct) =>
+        [Description("Page number (default 1)")] int? pageNumber = null,
+        [Description("Page size (default 10)")] int? pageSize = null,
+        CancellationToken ct = default) =>
         await api.GetAsync($"api/instruments/{id}/prices" + HoardApiClient.BuildQuery(("pageNumber", pageNumber), ("pageSize", pageSize)), ct);
 
     [McpServerTool, Description("Get a simplified price time series for an instrument over a date range. Returns date and closing price only, suitable for charting price trends.")]
     public static async Task<string> GetInstrumentPriceSeries(
         HoardApiClient api,
         [Description("The instrument ID")] int id,
-        [Description("Start date in yyyy-MM-dd format")] string? from,
-        [Description("End date in yyyy-MM-dd format")] string? to,
-        CancellationToken ct) =>
+        [Description("Start date in yyyy-MM-dd format")] string? from = null,
+        [Description("End date in yyyy-MM-dd format")] string? to = null,
+        CancellationToken ct = default) =>
         await api.GetAsync($"api/instruments/{id}/price-series" + HoardApiClient.BuildQuery(("from", from), ("to", to)), ct);
 
     [McpServerTool, Description("Get a valuation time series for an instrument over a date range. Valuation is market value (price × units held), showing how the value of your holdings has changed over time.")]
     public static async Task<string> GetInstrumentValuationSeries(
         HoardApiClient api,
         [Description("The instrument ID")] int id,
-        [Description("Start date in yyyy-MM-dd format")] string? from,
-        [Description("End date in yyyy-MM-dd format")] string? to,
-        CancellationToken ct) =>
+        [Description("Start date in yyyy-MM-dd format")] string? from = null,
+        [Description("End date in yyyy-MM-dd format")] string? to = null,
+        CancellationToken ct = default) =>
         await api.GetAsync($"api/instruments/{id}/valuation-series" + HoardApiClient.BuildQuery(("from", from), ("to", to)), ct);
 }

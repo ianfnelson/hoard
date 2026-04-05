@@ -9,15 +9,15 @@ public static class TransactionTools
     [McpServerTool, Description("Search and list transactions. Results are paged. Can filter by date range, account, instrument, or transaction type.")]
     public static async Task<string> GetTransactions(
         HoardApiClient api,
-        [Description("Filter from date in yyyy-MM-dd format")] string? fromDate,
-        [Description("Filter to date in yyyy-MM-dd format")] string? toDate,
-        [Description("Filter by account ID (use GetAccounts to find valid IDs)")] int? accountId,
-        [Description("Filter by instrument ID")] int? instrumentId,
-        [Description("Filter by transaction type ID (use GetTransactionTypes for valid IDs)")] int? transactionTypeId,
-        [Description("Search text")] string? search,
-        [Description("Page number (default 1)")] int? pageNumber,
-        [Description("Page size (default 10)")] int? pageSize,
-        CancellationToken ct) =>
+        [Description("Filter from date in yyyy-MM-dd format")] string? fromDate = null,
+        [Description("Filter to date in yyyy-MM-dd format")] string? toDate = null,
+        [Description("Filter by account ID (use GetAccounts to find valid IDs)")] int? accountId = null,
+        [Description("Filter by instrument ID")] int? instrumentId = null,
+        [Description("Filter by transaction type ID (use GetTransactionTypes for valid IDs)")] int? transactionTypeId = null,
+        [Description("Search text")] string? search = null,
+        [Description("Page number (default 1)")] int? pageNumber = null,
+        [Description("Page size (default 10)")] int? pageSize = null,
+        CancellationToken ct = default) =>
         await api.GetAsync("api/transactions" + HoardApiClient.BuildQuery(
             ("FromDate", fromDate), ("ToDate", toDate), ("AccountId", accountId),
             ("InstrumentId", instrumentId), ("TransactionTypeId", transactionTypeId),
@@ -34,19 +34,19 @@ public static class TransactionTools
     public static async Task<string> CreateTransaction(
         HoardApiClient api,
         [Description("The account ID (use GetAccounts to find valid IDs)")] int accountId,
-        [Description("The instrument ID (nullable for cash-only transactions like deposits)")] int? instrumentId,
         [Description("The transaction type ID (use GetTransactionTypes for valid IDs)")] int transactionTypeId,
         [Description("Transaction date in yyyy-MM-dd format")] string date,
-        [Description("Number of units/shares")] double? units,
-        [Description("Price per unit")] double? price,
-        [Description("Total transaction value")] double? value,
-        [Description("Optional notes")] string? notes,
-        [Description("Contract note reference")] string? contractNoteReference,
-        [Description("Dealing charge amount")] double? dealingCharge,
-        [Description("FX charge amount")] double? fxCharge,
-        [Description("Stamp duty amount")] double? stampDuty,
-        [Description("PTM levy amount")] double? ptmLevy,
-        CancellationToken ct) =>
+        [Description("The instrument ID (nullable for cash-only transactions like deposits)")] int? instrumentId = null,
+        [Description("Number of units/shares")] double? units = null,
+        [Description("Price per unit")] double? price = null,
+        [Description("Total transaction value")] double? value = null,
+        [Description("Optional notes")] string? notes = null,
+        [Description("Contract note reference")] string? contractNoteReference = null,
+        [Description("Dealing charge amount")] double? dealingCharge = null,
+        [Description("FX charge amount")] double? fxCharge = null,
+        [Description("Stamp duty amount")] double? stampDuty = null,
+        [Description("PTM levy amount")] double? ptmLevy = null,
+        CancellationToken ct = default) =>
         await api.PostAsync("api/transactions", new
         {
             accountId,
@@ -69,19 +69,19 @@ public static class TransactionTools
         HoardApiClient api,
         [Description("The transaction ID to update")] int id,
         [Description("The account ID (use GetAccounts to find valid IDs)")] int accountId,
-        [Description("The instrument ID (nullable for cash-only transactions)")] int? instrumentId,
         [Description("The transaction type ID")] int transactionTypeId,
         [Description("Transaction date in yyyy-MM-dd format")] string date,
-        [Description("Number of units/shares")] double? units,
-        [Description("Price per unit")] double? price,
-        [Description("Total transaction value")] double? value,
-        [Description("Optional notes")] string? notes,
-        [Description("Contract note reference")] string? contractNoteReference,
-        [Description("Dealing charge amount")] double? dealingCharge,
-        [Description("FX charge amount")] double? fxCharge,
-        [Description("Stamp duty amount")] double? stampDuty,
-        [Description("PTM levy amount")] double? ptmLevy,
-        CancellationToken ct) =>
+        [Description("The instrument ID (nullable for cash-only transactions)")] int? instrumentId = null,
+        [Description("Number of units/shares")] double? units = null,
+        [Description("Price per unit")] double? price = null,
+        [Description("Total transaction value")] double? value = null,
+        [Description("Optional notes")] string? notes = null,
+        [Description("Contract note reference")] string? contractNoteReference = null,
+        [Description("Dealing charge amount")] double? dealingCharge = null,
+        [Description("FX charge amount")] double? fxCharge = null,
+        [Description("Stamp duty amount")] double? stampDuty = null,
+        [Description("PTM levy amount")] double? ptmLevy = null,
+        CancellationToken ct = default) =>
         await api.PutAsync($"api/transactions/{id}", new
         {
             accountId,
