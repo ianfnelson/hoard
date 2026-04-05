@@ -48,12 +48,15 @@ await app.ApplyMigrationsAndSeedAsync();
 
 app.UsePathBase("/api");
 
-app.MapOpenApi();
-
-app.UseSwaggerUI(options =>
+if (app.Environment.IsDevelopment())
 {
-    options.SwaggerEndpoint("../openapi/v1.json", "v1");
-});
+    app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("../openapi/v1.json", "v1");
+    });
+}
 
 if (!app.Environment.IsDevelopment())
 {
