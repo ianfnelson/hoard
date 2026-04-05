@@ -34,7 +34,8 @@ public class BackfillHoldingsSagaTests
         };
 
         _mediator.Setup(m => m.QueryAsync<GetDatesForBackfillQuery, IReadOnlyList<DateOnly>>(
-                It.IsAny<GetDatesForBackfillQuery>(), default))
+                It.Is<GetDatesForBackfillQuery>(q =>
+                    q.StartDate == new DateOnly(2024, 6, 13) && q.EndDate == new DateOnly(2024, 6, 15)), default))
             .ReturnsAsync(dates);
 
         await _saga.Handle(new StartBackfillHoldingsSagaCommand(runId, PipelineMode.Backfill, new DateOnly(2024, 6, 13), new DateOnly(2024, 6, 15)));
@@ -42,7 +43,10 @@ public class BackfillHoldingsSagaTests
         Assert.Equal(runId, _saga.Data.HoldingsRunId);
         Assert.Equal(3, _saga.Data.PendingDates.Count);
 
-        _mediator.Verify(m => m.SendAsync(It.IsAny<DispatchBackfillHoldingsCommand>(), default), Times.Once);
+        _mediator.Verify(m => m.SendAsync(It.Is<DispatchBackfillHoldingsCommand>(c =>
+            c.HoldingsRunId == runId &&
+            c.PipelineMode == PipelineMode.Backfill &&
+            c.Dates.Count == 3), default), Times.Once);
     }
 
     [Fact]
@@ -55,7 +59,7 @@ public class BackfillHoldingsSagaTests
 
         await _saga.Handle(new HoldingsCalculatedEvent(runId, PipelineMode.Backfill, new DateOnly(2024, 6, 14)));
 
-        Assert.Single(_saga.Data.PendingDates);
+        Assert.DoesNotContain(new DateOnly(2024, 6, 14), _saga.Data.PendingDates);
         Assert.Contains(new DateOnly(2024, 6, 15), _saga.Data.PendingDates);
         _bus.Verify(b => b.Publish(It.IsAny<HoldingsBackfilledEvent>(), null), Times.Never);
     }

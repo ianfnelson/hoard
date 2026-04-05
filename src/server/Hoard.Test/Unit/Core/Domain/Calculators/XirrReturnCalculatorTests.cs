@@ -138,22 +138,25 @@ public class XirrReturnCalculatorTests
         Assert.Equal(13.2m, result.Value, 1);
     }
 
-    [Fact]
-    public void Calculate_PositionScopeWithDividend_CalculatesXirr()
+    [Theory]
+    [InlineData(TransactionType.IncomeDividend, 50, 1050, 10.3)]
+    [InlineData(TransactionType.IncomeLoyaltyBonus, 25, 1025, 5.1)]
+    public void Calculate_PositionScopeWithIncome_CalculatesXirr(
+        int transactionTypeId, decimal incomeValue, decimal endValue, decimal expectedReturn)
     {
         var transactions = new List<Transaction>
         {
             new()
             {
-                TransactionTypeId = TransactionType.IncomeDividend,
-                Value = 50m,
+                TransactionTypeId = transactionTypeId,
+                Value = incomeValue,
                 Date = new DateOnly(2023, 7, 1)
             }
         };
 
         var result = _calculator.Calculate(
             startValue: 1000m,
-            endValue: 1050m,
+            endValue: endValue,
             startDate: new DateOnly(2023, 1, 1),
             endDate: new DateOnly(2024, 1, 1),
             periodTransactions: transactions,
@@ -162,36 +165,7 @@ public class XirrReturnCalculatorTests
         );
 
         Assert.NotNull(result);
-        // 1000 start + 50 dividend at mid-year + 1050 end = ~10.3% annualised
-        Assert.Equal(10.3m, result.Value, 1);
-    }
-
-    [Fact]
-    public void Calculate_PositionScopeWithLoyaltyBonus_CalculatesXirr()
-    {
-        var transactions = new List<Transaction>
-        {
-            new()
-            {
-                TransactionTypeId = TransactionType.IncomeLoyaltyBonus,
-                Value = 25m,
-                Date = new DateOnly(2023, 7, 1)
-            }
-        };
-
-        var result = _calculator.Calculate(
-            startValue: 1000m,
-            endValue: 1025m,
-            startDate: new DateOnly(2023, 1, 1),
-            endDate: new DateOnly(2024, 1, 1),
-            periodTransactions: transactions,
-            scope: PerformanceScope.Position,
-            annualised: true
-        );
-
-        Assert.NotNull(result);
-        // 1000 start + 25 loyalty bonus at mid-year + 1025 end = ~5.1% annualised
-        Assert.Equal(5.1m, result.Value, 1);
+        Assert.Equal(expectedReturn, result.Value, 1);
     }
 
     [Fact]

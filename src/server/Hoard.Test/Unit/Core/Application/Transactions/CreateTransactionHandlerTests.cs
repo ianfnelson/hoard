@@ -75,7 +75,15 @@ public class CreateTransactionHandlerTests : IDisposable
         var result = await _handler.HandleAsync(command);
 
         // Assert
-        Assert.True(result > 0);
+        var persisted = await _context.Transactions.FindAsync(result);
+        Assert.NotNull(persisted);
+        Assert.Equal(account.Id, persisted.AccountId);
+        Assert.Equal(instrumentId, persisted.InstrumentId);
+        Assert.Equal(TransactionType.Buy, persisted.TransactionTypeId);
+        Assert.Equal(transactionDate, persisted.Date);
+        Assert.Equal(transactionPrice, persisted.Price);
+        Assert.Equal(10m, persisted.Units);
+        Assert.Equal(-1005m, persisted.Value);
 
         var createdPrice = await _context.Prices
             .FirstOrDefaultAsync(p => p.InstrumentId == instrumentId && p.AsOfDate == transactionDate);

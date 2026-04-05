@@ -49,11 +49,10 @@ public class AlertServiceTests : IDisposable
     {
         var request = MakeRequest("dup-no-publish");
         await _sut.TryRaiseAsync(request);
-        _bus.Invocations.Clear();
 
         await _sut.TryRaiseAsync(request);
 
-        _bus.Verify(b => b.Publish(It.IsAny<object>(), It.IsAny<IDictionary<string, string>>()), Times.Never);
+        _bus.Verify(b => b.Publish(It.IsAny<object>(), It.IsAny<IDictionary<string, string>>()), Times.Once);
     }
 
     [Fact]

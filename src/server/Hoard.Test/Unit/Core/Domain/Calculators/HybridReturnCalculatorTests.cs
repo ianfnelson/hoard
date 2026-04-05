@@ -20,30 +20,18 @@ public class HybridReturnCalculatorTests
         _calculator = new HybridReturnCalculator(_mockLogger.Object, _simpleCalculator, _xirrCalculator);
     }
 
-    [Fact]
-    public void Calculate_ZeroDays_ReturnsNull()
+    [Theory]
+    [InlineData(2023, 1, 1, 2023, 1, 1)]     // zero days
+    [InlineData(2023, 12, 31, 2023, 1, 1)]   // negative days
+    public void Calculate_ZeroOrNegativeDays_ReturnsNull(
+        int startYear, int startMonth, int startDay,
+        int endYear, int endMonth, int endDay)
     {
         var result = _calculator.Calculate(
             startValue: 1000m,
             endValue: 1100m,
-            startDate: new DateOnly(2023, 1, 1),
-            endDate: new DateOnly(2023, 1, 1),
-            periodTransactions: new List<Transaction>(),
-            scope: PerformanceScope.Portfolio,
-            annualised: false
-        );
-
-        Assert.Null(result);
-    }
-
-    [Fact]
-    public void Calculate_NegativeDays_ReturnsNull()
-    {
-        var result = _calculator.Calculate(
-            startValue: 1000m,
-            endValue: 1100m,
-            startDate: new DateOnly(2023, 12, 31),
-            endDate: new DateOnly(2023, 1, 1),
+            startDate: new DateOnly(startYear, startMonth, startDay),
+            endDate: new DateOnly(endYear, endMonth, endDay),
             periodTransactions: new List<Transaction>(),
             scope: PerformanceScope.Portfolio,
             annualised: false
@@ -68,21 +56,23 @@ public class HybridReturnCalculatorTests
         Assert.Null(result);
     }
 
-    [Fact]
-    public void Calculate_LessThan30DaysNotAnnualised_UsesSimpleCalculator()
+    [Theory]
+    [InlineData(2023, 1, 29)]  // 28 days
+    [InlineData(2023, 1, 30)]  // 29 days
+    public void Calculate_LessThan30DaysNotAnnualised_UsesSimpleCalculator(
+        int endYear, int endMonth, int endDay)
     {
         var result = _calculator.Calculate(
             startValue: 1000m,
             endValue: 1100m,
             startDate: new DateOnly(2023, 1, 1),
-            endDate: new DateOnly(2023, 1, 29),
+            endDate: new DateOnly(endYear, endMonth, endDay),
             periodTransactions: new List<Transaction>(),
             scope: PerformanceScope.Portfolio,
             annualised: false
         );
 
         Assert.NotNull(result);
-        // Simple return: (1100 - 1000) / 1000 * 100 = 10%
         Assert.Equal(10m, result.Value, 2);
     }
 
@@ -270,23 +260,6 @@ public class HybridReturnCalculatorTests
         Assert.Equal(0.9m, result.Value, 1);
     }
 
-    [Fact]
-    public void Calculate_29Days_UsesSimpleCalculator()
-    {
-        var result = _calculator.Calculate(
-            startValue: 1000m,
-            endValue: 1100m,
-            startDate: new DateOnly(2023, 1, 1),
-            endDate: new DateOnly(2023, 1, 30),
-            periodTransactions: new List<Transaction>(),
-            scope: PerformanceScope.Portfolio,
-            annualised: false
-        );
-
-        Assert.NotNull(result);
-        // Simple return: (1100 - 1000) / 1000 * 100 = 10%
-        Assert.Equal(10m, result.Value, 2);
-    }
 
     [Fact]
     public void Calculate_LongPeriodWithNoTransactions_UsesXirr()
