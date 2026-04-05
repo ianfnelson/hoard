@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useNavigationStore } from '@/stores/navigationStore'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,9 +14,12 @@ const router = createRouter({
         },
         {
           path: 'portfolios',
-          redirect: () => {
-            // TODO: Redirect to first portfolio from store
-            return '/portfolios/3'
+          redirect: async () => {
+            const navStore = useNavigationStore()
+            if (!navStore.portfolios.length) await navStore.loadPortfolios()
+            return navStore.portfolios.length
+              ? `/portfolios/${navStore.portfolios[0].id}`
+              : '/instruments'
           },
         },
         {
