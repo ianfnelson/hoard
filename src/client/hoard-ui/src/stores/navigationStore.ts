@@ -10,14 +10,18 @@ export const useNavigationStore = defineStore('navigation', () => {
   const accounts = ref<AccountSummaryDto[]>([])
   const isLoading = ref(false)
   const lastUpdated = ref<Date | null>(null)
+  const portfoliosLoaded = ref(false)
   const accountsLoaded = ref(false)
   const error = ref<string | null>(null)
 
   async function loadPortfolios() {
+    if (portfoliosLoaded.value) return
+
     isLoading.value = true
     error.value = null
     try {
       portfolios.value = await getPortfolioList()
+      portfoliosLoaded.value = true
       lastUpdated.value = new Date()
     } catch (e) {
       error.value = 'Failed to load portfolios'
@@ -47,6 +51,7 @@ export const useNavigationStore = defineStore('navigation', () => {
 
   async function refresh() {
     lastUpdated.value = null
+    portfoliosLoaded.value = false
     accountsLoaded.value = false
     await Promise.all([loadPortfolios(), loadAccounts()])
   }

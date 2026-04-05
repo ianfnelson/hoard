@@ -42,6 +42,16 @@ describe('navigationStore', () => {
       expect(store.error).toBeNull()
     })
 
+    it('should not reload if already loaded', async () => {
+      vi.mocked(portfoliosApi.getPortfolioList).mockResolvedValue([])
+
+      const store = useNavigationStore()
+      await store.loadPortfolios()
+      await store.loadPortfolios()
+
+      expect(portfoliosApi.getPortfolioList).toHaveBeenCalledOnce()
+    })
+
     it('should handle error', async () => {
       vi.mocked(portfoliosApi.getPortfolioList).mockRejectedValue(new Error('Network error'))
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -104,13 +114,15 @@ describe('navigationStore', () => {
       const store = useNavigationStore()
 
       // First load to set cache flags
+      await store.loadPortfolios()
       await store.loadAccounts()
+      expect(portfoliosApi.getPortfolioList).toHaveBeenCalledOnce()
       expect(accountsApi.getAccounts).toHaveBeenCalledOnce()
 
-      // Refresh should reload even though cache was set
+      // Refresh should reload even though caches were set
       await store.refresh()
+      expect(portfoliosApi.getPortfolioList).toHaveBeenCalledTimes(2)
       expect(accountsApi.getAccounts).toHaveBeenCalledTimes(2)
-      expect(portfoliosApi.getPortfolioList).toHaveBeenCalledOnce()
     })
   })
 })
