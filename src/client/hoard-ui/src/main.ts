@@ -6,8 +6,6 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
-import VueApexCharts from 'vue3-apexcharts'
-
 import router from './router'
 import App from './App.vue'
 import './styles/global.css'
@@ -46,4 +44,4 @@ const vuetify = createVuetify({
   },
 })
 
-createApp(App).use(createPinia()).use(router).use(vuetify).use(VueApexCharts).mount('#app')
+createApp(App).use(createPinia()).use(router).use(vuetify).mount('#app')

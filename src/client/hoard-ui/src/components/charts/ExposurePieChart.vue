@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import apexchart from 'vue3-apexcharts/core'
 import { useTheme } from 'vuetify'
 
 export interface PieChartData {
