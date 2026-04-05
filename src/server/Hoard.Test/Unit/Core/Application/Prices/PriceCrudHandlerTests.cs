@@ -72,7 +72,8 @@ public class UpdatePriceCommandHandlerTests : IDisposable
         await handler.HandleAsync(new UpdatePriceCommand(price.Id, dto));
 
         // Assert
-        _bus.Verify(b => b.Publish(It.IsAny<PriceChangedEvent>(), null), Times.Once);
+        _bus.Verify(b => b.Publish(It.Is<PriceChangedEvent>(e =>
+            e.InstrumentId == 1 && e.AsOfDate == new DateOnly(2024, 1, 15)), null), Times.Once);
     }
 
     [Fact]
@@ -109,7 +110,7 @@ public class DeletePriceCommandHandlerTests : IDisposable
         // Assert
         Assert.Equal(0, await _context.Prices.CountAsync());
         _bus.Verify(b => b.Publish(It.Is<PriceChangedEvent>(e =>
-            e.InstrumentId == 1), null), Times.Once);
+            e.InstrumentId == 1 && e.AsOfDate == new DateOnly(2024, 1, 15)), null), Times.Once);
     }
 
     [Fact]

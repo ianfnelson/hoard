@@ -63,8 +63,11 @@ public class CostBasisCalculatorTests
         Assert.Equal(0m, realisedGain);
     }
 
-    [Fact]
-    public void Calculate_BuyAndSell_CalculatesRealisedGain()
+    [Theory]
+    [InlineData(600, 500, 100)]    // sell at profit (£12/unit)
+    [InlineData(400, 500, -100)]   // sell at loss (£8/unit)
+    public void Calculate_BuyAndSell_CalculatesRealisedGain(
+        decimal sellValue, decimal expectedCostBasis, decimal expectedGain)
     {
         var transactions = new List<Transaction>
         {
@@ -79,45 +82,15 @@ public class CostBasisCalculatorTests
             {
                 TransactionTypeId = TransactionType.Sell,
                 Units = -50m,
-                Value = 600m, // £12 per unit
+                Value = sellValue,
                 Date = new DateOnly(2023, 2, 1)
             }
         };
 
         var (costBasis, realisedGain) = CostBasisCalculator.Calculate(transactions);
 
-        // 50 units remaining at £10 = £500 cost basis
-        Assert.Equal(500m, costBasis);
-        // Sold 50 units: £600 proceeds - £500 cost = £100 gain
-        Assert.Equal(100m, realisedGain);
-    }
-
-    [Fact]
-    public void Calculate_BuyAndSellWithLoss_CalculatesNegativeGain()
-    {
-        var transactions = new List<Transaction>
-        {
-            new()
-            {
-                TransactionTypeId = TransactionType.Buy,
-                Units = 100m,
-                Value = -1000m, // £10 per unit
-                Date = new DateOnly(2023, 1, 1)
-            },
-            new()
-            {
-                TransactionTypeId = TransactionType.Sell,
-                Units = -50m,
-                Value = 400m, // £8 per unit
-                Date = new DateOnly(2023, 2, 1)
-            }
-        };
-
-        var (costBasis, realisedGain) = CostBasisCalculator.Calculate(transactions);
-
-        Assert.Equal(500m, costBasis);
-        // Sold 50 units: £400 proceeds - £500 cost = -£100 loss
-        Assert.Equal(-100m, realisedGain);
+        Assert.Equal(expectedCostBasis, costBasis);
+        Assert.Equal(expectedGain, realisedGain);
     }
 
     [Fact]

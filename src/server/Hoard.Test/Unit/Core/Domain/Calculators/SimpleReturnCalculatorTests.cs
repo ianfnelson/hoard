@@ -7,12 +7,15 @@ public class SimpleReturnCalculatorTests
 {
     private readonly SimpleReturnCalculator _calculator = new();
 
-    [Fact]
-    public void Calculate_NoTransactions_ReturnsSimpleReturn()
+    [Theory]
+    [InlineData(1000, 1100, 10)]    // positive return
+    [InlineData(1000, 800, -20)]    // negative return
+    public void Calculate_NoTransactions_ReturnsSimpleReturn(
+        decimal startValue, decimal endValue, decimal expectedReturn)
     {
         var result = _calculator.Calculate(
-            startValue: 1000m,
-            endValue: 1100m,
+            startValue: startValue,
+            endValue: endValue,
             startDate: new DateOnly(2023, 1, 1),
             endDate: new DateOnly(2023, 12, 31),
             periodTransactions: new List<Transaction>(),
@@ -21,8 +24,7 @@ public class SimpleReturnCalculatorTests
         );
 
         Assert.NotNull(result);
-        // (1100 - 1000) / 1000 * 100 = 10%
-        Assert.Equal(10m, result.Value, 2);
+        Assert.Equal(expectedReturn, result.Value, 2);
     }
 
     [Fact]
@@ -139,15 +141,18 @@ public class SimpleReturnCalculatorTests
         Assert.Equal(10m, result.Value, 2);
     }
 
-    [Fact]
-    public void Calculate_PositionScopeWithDividend_IncludesWithdrawal()
+    [Theory]
+    [InlineData(TransactionType.IncomeDividend, 50, 5)]
+    [InlineData(TransactionType.IncomeLoyaltyBonus, 25, 2.5)]
+    public void Calculate_PositionScopeWithIncome_IncludesWithdrawal(
+        int transactionTypeId, decimal incomeValue, decimal expectedReturn)
     {
         var transactions = new List<Transaction>
         {
             new()
             {
-                TransactionTypeId = TransactionType.IncomeDividend,
-                Value = 50m,
+                TransactionTypeId = transactionTypeId,
+                Value = incomeValue,
                 Date = new DateOnly(2023, 6, 1)
             }
         };
@@ -163,36 +168,7 @@ public class SimpleReturnCalculatorTests
         );
 
         Assert.NotNull(result);
-        // (1000 + 50 - 0 - 1000) / (1000 + 0) * 100 = 50 / 1000 * 100 = 5%
-        Assert.Equal(5m, result.Value, 2);
-    }
-
-    [Fact]
-    public void Calculate_PositionScopeWithLoyaltyBonus_IncludesWithdrawal()
-    {
-        var transactions = new List<Transaction>
-        {
-            new()
-            {
-                TransactionTypeId = TransactionType.IncomeLoyaltyBonus,
-                Value = 25m,
-                Date = new DateOnly(2023, 6, 1)
-            }
-        };
-
-        var result = _calculator.Calculate(
-            startValue: 1000m,
-            endValue: 1000m,
-            startDate: new DateOnly(2023, 1, 1),
-            endDate: new DateOnly(2023, 12, 31),
-            periodTransactions: transactions,
-            scope: PerformanceScope.Position,
-            annualised: false
-        );
-
-        Assert.NotNull(result);
-        // (1000 + 25 - 0 - 1000) / (1000 + 0) * 100 = 25 / 1000 * 100 = 2.5%
-        Assert.Equal(2.5m, result.Value, 2);
+        Assert.Equal(expectedReturn, result.Value, 2);
     }
 
     [Fact]
@@ -318,23 +294,6 @@ public class SimpleReturnCalculatorTests
         Assert.Equal(4m, result.Value, 1);
     }
 
-    [Fact]
-    public void Calculate_NegativeReturn_HandlesCorrectly()
-    {
-        var result = _calculator.Calculate(
-            startValue: 1000m,
-            endValue: 800m,
-            startDate: new DateOnly(2023, 1, 1),
-            endDate: new DateOnly(2023, 12, 31),
-            periodTransactions: new List<Transaction>(),
-            scope: PerformanceScope.Portfolio,
-            annualised: false
-        );
-
-        Assert.NotNull(result);
-        // (800 - 1000) / 1000 * 100 = -20%
-        Assert.Equal(-20m, result.Value, 2);
-    }
 
     [Fact]
     public void Calculate_ComplexScenario_ReturnsCorrectValue()
