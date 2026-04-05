@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import apexchart from 'vue3-apexcharts/core'
 import { useTheme } from 'vuetify'
 import { usePortfolioValuationSeries } from '@/composables/usePortfolioValuationSeries'
 import type { DisaggregateBy } from '@/api/portfoliosApi'

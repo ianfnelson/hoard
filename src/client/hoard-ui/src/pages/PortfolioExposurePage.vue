@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
-import ExposurePieChart from '@/components/charts/ExposurePieChart.vue'
 import type { PieChartData } from '@/components/charts/ExposurePieChart.vue'
+
+const ExposurePieChart = defineAsyncComponent(
+  () => import('@/components/charts/ExposurePieChart.vue')
+)
 
 const store = usePortfolioStore()
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useInstrumentStore } from '@/stores/instrumentStore'
 import { useInstrumentDetail } from '@/composables/useInstrumentDetail'
@@ -21,8 +21,11 @@ import type { NewsArticleSummaryDto } from '@/api/dtos/News/NewsArticleSummaryDt
 import type { PriceSummaryDto } from '@/api/dtos/Instruments/PriceSummaryDto'
 import type { InstrumentDataFeedWriteDto } from '@/api/dtos/Instruments/InstrumentDataFeedWriteDto'
 import { useContractNoteDownload } from '@/composables/useContractNoteDownload'
-import PriceChart from '@/components/charts/PriceChart.vue'
-import InstrumentValuationChart from '@/components/charts/InstrumentValuationChart.vue'
+
+const PriceChart = defineAsyncComponent(() => import('@/components/charts/PriceChart.vue'))
+const InstrumentValuationChart = defineAsyncComponent(
+  () => import('@/components/charts/InstrumentValuationChart.vue')
+)
 
 // Data feed constants (must match backend DataFeed.cs)
 const DATA_FEED_NEWS = 1
