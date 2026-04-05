@@ -1,6 +1,5 @@
 using Hoard.Core.Application.RunLog;
-using Hoard.Core.Data;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 using RunLogEntity = Hoard.Core.Domain.Entities.RunLog;
 using RunType = Hoard.Core.Domain.Entities.RunType;
 
@@ -12,7 +11,7 @@ public class GetRunLogsHandlerTests
     public async Task HandleAsync_ReturnsPagedResults()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var runType = new RunType { Id = 1, Name = "Close Of Day" };
         context.RunTypes.Add(runType);
 
@@ -44,7 +43,7 @@ public class GetRunLogsHandlerTests
     public async Task HandleAsync_FiltersByRunTypeId()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.RunTypes.AddRange(
             new RunType { Id = 1, Name = "Close Of Day" },
             new RunType { Id = 2, Name = "Refresh Prices" }
@@ -71,7 +70,7 @@ public class GetRunLogsHandlerTests
     public async Task HandleAsync_DefaultsSortByStartedAtDescending()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var runType = new RunType { Id = 1, Name = "Close Of Day" };
         context.RunTypes.Add(runType);
         context.RunLogs.AddRange(
@@ -96,7 +95,7 @@ public class GetRunLogsHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyPagedResult()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetRunLogsHandler(context);
 
         var result = await handler.HandleAsync(new GetRunLogsQuery());
@@ -105,11 +104,4 @@ public class GetRunLogsHandlerTests
         Assert.Empty(result.Items);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

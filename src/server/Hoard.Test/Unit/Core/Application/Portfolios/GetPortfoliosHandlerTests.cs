@@ -1,7 +1,6 @@
 using Hoard.Core.Application.Portfolios;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.Portfolios;
 
@@ -11,7 +10,7 @@ public class GetPortfoliosHandlerTests
     public async Task HandleAsync_ReturnsPortfoliosOrderedAlphabetically()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.Portfolios.AddRange(
             new Portfolio { Id = 1, Name = "Zebra Fund" },
             new Portfolio { Id = 2, Name = "Alpha Portfolio" },
@@ -35,7 +34,7 @@ public class GetPortfoliosHandlerTests
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetPortfoliosHandler(context);
 
         // Act
@@ -45,12 +44,4 @@ public class GetPortfoliosHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        return new HoardContext(options);
-    }
 }

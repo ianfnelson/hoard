@@ -1,6 +1,4 @@
 using Hoard.Core.Application.Snapshots;
-using Hoard.Core.Data;
-using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.Snapshots;
@@ -29,7 +27,7 @@ public class GetYearsForBackfillHandlerTests
         // Arrange
         await using var context = TestContextFactory.Create();
         context.Accounts.Add(TestData.Account());
-        context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         context.Transactions.Add(TestData.BuyTransaction(date: new DateOnly(2018, 6, 15)));
         await context.SaveChangesAsync();
 

@@ -1,5 +1,4 @@
 using Hoard.Core.Application.Portfolios;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -21,10 +20,7 @@ public class GetPortfolioValuationSeriesHandlerTests
         context.Portfolios.Add(portfolio);
         context.Accounts.Add(account);
         context.Instruments.Add(instrument);
-        context.InstrumentTypes.Add(new InstrumentType { Id = 1, Name = "Stock", Colour = "#FF0000" });
-        var assetClass = new AssetClass { Id = 1, Name = "Equities", Colour = "#0000FF" };
-        assetClass.Subclasses.Add(new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK", Colour = "#0000AA" });
-        context.AssetClasses.Add(assetClass);
+        TestData.SeedReferenceData(context);
 
         context.Holdings.AddRange(
             CreateHoldingWithValuation(1, 1, 1, new DateOnly(2024, 1, 1), 1000m),

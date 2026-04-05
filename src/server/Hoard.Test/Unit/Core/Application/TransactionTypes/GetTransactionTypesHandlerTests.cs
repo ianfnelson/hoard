@@ -1,7 +1,6 @@
 using Hoard.Core.Application.TransactionTypes;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.TransactionTypes;
 
@@ -11,7 +10,7 @@ public class GetTransactionTypesHandlerTests
     public async Task HandleAsync_ReturnsTransactionTypesOrderedByName()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.TransactionTypes.AddRange(
             new TransactionType { Id = 1, Name = "Sell" },
             new TransactionType { Id = 2, Name = "Buy" },
@@ -34,7 +33,7 @@ public class GetTransactionTypesHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetTransactionTypesHandler(context);
 
         var result = await handler.HandleAsync(new GetTransactionTypesQuery());
@@ -42,11 +41,4 @@ public class GetTransactionTypesHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

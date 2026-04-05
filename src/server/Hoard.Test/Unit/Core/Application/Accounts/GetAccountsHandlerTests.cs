@@ -1,7 +1,6 @@
 using Hoard.Core.Application.Accounts;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.Accounts;
 
@@ -11,7 +10,7 @@ public class GetAccountsHandlerTests
     public async Task HandleAsync_ReturnsAllAccounts()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.Accounts.AddRange(
             new Account { Id = 1, Name = "ISA", Colour = "#FF0000", IsActive = true },
             new Account { Id = 2, Name = "SIPP", Colour = "#00FF00", IsActive = false }
@@ -31,7 +30,7 @@ public class GetAccountsHandlerTests
     public async Task HandleAsync_FiltersByIsActive()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         context.Accounts.AddRange(
             new Account { Id = 1, Name = "ISA", Colour = "#FF0000", IsActive = true },
             new Account { Id = 2, Name = "Old SIPP", Colour = "#00FF00", IsActive = false },
@@ -53,7 +52,7 @@ public class GetAccountsHandlerTests
     public async Task HandleAsync_FiltersByPortfolioId()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var portfolio = new Portfolio { Id = 1, Name = "Main" };
         var account1 = new Account { Id = 1, Name = "ISA", Colour = "#FF0000" };
         var account2 = new Account { Id = 2, Name = "SIPP", Colour = "#00FF00" };
@@ -76,7 +75,7 @@ public class GetAccountsHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetAccountsHandler(context);
 
         var result = await handler.HandleAsync(new GetAccountsQuery());
@@ -84,11 +83,4 @@ public class GetAccountsHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

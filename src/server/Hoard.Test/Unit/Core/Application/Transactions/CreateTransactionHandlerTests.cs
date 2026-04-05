@@ -3,6 +3,7 @@ using Hoard.Core.Application.Transactions;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages.Prices;
+using Hoard.Test.Shared;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Rebus.Bus;
@@ -18,11 +19,7 @@ public class CreateTransactionHandlerTests : IDisposable
 
     public CreateTransactionHandlerTests()
     {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new HoardContext(options);
+        _context = TestContextFactory.Create();
 
         _bus = new Mock<IBus>();
         _mapper = new Mock<IMapper>();

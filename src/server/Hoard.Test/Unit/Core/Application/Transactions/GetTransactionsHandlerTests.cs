@@ -1,7 +1,6 @@
 using Hoard.Core.Application.Transactions;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.Transactions;
 
@@ -11,13 +10,15 @@ public class GetTransactionsHandlerTests
     public async Task HandleAsync_ReturnsPagedResults()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
-        SeedReferenceData(context);
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
         for (var i = 1; i <= 10; i++)
         {
             context.Transactions.Add(new Transaction
             {
-                Id = i, AccountId = 1, InstrumentId = 1, TransactionTypeId = 1,
+                Id = i, AccountId = 1, InstrumentId = 1, TransactionTypeId = TransactionType.Buy,
                 Date = new DateOnly(2024, 1, i), Value = -100m * i
             });
         }
@@ -38,12 +39,14 @@ public class GetTransactionsHandlerTests
     public async Task HandleAsync_FiltersByDateRange()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
-        SeedReferenceData(context);
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
         context.Transactions.AddRange(
-            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -100m },
-            new Transaction { Id = 2, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 15), Value = -200m },
-            new Transaction { Id = 3, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 2, 1), Value = -300m }
+            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -100m },
+            new Transaction { Id = 2, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 15), Value = -200m },
+            new Transaction { Id = 3, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 2, 1), Value = -300m }
         );
         await context.SaveChangesAsync();
 
@@ -66,12 +69,14 @@ public class GetTransactionsHandlerTests
     public async Task HandleAsync_FiltersByAccountId()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
-        SeedReferenceData(context);
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
         context.Accounts.Add(new Account { Id = 2, Name = "Other Account", Colour = "#00FF00" });
         context.Transactions.AddRange(
-            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -100m },
-            new Transaction { Id = 2, AccountId = 2, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -200m }
+            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -100m },
+            new Transaction { Id = 2, AccountId = 2, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -200m }
         );
         await context.SaveChangesAsync();
 
@@ -90,12 +95,14 @@ public class GetTransactionsHandlerTests
     public async Task HandleAsync_FiltersByInstrumentId()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
-        SeedReferenceData(context);
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
         context.Instruments.Add(new Instrument { Id = 2, Name = "Other Stock", Ticker = "OTH", CurrencyId = "GBP" });
         context.Transactions.AddRange(
-            new Transaction { Id = 1, AccountId = 1, InstrumentId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -100m },
-            new Transaction { Id = 2, AccountId = 1, InstrumentId = 2, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -200m }
+            new Transaction { Id = 1, AccountId = 1, InstrumentId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -100m },
+            new Transaction { Id = 2, AccountId = 1, InstrumentId = 2, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -200m }
         );
         await context.SaveChangesAsync();
 
@@ -113,11 +120,13 @@ public class GetTransactionsHandlerTests
     public async Task HandleAsync_SearchByContractNoteReference()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
-        SeedReferenceData(context);
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
         context.Transactions.AddRange(
-            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -100m, ContractNoteReference = "CN-001" },
-            new Transaction { Id = 2, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 2), Value = -200m, ContractNoteReference = "CN-002" }
+            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -100m, ContractNoteReference = "CN-001" },
+            new Transaction { Id = 2, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 2), Value = -200m, ContractNoteReference = "CN-002" }
         );
         await context.SaveChangesAsync();
 
@@ -135,12 +144,14 @@ public class GetTransactionsHandlerTests
     public async Task HandleAsync_DefaultSortByDateDescending()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
-        SeedReferenceData(context);
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
         context.Transactions.AddRange(
-            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 1), Value = -100m },
-            new Transaction { Id = 2, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 3), Value = -300m },
-            new Transaction { Id = 3, AccountId = 1, TransactionTypeId = 1, Date = new DateOnly(2024, 1, 2), Value = -200m }
+            new Transaction { Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 1), Value = -100m },
+            new Transaction { Id = 2, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 3), Value = -300m },
+            new Transaction { Id = 3, AccountId = 1, TransactionTypeId = TransactionType.Buy, Date = new DateOnly(2024, 1, 2), Value = -200m }
         );
         await context.SaveChangesAsync();
 
@@ -158,7 +169,7 @@ public class GetTransactionsHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyPagedResult()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetTransactionsHandler(context);
 
         var result = await handler.HandleAsync(new GetTransactionsQuery());
@@ -167,18 +178,4 @@ public class GetTransactionsHandlerTests
         Assert.Empty(result.Items);
     }
 
-    private static void SeedReferenceData(HoardContext context)
-    {
-        context.Accounts.Add(new Account { Id = 1, Name = "Test Account", Colour = "#FF0000" });
-        context.Instruments.Add(new Instrument { Id = 1, Name = "Test Stock", Ticker = "TEST", CurrencyId = "GBP" });
-        context.TransactionTypes.Add(new TransactionType { Id = 1, Name = "Buy" });
-    }
-
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }

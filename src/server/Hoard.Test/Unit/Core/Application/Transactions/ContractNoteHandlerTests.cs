@@ -3,7 +3,6 @@ using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Test.Shared;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Hoard.Test.Unit.Core.Application.Transactions;
@@ -18,7 +17,7 @@ public class UploadContractNoteHandlerTests : IDisposable
     {
         // Arrange
         _context.Accounts.Add(TestData.Account());
-        _context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        _context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         _context.Transactions.Add(new Transaction
         {
             Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy,
@@ -46,7 +45,7 @@ public class UploadContractNoteHandlerTests : IDisposable
     {
         // Arrange
         _context.Accounts.Add(TestData.Account());
-        _context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        _context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         _context.Transactions.Add(new Transaction
         {
             Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy,
@@ -91,7 +90,7 @@ public class DeleteContractNoteHandlerTests : IDisposable
     {
         // Arrange
         _context.Accounts.Add(TestData.Account());
-        _context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        _context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         _context.Transactions.Add(new Transaction
         {
             Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy,
@@ -116,7 +115,7 @@ public class DeleteContractNoteHandlerTests : IDisposable
     {
         // Arrange
         _context.Accounts.Add(TestData.Account());
-        _context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        _context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         _context.Transactions.Add(new Transaction
         {
             Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy,
@@ -155,7 +154,7 @@ public class GetContractNoteHandlerTests : IDisposable
     {
         // Arrange
         _context.Accounts.Add(TestData.Account());
-        _context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        _context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         _context.Transactions.Add(new Transaction
         {
             Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy,
@@ -184,7 +183,7 @@ public class GetContractNoteHandlerTests : IDisposable
     {
         // Arrange
         _context.Accounts.Add(TestData.Account());
-        _context.TransactionTypes.Add(new TransactionType { Id = TransactionType.Buy, Name = "Buy" });
+        _context.TransactionTypes.Add(TestData.TransactionType(Hoard.Core.Domain.Entities.TransactionType.Buy));
         _context.Transactions.Add(new Transaction
         {
             Id = 1, AccountId = 1, TransactionTypeId = TransactionType.Buy,

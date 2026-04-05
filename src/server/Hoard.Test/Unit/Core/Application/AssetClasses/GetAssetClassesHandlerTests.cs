@@ -1,7 +1,6 @@
 using Hoard.Core.Application.AssetClasses;
-using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Hoard.Test.Shared;
 
 namespace Hoard.Test.Unit.Core.Application.AssetClasses;
 
@@ -11,7 +10,7 @@ public class GetAssetClassesHandlerTests
     public async Task HandleAsync_ReturnsAssetClassesWithSubclassesOrderedByName()
     {
         // Arrange
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var equities = new AssetClass { Id = 1, Name = "Equities", Colour = "#0000FF" };
         equities.Subclasses.Add(new AssetSubclass { Id = 1, AssetClassId = 1, Name = "UK", Colour = "#0000AA" });
         equities.Subclasses.Add(new AssetSubclass { Id = 2, AssetClassId = 1, Name = "Global", Colour = "#0000BB" });
@@ -37,7 +36,7 @@ public class GetAssetClassesHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
-        await using var context = CreateInMemoryContext();
+        await using var context = TestContextFactory.Create();
         var handler = new GetAssetClassesHandler(context);
 
         var result = await handler.HandleAsync(new GetAssetClassesQuery());
@@ -45,11 +44,4 @@ public class GetAssetClassesHandlerTests
         Assert.Empty(result);
     }
 
-    private static HoardContext CreateInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<HoardContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new HoardContext(options);
-    }
 }
