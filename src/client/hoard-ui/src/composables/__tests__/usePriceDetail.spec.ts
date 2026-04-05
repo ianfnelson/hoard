@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { usePriceDetail } from '../usePriceDetail'
 import * as pricesApi from '@/api/pricesApi'
 import type { PriceDetailDto } from '@/api/dtos/Prices/PriceDetailDto'
@@ -30,6 +31,17 @@ describe('usePriceDetail', () => {
       await fetchPrice(1)
 
       expect(price.value).toEqual(mockPrice)
+    })
+
+    it('should silently ignore cancelled fetch', async () => {
+      vi.mocked(pricesApi.getPriceDetail).mockRejectedValue(new axios.CanceledError())
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      const { price, error, fetchPrice } = usePriceDetail()
+      await fetchPrice(1)
+
+      expect(error.value).toBeNull()
+      expect(price.value).toBeNull()
     })
 
     it('should handle error', async () => {

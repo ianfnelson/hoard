@@ -18,14 +18,18 @@ export interface GetTransactionsParams {
 }
 
 export async function getTransactions(
-  params?: GetTransactionsParams
+  params?: GetTransactionsParams,
+  signal?: AbortSignal
 ): Promise<PagedResult<TransactionSummaryDto>> {
-  const response = await hoardApi.get('/transactions', { params })
+  const response = await hoardApi.get('/transactions', { params, signal })
   return response.data
 }
 
-export async function getTransactionDetail(transactionId: number): Promise<TransactionDetailDto> {
-  const response = await hoardApi.get(`/transactions/${transactionId}`)
+export async function getTransactionDetail(
+  transactionId: number,
+  signal?: AbortSignal
+): Promise<TransactionDetailDto> {
+  const response = await hoardApi.get(`/transactions/${transactionId}`, { signal })
   return response.data
 }
 

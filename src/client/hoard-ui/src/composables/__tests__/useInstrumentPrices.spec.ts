@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useInstrumentPrices } from '../useInstrumentPrices'
 import * as instrumentsApi from '@/api/instrumentsApi'
 import type { PriceSummaryDto } from '@/api/dtos/Instruments/PriceSummaryDto'
@@ -32,7 +33,22 @@ describe('useInstrumentPrices', () => {
 
     expect(items.value).toEqual(mockResponse.items)
     expect(totalCount.value).toBe(1)
-    expect(instrumentsApi.getPrices).toHaveBeenCalledWith(42, { pageSize: 10 })
+    expect(instrumentsApi.getPrices).toHaveBeenCalledWith(
+      42,
+      { pageSize: 10 },
+      expect.any(AbortSignal)
+    )
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(instrumentsApi.getPrices).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { error, isLoading, fetchPrices } = useInstrumentPrices()
+    await fetchPrices(1)
+
+    expect(error.value).toBeNull()
+    expect(isLoading.value).toBe(false)
   })
 
   it('should handle error', async () => {

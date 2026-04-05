@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useTransactionDetail } from '../useTransactionDetail'
 import * as transactionsApi from '@/api/transactionsApi'
 import type { TransactionDetailDto } from '@/api/dtos/Transactions/TransactionDetailDto'
@@ -36,6 +37,17 @@ describe('useTransactionDetail', () => {
       expect(transaction.value).toEqual(mockTransaction)
       expect(isLoading.value).toBe(false)
       expect(error.value).toBeNull()
+    })
+
+    it('should silently ignore cancelled fetch', async () => {
+      vi.mocked(transactionsApi.getTransactionDetail).mockRejectedValue(new axios.CanceledError())
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      const { transaction, error, fetchTransaction } = useTransactionDetail()
+      await fetchTransaction(1)
+
+      expect(error.value).toBeNull()
+      expect(transaction.value).toBeNull()
     })
 
     it('should use Error.message on failure', async () => {

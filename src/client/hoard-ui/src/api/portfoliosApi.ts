@@ -30,70 +30,88 @@ export interface GetPortfolioValuationSeriesParams {
   disaggregateBy?: DisaggregateBy
 }
 
-export async function getPortfolioList(): Promise<PortfolioSummaryDto[]> {
-  const response = await hoardApi.get('/portfolios')
+export async function getPortfolioList(signal?: AbortSignal): Promise<PortfolioSummaryDto[]> {
+  const response = await hoardApi.get('/portfolios', { signal })
   return response.data
 }
 
-export async function getPortfolioDetail(portfolioId: number): Promise<PortfolioDetailDto> {
-  const response = await hoardApi.get(`/portfolios/${portfolioId}`)
+export async function getPortfolioDetail(
+  portfolioId: number,
+  signal?: AbortSignal
+): Promise<PortfolioDetailDto> {
+  const response = await hoardApi.get(`/portfolios/${portfolioId}`, { signal })
   return response.data
 }
 
 export async function getPortfolioPositions(
   portfolioId: number,
-  params?: GetPortfolioPositionsParams
+  params?: GetPortfolioPositionsParams,
+  signal?: AbortSignal
 ): Promise<PortfolioPositionsDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/positions`, {
     params,
+    signal,
   })
   return response.data
 }
 
-export async function getPortfolioExposure(portfolioId: number): Promise<PortfolioExposureDto> {
-  const response = await hoardApi.get(`/portfolios/${portfolioId}/exposure`)
+export async function getPortfolioExposure(
+  portfolioId: number,
+  signal?: AbortSignal
+): Promise<PortfolioExposureDto> {
+  const response = await hoardApi.get(`/portfolios/${portfolioId}/exposure`, { signal })
   return response.data
 }
 
 export async function getPortfolioInstrumentTypes(
-  portfolioId: number
+  portfolioId: number,
+  signal?: AbortSignal
 ): Promise<PortfolioInstrumentTypesDto> {
-  const response = await hoardApi.get(`/portfolios/${portfolioId}/instrument-types`)
+  const response = await hoardApi.get(`/portfolios/${portfolioId}/instrument-types`, { signal })
   return response.data
 }
 
-export async function getPortfolioSnapshots(portfolioId: number): Promise<PortfolioSnapshotsDto> {
-  const response = await hoardApi.get(`/portfolios/${portfolioId}/snapshots`)
+export async function getPortfolioSnapshots(
+  portfolioId: number,
+  signal?: AbortSignal
+): Promise<PortfolioSnapshotsDto> {
+  const response = await hoardApi.get(`/portfolios/${portfolioId}/snapshots`, { signal })
   return response.data
 }
 
 export async function getPortfolioValuations(
   portfolioId: number,
-  params?: GetPortfolioValuationsParams
+  params?: GetPortfolioValuationsParams,
+  signal?: AbortSignal
 ): Promise<PortfolioValuationsDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation`, {
     params,
+    signal,
   })
   return response.data
 }
 
 export async function downloadPortfolioValuationsPdf(
   portfolioId: number,
-  params?: GetPortfolioValuationsParams
+  params?: GetPortfolioValuationsParams,
+  signal?: AbortSignal
 ) {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation/export`, {
     params,
     responseType: 'blob',
+    signal,
   })
   return response
 }
 
 export async function getPortfolioValuationSeries(
   portfolioId: number,
-  params?: GetPortfolioValuationSeriesParams
+  params?: GetPortfolioValuationSeriesParams,
+  signal?: AbortSignal
 ): Promise<PortfolioValuationSeriesDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation-series`, {
     params,
+    signal,
   })
   return response.data
 }

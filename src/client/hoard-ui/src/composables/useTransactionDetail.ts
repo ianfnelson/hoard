@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
+import axios from 'axios'
 import type { TransactionDetailDto } from '@/api/dtos/Transactions/TransactionDetailDto'
 import type { TransactionWriteDto } from '@/api/dtos/Transactions/TransactionWriteDto'
 import {
@@ -14,17 +15,25 @@ export function useTransactionDetail() {
   const isSaving = ref(false)
   const isDeleting = ref(false)
   const error = ref<string | null>(null)
+  let abortController: AbortController | null = null
 
   async function fetchTransaction(id: number): Promise<void> {
+    abortController?.abort()
+    const controller = new AbortController()
+    abortController = controller
+
     isLoading.value = true
     error.value = null
     try {
-      transaction.value = await getTransactionDetail(id)
+      transaction.value = await getTransactionDetail(id, controller.signal)
     } catch (err) {
+      if (axios.isCancel(err)) return
       error.value = err instanceof Error ? err.message : 'Failed to load transaction'
       console.error('Error fetching transaction:', err)
     } finally {
-      isLoading.value = false
+      if (abortController === controller) {
+        isLoading.value = false
+      }
     }
   }
 
@@ -72,6 +81,10 @@ export function useTransactionDetail() {
       isDeleting.value = false
     }
   }
+
+  onUnmounted(() => {
+    abortController?.abort()
+  })
 
   return {
     transaction,

@@ -2,8 +2,11 @@ import { hoardApi } from './hoardApi'
 import type { PriceDetailDto } from './dtos/Prices/PriceDetailDto'
 import type { PriceWriteDto } from './dtos/Prices/PriceWriteDto'
 
-export async function getPriceDetail(priceId: number): Promise<PriceDetailDto> {
-  const response = await hoardApi.get(`/prices/${priceId}`)
+export async function getPriceDetail(
+  priceId: number,
+  signal?: AbortSignal
+): Promise<PriceDetailDto> {
+  const response = await hoardApi.get(`/prices/${priceId}`, { signal })
   return response.data
 }
 

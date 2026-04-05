@@ -10,7 +10,10 @@ export interface GetRunLogsParams {
   runTypeId?: number
 }
 
-export async function getRunLogs(params?: GetRunLogsParams): Promise<PagedResult<RunLogDto>> {
-  const response = await hoardApi.get<PagedResult<RunLogDto>>('/run-logs', { params })
+export async function getRunLogs(
+  params?: GetRunLogsParams,
+  signal?: AbortSignal
+): Promise<PagedResult<RunLogDto>> {
+  const response = await hoardApi.get<PagedResult<RunLogDto>>('/run-logs', { params, signal })
   return response.data
 }

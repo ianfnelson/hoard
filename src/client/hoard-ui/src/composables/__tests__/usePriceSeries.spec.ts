@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { usePriceSeries } from '../usePriceSeries'
 import * as instrumentsApi from '@/api/instrumentsApi'
 
@@ -27,7 +28,23 @@ describe('usePriceSeries', () => {
     await fetchPriceSeries(42, '2025-01-01', '2026-01-01')
 
     expect(candles.value).toEqual(mockCandles)
-    expect(instrumentsApi.getPriceSeries).toHaveBeenCalledWith(42, '2025-01-01', '2026-01-01')
+    expect(instrumentsApi.getPriceSeries).toHaveBeenCalledWith(
+      42,
+      '2025-01-01',
+      '2026-01-01',
+      expect.any(AbortSignal)
+    )
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(instrumentsApi.getPriceSeries).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { error, isLoading, fetchPriceSeries } = usePriceSeries()
+    await fetchPriceSeries(1, '2025-01-01', '2026-01-01')
+
+    expect(error.value).toBeNull()
+    expect(isLoading.value).toBe(false)
   })
 
   it('should handle error', async () => {
