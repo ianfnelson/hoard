@@ -18,13 +18,17 @@ export interface GetNewsArticlesParams {
 }
 
 export async function getNewsArticles(
-  params?: GetNewsArticlesParams
+  params?: GetNewsArticlesParams,
+  signal?: AbortSignal
 ): Promise<PagedResult<NewsArticleSummaryDto>> {
-  const response = await hoardApi.get('/news-articles', { params })
+  const response = await hoardApi.get('/news-articles', { params, signal })
   return response.data
 }
 
-export async function getNewsArticleDetail(newsArticleId: number): Promise<NewsArticleDetailDto> {
-  const response = await hoardApi.get(`/news-articles/${newsArticleId}`)
+export async function getNewsArticleDetail(
+  newsArticleId: number,
+  signal?: AbortSignal
+): Promise<NewsArticleDetailDto> {
+  const response = await hoardApi.get(`/news-articles/${newsArticleId}`, { signal })
   return response.data
 }

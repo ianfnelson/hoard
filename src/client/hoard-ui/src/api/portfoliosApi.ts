@@ -62,8 +62,11 @@ export async function getPortfolioInstrumentTypes(
   return response.data
 }
 
-export async function getPortfolioSnapshots(portfolioId: number): Promise<PortfolioSnapshotsDto> {
-  const response = await hoardApi.get(`/portfolios/${portfolioId}/snapshots`)
+export async function getPortfolioSnapshots(
+  portfolioId: number,
+  signal?: AbortSignal
+): Promise<PortfolioSnapshotsDto> {
+  const response = await hoardApi.get(`/portfolios/${portfolioId}/snapshots`, { signal })
   return response.data
 }
 
@@ -90,10 +93,12 @@ export async function downloadPortfolioValuationsPdf(
 
 export async function getPortfolioValuationSeries(
   portfolioId: number,
-  params?: GetPortfolioValuationSeriesParams
+  params?: GetPortfolioValuationSeriesParams,
+  signal?: AbortSignal
 ): Promise<PortfolioValuationSeriesDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/valuation-series`, {
     params,
+    signal,
   })
   return response.data
 }

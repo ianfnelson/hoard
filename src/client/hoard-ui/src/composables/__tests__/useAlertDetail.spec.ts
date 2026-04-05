@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useAlertDetail } from '../useAlertDetail'
 import * as alertsApi from '@/api/alertsApi'
 import type { AlertDetailDto } from '@/api/dtos/Alerts/AlertDetailDto'
@@ -26,7 +27,18 @@ describe('useAlertDetail', () => {
     await fetchAlert(1)
 
     expect(alert.value).toEqual(mockAlert)
-    expect(alertsApi.getAlertDetail).toHaveBeenCalledWith(1)
+    expect(alertsApi.getAlertDetail).toHaveBeenCalledWith(1, expect.any(AbortSignal))
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(alertsApi.getAlertDetail).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { alert, error, fetchAlert } = useAlertDetail()
+    await fetchAlert(1)
+
+    expect(error.value).toBeNull()
+    expect(alert.value).toBeNull()
   })
 
   it('should handle error and clear alert', async () => {

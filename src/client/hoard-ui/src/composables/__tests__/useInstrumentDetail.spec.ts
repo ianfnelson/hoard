@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useInstrumentDetail } from '../useInstrumentDetail'
 import * as instrumentsApi from '@/api/instrumentsApi'
 import type { InstrumentDetailDto } from '@/api/dtos/Instruments/InstrumentDetailDto'
@@ -36,7 +37,18 @@ describe('useInstrumentDetail', () => {
       expect(instrument.value).toEqual(mockInstrument)
       expect(isLoading.value).toBe(false)
       expect(error.value).toBeNull()
-      expect(instrumentsApi.getInstrumentDetail).toHaveBeenCalledWith(1)
+      expect(instrumentsApi.getInstrumentDetail).toHaveBeenCalledWith(1, expect.any(AbortSignal))
+    })
+
+    it('should silently ignore cancelled fetch', async () => {
+      vi.mocked(instrumentsApi.getInstrumentDetail).mockRejectedValue(new axios.CanceledError())
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      const { instrument, error, fetchInstrument } = useInstrumentDetail()
+      await fetchInstrument(1)
+
+      expect(error.value).toBeNull()
+      expect(instrument.value).toBeNull()
     })
 
     it('should handle fetch error', async () => {

@@ -14,12 +14,18 @@ export interface GetAlertsParams {
   sortDirection?: string
 }
 
-export async function getAlerts(params?: GetAlertsParams): Promise<PagedResult<AlertSummaryDto>> {
-  const response = await hoardApi.get('/alerts', { params })
+export async function getAlerts(
+  params?: GetAlertsParams,
+  signal?: AbortSignal
+): Promise<PagedResult<AlertSummaryDto>> {
+  const response = await hoardApi.get('/alerts', { params, signal })
   return response.data
 }
 
-export async function getAlertDetail(alertId: number): Promise<AlertDetailDto> {
-  const response = await hoardApi.get(`/alerts/${alertId}`)
+export async function getAlertDetail(
+  alertId: number,
+  signal?: AbortSignal
+): Promise<AlertDetailDto> {
+  const response = await hoardApi.get(`/alerts/${alertId}`, { signal })
   return response.data
 }

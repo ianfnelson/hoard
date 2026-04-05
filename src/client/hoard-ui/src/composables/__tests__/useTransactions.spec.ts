@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useTransactions } from '../useTransactions'
 import * as transactionsApi from '@/api/transactionsApi'
 import type { TransactionSummaryDto } from '@/api/dtos/Transactions/TransactionSummaryDto'
@@ -54,6 +55,17 @@ describe('useTransactions', () => {
     expect(transactionsApi.getTransactions).toHaveBeenCalledOnce()
   })
 
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(transactionsApi.getTransactions).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { error, isLoading, fetchTransactions } = useTransactions()
+    await fetchTransactions()
+
+    expect(error.value).toBeNull()
+    expect(isLoading.value).toBe(false)
+  })
+
   it('should handle fetch error', async () => {
     vi.mocked(transactionsApi.getTransactions).mockRejectedValue(new Error('Network error'))
 
@@ -83,6 +95,9 @@ describe('useTransactions', () => {
     const { fetchTransactions } = useTransactions()
     await fetchTransactions({ accountId: 5, pageSize: 10 })
 
-    expect(transactionsApi.getTransactions).toHaveBeenCalledWith({ accountId: 5, pageSize: 10 })
+    expect(transactionsApi.getTransactions).toHaveBeenCalledWith(
+      { accountId: 5, pageSize: 10 },
+      expect.any(AbortSignal)
+    )
   })
 })

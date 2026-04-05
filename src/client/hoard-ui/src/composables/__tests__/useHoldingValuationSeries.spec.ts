@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useHoldingValuationSeries } from '../useHoldingValuationSeries'
 import * as instrumentsApi from '@/api/instrumentsApi'
 
@@ -27,7 +28,18 @@ describe('useHoldingValuationSeries', () => {
     await fetchHoldingValuationSeries(42)
 
     expect(series.value).toEqual(mockSeries)
-    expect(instrumentsApi.getValuationSeries).toHaveBeenCalledWith(42)
+    expect(instrumentsApi.getValuationSeries).toHaveBeenCalledWith(42, expect.any(AbortSignal))
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(instrumentsApi.getValuationSeries).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { error, isLoading, fetchHoldingValuationSeries } = useHoldingValuationSeries()
+    await fetchHoldingValuationSeries(1)
+
+    expect(error.value).toBeNull()
+    expect(isLoading.value).toBe(false)
   })
 
   it('should handle error', async () => {

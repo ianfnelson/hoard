@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { usePortfolioSnapshots } from '../usePortfolioSnapshots'
 import * as portfoliosApi from '@/api/portfoliosApi'
 
@@ -27,7 +28,18 @@ describe('usePortfolioSnapshots', () => {
     await fetchSnapshots(1)
 
     expect(items.value).toEqual(mockSnapshots)
-    expect(portfoliosApi.getPortfolioSnapshots).toHaveBeenCalledWith(1)
+    expect(portfoliosApi.getPortfolioSnapshots).toHaveBeenCalledWith(1, expect.any(AbortSignal))
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(portfoliosApi.getPortfolioSnapshots).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { error, isLoading, fetchSnapshots } = usePortfolioSnapshots()
+    await fetchSnapshots(1)
+
+    expect(error.value).toBeNull()
+    expect(isLoading.value).toBe(false)
   })
 
   it('should handle error', async () => {

@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
+import axios from 'axios'
 import type { InstrumentDetailDto } from '@/api/dtos/Instruments/InstrumentDetailDto'
 import type { InstrumentWriteDto } from '@/api/dtos/Instruments/InstrumentWriteDto'
 import {
@@ -14,17 +15,25 @@ export function useInstrumentDetail() {
   const isSaving = ref(false)
   const isDeleting = ref(false)
   const error = ref<string | null>(null)
+  let abortController: AbortController | null = null
 
   async function fetchInstrument(id: number): Promise<void> {
+    abortController?.abort()
+    const controller = new AbortController()
+    abortController = controller
+
     isLoading.value = true
     error.value = null
     try {
-      instrument.value = await getInstrumentDetail(id)
+      instrument.value = await getInstrumentDetail(id, controller.signal)
     } catch (err) {
+      if (axios.isCancel(err)) return
       error.value = err instanceof Error ? err.message : 'Failed to load instrument'
       console.error('Error fetching instrument:', err)
     } finally {
-      isLoading.value = false
+      if (abortController === controller) {
+        isLoading.value = false
+      }
     }
   }
 
@@ -72,6 +81,10 @@ export function useInstrumentDetail() {
       isDeleting.value = false
     }
   }
+
+  onUnmounted(() => {
+    abortController?.abort()
+  })
 
   return {
     instrument,

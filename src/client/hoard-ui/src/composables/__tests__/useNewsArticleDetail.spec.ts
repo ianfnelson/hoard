@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useNewsArticleDetail } from '../useNewsArticleDetail'
 import * as newsArticlesApi from '@/api/newsArticlesApi'
 import type { NewsArticleDetailDto } from '@/api/dtos/News/NewsArticleDetailDto'
@@ -36,7 +37,18 @@ describe('useNewsArticleDetail', () => {
     await fetchNewsArticle(1)
 
     expect(article.value).toEqual(mockArticle)
-    expect(newsArticlesApi.getNewsArticleDetail).toHaveBeenCalledWith(1)
+    expect(newsArticlesApi.getNewsArticleDetail).toHaveBeenCalledWith(1, expect.any(AbortSignal))
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(newsArticlesApi.getNewsArticleDetail).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { article, error, fetchNewsArticle } = useNewsArticleDetail()
+    await fetchNewsArticle(1)
+
+    expect(error.value).toBeNull()
+    expect(article.value).toBeNull()
   })
 
   it('should handle error and clear article', async () => {

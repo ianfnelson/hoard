@@ -19,15 +19,19 @@ export interface GetInstrumentsParams {
   sortDirection?: string
 }
 
-export async function getInstrumentDetail(id: number): Promise<InstrumentDetailDto> {
-  const response = await hoardApi.get(`/instruments/${id}`)
+export async function getInstrumentDetail(
+  id: number,
+  signal?: AbortSignal
+): Promise<InstrumentDetailDto> {
+  const response = await hoardApi.get(`/instruments/${id}`, { signal })
   return response.data
 }
 
 export async function getInstruments(
-  params?: GetInstrumentsParams
+  params?: GetInstrumentsParams,
+  signal?: AbortSignal
 ): Promise<PagedResult<InstrumentSummaryDto>> {
-  const response = await hoardApi.get('/instruments', { params })
+  const response = await hoardApi.get('/instruments', { params, signal })
   return response.data
 }
 
@@ -57,16 +61,21 @@ export interface GetPriceSeriesParams {
 export async function getPriceSeries(
   instrumentId: number,
   from: string,
-  to: string
+  to: string,
+  signal?: AbortSignal
 ): Promise<PriceSeriesDto> {
   const response = await hoardApi.get(`/instruments/${instrumentId}/price-series`, {
     params: { from, to },
+    signal,
   })
   return response.data
 }
 
-export async function getValuationSeries(instrumentId: number): Promise<ValuationSeriesDto> {
-  const response = await hoardApi.get(`/instruments/${instrumentId}/valuation-series`)
+export async function getValuationSeries(
+  instrumentId: number,
+  signal?: AbortSignal
+): Promise<ValuationSeriesDto> {
+  const response = await hoardApi.get(`/instruments/${instrumentId}/valuation-series`, { signal })
   return response.data
 }
 
@@ -77,8 +86,9 @@ export interface GetPricesParams {
 
 export async function getPrices(
   instrumentId: number,
-  params?: GetPricesParams
+  params?: GetPricesParams,
+  signal?: AbortSignal
 ): Promise<PagedResult<PriceSummaryDto>> {
-  const response = await hoardApi.get(`/instruments/${instrumentId}/prices`, { params })
+  const response = await hoardApi.get(`/instruments/${instrumentId}/prices`, { params, signal })
   return response.data
 }

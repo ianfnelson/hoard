@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axios from 'axios'
 import { useAlerts } from '../useAlerts'
 import * as alertsApi from '@/api/alertsApi'
 import type { AlertSummaryDto } from '@/api/dtos/Alerts/AlertSummaryDto'
@@ -45,7 +46,18 @@ describe('useAlerts', () => {
 
     expect(items.value).toEqual(mockResponse.items)
     expect(totalCount.value).toBe(1)
-    expect(alertsApi.getAlerts).toHaveBeenCalledWith({ pageSize: 10 })
+    expect(alertsApi.getAlerts).toHaveBeenCalledWith({ pageSize: 10 }, expect.any(AbortSignal))
+  })
+
+  it('should silently ignore cancelled requests', async () => {
+    vi.mocked(alertsApi.getAlerts).mockRejectedValue(new axios.CanceledError())
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { error, isLoading, fetchAlerts } = useAlerts()
+    await fetchAlerts()
+
+    expect(error.value).toBeNull()
+    expect(isLoading.value).toBe(false)
   })
 
   it('should handle error', async () => {

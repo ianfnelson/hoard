@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
+import axios from 'axios'
 import type { PriceDetailDto } from '@/api/dtos/Prices/PriceDetailDto'
 import type { PriceWriteDto } from '@/api/dtos/Prices/PriceWriteDto'
 import { getPriceDetail, createPrice, updatePrice, deletePrice } from '@/api/pricesApi'
@@ -9,17 +10,25 @@ export function usePriceDetail() {
   const isSaving = ref(false)
   const isDeleting = ref(false)
   const error = ref<string | null>(null)
+  let abortController: AbortController | null = null
 
   async function fetchPrice(id: number): Promise<void> {
+    abortController?.abort()
+    const controller = new AbortController()
+    abortController = controller
+
     isLoading.value = true
     error.value = null
     try {
-      price.value = await getPriceDetail(id)
+      price.value = await getPriceDetail(id, controller.signal)
     } catch (err) {
+      if (axios.isCancel(err)) return
       error.value = err instanceof Error ? err.message : 'Failed to load price'
       console.error('Error fetching price:', err)
     } finally {
-      isLoading.value = false
+      if (abortController === controller) {
+        isLoading.value = false
+      }
     }
   }
 
@@ -67,6 +76,10 @@ export function usePriceDetail() {
       isDeleting.value = false
     }
   }
+
+  onUnmounted(() => {
+    abortController?.abort()
+  })
 
   return {
     price,
