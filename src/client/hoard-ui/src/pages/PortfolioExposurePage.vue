@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent } from 'vue'
 
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
+import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 import type { PieChartData } from '@/components/charts/ExposurePieChart.vue'
 
@@ -92,6 +93,8 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
 
 <template>
   <v-container fluid>
+    <ApiErrorAlert :error="store.error" />
+
     <!-- Asset classes row -->
     <v-row dense>
       <v-col cols="12" md="6">
@@ -126,7 +129,9 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
                 <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
               </template>
 
-              <template #no-data> No asset classes </template>
+              <template #no-data>
+                No asset class exposure data. Ensure positions have asset classes assigned.
+              </template>
             </v-data-table>
           </v-card-text>
         </v-card>
@@ -175,7 +180,9 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
                 <span :class="getTrendClass(value)">{{ formatCurrency(value) }}</span>
               </template>
 
-              <template #no-data> No asset subclasses </template>
+              <template #no-data>
+                No asset subclass exposure data. Ensure positions have asset subclasses assigned.
+              </template>
             </v-data-table>
           </v-card-text>
         </v-card>
@@ -216,7 +223,9 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
                 <span>{{ formatPercentage(value) }}</span>
               </template>
 
-              <template #no-data> No instrument types </template>
+              <template #no-data>
+                No instrument type exposure data. Ensure positions have instrument types assigned.
+              </template>
             </v-data-table>
           </v-card-text>
         </v-card>

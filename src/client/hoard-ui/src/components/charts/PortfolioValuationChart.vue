@@ -15,7 +15,7 @@ const props = defineProps<{
 const theme = useTheme()
 const isDark = computed(() => theme.global.current.value.dark)
 
-const { series, isLoading, fetchSeries } = usePortfolioValuationSeries()
+const { series, isLoading, error, fetchSeries } = usePortfolioValuationSeries()
 
 const totalDataPoints = computed(() => series.value.reduce((sum, s) => sum + s.data.length, 0))
 
@@ -84,7 +84,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="isLoading" class="d-flex justify-center align-center" style="min-height: 300px">
+  <v-alert v-if="error" type="error" variant="tonal" class="mb-4">
+    {{ error }}
+  </v-alert>
+  <div v-else-if="isLoading" class="d-flex justify-center align-center" style="min-height: 300px">
     <v-progress-circular indeterminate />
   </div>
   <div

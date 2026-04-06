@@ -3,6 +3,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlerts } from '@/composables/useAlerts'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
+import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import { useNavigationStore } from '@/stores/navigationStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDateTime } from '@/utils/formatters'
@@ -14,7 +15,7 @@ usePageTitle(pageTitle)
 
 const router = useRouter()
 const route = useRoute()
-const { items, totalCount, isLoading, fetchAlerts } = useAlerts()
+const { items, totalCount, isLoading, error, fetchAlerts } = useAlerts()
 const refStore = useReferenceDataStore()
 const navStore = useNavigationStore()
 
@@ -136,6 +137,8 @@ onMounted(() => {
         />
       </v-col>
     </v-row>
+    <ApiErrorAlert :error="error" retryable @retry="loadItems" />
+
     <v-row dense>
       <v-col>
         <v-data-table-server
