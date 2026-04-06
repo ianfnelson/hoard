@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useInstrumentStore } from '@/stores/instrumentStore'
 import { useInstrumentDetail } from '@/composables/useInstrumentDetail'
 import { usePageTitle } from '@/composables/usePageTitle'
+import type { InstrumentWriteDto } from '@/api/dtos/Instruments/InstrumentWriteDto'
 import InstrumentViewCard from '@/components/instruments/InstrumentViewCard.vue'
 import InstrumentForm from '@/components/instruments/InstrumentForm.vue'
 import InstrumentTransactionsCard from '@/components/instruments/InstrumentTransactionsCard.vue'
@@ -50,7 +51,7 @@ const isLoading = computed(() => instrumentStore.isLoading)
 const showDeleteDialog = ref(false)
 
 // Actions
-async function handleSave(payload: Record<string, unknown>) {
+async function handleSave(payload: InstrumentWriteDto) {
   if (isCreateMode.value) {
     const id = await create(payload)
     if (id) {

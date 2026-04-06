@@ -2,6 +2,7 @@
 import { reactive, computed, watch, onMounted } from 'vue'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import type { PriceDetailDto } from '@/api/dtos/Prices/PriceDetailDto'
+import type { PriceWriteDto } from '@/api/dtos/Prices/PriceWriteDto'
 
 const props = defineProps<{
   price: PriceDetailDto | null
@@ -10,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  save: [payload: Record<string, unknown>]
+  save: [payload: PriceWriteDto]
   cancel: []
 }>()
 

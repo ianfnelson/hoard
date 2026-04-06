@@ -3,6 +3,7 @@ import { reactive, computed, watch, onMounted } from 'vue'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import type { InstrumentDetailDto } from '@/api/dtos/Instruments/InstrumentDetailDto'
 import type { InstrumentDataFeedWriteDto } from '@/api/dtos/Instruments/InstrumentDataFeedWriteDto'
+import type { InstrumentWriteDto } from '@/api/dtos/Instruments/InstrumentWriteDto'
 
 const props = defineProps<{
   instrument: InstrumentDetailDto | null
@@ -10,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  save: [payload: Record<string, unknown>]
+  save: [payload: InstrumentWriteDto]
   cancel: []
 }>()
 

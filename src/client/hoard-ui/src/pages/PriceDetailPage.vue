@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePriceDetail } from '@/composables/usePriceDetail'
 import { usePageTitle } from '@/composables/usePageTitle'
+import type { PriceWriteDto } from '@/api/dtos/Prices/PriceWriteDto'
 import PriceViewCard from '@/components/prices/PriceViewCard.vue'
 import PriceForm from '@/components/prices/PriceForm.vue'
 import DeleteConfirmDialog from '@/components/DeleteConfirmDialog.vue'
@@ -45,7 +46,7 @@ const createInstrumentId = computed(() => {
 })
 
 // Actions
-async function handleSave(payload: Record<string, unknown>) {
+async function handleSave(payload: PriceWriteDto) {
   if (isCreateMode.value) {
     const id = await create(payload)
     if (id) {

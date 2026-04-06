@@ -3,6 +3,7 @@ import { reactive, computed, watch, onMounted } from 'vue'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
 import { useNavigationStore } from '@/stores/navigationStore'
 import type { TransactionDetailDto } from '@/api/dtos/Transactions/TransactionDetailDto'
+import type { TransactionWriteDto } from '@/api/dtos/Transactions/TransactionWriteDto'
 import {
   TransactionTypeIds,
   INSTRUMENT_REQUIRED_TYPES,
@@ -18,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  save: [payload: Record<string, unknown>]
+  save: [payload: TransactionWriteDto & { contractNoteFile: File | null }]
   cancel: []
 }>()
 
