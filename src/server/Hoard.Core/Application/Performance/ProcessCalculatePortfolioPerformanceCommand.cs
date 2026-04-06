@@ -171,7 +171,7 @@ public class ProcessCalculatePortfolioPerformanceHandler(
         var startValue = GetValueForDate(startDate, valuations) ?? 0M;
         var endValue = GetValueForDate(endDate, valuations) ?? 0M;
 
-        var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date < endDate).ToList();
+        var periodTransactions = transactions.Where(x => x.Date > startDate && x.Date <= endDate).ToList();
 
         return returnCalculator.Calculate(startValue, endValue, startDate, endDate, periodTransactions, PerformanceScope.Portfolio);
     }
