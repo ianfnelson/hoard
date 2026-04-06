@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useInstruments } from '@/composables/useInstruments'
 import { useReferenceDataStore } from '@/stores/referenceDataStore'
+import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
@@ -11,7 +12,7 @@ usePageTitle(pageTitle)
 
 const router = useRouter()
 const route = useRoute()
-const { items, totalCount, isLoading, fetchInstruments } = useInstruments()
+const { items, totalCount, isLoading, error, fetchInstruments } = useInstruments()
 const refStore = useReferenceDataStore()
 
 const page = ref(1)
@@ -197,6 +198,8 @@ onMounted(() => {
         />
       </v-col>
     </v-row>
+    <ApiErrorAlert :error="error" retryable @retry="loadItems" />
+
     <v-row dense>
       <v-col>
         <v-data-table-server

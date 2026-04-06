@@ -3,6 +3,7 @@ import { computed, ref, onMounted, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
+import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import type { DisaggregateBy } from '@/api/portfoliosApi'
 
 const PortfolioValuationChart = defineAsyncComponent(
@@ -77,6 +78,8 @@ onMounted(() => {
 
 <template>
   <v-container fluid>
+    <ApiErrorAlert :error="portfolioStore.error" />
+
     <v-row dense class="mb-4">
       <v-col cols="auto" class="d-flex align-center">
         <v-btn-toggle

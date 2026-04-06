@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import SummaryCard from '@/components/SummaryCard.vue'
+import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 
 const store = usePortfolioStore()
@@ -57,6 +58,8 @@ const rows = computed(() =>
 
 <template>
   <v-container fluid>
+    <ApiErrorAlert :error="store.error" />
+
     <!-- Summary strip -->
     <v-row dense class="mt-0">
       <v-col cols="6" sm="3">

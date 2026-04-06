@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
+import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import { formatCurrency, formatPercentage, getTrendClass, formatDate } from '@/utils/formatters'
 import { TABLE_ITEMS_PER_PAGE_OPTIONS } from '@/utils/tableDefaults'
 
@@ -106,6 +107,8 @@ const performanceHeaders = [
 
 <template>
   <v-container fluid>
+    <ApiErrorAlert :error="store.error" />
+
     <v-row dense class="mb-2">
       <v-col cols="12" sm="6" md="3">
         <v-text-field
@@ -191,7 +194,9 @@ const performanceHeaders = [
                 {{ formatPercentage(item.portfolioPercentage) }}
               </template>
 
-              <template #no-data> No positions</template>
+              <template #no-data>
+                No positions found. Positions are created when transactions are recorded.
+              </template>
             </v-data-table>
           </v-window-item>
           <v-window-item value="gains">
@@ -254,7 +259,9 @@ const performanceHeaders = [
                 }}</span>
               </template>
 
-              <template #no-data> No positions</template>
+              <template #no-data>
+                No positions found. Positions are created when transactions are recorded.
+              </template>
             </v-data-table>
           </v-window-item>
           <v-window-item value="performance">
@@ -341,7 +348,9 @@ const performanceHeaders = [
                 }}</span>
               </template>
 
-              <template #no-data> No positions</template>
+              <template #no-data>
+                No positions found. Positions are created when transactions are recorded.
+              </template>
             </v-data-table>
           </v-window-item>
         </v-window>
