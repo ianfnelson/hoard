@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useTransactionDetail } from '@/composables/useTransactionDetail'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { uploadContractNote } from '@/api/transactionsApi'
+import type { TransactionWriteDto } from '@/api/dtos/Transactions/TransactionWriteDto'
 import TransactionViewCard from '@/components/transactions/TransactionViewCard.vue'
 import TransactionForm from '@/components/transactions/TransactionForm.vue'
 import DeleteConfirmDialog from '@/components/DeleteConfirmDialog.vue'
@@ -47,18 +48,18 @@ const isUploadingFile = ref(false)
 const uploadError = ref<string | null>(null)
 
 // Actions
-async function handleSave(payload: Record<string, unknown>) {
+async function handleSave(payload: TransactionWriteDto & { contractNoteFile: File | null }) {
   try {
     let transactionId: number
-    const contractNoteFile = payload.contractNoteFile as File | null
+    const { contractNoteFile, ...writeData } = payload
 
     if (isCreateMode.value) {
-      const id = await create(payload)
+      const id = await create(writeData)
       if (!id) return
       transactionId = id
     } else {
       transactionId = Number(props.id)
-      const success = await update(transactionId, payload)
+      const success = await update(transactionId, writeData)
       if (!success) return
     }
 
