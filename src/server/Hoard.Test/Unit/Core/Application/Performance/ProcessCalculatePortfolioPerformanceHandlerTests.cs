@@ -464,6 +464,39 @@ public class ProcessCalculatePortfolioPerformanceHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task HandleAsync_PeriodReturn_IncludesTransactionsOnEndDate()
+    {
+        var (portfolio, account) = await SetupPortfolioWithAccount();
+
+        // Deposit dated on Today (the end date for 1D return)
+        _context.Transactions.AddRange(
+            TestData.BuyTransaction(accountId: account.Id, instrumentId: null,
+                date: Today.AddYears(-1)),
+            new Transaction
+            {
+                AccountId = account.Id,
+                TransactionTypeId = TransactionType.DepositPersonal,
+                Date = Today, Value = 1000m
+            });
+        await _context.SaveChangesAsync();
+
+        await AddPortfolioValuations(portfolio.Id,
+            (Yesterday, 10000m),
+            (Today, 11000m));
+
+        await _handler.HandleAsync(new ProcessCalculatePortfolioPerformanceCommand(
+            Guid.NewGuid(), portfolio.Id, PipelineMode.CloseOfDay));
+
+        // The 1D return calculator should receive a list containing the deposit on Today
+        _returnCalculator.Verify(r => r.Calculate(
+            10000m, 11000m,
+            Yesterday, Today,
+            It.Is<IList<Transaction>>(t => t.Any(x => x.Date == Today && x.Value == 1000m)),
+            PerformanceScope.Portfolio, It.IsAny<bool>()),
+            Times.AtLeastOnce);
+    }
+
+    [Fact]
     public async Task HandleAsync_PortfolioNotFound_Throws()
     {
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
