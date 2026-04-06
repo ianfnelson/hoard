@@ -12,7 +12,7 @@
     "format": "prettier --write src/",
     "test": "vitest",
     "test:run": "vitest run",
-    "type-check": "vue-tsc --noEmit",
+    "type-check": "vue-tsc -b --noEmit",
     "prepare": "cd ../../.. && husky || true"
   },
   "dependencies": {
