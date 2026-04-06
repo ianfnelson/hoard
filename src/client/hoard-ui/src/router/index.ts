@@ -14,7 +14,8 @@ const router = createRouter({
         },
         {
           path: 'portfolios',
-          redirect: async () => {
+          component: () => import('@/layouts/LayoutDefault.vue'),
+          beforeEnter: async () => {
             const navStore = useNavigationStore()
             await navStore.loadPortfolios()
             return navStore.portfolios.length
