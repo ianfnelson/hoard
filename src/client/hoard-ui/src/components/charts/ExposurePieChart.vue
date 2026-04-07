@@ -22,6 +22,7 @@ const chartOptions = computed(() => ({
     type: 'pie' as const,
     background: 'transparent',
     fontFamily: 'IBM Plex Sans, sans-serif',
+    animations: { enabled: false },
   },
   theme: {
     mode: isDark.value ? ('dark' as const) : ('light' as const),

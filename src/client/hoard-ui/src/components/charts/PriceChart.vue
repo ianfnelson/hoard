@@ -18,6 +18,7 @@ const chartOptions = computed(() => ({
     type: 'candlestick' as const,
     background: 'transparent',
     fontFamily: 'IBM Plex Sans, sans-serif',
+    animations: { enabled: false },
     zoom: {
       autoScaleYaxis: true,
     },
