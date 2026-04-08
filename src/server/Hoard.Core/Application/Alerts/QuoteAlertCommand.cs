@@ -9,18 +9,20 @@ public record QuoteAlertCommand(int InstrumentId, decimal RegularMarketChangePer
 
 public class QuoteAlertHandler(
     HoardContext context,
-    IAlertService alertService)
+    IAlertService alertService,
+    TimeProvider timeProvider)
     : ICommandHandler<QuoteAlertCommand>
 {
     public async Task HandleAsync(QuoteAlertCommand command, CancellationToken ct = default)
     {
-        var today = DateOnlyHelper.TodayLocal();
+        var nowUk = TimeZoneInfo.ConvertTimeFromUtc(timeProvider.GetUtcNow().UtcDateTime, DateOnlyHelper.UkTimeZone);
+        var today = DateOnly.FromDateTime(nowUk);
 
         if (!today.IsWeekday())
             return;
 
-        var localTime = TimeOnly.FromDateTime(DateTime.Now);
-        if (localTime < new TimeOnly(9, 0) || localTime >= new TimeOnly(16, 30))
+        var ukTime = TimeOnly.FromDateTime(nowUk);
+        if (ukTime < new TimeOnly(9, 0) || ukTime >= new TimeOnly(16, 30))
             return;
 
         var instrument = await context.Instruments

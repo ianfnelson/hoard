@@ -82,6 +82,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddServices(IServiceCollection services)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<IRebalanceService, RebalanceService>();
         services.AddScoped<IRunLogService, RunLogService>();
