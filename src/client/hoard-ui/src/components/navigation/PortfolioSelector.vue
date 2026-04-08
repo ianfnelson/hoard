@@ -20,7 +20,7 @@ const currentPortfolioName = computed(() => {
 <template>
   <v-menu>
     <template #activator="{ props }">
-      <v-btn text v-bind="props">
+      <v-btn text v-bind="props" class="portfolio-selector-btn">
         {{ currentPortfolioName || 'Portfolios' }}
         <v-icon end>mdi-chevron-down</v-icon>
       </v-btn>
@@ -37,3 +37,9 @@ const currentPortfolioName = computed(() => {
     </v-list>
   </v-menu>
 </template>
+
+<style scoped>
+.portfolio-selector-btn {
+  font-size: 0.875rem !important;
+}
+</style>

@@ -5,7 +5,7 @@
         {{ title }}
       </div>
 
-      <div class="text-h6 font-weight-medium mt-1" :class="trendClass">
+      <div class="summary-value font-weight-medium mt-1" :class="trendClass">
         {{ formattedValue }}
       </div>
 
@@ -42,5 +42,10 @@ const trendClass = computed(() => getTrendClass(props.trend))
 .v-theme--dark .summary-card {
   background-color: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+.summary-value {
+  font-size: 1.25rem !important;
+  line-height: 1.6;
 }
 </style>
