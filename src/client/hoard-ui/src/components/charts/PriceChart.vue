@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import apexchart from 'vue3-apexcharts/core'
+import apexchart from 'vue3-apexcharts'
 import { useTheme } from 'vuetify'
 import { usePriceSeries } from '@/composables/usePriceSeries'
 
