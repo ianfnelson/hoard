@@ -19,8 +19,8 @@ public class QuoteAlertHandler(
         if (!today.IsWeekday())
             return;
 
-        var localTime = TimeOnly.FromDateTime(DateTime.Now);
-        if (localTime < new TimeOnly(9, 0) || localTime >= new TimeOnly(16, 30))
+        var ukTime = TimeOnly.FromDateTime(DateOnlyHelper.NowUk());
+        if (ukTime < new TimeOnly(9, 0) || ukTime >= new TimeOnly(16, 30))
             return;
 
         var instrument = await context.Instruments

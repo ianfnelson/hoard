@@ -19,7 +19,7 @@ public class SchedulerBootstrapper : IHostedService
     private readonly ILogger<SchedulerBootstrapper> _logger;
 
     private static readonly ActivitySource ActivitySource = new("hoard.scheduler");
-    private static readonly TimeZoneInfo UkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/London");
+    private static readonly TimeZoneInfo UkTimeZone = DateOnlyHelper.UkTimeZone;
 
     public SchedulerBootstrapper(
         IBackgroundJobClient jobs,
