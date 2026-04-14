@@ -26,11 +26,11 @@ const navigationItems = [
 
     <!-- Desktop: Show all nav buttons -->
     <template v-if="!xs">
-      <v-btn :to="{ name: 'instruments' }" text>Instruments</v-btn>
-      <v-btn :to="{ name: 'transactions' }" text>Transactions</v-btn>
-      <v-btn :to="{ name: 'news' }" text>News</v-btn>
-      <v-btn :to="{ name: 'alerts' }" text>Alerts</v-btn>
-      <v-btn to="/system" text>System</v-btn>
+      <v-btn :to="{ name: 'instruments' }" text class="nav-btn">Instruments</v-btn>
+      <v-btn :to="{ name: 'transactions' }" text class="nav-btn">Transactions</v-btn>
+      <v-btn :to="{ name: 'news' }" text class="nav-btn">News</v-btn>
+      <v-btn :to="{ name: 'alerts' }" text class="nav-btn">Alerts</v-btn>
+      <v-btn to="/system" text class="nav-btn">System</v-btn>
     </template>
 
     <v-spacer />
@@ -59,3 +59,10 @@ const navigationItems = [
     </v-list>
   </v-navigation-drawer>
 </template>
+
+<style scoped>
+.nav-btn {
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+}
+</style>

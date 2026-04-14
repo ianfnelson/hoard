@@ -25,7 +25,7 @@ const currentPortfolioName = computed(() => {
         <v-icon end>mdi-chevron-down</v-icon>
       </v-btn>
     </template>
-    <v-list>
+    <v-list class="portfolio-selector-menu-list">
       <v-list-item
         v-for="portfolio in navStore.portfolios"
         :key="portfolio.id"
@@ -40,6 +40,14 @@ const currentPortfolioName = computed(() => {
 
 <style scoped>
 .portfolio-selector-btn {
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+}
+</style>
+
+<!-- Unscoped because v-menu teleports content outside the component's DOM -->
+<style>
+.portfolio-selector-menu-list .v-list-item-title {
   font-size: 0.875rem !important;
 }
 </style>
