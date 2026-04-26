@@ -11,7 +11,7 @@ public sealed class GetPriceSeriesQuery(int instrumentId) : IQuery<PriceSeriesDt
     public DateOnly? To { get; init; }
 }
 
-public sealed class GetPriceSeriesHandler(HoardContext context, ILogger<GetPriceSeriesHandler> logger)
+public sealed class GetPriceSeriesHandler(HoardContext context, ILogger<GetPriceSeriesHandler> logger, TimeProvider timeProvider)
     : IQueryHandler<GetPriceSeriesQuery, PriceSeriesDto?>
 {
     public async Task<PriceSeriesDto?> HandleAsync(GetPriceSeriesQuery query, CancellationToken ct = default)
@@ -27,7 +27,7 @@ public sealed class GetPriceSeriesHandler(HoardContext context, ILogger<GetPrice
             return null;
         }
 
-        var to = query.To ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        var to = query.To ?? DateOnlyHelper.TodayLocal(timeProvider);
         var from = query.From ?? to.AddYears(-1);
 
         var prices = await context.Prices

@@ -8,7 +8,7 @@ namespace Hoard.Core.Application.Portfolios;
 public record GetPortfolioValuationsQuery(int PortfolioId, DateOnly? FromDate, DateOnly? ToDate)
     : IQuery<PortfolioValuationsDto?>;
 
-public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPortfolioValuationsHandler> logger)
+public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPortfolioValuationsHandler> logger, TimeProvider timeProvider)
     : IQueryHandler<GetPortfolioValuationsQuery, PortfolioValuationsDto?>
 {
     private record InstrumentValuation(int InstrumentId, string InstrumentName, string InstrumentTicker, decimal Units, decimal Value);
@@ -23,7 +23,7 @@ public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPort
             return null;
         }
 
-        var toDate = query.ToDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        var toDate = query.ToDate ?? DateOnlyHelper.TodayLocal(timeProvider);
         var fromDate = query.FromDate;
 
         ValidateDates(fromDate, toDate);
@@ -44,9 +44,9 @@ public class GetPortfolioValuationsHandler(HoardContext context, ILogger<GetPort
         };
     }
 
-    private static void ValidateDates(DateOnly? fromDate, DateOnly toDate)
+    private void ValidateDates(DateOnly? fromDate, DateOnly toDate)
     {
-        if (toDate > DateOnly.FromDateTime(DateTime.UtcNow))
+        if (toDate > DateOnlyHelper.TodayLocal(timeProvider))
         {
             throw new ArgumentException("To date cannot be in the future");
         }

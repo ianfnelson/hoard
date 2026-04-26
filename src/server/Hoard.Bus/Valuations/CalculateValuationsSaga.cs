@@ -10,7 +10,7 @@ using Rebus.Sagas;
 
 namespace Hoard.Bus.Valuations;
 
-public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IMediator mediator, IBus bus)
+public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IMediator mediator, IBus bus, TimeProvider timeProvider)
     :
         Saga<CvSagaData>,
         IAmInitiatedBy<StartCalculateValuationsSagaCommand>,
@@ -38,7 +38,7 @@ public class CalculateValuationsSaga(ILogger<CalculateValuationsSaga> logger, IM
         
         Data.ValuationsRunId = valuationsRunId;
 
-        var asOfDate = nullableAsOfDate.OrToday();
+        var asOfDate = nullableAsOfDate.OrToday(timeProvider);
         Data.AsOfDate = asOfDate;
 
         var instrumentIds = await mediator.QueryAsync<GetInstrumentsForHoldingValuationsQuery, IReadOnlyList<int>>(

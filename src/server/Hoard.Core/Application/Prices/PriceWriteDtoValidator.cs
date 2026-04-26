@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.Prices;
 
 public class PriceWriteDtoValidator : AbstractValidator<PriceWriteDto>
 {
-    public PriceWriteDtoValidator(HoardContext context)
+    public PriceWriteDtoValidator(HoardContext context, TimeProvider timeProvider)
     {
         RuleFor(x => x.InstrumentId)
             .NotNull()
@@ -22,7 +22,7 @@ public class PriceWriteDtoValidator : AbstractValidator<PriceWriteDto>
         RuleFor(x => x.AsOfDate)
             .NotNull()
             .WithMessage("As of date is required")
-            .Must(date => date == null || date <= DateOnly.FromDateTime(DateTime.UtcNow))
+            .Must(date => date == null || date <= DateOnlyHelper.TodayLocal(timeProvider))
             .WithMessage("As of date cannot be in the future");
 
         RuleFor(x => x.Source)

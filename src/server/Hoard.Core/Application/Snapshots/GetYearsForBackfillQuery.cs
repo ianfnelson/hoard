@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.Snapshots;
 public record GetYearsForBackfillQuery(int? StartYear, int? EndYear)
     : IQuery<IReadOnlyList<int>>;
 
-public class GetYearsForBackfillHandler(HoardContext context)
+public class GetYearsForBackfillHandler(HoardContext context, TimeProvider timeProvider)
     : IQueryHandler<GetYearsForBackfillQuery, IReadOnlyList<int>>
 {
     public async Task<IReadOnlyList<int>> HandleAsync(GetYearsForBackfillQuery query, CancellationToken ct = default)
@@ -22,8 +22,8 @@ public class GetYearsForBackfillHandler(HoardContext context)
     private async Task<YearRange> GetYearRange(GetYearsForBackfillQuery query, CancellationToken ct = default)
     {
         var startYear = query.StartYear ?? await GetDefaultStartYear(ct);
-        var endYear = query.EndYear ?? DateTime.Today.Year;
-        
+        var endYear = query.EndYear ?? DateOnlyHelper.TodayLocal(timeProvider).Year;
+
         return new YearRange(startYear, endYear);
     }
 
@@ -34,6 +34,6 @@ public class GetYearsForBackfillHandler(HoardContext context)
             .Select(x => x.Date)
             .FirstOrDefaultAsync(ct);
 
-        return earliestTradeDate.OrToday().Year;
+        return earliestTradeDate.OrToday(timeProvider).Year;
     }
 }

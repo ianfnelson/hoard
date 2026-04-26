@@ -13,8 +13,8 @@ namespace Hoard.Core.Application.Performance;
 public record ProcessCalculatePositionPerformanceCommand(Guid PerformanceRunId, int InstrumentId, PipelineMode PipelineMode) : ICommand;
 
 public class ProcessCalculatePositionPerformanceHandler(
-    ILogger<ProcessCalculatePositionPerformanceHandler> logger, 
-    HoardContext context, IBus bus, IReturnCalculator returnCalculator)
+    ILogger<ProcessCalculatePositionPerformanceHandler> logger,
+    HoardContext context, IBus bus, IReturnCalculator returnCalculator, TimeProvider timeProvider)
 : ICommandHandler<ProcessCalculatePositionPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePositionPerformanceCommand command, CancellationToken ct = default)
@@ -102,12 +102,12 @@ public class ProcessCalculatePositionPerformanceHandler(
         return perf;
     }
 
-    private static PositionContext BuildPositionContext(
+    private PositionContext BuildPositionContext(
         Position position,
         List<Transaction> allTransactions,
         Dictionary<DateOnly, Holding[]> holdings)
     {
-        var today = DateOnlyHelper.TodayLocal();
+        var today = DateOnlyHelper.TodayLocal(timeProvider);
         var previousDay = today.PreviousTradingDay();
         var accountIds = position.Portfolio.Accounts.Select(a => a.Id).ToArray();
 

@@ -28,7 +28,7 @@ public class GetPortfolioValuationSeriesHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetPortfolioValuationSeriesHandler(context, NullLogger<GetPortfolioValuationSeriesHandler>.Instance);
+        var handler = new GetPortfolioValuationSeriesHandler(context, NullLogger<GetPortfolioValuationSeriesHandler>.Instance, TimeProvider.System);
         var query = new GetPortfolioValuationSeriesQuery(1)
         {
             From = new DateOnly(2024, 1, 1),
@@ -49,7 +49,7 @@ public class GetPortfolioValuationSeriesHandlerTests
     public async Task HandleAsync_NonExistentPortfolio_ReturnsNull()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioValuationSeriesHandler(context, NullLogger<GetPortfolioValuationSeriesHandler>.Instance);
+        var handler = new GetPortfolioValuationSeriesHandler(context, NullLogger<GetPortfolioValuationSeriesHandler>.Instance, TimeProvider.System);
 
         var result = await handler.HandleAsync(new GetPortfolioValuationSeriesQuery(999));
 

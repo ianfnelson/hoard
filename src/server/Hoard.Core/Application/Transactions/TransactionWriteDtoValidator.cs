@@ -30,7 +30,7 @@ public class TransactionWriteDtoValidator : AbstractValidator<TransactionWriteDt
         TransactionType.CorporateAction
     ];
 
-    public TransactionWriteDtoValidator(HoardContext context)
+    public TransactionWriteDtoValidator(HoardContext context, TimeProvider timeProvider)
     {
         // Required fields
         RuleFor(x => x.AccountId)
@@ -48,7 +48,7 @@ public class TransactionWriteDtoValidator : AbstractValidator<TransactionWriteDt
         RuleFor(x => x.Date)
             .NotNull()
             .WithMessage("Date is required")
-            .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow))
+            .LessThanOrEqualTo(DateOnlyHelper.TodayLocal(timeProvider))
             .WithMessage("Transaction date cannot be in the future");
 
         RuleFor(x => x.Value)

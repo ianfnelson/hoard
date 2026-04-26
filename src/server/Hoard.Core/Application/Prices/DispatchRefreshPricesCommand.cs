@@ -12,28 +12,28 @@ public record DispatchRefreshPricesCommand(
     DateOnly? EndDate)
     : ICommand;
 
-public class DispatchRefreshPricesHandler(IBus bus)
+public class DispatchRefreshPricesHandler(IBus bus, TimeProvider timeProvider)
     : ICommandHandler<DispatchRefreshPricesCommand>
 {
     public async Task HandleAsync(DispatchRefreshPricesCommand command, CancellationToken ct = default)
     {
         var dateRange = GetDateRange(command);
-        
+
         var delay = TimeSpan.Zero;
-        
+
         foreach (var instrumentId in command.InstrumentIds)
         {
-            await bus.DeferLocal(delay, 
+            await bus.DeferLocal(delay,
                 new RefreshPricesBatchBusCommand(command.PricesRunId, command.PipelineMode, instrumentId, dateRange.StartDate, dateRange.EndDate));
-            delay+=TimeSpan.FromSeconds(2);
-        }   
+            delay += TimeSpan.FromSeconds(2);
+        }
     }
-    
-    private static DateRange GetDateRange(DispatchRefreshPricesCommand command)
+
+    private DateRange GetDateRange(DispatchRefreshPricesCommand command)
     {
         var startDate = command.StartDate ?? DateOnlyHelper.EpochLocal();
-        var endDate = command.EndDate ?? DateOnlyHelper.TodayLocal();
-        
+        var endDate = command.EndDate ?? DateOnlyHelper.TodayLocal(timeProvider);
+
         return new DateRange(startDate, endDate);
     }
 }

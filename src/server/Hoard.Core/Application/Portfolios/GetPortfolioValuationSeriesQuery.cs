@@ -14,7 +14,8 @@ public sealed class GetPortfolioValuationSeriesQuery(int portfolioId) : IQuery<P
 
 public sealed class GetPortfolioValuationSeriesHandler(
     HoardContext context,
-    ILogger<GetPortfolioValuationSeriesHandler> logger)
+    ILogger<GetPortfolioValuationSeriesHandler> logger,
+    TimeProvider timeProvider)
     : IQueryHandler<GetPortfolioValuationSeriesQuery, PortfolioValuationSeriesDto?>
 {
     public async Task<PortfolioValuationSeriesDto?> HandleAsync(
@@ -32,8 +33,8 @@ public sealed class GetPortfolioValuationSeriesHandler(
             return null;
         }
 
-        var from = query.From ?? DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1));
-        var to = query.To ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        var to = query.To ?? DateOnlyHelper.TodayLocal(timeProvider);
+        var from = query.From ?? to.AddYears(-1);
 
         var accountIds = portfolio.Accounts.Select(a => a.Id).ToArray();
 

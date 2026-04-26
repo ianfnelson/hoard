@@ -21,7 +21,7 @@ public class GetPriceSeriesHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetPriceSeriesHandler(context, NullLogger<GetPriceSeriesHandler>.Instance);
+        var handler = new GetPriceSeriesHandler(context, NullLogger<GetPriceSeriesHandler>.Instance, TimeProvider.System);
         var query = new GetPriceSeriesQuery(1)
         {
             From = new DateOnly(2024, 1, 1),
@@ -54,7 +54,7 @@ public class GetPriceSeriesHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetPriceSeriesHandler(context, NullLogger<GetPriceSeriesHandler>.Instance);
+        var handler = new GetPriceSeriesHandler(context, NullLogger<GetPriceSeriesHandler>.Instance, TimeProvider.System);
         var query = new GetPriceSeriesQuery(1)
         {
             From = new DateOnly(2024, 1, 1),
@@ -73,7 +73,7 @@ public class GetPriceSeriesHandlerTests
     public async Task HandleAsync_NonExistentInstrument_ReturnsNull()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetPriceSeriesHandler(context, NullLogger<GetPriceSeriesHandler>.Instance);
+        var handler = new GetPriceSeriesHandler(context, NullLogger<GetPriceSeriesHandler>.Instance, TimeProvider.System);
 
         var result = await handler.HandleAsync(new GetPriceSeriesQuery(999));
 

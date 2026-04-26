@@ -10,7 +10,7 @@ public class GetDatesForBackfillHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetDatesForBackfillHandler(context);
+        var handler = new GetDatesForBackfillHandler(context, TimeProvider.System);
         var query = new GetDatesForBackfillQuery(
             new DateOnly(2024, 1, 1),
             new DateOnly(2024, 1, 3));
@@ -30,7 +30,7 @@ public class GetDatesForBackfillHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetDatesForBackfillHandler(context);
+        var handler = new GetDatesForBackfillHandler(context, TimeProvider.System);
         var query = new GetDatesForBackfillQuery(
             new DateOnly(2024, 6, 15),
             new DateOnly(2024, 6, 15));
@@ -56,7 +56,7 @@ public class GetDatesForBackfillHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetDatesForBackfillHandler(context);
+        var handler = new GetDatesForBackfillHandler(context, TimeProvider.System);
         var query = new GetDatesForBackfillQuery(null, new DateOnly(2024, 3, 7));
 
         // Act

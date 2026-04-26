@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Portfolios;
 
 public record GetPortfolioInstrumentTypesQuery(int PortfolioId) : IQuery<PortfolioInstrumentTypesDto?>;
 
-public class GetPortfolioInstrumentTypesHandler(HoardContext context, ILogger<GetPortfolioInstrumentTypesHandler> logger)
+public class GetPortfolioInstrumentTypesHandler(HoardContext context, ILogger<GetPortfolioInstrumentTypesHandler> logger, TimeProvider timeProvider)
 :IQueryHandler<GetPortfolioInstrumentTypesQuery, PortfolioInstrumentTypesDto?>
 {
     public async Task<PortfolioInstrumentTypesDto?> HandleAsync(GetPortfolioInstrumentTypesQuery query, CancellationToken ct = default)
@@ -22,7 +22,7 @@ public class GetPortfolioInstrumentTypesHandler(HoardContext context, ILogger<Ge
             return null;
         }
         
-        var today = DateOnlyHelper.TodayLocal();
+        var today = DateOnlyHelper.TodayLocal(timeProvider);
         
         var instrumentTypes = await context
             .HoldingValuations

@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.Transactions;
 public record GetDatesForBackfillQuery(DateOnly? StartDate, DateOnly? EndDate)
     : IQuery<IReadOnlyList<DateOnly>>;
 
-public class GetDatesForBackfillHandler(HoardContext context)
+public class GetDatesForBackfillHandler(HoardContext context, TimeProvider timeProvider)
     : IQueryHandler<GetDatesForBackfillQuery, IReadOnlyList<DateOnly>>
 {
     public async Task<IReadOnlyList<DateOnly>> HandleAsync(GetDatesForBackfillQuery query, CancellationToken ct = default)
@@ -22,7 +22,7 @@ public class GetDatesForBackfillHandler(HoardContext context)
     private async Task<DateRange> GetDateRange(GetDatesForBackfillQuery query, CancellationToken ct)
     {
         var startDate = query.StartDate ?? await GetDefaultStartDate(ct);
-        var endDate = query.EndDate.OrToday();
+        var endDate = query.EndDate.OrToday(timeProvider);
 
         return new DateRange(startDate, endDate);
     }
@@ -34,6 +34,6 @@ public class GetDatesForBackfillHandler(HoardContext context)
             .Select(x => x.Date)
             .FirstOrDefaultAsync(ct);
 
-        return earliestTradeDate.OrToday();
+        return earliestTradeDate.OrToday(timeProvider);
     }
 }

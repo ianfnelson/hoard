@@ -10,7 +10,7 @@ public class GetYearsForBackfillHandlerTests
     {
         // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetYearsForBackfillHandler(context);
+        var handler = new GetYearsForBackfillHandler(context, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(new GetYearsForBackfillQuery(2020, 2024));
@@ -31,7 +31,7 @@ public class GetYearsForBackfillHandlerTests
         context.Transactions.Add(TestData.BuyTransaction(date: new DateOnly(2018, 6, 15)));
         await context.SaveChangesAsync();
 
-        var handler = new GetYearsForBackfillHandler(context);
+        var handler = new GetYearsForBackfillHandler(context, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(new GetYearsForBackfillQuery(null, 2020));

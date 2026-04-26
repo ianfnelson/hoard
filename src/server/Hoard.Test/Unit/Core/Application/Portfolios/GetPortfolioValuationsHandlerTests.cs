@@ -22,7 +22,7 @@ public class GetPortfolioValuationsHandlerTests
         context.Accounts.Add(account);
         context.Instruments.Add(instrument);
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = new DateOnly(2024, 6, 15);
         context.Holdings.Add(new Holding
         {
             Id = 1, AccountId = 1, InstrumentId = 1, AsOfDate = today,
@@ -31,7 +31,7 @@ public class GetPortfolioValuationsHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetPortfolioValuationsHandler(context, NullLogger<GetPortfolioValuationsHandler>.Instance);
+        var handler = new GetPortfolioValuationsHandler(context, NullLogger<GetPortfolioValuationsHandler>.Instance, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(new GetPortfolioValuationsQuery(1, null, today));
@@ -47,7 +47,7 @@ public class GetPortfolioValuationsHandlerTests
     public async Task HandleAsync_NonExistentPortfolio_ReturnsNull()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioValuationsHandler(context, NullLogger<GetPortfolioValuationsHandler>.Instance);
+        var handler = new GetPortfolioValuationsHandler(context, NullLogger<GetPortfolioValuationsHandler>.Instance, TimeProvider.System);
 
         var result = await handler.HandleAsync(new GetPortfolioValuationsQuery(999, null, null));
 

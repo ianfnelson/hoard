@@ -15,7 +15,7 @@ public record ProcessCalculatePortfolioPerformanceCommand(Guid PerformanceRunId,
 
 public class ProcessCalculatePortfolioPerformanceHandler(
     ILogger<ProcessCalculatePortfolioPerformanceHandler> logger, HoardContext context,
-    IBus bus, IReturnCalculator returnCalculator) : ICommandHandler<ProcessCalculatePortfolioPerformanceCommand>
+    IBus bus, IReturnCalculator returnCalculator, TimeProvider timeProvider) : ICommandHandler<ProcessCalculatePortfolioPerformanceCommand>
 {
     public async Task HandleAsync(ProcessCalculatePortfolioPerformanceCommand command, CancellationToken ct = default)
     {
@@ -232,13 +232,13 @@ public class ProcessCalculatePortfolioPerformanceHandler(
         return valuation.Value;
     }
 
-    private static PortfolioContext BuildPortfolioContext(
+    private PortfolioContext BuildPortfolioContext(
         Portfolio portfolio,
         List<Transaction> transactions,
         Dictionary<DateOnly, PortfolioValuation> valuations,
         List<PositionPerformance> positionPerformances)
     {
-        var today = DateOnlyHelper.TodayLocal();
+        var today = DateOnlyHelper.TodayLocal(timeProvider);
         var previousDay = today.PreviousTradingDay();
         
         return new PortfolioContext(

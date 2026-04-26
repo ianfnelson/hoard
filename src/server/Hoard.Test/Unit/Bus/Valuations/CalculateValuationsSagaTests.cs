@@ -18,7 +18,7 @@ public class CalculateValuationsSagaTests
 
     public CalculateValuationsSagaTests()
     {
-        _saga = new CalculateValuationsSaga(Mock.Of<ILogger<CalculateValuationsSaga>>(), _mediator.Object, _bus.Object)
+        _saga = new CalculateValuationsSaga(Mock.Of<ILogger<CalculateValuationsSaga>>(), _mediator.Object, _bus.Object, TimeProvider.System)
         {
             Data = new CvSagaData()
         };

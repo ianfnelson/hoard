@@ -5,27 +5,34 @@ using Hoard.Core.Application.Performance;
 using Hoard.Core.Application.Snapshots;
 using Hoard.Messages;
 using Hoard.Messages.Valuations;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace Hoard.Test.Unit.Bus.Propagators;
 
 public class ValuationChangePropagatorTests
 {
+    private static readonly DateOnly Today = new(2024, 6, 15);
+    private static readonly DateOnly Yesterday = Today.AddDays(-1);
+
     private readonly Mock<IMediator> _mediator = new();
+    private readonly FakeTimeProvider _timeProvider = new();
     private readonly ValuationChangePropagator _propagator;
 
     public ValuationChangePropagatorTests()
     {
-        _propagator = new ValuationChangePropagator(_mediator.Object);
+        var ukNoon = new DateTime(Today.Year, Today.Month, Today.Day, 12, 0, 0, DateTimeKind.Unspecified);
+        var utc = TimeZoneInfo.ConvertTimeToUtc(ukNoon, DateOnlyHelper.UkTimeZone);
+        _timeProvider.SetUtcNow(new DateTimeOffset(utc, TimeSpan.Zero));
+
+        _propagator = new ValuationChangePropagator(_mediator.Object, _timeProvider);
     }
 
     [Fact]
     public async Task Handle_HoldingValuationsChanged_DaytimeReactive_Today_DispatchesPositionPerformance()
     {
-        var today = DateOnlyHelper.TodayLocal();
-
         await _propagator.Handle(new HoldingValuationsChangedEvent(
-            Guid.NewGuid(), PipelineMode.DaytimeReactive, 1, today));
+            Guid.NewGuid(), PipelineMode.DaytimeReactive, 1, Today));
 
         _mediator.Verify(m => m.SendAsync(
             It.Is<ProcessCalculatePositionPerformanceCommand>(c =>
@@ -36,10 +43,8 @@ public class ValuationChangePropagatorTests
     [Fact]
     public async Task Handle_HoldingValuationsChanged_DaytimeReactive_NotToday_DoesNotDispatch()
     {
-        var yesterday = DateOnlyHelper.TodayLocal().AddDays(-1);
-
         await _propagator.Handle(new HoldingValuationsChangedEvent(
-            Guid.NewGuid(), PipelineMode.DaytimeReactive, 1, yesterday));
+            Guid.NewGuid(), PipelineMode.DaytimeReactive, 1, Yesterday));
 
         _mediator.Verify(m => m.SendAsync(It.IsAny<ProcessCalculatePositionPerformanceCommand>(), default), Times.Never);
     }
@@ -47,10 +52,8 @@ public class ValuationChangePropagatorTests
     [Fact]
     public async Task Handle_HoldingValuationsChanged_CloseOfDay_DoesNotDispatch()
     {
-        var today = DateOnlyHelper.TodayLocal();
-
         await _propagator.Handle(new HoldingValuationsChangedEvent(
-            Guid.NewGuid(), PipelineMode.CloseOfDay, 1, today));
+            Guid.NewGuid(), PipelineMode.CloseOfDay, 1, Today));
 
         _mediator.Verify(m => m.SendAsync(It.IsAny<ProcessCalculatePositionPerformanceCommand>(), default), Times.Never);
     }
@@ -58,24 +61,20 @@ public class ValuationChangePropagatorTests
     [Fact]
     public async Task Handle_PortfolioValuationChanged_DaytimeReactive_Today_DispatchesSnapshot()
     {
-        var today = DateOnlyHelper.TodayLocal();
-
         await _propagator.Handle(new PortfolioValuationChangedEvent(
-            Guid.NewGuid(), PipelineMode.DaytimeReactive, 5, today));
+            Guid.NewGuid(), PipelineMode.DaytimeReactive, 5, Today));
 
         _mediator.Verify(m => m.SendAsync(
             It.Is<ProcessCalculateSnapshotCommand>(c =>
-                c.PortfolioId == 5 && c.Year == today.Year),
+                c.PortfolioId == 5 && c.Year == Today.Year),
             default), Times.Once);
     }
 
     [Fact]
     public async Task Handle_PortfolioValuationChanged_DaytimeReactive_NotToday_DoesNotDispatch()
     {
-        var yesterday = DateOnlyHelper.TodayLocal().AddDays(-1);
-
         await _propagator.Handle(new PortfolioValuationChangedEvent(
-            Guid.NewGuid(), PipelineMode.DaytimeReactive, 5, yesterday));
+            Guid.NewGuid(), PipelineMode.DaytimeReactive, 5, Yesterday));
 
         _mediator.Verify(m => m.SendAsync(It.IsAny<ProcessCalculateSnapshotCommand>(), default), Times.Never);
     }
@@ -83,10 +82,8 @@ public class ValuationChangePropagatorTests
     [Fact]
     public async Task Handle_PortfolioValuationChanged_CloseOfDay_DoesNotDispatch()
     {
-        var today = DateOnlyHelper.TodayLocal();
-
         await _propagator.Handle(new PortfolioValuationChangedEvent(
-            Guid.NewGuid(), PipelineMode.CloseOfDay, 5, today));
+            Guid.NewGuid(), PipelineMode.CloseOfDay, 5, Today));
 
         _mediator.Verify(m => m.SendAsync(It.IsAny<ProcessCalculateSnapshotCommand>(), default), Times.Never);
     }

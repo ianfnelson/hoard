@@ -12,7 +12,7 @@ public class GetPortfolioInstrumentTypesHandlerTests
     public async Task HandleAsync_NonExistentPortfolio_ReturnsNull()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioInstrumentTypesHandler(context, NullLogger<GetPortfolioInstrumentTypesHandler>.Instance);
+        var handler = new GetPortfolioInstrumentTypesHandler(context, NullLogger<GetPortfolioInstrumentTypesHandler>.Instance, TimeProvider.System);
 
         var result = await handler.HandleAsync(new GetPortfolioInstrumentTypesQuery(999));
 
@@ -27,7 +27,7 @@ public class GetPortfolioInstrumentTypesHandlerTests
         context.Portfolios.Add(TestData.Portfolio());
         await context.SaveChangesAsync();
 
-        var handler = new GetPortfolioInstrumentTypesHandler(context, NullLogger<GetPortfolioInstrumentTypesHandler>.Instance);
+        var handler = new GetPortfolioInstrumentTypesHandler(context, NullLogger<GetPortfolioInstrumentTypesHandler>.Instance, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(new GetPortfolioInstrumentTypesQuery(1));

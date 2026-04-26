@@ -8,7 +8,7 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Valuations;
 
-public class ValuationChangePropagator(IMediator mediator)
+public class ValuationChangePropagator(IMediator mediator, TimeProvider timeProvider)
     : IHandleMessages<HoldingValuationsChangedEvent>,
         IHandleMessages<PortfolioValuationChangedEvent>
 {
@@ -16,7 +16,7 @@ public class ValuationChangePropagator(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            if (message.AsOfDate == DateOnlyHelper.TodayLocal())
+            if (message.AsOfDate == DateOnlyHelper.TodayLocal(timeProvider))
             {
                 var positionPerformanceAppCommand =
                     new ProcessCalculatePositionPerformanceCommand(Guid.NewGuid(), message.InstrumentId,
@@ -31,7 +31,7 @@ public class ValuationChangePropagator(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            if (message.AsOfDate == DateOnlyHelper.TodayLocal())
+            if (message.AsOfDate == DateOnlyHelper.TodayLocal(timeProvider))
             {
                 var appCommand = new ProcessCalculateSnapshotCommand(Guid.NewGuid(), message.PipelineMode, message.PortfolioId, message.AsOfDate.Year);
                 await mediator.SendAsync(appCommand);

@@ -25,7 +25,7 @@ public class TransactionWriteDtoValidatorTests : IDisposable
         _context.TransactionTypes.Add(TestData.TransactionType(TransactionType.DepositPersonal, "Deposit Personal"));
         _context.TransactionTypes.Add(TestData.TransactionType(TransactionType.Fee, "Fee"));
         _context.SaveChanges();
-        _validator = new TransactionWriteDtoValidator(_context);
+        _validator = new TransactionWriteDtoValidator(_context, TimeProvider.System);
     }
 
     private static TransactionWriteDto ValidBuyDto() => new()

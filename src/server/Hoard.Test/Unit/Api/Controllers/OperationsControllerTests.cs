@@ -1,6 +1,8 @@
 using Hoard.Api.Controllers;
+using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Analysis;
+using Microsoft.Extensions.Time.Testing;
 using Hoard.Core.Application.Chrono;
 using Hoard.Core.Application.Holdings;
 using Hoard.Core.Application.News;
@@ -17,12 +19,22 @@ namespace Hoard.Test.Unit.Api.Controllers;
 
 public class AnalysisOperationsControllerTests
 {
+    private static readonly DateOnly FixedToday = new(2024, 6, 15);
+
     private readonly Mock<IMediator> _mediator = new();
+    private readonly FakeTimeProvider _timeProvider = new();
+
+    public AnalysisOperationsControllerTests()
+    {
+        var ukNoon = new DateTime(FixedToday.Year, FixedToday.Month, FixedToday.Day, 12, 0, 0, DateTimeKind.Unspecified);
+        var utc = TimeZoneInfo.ConvertTimeToUtc(ukNoon, DateOnlyHelper.UkTimeZone);
+        _timeProvider.SetUtcNow(new DateTimeOffset(utc, TimeSpan.Zero));
+    }
 
     [Fact]
     public async Task AnalyseInstruments_ReturnsAccepted()
     {
-        var controller = new AnalysisOperationsController(_mediator.Object);
+        var controller = new AnalysisOperationsController(_mediator.Object, _timeProvider);
 
         var result = await controller.AnalyseInstrumentsAsync(new AnalyseInstrumentsRequest());
 
@@ -35,7 +47,7 @@ public class AnalysisOperationsControllerTests
     public async Task AnalyseInstruments_WithAsOfDate_UsesProvidedDate()
     {
         var date = new DateOnly(2024, 6, 15);
-        var controller = new AnalysisOperationsController(_mediator.Object);
+        var controller = new AnalysisOperationsController(_mediator.Object, _timeProvider);
 
         await controller.AnalyseInstrumentsAsync(new AnalyseInstrumentsRequest(date));
 
@@ -47,13 +59,12 @@ public class AnalysisOperationsControllerTests
     [Fact]
     public async Task AnalyseInstruments_WithoutAsOfDate_UsesToday()
     {
-        var controller = new AnalysisOperationsController(_mediator.Object);
+        var controller = new AnalysisOperationsController(_mediator.Object, _timeProvider);
 
         await controller.AnalyseInstrumentsAsync(new AnalyseInstrumentsRequest());
 
         _mediator.Verify(m => m.SendAsync(
-            It.Is<TriggerAnalyseInstrumentsCommand>(c =>
-                c.AsOfDate == DateOnly.FromDateTime(DateTime.Today)),
+            It.Is<TriggerAnalyseInstrumentsCommand>(c => c.AsOfDate == FixedToday),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 }

@@ -26,7 +26,7 @@ public class DispatchRefreshPricesHandlerTests
     public async Task HandleAsync_DefersOneBusCommandPerInstrument()
     {
         var bus = new Mock<IBus>();
-        var handler = new DispatchRefreshPricesHandler(bus.Object);
+        var handler = new DispatchRefreshPricesHandler(bus.Object, TimeProvider.System);
         var runId = Guid.NewGuid();
 
         await handler.HandleAsync(new DispatchRefreshPricesCommand(
@@ -41,7 +41,7 @@ public class DispatchRefreshPricesHandlerTests
     public async Task HandleAsync_EmptyInstrumentIds_SendsNothing()
     {
         var bus = new Mock<IBus>();
-        var handler = new DispatchRefreshPricesHandler(bus.Object);
+        var handler = new DispatchRefreshPricesHandler(bus.Object, TimeProvider.System);
 
         await handler.HandleAsync(new DispatchRefreshPricesCommand(
             Guid.NewGuid(), PipelineMode.CloseOfDay, [],

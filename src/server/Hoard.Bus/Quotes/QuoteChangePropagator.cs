@@ -1,3 +1,4 @@
+using Hoard.Core;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Valuations;
 using Hoard.Core.Domain.Entities;
@@ -14,7 +15,8 @@ public class QuoteChangePropagator(IMediator mediator) :
     {
         if (message.InstrumentTypeId != InstrumentType.FxPair)
         {
-            var date = DateOnly.FromDateTime(message.RetrievedUtc.ToLocalTime());
+            var date = DateOnly.FromDateTime(
+                TimeZoneInfo.ConvertTimeFromUtc(message.RetrievedUtc, DateOnlyHelper.UkTimeZone));
             var appCommand = new ProcessCalculateHoldingValuationsCommand(Guid.NewGuid(), PipelineMode.DaytimeReactive, message.InstrumentId, date);
 
             await mediator.SendAsync(appCommand);

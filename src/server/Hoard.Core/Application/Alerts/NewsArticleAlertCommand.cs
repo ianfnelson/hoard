@@ -12,7 +12,8 @@ public record NewsArticleAlertCommand(PipelineMode PipelineMode, int NewsArticle
 public class NewsArticleAlertHandler(
     INewsAlertSuppressionRuleProvider suppressionRuleProvider,
     HoardContext hoardContext,
-    IAlertService alertService) : ICommandHandler<NewsArticleAlertCommand>
+    IAlertService alertService,
+    TimeProvider timeProvider) : ICommandHandler<NewsArticleAlertCommand>
 {
     public async Task HandleAsync(NewsArticleAlertCommand command, CancellationToken ct = default)
     {
@@ -21,7 +22,7 @@ public class NewsArticleAlertHandler(
             return;
         }
 
-        if (!command.PublishedUtc.Date.Equals(DateTime.UtcNow.Date))
+        if (!command.PublishedUtc.Date.Equals(timeProvider.GetUtcNow().Date))
         {
             return;
         }

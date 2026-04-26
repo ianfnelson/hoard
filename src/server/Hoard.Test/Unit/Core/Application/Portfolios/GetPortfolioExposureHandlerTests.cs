@@ -3,32 +3,40 @@ using Hoard.Core.Application.Portfolios;
 using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace Hoard.Test.Unit.Core.Application.Portfolios;
 
 public class GetPortfolioExposureHandlerTests
 {
+    private static readonly DateOnly Today = new(2024, 6, 15);
+
     private readonly Mock<ILogger<GetPortfolioExposureHandler>> _mockLogger;
     private readonly IRebalanceService _rebalanceService;
+    private readonly FakeTimeProvider _timeProvider = new();
 
     public GetPortfolioExposureHandlerTests()
     {
         _mockLogger = new Mock<ILogger<GetPortfolioExposureHandler>>();
         _rebalanceService = new RebalanceService();
+
+        var ukNoon = new DateTime(Today.Year, Today.Month, Today.Day, 12, 0, 0, DateTimeKind.Unspecified);
+        var utc = TimeZoneInfo.ConvertTimeToUtc(ukNoon, DateOnlyHelper.UkTimeZone);
+        _timeProvider.SetUtcNow(new DateTimeOffset(utc, TimeSpan.Zero));
     }
+
+    private GetPortfolioExposureHandler CreateHandler(Hoard.Core.Data.HoardContext context)
+        => new(context, _mockLogger.Object, _rebalanceService, _timeProvider);
 
     [Fact]
     public async Task HandleAsync_PortfolioNotFound_ReturnsNull()
     {
-        // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
+        var handler = CreateHandler(context);
 
-        // Act
         var result = await handler.HandleAsync(new GetPortfolioExposureQuery(999));
 
-        // Assert
         Assert.Null(result);
         _mockLogger.Verify(
             x => x.Log(
@@ -43,17 +51,14 @@ public class GetPortfolioExposureHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyPortfolio_ReturnsZeroValues()
     {
-        // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
+        var handler = CreateHandler(context);
 
         context.Portfolios.Add(TestData.Portfolio());
         await context.SaveChangesAsync();
 
-        // Act
         var result = await handler.HandleAsync(new GetPortfolioExposureQuery(1));
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result.PortfolioId);
         Assert.Equal(0m, result.TotalValue);
@@ -65,25 +70,19 @@ public class GetPortfolioExposureHandlerTests
     [Fact]
     public async Task HandleAsync_SingleHolding_ReturnsCorrectExposure()
     {
-        // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
+        var handler = CreateHandler(context);
 
-        var today = DateOnlyHelper.TodayLocal();
-
-        // Setup reference data
         context.AssetClasses.Add(TestData.AssetClass(1, "Equity"));
         context.AssetSubclasses.Add(TestData.AssetSubclass(10, "Stocks", 1));
         context.InstrumentTypes.Add(TestData.InstrumentType());
         context.Currencies.Add(TestData.Currency());
 
-        // Setup portfolio and account
         var account = TestData.Account();
         var portfolio = TestData.Portfolio();
         portfolio.Accounts.Add(account);
         context.Portfolios.Add(portfolio);
 
-        // Setup instrument and holding
         var instrument = new Instrument
         {
             Id = 1,
@@ -96,29 +95,18 @@ public class GetPortfolioExposureHandlerTests
         };
         context.Instruments.Add(instrument);
 
-        var holding = new Holding
-        {
-            Id = 1,
-            AccountId = 1,
-            InstrumentId = 1,
-            AsOfDate = today
-        };
-        context.Holdings.Add(holding);
-
+        context.Holdings.Add(new Holding { Id = 1, AccountId = 1, InstrumentId = 1, AsOfDate = Today });
         context.HoldingValuations.Add(new HoldingValuation { Id = 1, HoldingId = 1, Value = 10000m });
         context.TargetAllocations.Add(new TargetAllocation { PortfolioId = 1, AssetSubclassId = 10, Target = 100m });
 
         await context.SaveChangesAsync();
 
-        // Act
         var result = await handler.HandleAsync(new GetPortfolioExposureQuery(1));
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result.PortfolioId);
         Assert.Equal(10000m, result.TotalValue);
 
-        // Check asset class exposure
         var assetClassExposure = Assert.Single(result.AssetClasses);
         Assert.Equal(1, assetClassExposure.Id);
         Assert.Equal("Equity", assetClassExposure.Name);
@@ -129,7 +117,6 @@ public class GetPortfolioExposureHandlerTests
         Assert.Equal(0m, assetClassExposure.DeviationValue);
         Assert.Equal(0m, assetClassExposure.DeviationPercentage);
 
-        // Check asset subclass exposure
         var subclassExposure = Assert.Single(result.AssetSubclasses);
         Assert.Equal(10, subclassExposure.Id);
         Assert.Equal("Stocks", subclassExposure.Name);
@@ -140,13 +127,9 @@ public class GetPortfolioExposureHandlerTests
     [Fact]
     public async Task HandleAsync_MultipleSubclasses_CalculatesExposureCorrectly()
     {
-        // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
+        var handler = CreateHandler(context);
 
-        var today = DateOnlyHelper.TodayLocal();
-
-        // Setup reference data
         context.AssetClasses.AddRange(
             TestData.AssetClass(1, "Equity"),
             TestData.AssetClass(2, "Fixed Income", "#00FF00"));
@@ -156,7 +139,6 @@ public class GetPortfolioExposureHandlerTests
         context.InstrumentTypes.Add(TestData.InstrumentType());
         context.Currencies.Add(TestData.Currency());
 
-        // Setup portfolio and account
         var account = TestData.Account();
         var portfolio = TestData.Portfolio();
         portfolio.Accounts.Add(account);
@@ -166,29 +148,24 @@ public class GetPortfolioExposureHandlerTests
             new Instrument { Id = 1, Name = "Stock Fund", Ticker = "STK", AssetSubclassId = 10, InstrumentTypeId = 1, CurrencyId = "GBP" },
             new Instrument { Id = 2, Name = "Bond Fund", Ticker = "BND", AssetSubclassId = 20, InstrumentTypeId = 1, CurrencyId = "GBP" });
 
-        // Setup holdings and valuations
         context.Holdings.AddRange(
-            new Holding { Id = 1, AccountId = 1, InstrumentId = 1, AsOfDate = today },
-            new Holding { Id = 2, AccountId = 1, InstrumentId = 2, AsOfDate = today });
+            new Holding { Id = 1, AccountId = 1, InstrumentId = 1, AsOfDate = Today },
+            new Holding { Id = 2, AccountId = 1, InstrumentId = 2, AsOfDate = Today });
         context.HoldingValuations.AddRange(
             new HoldingValuation { Id = 1, HoldingId = 1, Value = 60000m },
             new HoldingValuation { Id = 2, HoldingId = 2, Value = 40000m });
 
-        // Setup target allocations (50/50 split)
         context.TargetAllocations.AddRange(
             new TargetAllocation { PortfolioId = 1, AssetSubclassId = 10, Target = 50m },
             new TargetAllocation { PortfolioId = 1, AssetSubclassId = 20, Target = 50m });
 
         await context.SaveChangesAsync();
 
-        // Act
         var result = await handler.HandleAsync(new GetPortfolioExposureQuery(1));
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(100000m, result.TotalValue);
 
-        // Check subclass exposure
         Assert.Equal(2, result.AssetSubclasses.Count);
 
         var stocksExposure = result.AssetSubclasses.First(x => x.Id == 10);
@@ -207,7 +184,6 @@ public class GetPortfolioExposureHandlerTests
         Assert.Equal(-10000m, bondsExposure.DeviationValue);
         Assert.Equal(-20m, bondsExposure.DeviationPercentage);
 
-        // Check asset class roll-up
         Assert.Equal(2, result.AssetClasses.Count);
         var equityExposure = result.AssetClasses.First(x => x.Id == 1);
         Assert.Equal(60000m, equityExposure.Value);
@@ -217,13 +193,9 @@ public class GetPortfolioExposureHandlerTests
     [Fact]
     public async Task HandleAsync_OrdersSubclassesByPercentageDescending()
     {
-        // Arrange
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioExposureHandler(context, _mockLogger.Object, _rebalanceService);
+        var handler = CreateHandler(context);
 
-        var today = DateOnlyHelper.TodayLocal();
-
-        // Setup reference data
         context.AssetClasses.Add(TestData.AssetClass(1, "Mixed", "#000000"));
         context.AssetSubclasses.AddRange(
             TestData.AssetSubclass(1, "Large Holdings", 1, "#111"),
@@ -237,23 +209,16 @@ public class GetPortfolioExposureHandlerTests
         portfolio.Accounts.Add(account);
         context.Portfolios.Add(portfolio);
 
-        // Create instruments with different values
-        for (int i = 1; i <= 3; i++)
+        for (var i = 1; i <= 3; i++)
         {
             context.Instruments.Add(new Instrument
             {
-                Id = i,
-                Name = $"Instrument {i}",
-                Ticker = $"TST{i}",
-                AssetSubclassId = i,
-                InstrumentTypeId = 1,
-                CurrencyId = "GBP"
+                Id = i, Name = $"Instrument {i}", Ticker = $"TST{i}",
+                AssetSubclassId = i, InstrumentTypeId = 1, CurrencyId = "GBP"
             });
-
-            context.Holdings.Add(new Holding { Id = i, AccountId = 1, InstrumentId = i, AsOfDate = today });
+            context.Holdings.Add(new Holding { Id = i, AccountId = 1, InstrumentId = i, AsOfDate = Today });
         }
 
-        // Values: Large=50k, Medium=30k, Small=20k
         context.HoldingValuations.AddRange(
             new HoldingValuation { Id = 1, HoldingId = 1, Value = 50000m },
             new HoldingValuation { Id = 2, HoldingId = 2, Value = 30000m },
@@ -261,14 +226,10 @@ public class GetPortfolioExposureHandlerTests
 
         await context.SaveChangesAsync();
 
-        // Act
         var result = await handler.HandleAsync(new GetPortfolioExposureQuery(1));
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(3, result.AssetSubclasses.Count);
-
-        // Should be ordered by percentage descending
         Assert.Equal("Large Holdings", result.AssetSubclasses[0].Name);
         Assert.Equal("Medium Holdings", result.AssetSubclasses[1].Name);
         Assert.Equal("Small Holdings", result.AssetSubclasses[2].Name);

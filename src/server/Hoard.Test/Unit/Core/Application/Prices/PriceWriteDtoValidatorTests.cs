@@ -18,7 +18,7 @@ public class PriceWriteDtoValidatorTests : IDisposable
         TestData.SeedReferenceData(_context);
         _context.Instruments.Add(TestData.Instrument());
         _context.SaveChanges();
-        _validator = new PriceWriteDtoValidator(_context);
+        _validator = new PriceWriteDtoValidator(_context, TimeProvider.System);
     }
 
     private static PriceWriteDto ValidDto() => new()

@@ -8,7 +8,7 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Holdings;
 
-public class HoldingChangePropagator(IMediator mediator)
+public class HoldingChangePropagator(IMediator mediator, TimeProvider timeProvider)
     : IHandleMessages<HoldingChangedEvent>,
         IHandleMessages<HoldingsCalculatedEvent>
 {
@@ -26,7 +26,7 @@ public class HoldingChangePropagator(IMediator mediator)
     {
         if (message.PipelineMode == PipelineMode.DaytimeReactive)
         {
-            if (message.AsOfDate == DateOnlyHelper.TodayLocal())
+            if (message.AsOfDate == DateOnlyHelper.TodayLocal(timeProvider))
             {
                 var appCommand = new ProcessCalculatePositionsCommand(Guid.NewGuid(), message.PipelineMode);
                 await mediator.SendAsync(appCommand);

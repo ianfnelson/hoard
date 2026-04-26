@@ -23,7 +23,7 @@ using Rebus.Sagas;
 
 namespace Hoard.Bus.Chrono;
 
-public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga> logger)
+public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga> logger, TimeProvider timeProvider)
 : Saga<ChronoSagaData>,
     IAmInitiatedBy<StartCloseOfDaySagaCommand>,
     IHandleMessages<PricesRefreshedEvent>,
@@ -51,7 +51,7 @@ public class CloseOfDaySaga(IBus bus, IMediator mediator, ILogger<CloseOfDaySaga
     {
         var (chronoRunId, nullableAsOfDate, pipelineMode) = message;
 
-        var asOfDate = nullableAsOfDate.OrToday();
+        var asOfDate = nullableAsOfDate.OrToday(timeProvider);
 
         Data.ChronoRunId = chronoRunId;
         Data.PipelineMode = pipelineMode;

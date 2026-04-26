@@ -21,16 +21,20 @@ public class SchedulerBootstrapper : IHostedService
     private static readonly ActivitySource ActivitySource = new("hoard.scheduler");
     private static readonly TimeZoneInfo UkTimeZone = DateOnlyHelper.UkTimeZone;
 
+    private readonly TimeProvider _timeProvider;
+
     public SchedulerBootstrapper(
         IBackgroundJobClient jobs,
         IRecurringJobManager recurring,
         IMediator mediator,
-        ILogger<SchedulerBootstrapper> logger)
+        ILogger<SchedulerBootstrapper> logger,
+        TimeProvider timeProvider)
     {
         _jobs = jobs;
         _recurring = recurring;
         _mediator = mediator;
         _logger = logger;
+        _timeProvider = timeProvider;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -123,7 +127,7 @@ public class SchedulerBootstrapper : IHostedService
         
         _logger.LogInformation("Triggering Close Of Day");
 
-        var today = DateOnlyHelper.TodayLocal();
+        var today = DateOnlyHelper.TodayLocal(_timeProvider);
         
         var command = new TriggerCloseOfDayRunCommand(today);
         

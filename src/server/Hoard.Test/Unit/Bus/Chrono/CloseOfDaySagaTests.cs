@@ -23,7 +23,7 @@ public class CloseOfDaySagaTests
 
     public CloseOfDaySagaTests()
     {
-        _saga = new CloseOfDaySaga(_bus.Object, _mediator.Object, Mock.Of<ILogger<CloseOfDaySaga>>())
+        _saga = new CloseOfDaySaga(_bus.Object, _mediator.Object, Mock.Of<ILogger<CloseOfDaySaga>>(), TimeProvider.System)
         {
             Data = new ChronoSagaData()
         };

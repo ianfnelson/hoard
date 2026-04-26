@@ -16,7 +16,7 @@ public class GetInstrumentsForNewsRefreshHandlerTests
         SeedInstrumentWithNewsFeed(context, 2, "Stock B");
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForNewsRefreshHandler(context);
+        var handler = new GetInstrumentsForNewsRefreshHandler(context, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(
@@ -36,7 +36,7 @@ public class GetInstrumentsForNewsRefreshHandlerTests
         context.Instruments.Add(new Instrument { Id = 2, Name = "Stock B", Ticker = "SB", CurrencyId = "GBP" });
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForNewsRefreshHandler(context);
+        var handler = new GetInstrumentsForNewsRefreshHandler(context, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(

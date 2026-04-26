@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.News;
 
 public record GetInstrumentsForNewsRefreshQuery(int? InstrumentId, PipelineMode PipelineMode = PipelineMode.Backfill) : IQuery<IReadOnlyList<int>>;
 
-public class GetInstrumentsForNewsRefreshHandler(HoardContext context)
+public class GetInstrumentsForNewsRefreshHandler(HoardContext context, TimeProvider timeProvider)
     : IQueryHandler<GetInstrumentsForNewsRefreshQuery, IReadOnlyList<int>>
 {
     public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForNewsRefreshQuery query, CancellationToken ct = default)
@@ -21,7 +21,7 @@ public class GetInstrumentsForNewsRefreshHandler(HoardContext context)
         }
         else if (query.PipelineMode is PipelineMode.DaytimeReactive or PipelineMode.CloseOfDay)
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateOnlyHelper.TodayLocal(timeProvider);
             var heldInstrumentIds = context.Holdings
                 .Where(h => h.AsOfDate == today)
                 .Select(h => h.InstrumentId);

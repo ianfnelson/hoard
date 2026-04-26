@@ -14,12 +14,13 @@ public record ProcessCalculateHoldingsCommand(Guid HoldingsRunId, PipelineMode P
 public class ProcessCalculateHoldingsHandler(
     IBus bus,
     ILogger<ProcessCalculateHoldingsHandler> logger,
-    HoardContext context)
+    HoardContext context,
+    TimeProvider timeProvider)
     : ICommandHandler<ProcessCalculateHoldingsCommand>
 {
     public async Task HandleAsync(ProcessCalculateHoldingsCommand command, CancellationToken ct = default)
     {
-        var asOfDate = command.AsOfDate.OrToday();
+        var asOfDate = command.AsOfDate.OrToday(timeProvider);
         
         logger.LogInformation("Starting holdings calculation for {Date}", asOfDate.ToIsoDateString());
 

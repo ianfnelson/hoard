@@ -20,8 +20,9 @@ public class QuoteChangePropagatorTests
     [Fact]
     public async Task Handle_NonFxInstrument_DispatchesHoldingValuations()
     {
-        var retrievedUtc = DateTime.UtcNow;
-        var expectedDate = DateOnly.FromDateTime(retrievedUtc.ToLocalTime());
+        var retrievedUtc = new DateTime(2024, 6, 15, 12, 0, 0, DateTimeKind.Utc);
+        var expectedDate = DateOnly.FromDateTime(
+            TimeZoneInfo.ConvertTimeFromUtc(retrievedUtc, Hoard.Core.DateOnlyHelper.UkTimeZone));
 
         await _propagator.Handle(new QuoteChangedEvent(42, InstrumentType.Shares, retrievedUtc, 1.5m));
 

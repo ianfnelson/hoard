@@ -20,7 +20,7 @@ public class ProcessCalculatePortfolioPerformanceHandlerTests : IDisposable
     private readonly Mock<IReturnCalculator> _returnCalculator = new();
     private readonly ProcessCalculatePortfolioPerformanceHandler _handler;
 
-    private static readonly DateOnly Today = DateOnly.FromDateTime(DateTime.Now);
+    private static readonly DateOnly Today = new(2024, 6, 15);
     private static readonly DateOnly Yesterday = Today.PreviousTradingDay();
 
     public ProcessCalculatePortfolioPerformanceHandlerTests()
@@ -32,9 +32,14 @@ public class ProcessCalculatePortfolioPerformanceHandlerTests : IDisposable
                 It.IsAny<IList<Transaction>>(), It.IsAny<PerformanceScope>(), It.IsAny<bool>()))
             .Returns(0.05m);
 
+        var timeProvider = new Microsoft.Extensions.Time.Testing.FakeTimeProvider();
+        var ukNoon = new DateTime(Today.Year, Today.Month, Today.Day, 12, 0, 0, DateTimeKind.Unspecified);
+        var utc = TimeZoneInfo.ConvertTimeToUtc(ukNoon, Hoard.Core.DateOnlyHelper.UkTimeZone);
+        timeProvider.SetUtcNow(new DateTimeOffset(utc, TimeSpan.Zero));
+
         _handler = new ProcessCalculatePortfolioPerformanceHandler(
             NullLogger<ProcessCalculatePortfolioPerformanceHandler>.Instance,
-            _context, _bus.Object, _returnCalculator.Object);
+            _context, _bus.Object, _returnCalculator.Object, timeProvider);
     }
 
     private async Task<(Portfolio portfolio, Account account)> SetupPortfolioWithAccount()

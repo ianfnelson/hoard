@@ -11,7 +11,8 @@ public record GetPortfolioExposureQuery(int PortfolioId) : IQuery<PortfolioExpos
 public class GetPortfolioExposureHandler(
     HoardContext context,
     ILogger<GetPortfolioExposureHandler> logger,
-    IRebalanceService rebalanceService)
+    IRebalanceService rebalanceService,
+    TimeProvider timeProvider)
     : IQueryHandler<GetPortfolioExposureQuery, PortfolioExposureDto?>
 {
     public async Task<PortfolioExposureDto?> HandleAsync(
@@ -29,7 +30,7 @@ public class GetPortfolioExposureHandler(
             return null;
         }
         
-        var today = DateOnlyHelper.TodayLocal();
+        var today = DateOnlyHelper.TodayLocal(timeProvider);
 
         // ------------------------------------------------------------------
         // 1. Load taxonomy (asset subclasses + asset classes)

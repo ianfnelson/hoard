@@ -23,7 +23,8 @@ public class ProcessCalculateHoldingValuationsHandlerTests : IDisposable
         _handler = new ProcessCalculateHoldingsValuationHandler(
             _bus.Object,
             NullLogger<ProcessCalculateHoldingsValuationHandler>.Instance,
-            _context);
+            _context,
+            TimeProvider.System);
     }
 
     [Fact]

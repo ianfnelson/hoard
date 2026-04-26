@@ -5,18 +5,27 @@ using Hoard.Core.Application.Positions;
 using Hoard.Core.Application.Valuations;
 using Hoard.Messages;
 using Hoard.Messages.Holdings;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace Hoard.Test.Unit.Bus.Propagators;
 
 public class HoldingChangePropagatorTests
 {
+    private static readonly DateOnly Today = new(2024, 6, 15);
+    private static readonly DateOnly Yesterday = Today.AddDays(-1);
+
     private readonly Mock<IMediator> _mediator = new();
+    private readonly FakeTimeProvider _timeProvider = new();
     private readonly HoldingChangePropagator _propagator;
 
     public HoldingChangePropagatorTests()
     {
-        _propagator = new HoldingChangePropagator(_mediator.Object);
+        var ukNoon = new DateTime(Today.Year, Today.Month, Today.Day, 12, 0, 0, DateTimeKind.Unspecified);
+        var utc = TimeZoneInfo.ConvertTimeToUtc(ukNoon, DateOnlyHelper.UkTimeZone);
+        _timeProvider.SetUtcNow(new DateTimeOffset(utc, TimeSpan.Zero));
+
+        _propagator = new HoldingChangePropagator(_mediator.Object, _timeProvider);
     }
 
     [Fact]
@@ -45,9 +54,7 @@ public class HoldingChangePropagatorTests
     [Fact]
     public async Task Handle_HoldingsCalculated_DaytimeReactive_Today_DispatchesPositions()
     {
-        var today = DateOnlyHelper.TodayLocal();
-
-        await _propagator.Handle(new HoldingsCalculatedEvent(Guid.NewGuid(), PipelineMode.DaytimeReactive, today));
+        await _propagator.Handle(new HoldingsCalculatedEvent(Guid.NewGuid(), PipelineMode.DaytimeReactive, Today));
 
         _mediator.Verify(m => m.SendAsync(
             It.Is<ProcessCalculatePositionsCommand>(c => c.PipelineMode == PipelineMode.DaytimeReactive),
@@ -57,9 +64,7 @@ public class HoldingChangePropagatorTests
     [Fact]
     public async Task Handle_HoldingsCalculated_DaytimeReactive_NotToday_DoesNotDispatchPositions()
     {
-        var yesterday = DateOnlyHelper.TodayLocal().AddDays(-1);
-
-        await _propagator.Handle(new HoldingsCalculatedEvent(Guid.NewGuid(), PipelineMode.DaytimeReactive, yesterday));
+        await _propagator.Handle(new HoldingsCalculatedEvent(Guid.NewGuid(), PipelineMode.DaytimeReactive, Yesterday));
 
         _mediator.Verify(m => m.SendAsync(It.IsAny<ProcessCalculatePositionsCommand>(), default), Times.Never);
     }
@@ -67,9 +72,7 @@ public class HoldingChangePropagatorTests
     [Fact]
     public async Task Handle_HoldingsCalculated_CloseOfDay_DoesNotDispatchPositions()
     {
-        var today = DateOnlyHelper.TodayLocal();
-
-        await _propagator.Handle(new HoldingsCalculatedEvent(Guid.NewGuid(), PipelineMode.CloseOfDay, today));
+        await _propagator.Handle(new HoldingsCalculatedEvent(Guid.NewGuid(), PipelineMode.CloseOfDay, Today));
 
         _mediator.Verify(m => m.SendAsync(It.IsAny<ProcessCalculatePositionsCommand>(), default), Times.Never);
     }

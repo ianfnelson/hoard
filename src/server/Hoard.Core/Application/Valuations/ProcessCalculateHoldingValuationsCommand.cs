@@ -15,7 +15,8 @@ public record ProcessCalculateHoldingValuationsCommand(Guid ValuationsRunId, Pip
 public class ProcessCalculateHoldingsValuationHandler(
     IBus bus,
     ILogger<ProcessCalculateHoldingsValuationHandler> logger,
-    HoardContext context)
+    HoardContext context,
+    TimeProvider timeProvider)
     : ICommandHandler<ProcessCalculateHoldingValuationsCommand>
 {
     public async Task HandleAsync(ProcessCalculateHoldingValuationsCommand command, CancellationToken ct = default)
@@ -124,8 +125,8 @@ public class ProcessCalculateHoldingsValuationHandler(
     private async Task<decimal> GetLatestPriceForInstrument(Instrument instrument, DateOnly asOfDate, CancellationToken ct = default)
     {
         // If we are valuing a holding for today before 17:00, use the quote if there is one.
-        if (asOfDate == DateOnlyHelper.TodayLocal() 
-            && DateTime.Now.TimeOfDay < new TimeSpan(17,0,0)
+        if (asOfDate == DateOnlyHelper.TodayLocal(timeProvider)
+            && DateOnlyHelper.NowUk(timeProvider).TimeOfDay < new TimeSpan(17, 0, 0)
             && instrument.Quote != null)
         {
             return instrument.Quote.RegularMarketPrice;

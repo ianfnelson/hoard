@@ -7,7 +7,7 @@ using Rebus.Handlers;
 
 namespace Hoard.Bus.Transactions;
 
-public class TransactionChangePropagator(IMediator mediator) :
+public class TransactionChangePropagator(IMediator mediator, TimeProvider timeProvider) :
     IHandleMessages<TransactionCreatedEvent>,
     IHandleMessages<TransactionDeletedEvent>,
     IHandleMessages<TransactionUpdatedEvent>
@@ -29,7 +29,7 @@ public class TransactionChangePropagator(IMediator mediator) :
 
     private async Task CalculateHoldingsForDatesFrom(PipelineMode pipelineMode, DateOnly date)
     {
-        var today = DateOnlyHelper.TodayLocal();
+        var today = DateOnlyHelper.TodayLocal(timeProvider);
 
         for (var d = date; d <= today; d = d.AddDays(1))
         {

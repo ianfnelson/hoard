@@ -171,7 +171,7 @@ public class GetInstrumentsForRefreshHandlerTests
         SeedInstrumentWithPriceFeed(context, 2, "Stock B");
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForRefreshHandler(context);
+        var handler = new GetInstrumentsForRefreshHandler(context, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(
@@ -195,7 +195,7 @@ public class GetInstrumentsForRefreshHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForRefreshHandler(context);
+        var handler = new GetInstrumentsForRefreshHandler(context, TimeProvider.System);
 
         // Act
         var result = await handler.HandleAsync(

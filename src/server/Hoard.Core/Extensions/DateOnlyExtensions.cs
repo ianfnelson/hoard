@@ -2,14 +2,14 @@ namespace Hoard.Core.Extensions;
 
 public static class DateOnlyExtensions
 {
-    public static DateOnly OrToday(this DateOnly dateOnly)
+    public static DateOnly OrToday(this DateOnly dateOnly, TimeProvider timeProvider)
     {
-        return dateOnly == default ? DateOnlyHelper.TodayLocal() : dateOnly;
+        return dateOnly == default ? DateOnlyHelper.TodayLocal(timeProvider) : dateOnly;
     }
-    
-    public static DateOnly OrToday(this DateOnly? value)
+
+    public static DateOnly OrToday(this DateOnly? value, TimeProvider timeProvider)
     {
-        return (value ?? default).OrToday();
+        return (value ?? default).OrToday(timeProvider);
     }
 
     public static bool IsWeekday(this DateOnly date)

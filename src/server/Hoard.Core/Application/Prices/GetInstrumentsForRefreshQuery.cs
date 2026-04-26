@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.Prices;
 
 public record GetInstrumentsForRefreshQuery(int? InstrumentId, PipelineMode PipelineMode = PipelineMode.Backfill) : IQuery<IReadOnlyList<int>>;
 
-public class GetInstrumentsForRefreshHandler(HoardContext context)
+public class GetInstrumentsForRefreshHandler(HoardContext context, TimeProvider timeProvider)
     : IQueryHandler<GetInstrumentsForRefreshQuery, IReadOnlyList<int>>
 {
     public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForRefreshQuery query, CancellationToken ct = default)
@@ -21,7 +21,7 @@ public class GetInstrumentsForRefreshHandler(HoardContext context)
         }
         else if (query.PipelineMode is PipelineMode.DaytimeReactive or PipelineMode.CloseOfDay)
         {
-            var today = DateOnlyHelper.TodayLocal();
+            var today = DateOnlyHelper.TodayLocal(timeProvider);
             var heldInstrumentIds = context.Holdings
                 .Where(h => h.AsOfDate == today)
                 .Select(h => h.InstrumentId);
