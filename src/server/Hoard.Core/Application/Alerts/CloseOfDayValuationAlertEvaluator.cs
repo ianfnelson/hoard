@@ -4,7 +4,7 @@ using Hoard.Core.Extensions;
 
 namespace Hoard.Core.Application.Alerts;
 
-public sealed class CloseOfDayValuationAlertEvaluator(IAlertService alertService) : IPortfolioAlertEvaluator
+public sealed class CloseOfDayValuationAlertEvaluator(IAlertService alertService) : ICloseOfDayPortfolioAlertEvaluator
 {
     public Task EvaluateAsync(
         PortfolioPerformance portfolioPerformance, DateOnly asOfDate, CancellationToken ct)

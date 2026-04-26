@@ -15,13 +15,15 @@ public class CloseOfDayAlertHandlerTests : IDisposable
 
     private readonly HoardContext _context;
     private readonly Mock<IPortfolioAlertEvaluator> _evaluator = new();
+    private readonly Mock<ICloseOfDayPortfolioAlertEvaluator> _codEvaluator = new();
     private readonly FakeTimeProvider _timeProvider = new();
     private readonly CloseOfDayAlertHandler _handler;
 
     public CloseOfDayAlertHandlerTests()
     {
         _context = TestContextFactory.Create();
-        _handler = new CloseOfDayAlertHandler(_context, [_evaluator.Object], _timeProvider);
+        _handler = new CloseOfDayAlertHandler(
+            _context, [_evaluator.Object], [_codEvaluator.Object], _timeProvider);
     }
 
     private void SetUkDate(DateOnly date)
@@ -41,6 +43,9 @@ public class CloseOfDayAlertHandlerTests : IDisposable
         _evaluator.Verify(e => e.EvaluateAsync(
             It.IsAny<PortfolioPerformance>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
             Times.Never);
+        _codEvaluator.Verify(e => e.EvaluateAsync(
+            It.IsAny<PortfolioPerformance>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Fact]
@@ -51,6 +56,9 @@ public class CloseOfDayAlertHandlerTests : IDisposable
         await _handler.HandleAsync(new CloseOfDayAlertCommand(Saturday));
 
         _evaluator.Verify(e => e.EvaluateAsync(
+            It.IsAny<PortfolioPerformance>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        _codEvaluator.Verify(e => e.EvaluateAsync(
             It.IsAny<PortfolioPerformance>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
@@ -65,6 +73,9 @@ public class CloseOfDayAlertHandlerTests : IDisposable
         _evaluator.Verify(e => e.EvaluateAsync(
             It.IsAny<PortfolioPerformance>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
             Times.Never);
+        _codEvaluator.Verify(e => e.EvaluateAsync(
+            It.IsAny<PortfolioPerformance>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Fact]
@@ -74,7 +85,7 @@ public class CloseOfDayAlertHandlerTests : IDisposable
 
         var second = new Mock<IPortfolioAlertEvaluator>();
         var handler = new CloseOfDayAlertHandler(
-            _context, [_evaluator.Object, second.Object], _timeProvider);
+            _context, [_evaluator.Object, second.Object], [_codEvaluator.Object], _timeProvider);
 
         _context.Portfolios.AddRange(
             TestData.Portfolio(id: 1, name: "ISA"),
@@ -95,6 +106,9 @@ public class CloseOfDayAlertHandlerTests : IDisposable
             It.Is<PortfolioPerformance>(p => p.PortfolioId == 2), Wednesday, It.IsAny<CancellationToken>()),
             Times.Once);
         second.Verify(e => e.EvaluateAsync(
+            It.IsAny<PortfolioPerformance>(), Wednesday, It.IsAny<CancellationToken>()),
+            Times.Exactly(2));
+        _codEvaluator.Verify(e => e.EvaluateAsync(
             It.IsAny<PortfolioPerformance>(), Wednesday, It.IsAny<CancellationToken>()),
             Times.Exactly(2));
     }

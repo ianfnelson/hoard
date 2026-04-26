@@ -9,6 +9,7 @@ public record CloseOfDayAlertCommand(DateOnly AsOfDate) : ICommand;
 public class CloseOfDayAlertHandler(
     HoardContext hoardContext,
     IEnumerable<IPortfolioAlertEvaluator> evaluators,
+    IEnumerable<ICloseOfDayPortfolioAlertEvaluator> closeOfDayEvaluators,
     TimeProvider timeProvider)
     : ICommandHandler<CloseOfDayAlertCommand>
 {
@@ -31,6 +32,11 @@ public class CloseOfDayAlertHandler(
         foreach (var portfolioPerformance in portfolioPerformances)
         {
             foreach (var evaluator in evaluators)
+            {
+                await evaluator.EvaluateAsync(portfolioPerformance, command.AsOfDate, ct);
+            }
+
+            foreach (var evaluator in closeOfDayEvaluators)
             {
                 await evaluator.EvaluateAsync(portfolioPerformance, command.AsOfDate, ct);
             }

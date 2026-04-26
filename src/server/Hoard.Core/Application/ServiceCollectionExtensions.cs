@@ -93,6 +93,12 @@ public static class ServiceCollectionExtensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
+        services.Scan(s => s
+            .FromAssemblyOf<ICommand>()
+            .AddClasses(c => c.AssignableTo<ICloseOfDayPortfolioAlertEvaluator>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
         return services;
     }
 }
