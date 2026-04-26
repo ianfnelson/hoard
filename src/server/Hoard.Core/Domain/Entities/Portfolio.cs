@@ -10,6 +10,9 @@ public class Portfolio : Entity<int>
     public PortfolioPerformance? Performance { get; set; }
     
     public bool IsActive { get; set; } = true;
-    
+
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
+
+    public decimal? AllTimeHighValue { get; set; }
+    public DateOnly? AllTimeHighDate { get; set; }
 }

@@ -14,5 +14,8 @@ public class PortfolioConfiguration : IEntityTypeConfiguration<Portfolio>
         builder.Property(e => e.CreatedUtc)
             .HasColumnType("datetime2(3)")
             .HasDefaultValueSql("SYSUTCDATETIME()");
+
+        builder.Property(e => e.AllTimeHighValue)
+            .HasColumnType("decimal(18,2)");
     }
 }

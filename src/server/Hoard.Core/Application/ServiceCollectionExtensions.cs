@@ -86,6 +86,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<IRebalanceService, RebalanceService>();
         services.AddScoped<IRunLogService, RunLogService>();
+
+        services.Scan(s => s
+            .FromAssemblyOf<ICommand>()
+            .AddClasses(c => c.AssignableTo<IPortfolioAlertEvaluator>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
         return services;
     }
 }

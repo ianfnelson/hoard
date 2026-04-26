@@ -15,7 +15,7 @@ public class QuoteAlertHandler(
 {
     public async Task HandleAsync(QuoteAlertCommand command, CancellationToken ct = default)
     {
-        var nowUk = TimeZoneInfo.ConvertTimeFromUtc(timeProvider.GetUtcNow().UtcDateTime, DateOnlyHelper.UkTimeZone);
+        var nowUk = DateOnlyHelper.NowUk(timeProvider);
         var today = DateOnly.FromDateTime(nowUk);
 
         if (!today.IsWeekday())
@@ -53,7 +53,7 @@ public class QuoteAlertHandler(
             SuppressionKey = $"{AlertType.QuoteMovement}:{command.InstrumentId}:{today.ToIsoDateString()}",
             Title = $"{instrument.Ticker} {direction} {absPct:F2}%",
             Message = $"{instrument.Name} is {direction} {absPct:F2}%",
-            Url = $"http://hoard.iannelson.uk/instruments/{command.InstrumentId}",
+            Url = HoardUrls.Instrument(command.InstrumentId),
             UrlTitle = instrument.Name
         }, ct);
     }
