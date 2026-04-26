@@ -1,39 +1,44 @@
+using Hoard.Core;
 using Hoard.Core.Application.Alerts;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
 using Hoard.Messages;
 using Hoard.Test.Shared;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace Hoard.Test.Unit.Core.Application.Alerts;
 
 public class InstrumentAnalysisAlertHandlerTests : IDisposable
 {
+    private static readonly DateOnly Wednesday = new(2026, 4, 8);
+    private static readonly DateOnly Saturday = new(2026, 4, 11);
+
     private readonly HoardContext _context;
     private readonly Mock<IAlertService> _alertService = new();
+    private readonly FakeTimeProvider _timeProvider = new();
     private readonly InstrumentAnalysisAlertHandler _handler;
 
     public InstrumentAnalysisAlertHandlerTests()
     {
         _context = TestContextFactory.Create();
-        _handler = new InstrumentAnalysisAlertHandler(_context, _alertService.Object);
+        _handler = new InstrumentAnalysisAlertHandler(_context, _alertService.Object, _timeProvider);
     }
 
-    private static DateOnly TodayIfWeekday()
+    private void SetUkDate(DateOnly date)
     {
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        while (today.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
-            today = today.AddDays(1);
-        return today;
+        var ukNoon = new DateTime(date.Year, date.Month, date.Day, 12, 0, 0, DateTimeKind.Unspecified);
+        var utc = TimeZoneInfo.ConvertTimeToUtc(ukNoon, DateOnlyHelper.UkTimeZone);
+        _timeProvider.SetUtcNow(new DateTimeOffset(utc, TimeSpan.Zero));
     }
 
     [Fact]
     public async Task HandleAsync_NotToday_DoesNotRaiseAlert()
     {
-        var yesterday = DateOnly.FromDateTime(DateTime.Now).AddDays(-1);
+        SetUkDate(Wednesday);
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, 1, yesterday, true, false, false));
+            PipelineMode.CloseOfDay, 1, Wednesday.AddDays(-1), true, false, false));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -41,12 +46,10 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_Weekend_DoesNotRaiseAlert()
     {
-        // Find next Saturday
-        var date = DateOnly.FromDateTime(DateTime.Now);
-        while (date.DayOfWeek != DayOfWeek.Saturday) date = date.AddDays(1);
+        SetUkDate(Saturday);
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, 1, date, true, false, false));
+            PipelineMode.CloseOfDay, 1, Saturday, true, false, false));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -54,14 +57,13 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_FiftyTwoWeekHigh_RaisesAlert()
     {
-        var today = TodayIfWeekday();
-        if (DateOnly.FromDateTime(DateTime.Now) != today) return;
+        SetUkDate(Wednesday);
         var instrument = TestData.Instrument();
         _context.Instruments.Add(instrument);
         await _context.SaveChangesAsync();
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, instrument.Id, today, true, false, false));
+            PipelineMode.CloseOfDay, instrument.Id, Wednesday, true, false, false));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.Is<AlertRequest>(r =>
             r.AlertTypeId == AlertType.FiftyTwoWeekHigh &&
@@ -71,14 +73,13 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_FiftyTwoWeekLow_RaisesAlert()
     {
-        var today = TodayIfWeekday();
-        if (DateOnly.FromDateTime(DateTime.Now) != today) return;
+        SetUkDate(Wednesday);
         var instrument = TestData.Instrument();
         _context.Instruments.Add(instrument);
         await _context.SaveChangesAsync();
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, instrument.Id, today, false, true, false));
+            PipelineMode.CloseOfDay, instrument.Id, Wednesday, false, true, false));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.Is<AlertRequest>(r =>
             r.AlertTypeId == AlertType.FiftyTwoWeekLow), It.IsAny<CancellationToken>()), Times.Once);
@@ -87,14 +88,13 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_AbnormalVolume_RaisesAlert()
     {
-        var today = TodayIfWeekday();
-        if (DateOnly.FromDateTime(DateTime.Now) != today) return;
+        SetUkDate(Wednesday);
         var instrument = TestData.Instrument();
         _context.Instruments.Add(instrument);
         await _context.SaveChangesAsync();
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, instrument.Id, today, false, false, true));
+            PipelineMode.CloseOfDay, instrument.Id, Wednesday, false, false, true));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.Is<AlertRequest>(r =>
             r.AlertTypeId == AlertType.AbnormalVolume), It.IsAny<CancellationToken>()), Times.Once);
@@ -103,14 +103,13 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_AllFlagsTrue_RaisesThreeAlerts()
     {
-        var today = TodayIfWeekday();
-        if (DateOnly.FromDateTime(DateTime.Now) != today) return;
+        SetUkDate(Wednesday);
         var instrument = TestData.Instrument();
         _context.Instruments.Add(instrument);
         await _context.SaveChangesAsync();
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, instrument.Id, today, true, true, true));
+            PipelineMode.CloseOfDay, instrument.Id, Wednesday, true, true, true));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()), Times.Exactly(3));
     }
@@ -118,14 +117,13 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_AllFlagsFalse_RaisesNoAlerts()
     {
-        var today = TodayIfWeekday();
-        if (DateOnly.FromDateTime(DateTime.Now) != today) return;
+        SetUkDate(Wednesday);
         var instrument = TestData.Instrument();
         _context.Instruments.Add(instrument);
         await _context.SaveChangesAsync();
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, instrument.Id, today, false, false, false));
+            PipelineMode.CloseOfDay, instrument.Id, Wednesday, false, false, false));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -133,10 +131,10 @@ public class InstrumentAnalysisAlertHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_UnknownInstrument_DoesNotRaiseAlert()
     {
-        var today = TodayIfWeekday();
+        SetUkDate(Wednesday);
 
         await _handler.HandleAsync(new InstrumentAnalysisAlertCommand(
-            PipelineMode.CloseOfDay, 999, today, true, true, true));
+            PipelineMode.CloseOfDay, 999, Wednesday, true, true, true));
 
         _alertService.Verify(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }

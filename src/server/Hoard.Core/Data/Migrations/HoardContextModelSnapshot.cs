@@ -510,6 +510,12 @@ namespace Hoard.Core.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateOnly?>("AllTimeHighDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("AllTimeHighValue")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("CreatedUtc")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2(3)")
