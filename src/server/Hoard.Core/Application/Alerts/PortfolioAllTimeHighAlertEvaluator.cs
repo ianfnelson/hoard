@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Alerts;
 
 public sealed class PortfolioAllTimeHighAlertEvaluator(
     HoardContext hoardContext,
-    IAlertService alertService) : IPortfolioAlertEvaluator
+    IAlertService alertService) : ICloseOfDayPortfolioAlertEvaluator
 {
     public async Task EvaluateAsync(
         PortfolioPerformance portfolioPerformance, DateOnly asOfDate, CancellationToken ct)

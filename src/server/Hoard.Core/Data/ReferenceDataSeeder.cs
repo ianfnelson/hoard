@@ -51,7 +51,11 @@ public class ReferenceDataSeeder
             new AlertType { Id = AlertType.FiftyTwoWeekLow, Name = "52-Week Low" },
             new AlertType { Id = AlertType.AbnormalVolume, Name = "Abnormal Volume" },
             new AlertType { Id = AlertType.QuoteMovement, Name = "Quote Movement" },
-            new AlertType { Id = AlertType.PortfolioAllTimeHigh, Name = "Portfolio All-Time High" }
+            new AlertType { Id = AlertType.PortfolioAllTimeHigh, Name = "Portfolio All-Time High" },
+            new AlertType { Id = AlertType.PortfolioDrawdown10, Name = "Portfolio Drawdown 10%" },
+            new AlertType { Id = AlertType.PortfolioDrawdown20, Name = "Portfolio Drawdown 20%" },
+            new AlertType { Id = AlertType.PortfolioDrawdown30, Name = "Portfolio Drawdown 30%" },
+            new AlertType { Id = AlertType.PortfolioDrawdown50, Name = "Portfolio Drawdown 50%" }
         };
         await UpsertAsync(_context.AlertTypes, items, x => x.Id);
     }
