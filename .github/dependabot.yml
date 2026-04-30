@@ -34,3 +34,17 @@ updates:
         update-types:
           - "minor"
           - "patch"
+
+  - package-ecosystem: "docker"
+    directories:
+      - "/src/server/Hoard.Api/"
+      - "/src/server/Hoard.Bus/"
+      - "/src/server/Hoard.Scheduler/"
+      - "/src/client/hoard-ui/"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
