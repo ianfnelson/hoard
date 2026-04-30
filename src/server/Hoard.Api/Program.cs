@@ -21,21 +21,15 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 var applicationInsightsConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights")
                                           ?? throw new InvalidOperationException("No Application Insights connection string configured.");
 
-// builder.Services.AddApplicationInsightsTelemetry(options =>
-// {
-//     options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
-// });
-
 builder.Services
     .AddHttpContextAccessor()
     .AddHoardData(sqlConnectionString)
-    .AddHoardLogging(applicationInsightsConnectionString)
+    .AddHoardTelemetry("hoard.api", applicationInsightsConnectionString)
     .AutoRegisterHandlersFromAssemblyOf<PortfolioUpdatedSignalRHandler>()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: false, "hoard.api")
     .AddIntegrations(builder.Configuration)
     .AddHoardApplication()
     .AddHoardCalculators()
-    .AddTelemetryInitializer("hoard.api")
     .Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 builder.Services.AddControllers();

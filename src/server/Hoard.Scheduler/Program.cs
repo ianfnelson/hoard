@@ -18,18 +18,12 @@ var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq
 var applicationInsightsConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights")
                                           ?? throw new InvalidOperationException("No Application Insights connection string configured.");
 
-// builder.Services.AddApplicationInsightsTelemetryWorkerService(options =>
-// {
-//     options.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights");
-// });
-
 builder.Services
     .AddHoardData(sqlConnectionString)
-    .AddHoardLogging(applicationInsightsConnectionString)
+    .AddHoardTelemetry("hoard.scheduler", applicationInsightsConnectionString)
     .AddHoardApplication()
     .AddHoardCalculators()
-    .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.scheduler")
-    .AddTelemetryInitializer("hoard.scheduler");
+    .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.scheduler");
 
 builder.Services.AddHangfire(config =>
 {
