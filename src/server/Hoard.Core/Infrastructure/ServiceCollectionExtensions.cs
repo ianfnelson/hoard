@@ -1,10 +1,13 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Hoard.Core.Data;
 using Hoard.Messages.Holdings;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Rebus.Config;
+using Rebus.OpenTelemetry.Configuration;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 using Rebus.Sagas.Exclusive;
@@ -22,23 +25,16 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddHoardLogging(string applicationInsightsConnectionString)
+        public IServiceCollection AddHoardTelemetry(string serviceName, string applicationInsightsConnectionString)
         {
-            services.AddLogging(cfg =>
-            {
-                cfg.ClearProviders();
-                cfg.AddSimpleConsole(o =>
-                {
-                    o.SingleLine = true;
-                    o.TimestampFormat = "HH:mm:ss ";
-                });
-                cfg.AddApplicationInsights(
-                    configureTelemetryConfiguration: tc =>
-                    {
-                        tc.ConnectionString = applicationInsightsConnectionString;
-                    },
-                    configureApplicationInsightsLoggerOptions: _ => { });
-            });
+            services.AddOpenTelemetry()
+                .ConfigureResource(r => r.AddService(serviceName))
+                .UseAzureMonitor(o => o.ConnectionString = applicationInsightsConnectionString)
+                .WithTracing(t => t
+                    .AddSqlClientInstrumentation()
+                    .AddRebusInstrumentation())
+                .WithMetrics(m => m.AddRebusInstrumentation());
+
             return services;
         }
 
@@ -57,17 +53,17 @@ public static class ServiceCollectionExtensions
                     configure.Transport(t => t
                         .UseRabbitMq(rabbitConnectionString, queueName)
                         .SetConnectionName(queueName));
-            
+
                 if (!sendOnly)
                 {
                     config.Sagas(x =>
                     {
                         x.StoreInSqlServer(sqlConnectionString, "__RebusSagas", "__RebusSagaIndex");
-                        
+
                         x.EnforceExclusiveAccess();
                     });
                     config.Timeouts(x => x.StoreInSqlServer(sqlConnectionString, "__RebusTimeouts"));
-                
+
                     config.Options(o =>
                     {
                         o.SetMaxParallelism(32);
@@ -75,7 +71,7 @@ public static class ServiceCollectionExtensions
 
                         o.RetryStrategy(
                             "hoard.error",
-                            maxDeliveryAttempts: 5, 
+                            maxDeliveryAttempts: 5,
                             secondLevelRetriesEnabled: true);
                     });
                 }
@@ -83,17 +79,6 @@ public static class ServiceCollectionExtensions
                 config.Routing(r => r.TypeBased().MapAssemblyOf<CalculateHoldingsBusCommand>("hoard.bus"));
                 return config;
             });
-            return services;
-        }
-
-        public IServiceCollection AddTelemetryInitializer(string roleName)
-        {
-            services.AddSingleton<ITelemetryInitializer>(_ =>
-            {
-                var initializer = new RoleNameInitializer(roleName);
-                return initializer;
-            });
-        
             return services;
         }
     }
