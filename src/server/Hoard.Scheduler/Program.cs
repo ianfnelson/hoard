@@ -20,7 +20,7 @@ var applicationInsightsConnectionString = builder.Configuration.GetConnectionStr
 
 builder.Services
     .AddHoardData(sqlConnectionString)
-    .AddHoardTelemetry("hoard.scheduler", applicationInsightsConnectionString)
+    .AddHoardTelemetry("hoard.scheduler", applicationInsightsConnectionString, instrumentSql: false)
     .AddHoardApplication()
     .AddHoardCalculators()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.scheduler");

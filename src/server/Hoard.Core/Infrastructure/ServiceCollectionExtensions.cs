@@ -25,14 +25,22 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddHoardTelemetry(string serviceName, string applicationInsightsConnectionString)
+        public IServiceCollection AddHoardTelemetry(
+            string serviceName,
+            string applicationInsightsConnectionString,
+            bool instrumentSql = true)
         {
             services.AddOpenTelemetry()
                 .ConfigureResource(r => r.AddService(serviceName))
                 .UseAzureMonitor(o => o.ConnectionString = applicationInsightsConnectionString)
-                .WithTracing(t => t
-                    .AddSqlClientInstrumentation()
-                    .AddRebusInstrumentation())
+                .WithTracing(t =>
+                {
+                    if (instrumentSql)
+                    {
+                        t.AddSqlClientInstrumentation();
+                    }
+                    t.AddRebusInstrumentation();
+                })
                 .WithMetrics(m => m.AddRebusInstrumentation());
 
             return services;
