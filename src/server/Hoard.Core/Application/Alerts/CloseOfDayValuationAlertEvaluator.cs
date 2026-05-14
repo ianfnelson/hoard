@@ -12,8 +12,8 @@ public sealed class CloseOfDayValuationAlertEvaluator(IAlertService alertService
         var portfolio = portfolioPerformance.Portfolio;
 
         var message = new StringBuilder()
-            .AppendLine($"Valuation: £{portfolioPerformance.Value:F2}")
-            .AppendLine($"Change: £{portfolioPerformance.ValueChange1D:F2}")
+            .AppendLine($"Valuation: £{portfolioPerformance.Value:N2}")
+            .AppendLine($"Change: £{portfolioPerformance.ValueChange1D:N2}")
             .AppendLine($"Day: {portfolioPerformance.Return1D:F2}%")
             .AppendLine($"Year: {portfolioPerformance.Return1Y:F2}%")
             .ToString();

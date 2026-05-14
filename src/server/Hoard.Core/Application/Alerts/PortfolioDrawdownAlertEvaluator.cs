@@ -48,7 +48,7 @@ public sealed class PortfolioDrawdownAlertEvaluator(IAlertService alertService) 
                 PortfolioId = portfolio.Id,
                 SuppressionKey = $"{alertTypeId}:{portfolio.Id}:{allTimeHighDate.ToIsoDateString()}",
                 Title = $"{portfolio.Name} — Drawdown Exceeds {thresholdPercent}%",
-                Message = $"{portfolio.Name} has fallen {drawdown:P1} from its all-time high of £{allTimeHigh:F2}.",
+                Message = $"{portfolio.Name} has fallen {drawdown:P1} from its all-time high of £{allTimeHigh:N2}.",
                 Url = HoardUrls.PortfolioOverview(portfolio.Id),
                 UrlTitle = portfolio.Name
             }, ct);

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Hoard.Core.Application.Alerts;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
@@ -104,6 +105,30 @@ public class PortfolioAllTimeHighAlertEvaluatorTests : IDisposable
         var stored = await _context.Portfolios.AsNoTracking().SingleAsync(p => p.Id == portfolio.Id);
         Assert.Equal(10000m, stored.AllTimeHighValue);
         Assert.Equal(PriorDate, stored.AllTimeHighDate);
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_NewHigh_FormatsMessageWithThousandsSeparators()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("en-GB");
+        try
+        {
+            var portfolio = await SeedPortfolio(10000m, PriorDate);
+            _alertService
+                .Setup(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            await _evaluator.EvaluateAsync(Performance(portfolio, 123456.78m), Today, CancellationToken.None);
+
+            _alertService.Verify(a => a.TryRaiseAsync(It.Is<AlertRequest>(r =>
+                    r.Message.Contains("£123,456.78")),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Fact]
