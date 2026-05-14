@@ -1,3 +1,4 @@
+using System.Globalization;
 using Hoard.Core.Application.Alerts;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
@@ -164,6 +165,32 @@ public class PortfolioDrawdownAlertEvaluatorTests : IDisposable
                 r.AlertTypeId == AlertType.PortfolioDrawdown20 &&
                 r.SuppressionKey == $"{AlertType.PortfolioDrawdown20}:{portfolio.Id}:2026-03-01"),
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_FormatsAllTimeHighWithThousandsSeparators()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("en-GB");
+        try
+        {
+            var portfolio = await SeedPortfolio(123456.78m, AthDate);
+            _alertService
+                .Setup(a => a.TryRaiseAsync(It.IsAny<AlertRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            // ~19% drawdown: crosses 10% but not 20%
+            await _evaluator.EvaluateAsync(Performance(portfolio, 100000m), Today, CancellationToken.None);
+
+            _alertService.Verify(a => a.TryRaiseAsync(It.Is<AlertRequest>(r =>
+                    r.AlertTypeId == AlertType.PortfolioDrawdown10 &&
+                    r.Message.Contains("£123,456.78")),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Fact]

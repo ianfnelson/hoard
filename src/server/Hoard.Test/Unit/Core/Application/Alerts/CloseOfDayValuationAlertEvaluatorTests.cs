@@ -1,3 +1,4 @@
+using System.Globalization;
 using Hoard.Core.Application.Alerts;
 using Hoard.Core.Domain.Entities;
 using Hoard.Test.Shared;
@@ -36,5 +37,37 @@ public class CloseOfDayValuationAlertEvaluatorTests
             r.Url == "http://hoard.iannelson.uk/portfolios/1/overview" &&
             r.UrlTitle == "ISA"),
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task EvaluateAsync_FormatsMonetaryAmountsWithThousandsSeparators()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("en-GB");
+        try
+        {
+            var evaluator = new CloseOfDayValuationAlertEvaluator(_alertService.Object);
+            var portfolio = TestData.Portfolio(id: 1, name: "ISA");
+            var performance = new PortfolioPerformance
+            {
+                PortfolioId = 1,
+                Portfolio = portfolio,
+                Value = 123456.78m,
+                ValueChange1D = -1234.56m,
+                Return1D = 1.0m,
+                Return1Y = 10.0m
+            };
+
+            await evaluator.EvaluateAsync(performance, Today, CancellationToken.None);
+
+            _alertService.Verify(a => a.TryRaiseAsync(It.Is<AlertRequest>(r =>
+                    r.Message.Contains("Valuation: £123,456.78") &&
+                    r.Message.Contains("Change: £-1,234.56")),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 }

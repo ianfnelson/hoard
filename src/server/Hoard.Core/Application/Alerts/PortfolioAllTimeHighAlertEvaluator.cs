@@ -26,7 +26,7 @@ public sealed class PortfolioAllTimeHighAlertEvaluator(
             PortfolioId = portfolio.Id,
             SuppressionKey = $"{AlertType.PortfolioAllTimeHigh}:{portfolio.Id}:{asOfDate.ToIsoDateString()}",
             Title = $"{portfolio.Name} — New All-Time High",
-            Message = $"{portfolio.Name} closed at a new all-time high of £{currentValue:F2}.",
+            Message = $"{portfolio.Name} closed at a new all-time high of £{currentValue:N2}.",
             Url = HoardUrls.PortfolioOverview(portfolio.Id),
             UrlTitle = portfolio.Name
         }, ct);
