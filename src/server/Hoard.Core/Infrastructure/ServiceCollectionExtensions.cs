@@ -1,13 +1,8 @@
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Hoard.Core.Data;
 using Hoard.Messages.Holdings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Rebus.Config;
-using Rebus.OpenTelemetry.Configuration;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 using Rebus.Sagas.Exclusive;
@@ -22,27 +17,6 @@ public static class ServiceCollectionExtensions
         {
             services.AddDbContext<HoardContext>(options => options.UseSqlServer(sqlConnStr));
             services.AddTransient<ReferenceDataSeeder>();
-            return services;
-        }
-
-        public IServiceCollection AddHoardTelemetry(
-            string serviceName,
-            string applicationInsightsConnectionString,
-            bool instrumentSql = true)
-        {
-            services.AddOpenTelemetry()
-                .ConfigureResource(r => r.AddService(serviceName))
-                .UseAzureMonitor(o => o.ConnectionString = applicationInsightsConnectionString)
-                .WithTracing(t =>
-                {
-                    if (instrumentSql)
-                    {
-                        t.AddSqlClientInstrumentation();
-                    }
-                    t.AddRebusInstrumentation();
-                })
-                .WithMetrics(m => m.AddRebusInstrumentation());
-
             return services;
         }
 

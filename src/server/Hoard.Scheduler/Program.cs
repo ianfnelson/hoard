@@ -15,12 +15,9 @@ var sqlConnectionString = builder.Configuration.GetConnectionString("HoardDataba
                           ?? throw new InvalidOperationException("No SQL Server connection string configured.");
 var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMq")
                              ?? "amqp://guest:guest@localhost/";
-var applicationInsightsConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights")
-                                          ?? throw new InvalidOperationException("No Application Insights connection string configured.");
 
 builder.Services
     .AddHoardData(sqlConnectionString)
-    .AddHoardTelemetry("hoard.scheduler", applicationInsightsConnectionString, instrumentSql: false)
     .AddHoardApplication()
     .AddHoardCalculators()
     .AddHoardRebus(rabbitConnectionString, sqlConnectionString, sendOnly: true, "hoard.scheduler");

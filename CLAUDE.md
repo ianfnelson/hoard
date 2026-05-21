@@ -170,7 +170,6 @@ The codebase uses a custom Mediator pattern (`Hoard.Core/Application/Mediator.cs
 - **Market Data:** YahooFinanceApiNext for price quotes, configured per instrument via the DataFeed/InstrumentDataFeed model
 - **Regulatory News:** Clarion (in-house NuGet package, `ianfnelson/clarion`) - scrapes and parses UK regulatory announcements from Investegate by ticker. Runs in-process, not as a separate service.
 - **Blob Storage:** Azure Blob Storage for contract note PDFs
-- **Telemetry:** Application Insights
 - **Notifications:** Pushover (alerts/events pushed to mobile)
 
 ## Configuration
@@ -179,7 +178,6 @@ Connection strings are configured via user secrets or appsettings:
 - `HoardDatabase` - SQL Server connection
 - `RabbitMq` - RabbitMQ connection
 - `AzureBlobStorage` - Azure Blob Storage connection
-- `ApplicationInsights` - Application Insights connection
 
 Additional settings:
 - `BlobStorage:ContainerName` - Blob container name (default: "documents")
@@ -218,7 +216,6 @@ The `.env` file on Puck maps secrets to the .NET configuration pattern:
 |---|---|
 | `SQL_CONNECTION` | `ConnectionStrings__HoardDatabase` |
 | `RABBIT_CONNECTION` | `ConnectionStrings__RabbitMq` |
-| `APPINSIGHTS_CONNECTION` | `ConnectionStrings__ApplicationInsights` |
 | `AZURE_STORAGE_CONNECTION` | `ConnectionStrings__AzureBlobStorage` |
 | `PUSHOVER_TOKEN` | `Pushover__Token` |
 | `PUSHOVER_USER` | `Pushover__User` |
