@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 
 import { usePortfolioStore } from '@/stores/portfolioStore'
 import { usePageTitle } from '@/composables/usePageTitle'
 import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
+import TargetAllocationsDialog from '@/components/portfolios/TargetAllocationsDialog.vue'
 import { formatCurrency, formatPercentage, getTrendClass } from '@/utils/formatters'
 import type { PieChartData } from '@/components/charts/ExposurePieChart.vue'
 
@@ -12,6 +13,8 @@ const ExposurePieChart = defineAsyncComponent(
 )
 
 const store = usePortfolioStore()
+
+const isEditingTargets = ref(false)
 
 const pageTitle = computed(() => {
   const portfolioName = store.portfolio?.name
@@ -184,6 +187,18 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
                 No asset subclass exposure data. Ensure positions have asset subclasses assigned.
               </template>
             </v-data-table>
+
+            <div class="d-flex justify-end mt-2">
+              <v-btn
+                variant="text"
+                size="small"
+                prepend-icon="mdi-pencil"
+                :disabled="!store.portfolioId"
+                @click="isEditingTargets = true"
+              >
+                Edit Target Allocations
+              </v-btn>
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -268,5 +283,11 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
         </v-card>
       </v-col>
     </v-row>
+
+    <TargetAllocationsDialog
+      v-if="store.portfolioId"
+      v-model="isEditingTargets"
+      :portfolio-id="store.portfolioId"
+    />
   </v-container>
 </template>

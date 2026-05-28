@@ -1,5 +1,7 @@
+using FluentValidation;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Portfolios;
+using Hoard.Core.Application.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hoard.Api.Controllers;
@@ -8,7 +10,7 @@ namespace Hoard.Api.Controllers;
 [Route("api/portfolios/")]
 [Tags("Portfolios")]
 [Produces("application/json")]
-public class PortfoliosController(IMediator mediator) : ControllerBase
+public class PortfoliosController(IMediator mediator, IValidator<SetTargetAllocationsRequest> targetAllocationsValidator) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(List<PortfolioSummaryDto>), StatusCodes.Status200OK)]
@@ -147,5 +149,29 @@ public class PortfoliosController(IMediator mediator) : ControllerBase
         }
     }
 
-    // TODO - add target allocations put endpoint
+    [HttpPut("{id:int}/target-allocations")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> SetTargetAllocations(
+        int id,
+        [FromBody] SetTargetAllocationsRequest request,
+        CancellationToken ct)
+    {
+        var problems = await targetAllocationsValidator.ValidateAndGetProblemsAsync(request, cancellationToken: ct);
+        if (problems != null)
+        {
+            return BadRequest(problems);
+        }
+
+        try
+        {
+            await mediator.SendAsync(new SetTargetAllocationsCommand(id, request), ct);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+    }
 }
