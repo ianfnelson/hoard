@@ -20,4 +20,9 @@ public class TransactionSummaryDto
     public decimal? Price { get; set; }
     public decimal? Units { get; set; }
     public decimal Value { get; set; }
+
+    public decimal? DealingCharge { get; set; }
+    public decimal? StampDuty { get; set; }
+    public decimal? PtmLevy { get; set; }
+    public decimal? FxCharge { get; set; }
 }

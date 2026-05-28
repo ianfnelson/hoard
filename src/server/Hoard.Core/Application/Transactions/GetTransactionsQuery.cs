@@ -128,6 +128,11 @@ public sealed class GetTransactionsHandler(HoardContext context)
             Value = t.Value,
             Price = t.Price,
 
+            DealingCharge = t.DealingCharge,
+            StampDuty = t.StampDuty,
+            PtmLevy = t.PtmLevy,
+            FxCharge = t.FxCharge,
+
             AccountId = t.AccountId,
             AccountName = t.Account.Name,
 
