@@ -167,6 +167,35 @@ public class GetTransactionsHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_ProjectsChargeFields()
+    {
+        // Arrange
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Accounts.Add(TestData.Account());
+        context.Instruments.Add(TestData.Instrument());
+        context.Transactions.Add(new Transaction
+        {
+            Id = 1, AccountId = 1, InstrumentId = 1, TransactionTypeId = TransactionType.Buy,
+            Date = new DateOnly(2024, 1, 1), Value = -1000m,
+            DealingCharge = 9.95m, FxCharge = 12.50m, StampDuty = 5.00m, PtmLevy = 1.00m
+        });
+        await context.SaveChangesAsync();
+
+        var handler = new GetTransactionsHandler(context);
+
+        // Act
+        var result = await handler.HandleAsync(new GetTransactionsQuery());
+
+        // Assert
+        var item = Assert.Single(result.Items);
+        Assert.Equal(9.95m, item.DealingCharge);
+        Assert.Equal(12.50m, item.FxCharge);
+        Assert.Equal(5.00m, item.StampDuty);
+        Assert.Equal(1.00m, item.PtmLevy);
+    }
+
+    [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyPagedResult()
     {
         await using var context = TestContextFactory.Create();
