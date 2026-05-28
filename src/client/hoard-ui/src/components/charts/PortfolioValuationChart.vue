@@ -28,7 +28,7 @@ const sortedSeries = computed(() =>
 )
 
 const chartColors = computed(() =>
-  sortedSeries.value.map((s) => s.color ?? undefined).filter(Boolean)
+  sortedSeries.value.map((s) => s.color).filter((c): c is string => Boolean(c))
 )
 
 const chartOptions = computed(() => ({
