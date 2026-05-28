@@ -108,5 +108,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
 
     // actions
     load,
+    refresh,
   }
 })

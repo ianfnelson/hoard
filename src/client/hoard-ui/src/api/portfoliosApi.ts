@@ -7,6 +7,7 @@ import type { PortfolioSummaryDto } from './dtos/Portfolios/PortfolioSummaryDto'
 import type { PortfolioSnapshotsDto } from './dtos/Portfolios/PortfolioSnapshotsDto'
 import type { PortfolioValuationsDto } from './dtos/Portfolios/PortfolioValuationsDto'
 import type { PortfolioValuationSeriesDto } from './dtos/Portfolios/PortfolioValuationSeriesDto'
+import type { TargetAllocationItemDto } from './dtos/Portfolios/TargetAllocationItemDto'
 
 export interface GetPortfolioPositionsParams {
   isOpen?: boolean
@@ -61,6 +62,14 @@ export async function getPortfolioExposure(
 ): Promise<PortfolioExposureDto> {
   const response = await hoardApi.get(`/portfolios/${portfolioId}/exposure`, { signal })
   return response.data
+}
+
+export async function setTargetAllocations(
+  portfolioId: number,
+  allocations: TargetAllocationItemDto[],
+  signal?: AbortSignal
+): Promise<void> {
+  await hoardApi.put(`/portfolios/${portfolioId}/target-allocations`, { allocations }, { signal })
 }
 
 export async function getPortfolioInstrumentTypes(

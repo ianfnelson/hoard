@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Hoard.Api.Controllers;
 using Hoard.Core.Application;
 using Hoard.Core.Application.Portfolios;
@@ -9,11 +11,16 @@ namespace Hoard.Test.Unit.Api.Controllers;
 public class PortfoliosControllerTests
 {
     private readonly Mock<IMediator> _mediator = new();
+    private readonly Mock<IValidator<SetTargetAllocationsRequest>> _targetAllocationsValidator = new();
     private readonly PortfoliosController _controller;
 
     public PortfoliosControllerTests()
     {
-        _controller = new PortfoliosController(_mediator.Object);
+        _targetAllocationsValidator
+            .Setup(v => v.ValidateAsync(It.IsAny<IValidationContext>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ValidationResult());
+
+        _controller = new PortfoliosController(_mediator.Object, _targetAllocationsValidator.Object);
     }
 
     [Fact]
@@ -281,5 +288,42 @@ public class PortfoliosControllerTests
         var result = await _controller.ExportValuationPdf(1, new DateOnly(2024, 12, 31), new DateOnly(2024, 1, 1), CancellationToken.None);
 
         Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task SetTargetAllocations_Valid_ReturnsNoContent()
+    {
+        var request = new SetTargetAllocationsRequest();
+
+        var result = await _controller.SetTargetAllocations(1, request, CancellationToken.None);
+
+        Assert.IsType<NoContentResult>(result);
+        _mediator.Verify(m => m.SendAsync(
+            It.Is<SetTargetAllocationsCommand>(c => c.PortfolioId == 1), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetTargetAllocations_InvalidValidation_ReturnsBadRequest()
+    {
+        _targetAllocationsValidator
+            .Setup(v => v.ValidateAsync(It.IsAny<IValidationContext>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ValidationResult([new ValidationFailure("Allocations", "Target allocations must not exceed 100%")]));
+
+        var result = await _controller.SetTargetAllocations(1, new SetTargetAllocationsRequest(), CancellationToken.None);
+
+        Assert.IsType<BadRequestObjectResult>(result);
+        _mediator.Verify(m => m.SendAsync(It.IsAny<SetTargetAllocationsCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SetTargetAllocations_PortfolioNotFound_ReturnsNotFound()
+    {
+        _mediator
+            .Setup(m => m.SendAsync(It.IsAny<SetTargetAllocationsCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Portfolio 999 not found."));
+
+        var result = await _controller.SetTargetAllocations(999, new SetTargetAllocationsRequest(), CancellationToken.None);
+
+        Assert.IsType<NotFoundResult>(result);
     }
 }
