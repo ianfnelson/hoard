@@ -6,32 +6,47 @@ namespace Hoard.Mcp;
 
 public class HoardApiClient(HttpClient http)
 {
-    public async Task<string> GetAsync(string path, CancellationToken ct = default)
-    {
-        var response = await http.GetAsync(path, ct);
-        return await HandleResponse(response, ct);
-    }
+    public Task<string> GetAsync(string path, CancellationToken ct = default) =>
+        SendAsync(() => http.GetAsync(path, ct), ct);
 
-    public async Task<string> PostAsync(string path, object body, CancellationToken ct = default)
-    {
-        var json = JsonSerializer.Serialize(body);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await http.PostAsync(path, content, ct);
-        return await HandleResponse(response, ct);
-    }
+    public Task<string> PostAsync(string path, object body, CancellationToken ct = default) =>
+        SendAsync(() => http.PostAsync(path, JsonBody(body), ct), ct);
 
-    public async Task<string> PutAsync(string path, object body, CancellationToken ct = default)
-    {
-        var json = JsonSerializer.Serialize(body);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await http.PutAsync(path, content, ct);
-        return await HandleResponse(response, ct);
-    }
+    public Task<string> PutAsync(string path, object body, CancellationToken ct = default) =>
+        SendAsync(() => http.PutAsync(path, JsonBody(body), ct), ct);
 
-    public async Task<string> DeleteAsync(string path, CancellationToken ct = default)
+    public Task<string> DeleteAsync(string path, CancellationToken ct = default) =>
+        SendAsync(() => http.DeleteAsync(path, ct), ct);
+
+    private static StringContent JsonBody(object body) =>
+        new(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+
+    private static async Task<string> SendAsync(Func<Task<HttpResponseMessage>> send, CancellationToken ct)
     {
-        var response = await http.DeleteAsync(path, ct);
-        return await HandleResponse(response, ct);
+        try
+        {
+            var response = await send();
+            return await HandleResponse(response, ct);
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            // The caller cancelled the request; let it propagate.
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            // Timed out via the resilience pipeline rather than caller cancellation.
+            return "Error: the request to the Hoard API timed out. The service may be slow or unavailable.";
+        }
+        catch (HttpRequestException ex)
+        {
+            return $"Error: could not reach the Hoard API ({ex.Message}). The service may be unavailable.";
+        }
+        catch (Exception ex)
+        {
+            // Catch-all so a transport failure surfaces as a tool error rather than crashing the MCP server.
+            return $"Error: the request to the Hoard API failed ({ex.Message}).";
+        }
     }
 
     private static async Task<string> HandleResponse(HttpResponseMessage response, CancellationToken ct)
