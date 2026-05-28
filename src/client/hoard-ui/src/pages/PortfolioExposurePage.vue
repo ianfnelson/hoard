@@ -188,10 +188,10 @@ const instrumentTypePieData = computed<PieChartData[]>(() =>
               </template>
             </v-data-table>
 
-            <div class="d-flex justify-end mt-2">
+            <div class="d-flex justify-start mt-2">
               <v-btn
-                variant="text"
-                size="small"
+                color="primary"
+                variant="flat"
                 prepend-icon="mdi-pencil"
                 :disabled="!store.portfolioId"
                 @click="isEditingTargets = true"
