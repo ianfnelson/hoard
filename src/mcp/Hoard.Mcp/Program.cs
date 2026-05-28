@@ -1,5 +1,6 @@
 using Hoard.Mcp;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
@@ -26,6 +27,10 @@ builder.Services.AddHttpClient<HoardApiClient>(client =>
     options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
     // Circuit breaker sampling window must be at least 2x the attempt timeout.
     options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(20);
+    // Don't retry mutating methods (POST/PATCH/PUT/DELETE): a lost response after
+    // the server has already processed the request would otherwise duplicate the
+    // side effect — e.g. creating a transaction twice. GETs remain retryable.
+    options.Retry.DisableForUnsafeHttpMethods();
 });
 
 builder.Services
