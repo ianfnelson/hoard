@@ -17,6 +17,15 @@ builder.Services.AddHttpClient<HoardApiClient>(client =>
 {
     client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddStandardResilienceHandler(options =>
+{
+    // Total budget for a single API call, including retries.
+    options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+    // Per-attempt timeout must be shorter than the total budget.
+    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+    // Circuit breaker sampling window must be at least 2x the attempt timeout.
+    options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(20);
 });
 
 builder.Services
