@@ -21,8 +21,7 @@ const chartColors = computed(() =>
 
 const chartOptions = computed(() => ({
   chart: {
-    type: 'area' as const,
-    stacked: true,
+    type: 'line' as const,
     background: 'transparent',
     fontFamily: 'IBM Plex Sans, sans-serif',
     animations: { enabled: false },
@@ -35,6 +34,7 @@ const chartOptions = computed(() => ({
   },
   stroke: {
     curve: 'straight' as const,
+    width: 2,
   },
   xaxis: {
     type: 'datetime' as const,
@@ -46,9 +46,6 @@ const chartOptions = computed(() => ({
   yaxis: {
     min: 0,
     forceNiceScale: true,
-  },
-  fill: {
-    opacity: 0.4,
   },
   ...(chartColors.value.length > 0 ? { colors: chartColors.value } : {}),
 }))
@@ -76,5 +73,5 @@ onMounted(() => {
   >
     Not enough valuation data to display chart
   </div>
-  <apexchart v-else type="area" height="450" :options="chartOptions" :series="chartSeries" />
+  <apexchart v-else type="line" height="450" :options="chartOptions" :series="chartSeries" />
 </template>
