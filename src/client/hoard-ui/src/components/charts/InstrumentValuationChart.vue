@@ -15,7 +15,9 @@ const { series, isLoading, fetchHoldingValuationSeries } = useHoldingValuationSe
 
 const totalDataPoints = computed(() => series.value.reduce((sum, s) => sum + s.data.length, 0))
 
-const chartColors = computed(() => series.value.map((s) => s.color ?? undefined).filter(Boolean))
+const chartColors = computed(() =>
+  series.value.map((s) => s.color).filter((c): c is string => Boolean(c))
+)
 
 const chartOptions = computed(() => ({
   chart: {
