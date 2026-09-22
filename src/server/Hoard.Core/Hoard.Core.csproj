@@ -44,7 +44,7 @@
       <PackageReference Include="Rebus.ServiceProvider" Version="10.7.2" />
       <PackageReference Include="Rebus.SqlServer" Version="8.4.0" />
       <PackageReference Include="Scrutor" Version="7.0.0" />
-      <PackageReference Include="QuestPDF" Version="2024.12.3" />
+      <PackageReference Include="QuestPDF" Version="2026.9.0" />
       <PackageReference Include="YahooFinanceApiNext" Version="2.3.10" />
     </ItemGroup>
 
