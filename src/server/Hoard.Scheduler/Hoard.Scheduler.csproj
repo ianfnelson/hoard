@@ -20,10 +20,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Hangfire" Version="1.8.22" />
-      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
-      <PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
-      <PackageReference Include="Rebus" Version="8.9.0" />
+      <PackageReference Include="Hangfire" Version="1.8.25" />
+      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
+      <PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />
+      <PackageReference Include="Rebus" Version="8.9.4" />
       <PackageReference Include="Rebus.RabbitMq" Version="10.1.1" />
       <PackageReference Include="Rebus.ServiceProvider" Version="10.7.2" />
     </ItemGroup>
