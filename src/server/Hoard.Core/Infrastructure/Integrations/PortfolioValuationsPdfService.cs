@@ -23,10 +23,10 @@ public class PortfolioValuationsPdfService : IPortfolioValuationsPdfService
         var ns = typeof(PortfolioValuationsPdfService).Namespace!;
 
         using var regular = assembly.GetManifestResourceStream($"{ns}.Fonts.Inter-Regular.ttf");
-        if (regular != null) FontManager.RegisterFont(regular);
+        if (regular != null) FontManager.RegisterFontFromStream(regular);
 
         using var bold = assembly.GetManifestResourceStream($"{ns}.Fonts.Inter-Bold.ttf");
-        if (bold != null) FontManager.RegisterFont(bold);
+        if (bold != null) FontManager.RegisterFontFromStream(bold);
     }
 
     public Stream Generate(string portfolioName, PortfolioValuationsDto valuations)
