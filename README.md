@@ -54,3 +54,7 @@ tools/              Ad-hoc scripts and Postman collections
 ## Getting started
 
 See `CLAUDE.md` for build commands, configuration, deployment details, and full architectural notes. That file is the authoritative developer reference; this README is just the orientation.
+
+## Licence
+
+MIT; see `LICENSE`. The bundled Inter fonts in `src/server/Hoard.Core/Infrastructure/Integrations/Fonts` are licensed separately under the SIL Open Font License 1.1; see `OFL.txt` in that folder.
