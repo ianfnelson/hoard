@@ -38,9 +38,11 @@ jobs:
         run: dotnet test Hoard.sln -c ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
 
   # Compiles the Clarion news adapter so a break surfaces before the image build.
-  # Fork PRs can't read the private package, so they rely on the default build in `test`.
+  # Only this repo's token can read the private package, so forks and fork PRs rely on the default build in `test`.
   build-clarion:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.repository == 'ianfnelson/hoard' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       contents: read
