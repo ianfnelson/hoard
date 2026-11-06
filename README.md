@@ -55,6 +55,8 @@ tools/              Ad-hoc scripts and Postman collections
 
 See `CLAUDE.md` for build commands, configuration, deployment details, and full architectural notes. That file is the authoritative developer reference; this README is just the orientation.
 
+A default server build needs no package credentials, but it leaves out regulatory news because Clarion, the library that fetches it, is a private package. News refreshes still run and complete; they just find no articles. Building with the MSBuild property `UseClarion=true` compiles Clarion in. The published images are built that way, which needs read access to the private GitHub Packages feed.
+
 ## Licence
 
 MIT; see `LICENSE`. The bundled Inter fonts in `src/server/Hoard.Core/Infrastructure/Integrations/Fonts` are licensed separately under the SIL Open Font License 1.1; see `OFL.txt` in that folder.

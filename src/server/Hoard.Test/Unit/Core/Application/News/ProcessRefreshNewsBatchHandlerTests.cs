@@ -1,8 +1,7 @@
-using Clarion;
-using Clarion.Models;
 using Hoard.Core.Application.News;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages;
 using Hoard.Messages.News;
 using Hoard.Test.Shared;
@@ -17,7 +16,7 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
 {
     private readonly HoardContext _context;
     private readonly Mock<IBus> _bus = new();
-    private readonly Mock<IClarionClient> _clarionClient = new();
+    private readonly Mock<INewsService> _newsService = new();
     private readonly ProcessRefreshNewsBatchHandler _handler;
 
     public ProcessRefreshNewsBatchHandlerTests()
@@ -26,7 +25,7 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
         _handler = new ProcessRefreshNewsBatchHandler(
             _bus.Object,
             _context,
-            _clarionClient.Object,
+            _newsService.Object,
             NullLogger<ProcessRefreshNewsBatchHandler>.Instance);
     }
 
@@ -54,7 +53,7 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
         await _handler.HandleAsync(new ProcessRefreshNewsBatchCommand(
             Guid.NewGuid(), PipelineMode.CloseOfDay, 999));
 
-        _clarionClient.Verify(c => c.GetArticlesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _newsService.Verify(c => c.GetArticleSummariesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -67,7 +66,7 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
         await _handler.HandleAsync(new ProcessRefreshNewsBatchCommand(
             Guid.NewGuid(), PipelineMode.CloseOfDay, instrument.Id));
 
-        _clarionClient.Verify(c => c.GetArticlesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _newsService.Verify(c => c.GetArticleSummariesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -75,14 +74,34 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
     {
         await AddInstrumentWithNewsFeed();
 
-        _clarionClient.Setup(c => c.GetArticlesAsync("TST", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ArticleSummary>());
+        _newsService.Setup(c => c.GetArticleSummariesAsync("TST", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<SourceArticleSummaryDto>());
 
         var runId = Guid.NewGuid();
         await _handler.HandleAsync(new ProcessRefreshNewsBatchCommand(runId, PipelineMode.CloseOfDay, 1));
 
         _bus.Verify(b => b.Publish(It.Is<NewsRefreshedEvent>(e =>
             e.NewsRunId == runId && e.InstrumentId == 1), null), Times.Once);
+    }
+
+    [Fact]
+    public async Task HandleAsync_NewsDisabled_CreatesNoArticlesAndPublishesNewsRefreshedEvent()
+    {
+        await AddInstrumentWithNewsFeed();
+
+        var handler = new ProcessRefreshNewsBatchHandler(
+            _bus.Object,
+            _context,
+            new NullNewsService(),
+            NullLogger<ProcessRefreshNewsBatchHandler>.Instance);
+
+        var runId = Guid.NewGuid();
+        await handler.HandleAsync(new ProcessRefreshNewsBatchCommand(runId, PipelineMode.CloseOfDay, 1));
+
+        Assert.Empty(await _context.NewsArticles.ToListAsync());
+        _bus.Verify(b => b.Publish(It.Is<NewsRefreshedEvent>(e =>
+            e.NewsRunId == runId && e.InstrumentId == 1), null), Times.Once);
+        _bus.Verify(b => b.Publish(It.IsAny<NewsArticleCreatedEvent>(), null), Times.Never);
     }
 
     [Fact]
@@ -98,16 +117,16 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
         });
         await _context.SaveChangesAsync();
 
-        _clarionClient.Setup(c => c.GetArticlesAsync("TST", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ArticleSummary>
+        _newsService.Setup(c => c.GetArticleSummariesAsync("TST", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<SourceArticleSummaryDto>
             {
-                new() { Source = "Investegate", SourceArticleId = "ABC123", PublishedUtc = DateTime.UtcNow, Ticker = "TST", Headline = "Old", Url = "http://example.com" }
+                new() { Source = "Investegate", SourceArticleId = "ABC123", PublishedUtc = DateTime.UtcNow, Headline = "Old", Url = "http://example.com" }
             });
 
         await _handler.HandleAsync(new ProcessRefreshNewsBatchCommand(
             Guid.NewGuid(), PipelineMode.CloseOfDay, 1));
 
-        _clarionClient.Verify(c => c.GetArticleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _newsService.Verify(c => c.GetArticleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
         var articles = await _context.NewsArticles.ToListAsync();
         Assert.Single(articles);
@@ -120,18 +139,18 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
 
         var publishedUtc = DateTime.UtcNow;
 
-        _clarionClient.Setup(c => c.GetArticlesAsync("TST", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ArticleSummary>
+        _newsService.Setup(c => c.GetArticleSummariesAsync("TST", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<SourceArticleSummaryDto>
             {
-                new() { Source = "Investegate", SourceArticleId = "NEW001", PublishedUtc = publishedUtc, Ticker = "TST", Headline = "Breaking news", Url = "http://example.com/article" }
+                new() { Source = "Investegate", SourceArticleId = "NEW001", PublishedUtc = publishedUtc, Headline = "Breaking news", Url = "http://example.com/article" }
             });
 
-        _clarionClient.Setup(c => c.GetArticleAsync("NEW001", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Article
+        _newsService.Setup(c => c.GetArticleAsync("NEW001", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SourceArticleDto
             {
                 Source = "Investegate", SourceArticleId = "NEW001",
                 Headline = "Breaking news", BodyHtml = "<p>Body</p>", BodyText = "Body",
-                Url = "http://example.com/article", RetrievedUtc = DateTime.UtcNow
+                Url = "http://example.com/article"
             });
 
         var runId = Guid.NewGuid();
@@ -150,22 +169,22 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
     {
         await AddInstrumentWithNewsFeed();
 
-        _clarionClient.Setup(c => c.GetArticlesAsync("TST", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<ArticleSummary>
+        _newsService.Setup(c => c.GetArticleSummariesAsync("TST", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<SourceArticleSummaryDto>
             {
-                new() { Source = "Investegate", SourceArticleId = "FAIL01", PublishedUtc = DateTime.UtcNow, Ticker = "TST", Headline = "Will fail", Url = "http://example.com/fail" },
-                new() { Source = "Investegate", SourceArticleId = "OK01", PublishedUtc = DateTime.UtcNow, Ticker = "TST", Headline = "Will succeed", Url = "http://example.com/ok" }
+                new() { Source = "Investegate", SourceArticleId = "FAIL01", PublishedUtc = DateTime.UtcNow, Headline = "Will fail", Url = "http://example.com/fail" },
+                new() { Source = "Investegate", SourceArticleId = "OK01", PublishedUtc = DateTime.UtcNow, Headline = "Will succeed", Url = "http://example.com/ok" }
             });
 
-        _clarionClient.Setup(c => c.GetArticleAsync("FAIL01", It.IsAny<CancellationToken>()))
+        _newsService.Setup(c => c.GetArticleAsync("FAIL01", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new HttpRequestException("Network error"));
 
-        _clarionClient.Setup(c => c.GetArticleAsync("OK01", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Article
+        _newsService.Setup(c => c.GetArticleAsync("OK01", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SourceArticleDto
             {
                 Source = "Investegate", SourceArticleId = "OK01",
                 Headline = "Will succeed", BodyHtml = "<p>OK</p>", BodyText = "OK",
-                Url = "http://example.com/ok", RetrievedUtc = DateTime.UtcNow
+                Url = "http://example.com/ok"
             });
 
         await _handler.HandleAsync(new ProcessRefreshNewsBatchCommand(Guid.NewGuid(), PipelineMode.CloseOfDay, 1));

@@ -6,6 +6,8 @@ EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
+# Published images include news fetching; MSBuild reads this as the UseClarion property for restore, build and publish.
+ENV UseClarion=true
 WORKDIR /src
 COPY ["Hoard.Api/Hoard.Api.csproj", "Hoard.Api/"]
 COPY ["Hoard.Core/Hoard.Core.csproj", "Hoard.Core/"]

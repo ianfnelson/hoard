@@ -27,15 +27,31 @@
       <InternalsVisibleTo Include="Hoard.Test" />
     </ItemGroup>
 
-    <!-- Transitive pins: Clarion and Microsoft.Data.SqlClient reference versions with known vulnerabilities. -->
+    <!-- Transitive pin: Microsoft.Data.SqlClient references a version with known vulnerabilities. -->
     <ItemGroup>
-      <PackageReference Include="AngleSharp" Version="1.9.1" />
       <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+    </ItemGroup>
+
+    <!--
+      Clarion is a private GitHub Packages package, so news fetching is only compiled in when UseClarion is true.
+      The default build needs no package credentials and registers NullNewsService instead.
+    -->
+    <PropertyGroup Condition=" '$(UseClarion)' == 'true' ">
+      <DefineConstants>$(DefineConstants);USE_CLARION</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" '$(UseClarion)' == 'true' ">
+      <PackageReference Include="Clarion" Version="1.1.0" />
+      <!-- Transitive pin: Clarion references an AngleSharp version with known vulnerabilities. -->
+      <PackageReference Include="AngleSharp" Version="1.9.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(UseClarion)' != 'true' ">
+      <Compile Remove="Infrastructure\Integrations\ClarionNewsService.cs" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Azure.Storage.Blobs" Version="12.30.1" />
-      <PackageReference Include="Clarion" Version="1.1.0" />
       <PackageReference Include="ExcelFinancialFunctions" Version="3.2.0" />
       <PackageReference Include="FluentValidation" Version="12.2.0" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />

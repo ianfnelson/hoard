@@ -28,9 +28,6 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Add GitHub Packages credentials
-        run: dotnet nuget update source github --username ianfnelson --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-
       - name: Restore solution
         run: dotnet restore Hoard.sln
 
@@ -40,8 +37,40 @@ jobs:
       - name: Test
         run: dotnet test Hoard.sln -c ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
 
+  # Compiles the Clarion news adapter so a break surfaces before the image build.
+  # Fork PRs can't read the private package, so they rely on the default build in `test`.
+  build-clarion:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      UseClarion: 'true'
+    defaults:
+      run:
+        working-directory: src/server
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Add GitHub Packages source
+        run: dotnet nuget add source "https://nuget.pkg.github.com/ianfnelson/index.json" --name github --configfile NuGet.Config
+
+      - name: Restore solution
+        run: dotnet restore Hoard.sln
+        env:
+          NuGetPackageSourceCredentials_github: Username=ianfnelson;Password=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: dotnet build Hoard.sln -c ${{ env.BUILD_CONFIGURATION }} --no-restore
+
   publish:
-    needs: test
+    needs: [test, build-clarion]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:

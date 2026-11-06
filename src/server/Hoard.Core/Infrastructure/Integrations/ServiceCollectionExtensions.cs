@@ -1,4 +1,3 @@
-using Clarion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +10,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IQuoteService, YahooFinance>();
         services.AddScoped<IPriceService, YahooFinance>();
         services.AddScoped<IPortfolioValuationsPdfService, PortfolioValuationsPdfService>();
-        services.AddScoped<IClarionClient>(_ => ClarionClient.Create());
+#if USE_CLARION
+        services.AddScoped<INewsService, ClarionNewsService>();
+#else
+        services.AddScoped<INewsService, NullNewsService>();
+#endif
 
         // Azure Blob Storage
         var blobConnectionString = configuration.GetConnectionString("AzureBlobStorage")

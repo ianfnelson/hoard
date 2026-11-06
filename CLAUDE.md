@@ -27,6 +27,15 @@ dotnet run --project Hoard.Scheduler
 dotnet test Hoard.sln --filter "FullyQualifiedName~TestClassName.TestMethodName"
 ```
 
+#### Build modes (`UseClarion`)
+
+Clarion, the regulatory news library, is a private GitHub Packages package, so it is opt-in via the `UseClarion` MSBuild property:
+
+- **Default** (`UseClarion` unset): restores from nuget.org only and needs no credentials. `NullNewsService` is registered, so news refreshes complete normally without fetching any articles.
+- **`UseClarion=true`** (pass `-p:UseClarion=true`, or set `UseClarion=true` as an environment variable): compiles in `ClarionNewsService`. Restore needs read access to `https://nuget.pkg.github.com/ianfnelson/index.json`, unless Clarion is already in the global packages folder. The published images (via `ENV` in each Dockerfile) and the `build-clarion` CI job always build this way; see that job for adding the feed without storing the token.
+
+Keep the GitHub feed and any credentials out of the tracked `NuGet.Config`; public clones can't authenticate to it, so restore would fail. Only `ClarionNewsService` may reference Clarion types; everything else goes through `INewsService`.
+
 ### Client (Vue 3 + Vite)
 
 ```bash
@@ -168,7 +177,7 @@ The codebase uses a custom Mediator pattern (`Hoard.Core/Application/Mediator.cs
 - **Message Bus:** RabbitMQ (Rebus)
 - **Job Scheduling:** Hangfire (SQL Server storage)
 - **Market Data:** YahooFinanceApiNext for price quotes, configured per instrument via the DataFeed/InstrumentDataFeed model
-- **Regulatory News:** Clarion (in-house NuGet package, `ianfnelson/clarion`) - scrapes and parses UK regulatory announcements from Investegate by ticker. Runs in-process, not as a separate service.
+- **Regulatory News:** Clarion (private in-house NuGet package on GitHub Packages, `ianfnelson/clarion`) - scrapes and parses UK regulatory announcements from Investegate by ticker. Runs in-process, not as a separate service, behind `INewsService`. Only compiled in when `UseClarion=true`; the default build has news disabled (see Build modes).
 - **Blob Storage:** Azure Blob Storage for contract note PDFs
 - **Notifications:** Pushover (alerts/events pushed to mobile)
 
