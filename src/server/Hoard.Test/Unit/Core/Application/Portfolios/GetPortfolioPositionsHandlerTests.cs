@@ -22,7 +22,7 @@ public class GetPortfolioPositionsHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetPortfolioPositionsHandler(context, NullLogger<GetPortfolioHandler>.Instance);
+        var handler = new GetPortfolioPositionsHandler(context, NullLogger<GetPortfolioPositionsHandler>.Instance);
 
         // Act
         var result = await handler.HandleAsync(new GetPortfolioPositionsQuery(1, null));
@@ -47,7 +47,7 @@ public class GetPortfolioPositionsHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetPortfolioPositionsHandler(context, NullLogger<GetPortfolioHandler>.Instance);
+        var handler = new GetPortfolioPositionsHandler(context, NullLogger<GetPortfolioPositionsHandler>.Instance);
 
         // Act
         var result = await handler.HandleAsync(new GetPortfolioPositionsQuery(1, IsOpen: true));
@@ -62,7 +62,7 @@ public class GetPortfolioPositionsHandlerTests
     public async Task HandleAsync_NonExistentPortfolio_ReturnsNull()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetPortfolioPositionsHandler(context, NullLogger<GetPortfolioHandler>.Instance);
+        var handler = new GetPortfolioPositionsHandler(context, NullLogger<GetPortfolioPositionsHandler>.Instance);
 
         var result = await handler.HandleAsync(new GetPortfolioPositionsQuery(999, null));
 

@@ -9,7 +9,7 @@ namespace Hoard.Core.Application.Prices;
 
 public record CreatePriceCommand(PriceWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand<int>;
 
-public class CreatePriceCommandHandler(
+public class CreatePriceHandler(
     IBus bus,
     IMapper mapper,
     HoardContext context)

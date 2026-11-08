@@ -91,7 +91,7 @@ public class DispatchCalculateHoldingValuationsHandlerTests
     public async Task HandleAsync_SendsOneBusCommandPerInstrument()
     {
         var bus = new Mock<IBus>();
-        var handler = new DispatchHoldingsValuationHandler(bus.Object);
+        var handler = new DispatchCalculateHoldingValuationsHandler(bus.Object);
         var runId = Guid.NewGuid();
 
         await handler.HandleAsync(new DispatchCalculateHoldingValuationsCommand(

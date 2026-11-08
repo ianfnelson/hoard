@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Prices;
 
 public record GetPriceQuery(int PriceId) : IQuery<PriceDetailDto?>;
 
-public class GetPriceQueryHandler(HoardContext context, ILogger<GetPriceQueryHandler> logger)
+public class GetPriceHandler(HoardContext context, ILogger<GetPriceHandler> logger)
     : IQueryHandler<GetPriceQuery, PriceDetailDto?>
 {
     public async Task<PriceDetailDto?> HandleAsync(GetPriceQuery request, CancellationToken cancellationToken)

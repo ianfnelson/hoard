@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.Valuations;
 public record DispatchCalculateHoldingValuationsCommand(Guid ValuationsRunId, PipelineMode PipelineMode, IReadOnlyList<int> InstrumentIds, DateOnly AsOfDate)
     : ICommand;
     
-public class DispatchHoldingsValuationHandler(IBus bus) 
+public class DispatchCalculateHoldingValuationsHandler(IBus bus) 
     : ICommandHandler<DispatchCalculateHoldingValuationsCommand>
 {
     public async Task HandleAsync(DispatchCalculateHoldingValuationsCommand command, CancellationToken ct = default)

@@ -12,9 +12,9 @@ namespace Hoard.Core.Application.Valuations;
 public record ProcessCalculateHoldingValuationsCommand(Guid ValuationsRunId, PipelineMode PipelineMode, int InstrumentId, DateOnly AsOfDate)
     : ICommand;
 
-public class ProcessCalculateHoldingsValuationHandler(
+public class ProcessCalculateHoldingValuationsHandler(
     IBus bus,
-    ILogger<ProcessCalculateHoldingsValuationHandler> logger,
+    ILogger<ProcessCalculateHoldingValuationsHandler> logger,
     HoardContext context,
     TimeProvider timeProvider)
     : ICommandHandler<ProcessCalculateHoldingValuationsCommand>
