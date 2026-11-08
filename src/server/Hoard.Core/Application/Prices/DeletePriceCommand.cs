@@ -8,7 +8,7 @@ namespace Hoard.Core.Application.Prices;
 
 public record DeletePriceCommand(int PriceId, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
-public class DeletePriceCommandHandler(IBus bus, HoardContext context)
+public class DeletePriceHandler(IBus bus, HoardContext context)
     : ICommandHandler<DeletePriceCommand>
 {
     public async Task HandleAsync(DeletePriceCommand command, CancellationToken ct = default)

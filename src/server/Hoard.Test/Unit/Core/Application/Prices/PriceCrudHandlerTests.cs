@@ -32,7 +32,7 @@ public class CreatePriceCommandHandlerTests : IDisposable
         };
         _mapper.Setup(m => m.Map<PriceWriteDto, Price>(dto)).Returns(price);
 
-        var handler = new CreatePriceCommandHandler(_bus.Object, _mapper.Object, _context);
+        var handler = new CreatePriceHandler(_bus.Object, _mapper.Object, _context);
 
         // Act
         var id = await handler.HandleAsync(new CreatePriceCommand(dto));
@@ -65,7 +65,7 @@ public class UpdatePriceCommandHandlerTests : IDisposable
         var dto = new PriceWriteDto();
         _mapper.Setup(m => m.Map<PriceWriteDto, Price>(dto, It.IsAny<Price>()));
 
-        var handler = new UpdatePriceCommandHandler(_bus.Object, _mapper.Object, _context);
+        var handler = new UpdatePriceHandler(_bus.Object, _mapper.Object, _context);
         var price = await _context.Prices.FirstAsync();
 
         // Act
@@ -79,7 +79,7 @@ public class UpdatePriceCommandHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_NonExistentPrice_Throws()
     {
-        var handler = new UpdatePriceCommandHandler(_bus.Object, _mapper.Object, _context);
+        var handler = new UpdatePriceHandler(_bus.Object, _mapper.Object, _context);
 
         await Assert.ThrowsAsync<KeyNotFoundException>(
             () => handler.HandleAsync(new UpdatePriceCommand(999, new PriceWriteDto())));
@@ -101,7 +101,7 @@ public class DeletePriceCommandHandlerTests : IDisposable
         _context.Prices.Add(TestData.Price());
         await _context.SaveChangesAsync();
 
-        var handler = new DeletePriceCommandHandler(_bus.Object, _context);
+        var handler = new DeletePriceHandler(_bus.Object, _context);
         var price = await _context.Prices.FirstAsync();
 
         // Act
@@ -116,7 +116,7 @@ public class DeletePriceCommandHandlerTests : IDisposable
     [Fact]
     public async Task HandleAsync_NonExistentPrice_Throws()
     {
-        var handler = new DeletePriceCommandHandler(_bus.Object, _context);
+        var handler = new DeletePriceHandler(_bus.Object, _context);
 
         await Assert.ThrowsAsync<KeyNotFoundException>(
             () => handler.HandleAsync(new DeletePriceCommand(999)));
@@ -136,7 +136,7 @@ public class GetPriceQueryHandlerTests
         context.Prices.Add(TestData.Price());
         await context.SaveChangesAsync();
 
-        var handler = new GetPriceQueryHandler(context, NullLogger<GetPriceQueryHandler>.Instance);
+        var handler = new GetPriceHandler(context, NullLogger<GetPriceHandler>.Instance);
         var price = await context.Prices.FirstAsync();
 
         // Act
@@ -152,7 +152,7 @@ public class GetPriceQueryHandlerTests
     public async Task HandleAsync_NonExistentPrice_ReturnsNull()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetPriceQueryHandler(context, NullLogger<GetPriceQueryHandler>.Instance);
+        var handler = new GetPriceHandler(context, NullLogger<GetPriceHandler>.Instance);
 
         var result = await handler.HandleAsync(new GetPriceQuery(999), CancellationToken.None);
 

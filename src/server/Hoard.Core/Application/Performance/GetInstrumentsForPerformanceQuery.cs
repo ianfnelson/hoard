@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Performance;
 
 public record GetInstrumentsForPerformanceQuery(int? InstrumentId) : IQuery<IReadOnlyList<int>>;
 
-public class GetInstrumentsForBackfillHandler(HoardContext context, ILogger<GetInstrumentsForBackfillHandler> logger)
+public class GetInstrumentsForPerformanceHandler(HoardContext context, ILogger<GetInstrumentsForPerformanceHandler> logger)
 : IQueryHandler<GetInstrumentsForPerformanceQuery, IReadOnlyList<int>>
 {
     public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForPerformanceQuery query, CancellationToken ct = default)

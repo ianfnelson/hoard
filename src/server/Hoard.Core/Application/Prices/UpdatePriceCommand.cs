@@ -9,7 +9,7 @@ namespace Hoard.Core.Application.Prices;
 
 public record UpdatePriceCommand(int PriceId, PriceWriteDto Dto, PipelineMode PipelineMode = PipelineMode.DaytimeReactive) : ICommand;
 
-public class UpdatePriceCommandHandler(
+public class UpdatePriceHandler(
     IBus bus,
     IMapper mapper,
     HoardContext context)

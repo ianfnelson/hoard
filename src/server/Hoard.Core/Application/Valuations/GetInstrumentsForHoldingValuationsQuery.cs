@@ -8,7 +8,7 @@ namespace Hoard.Core.Application.Valuations;
 public record GetInstrumentsForHoldingValuationsQuery(DateOnly AsOfDate, int? InstrumentId)
     : IQuery<IReadOnlyList<int>>;
 
-public class GetInstrumentsForValuationHandler(HoardContext context, ILogger<GetInstrumentsForRefreshHandler> logger)
+public class GetInstrumentsForHoldingValuationsHandler(HoardContext context, ILogger<GetInstrumentsForHoldingValuationsHandler> logger)
     : IQueryHandler<GetInstrumentsForHoldingValuationsQuery, IReadOnlyList<int>>
 {
     public async Task<IReadOnlyList<int>> HandleAsync(GetInstrumentsForHoldingValuationsQuery query, CancellationToken ct = default)

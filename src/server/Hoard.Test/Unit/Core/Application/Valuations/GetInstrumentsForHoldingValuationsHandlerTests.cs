@@ -25,7 +25,7 @@ public class GetInstrumentsForHoldingValuationsHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForValuationHandler(context, NullLogger<GetInstrumentsForRefreshHandler>.Instance);
+        var handler = new GetInstrumentsForHoldingValuationsHandler(context, NullLogger<GetInstrumentsForHoldingValuationsHandler>.Instance);
 
         // Act
         var result = await handler.HandleAsync(new GetInstrumentsForHoldingValuationsQuery(today, null));
@@ -42,7 +42,7 @@ public class GetInstrumentsForHoldingValuationsHandlerTests
         context.Instruments.Add(TestData.Instrument());
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForValuationHandler(context, NullLogger<GetInstrumentsForRefreshHandler>.Instance);
+        var handler = new GetInstrumentsForHoldingValuationsHandler(context, NullLogger<GetInstrumentsForHoldingValuationsHandler>.Instance);
 
         // Act
         var result = await handler.HandleAsync(new GetInstrumentsForHoldingValuationsQuery(new DateOnly(2024, 1, 1), 1));
@@ -56,7 +56,7 @@ public class GetInstrumentsForHoldingValuationsHandlerTests
     public async Task HandleAsync_NonExistentInstrumentId_ReturnsEmpty()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetInstrumentsForValuationHandler(context, NullLogger<GetInstrumentsForRefreshHandler>.Instance);
+        var handler = new GetInstrumentsForHoldingValuationsHandler(context, NullLogger<GetInstrumentsForHoldingValuationsHandler>.Instance);
 
         var result = await handler.HandleAsync(new GetInstrumentsForHoldingValuationsQuery(new DateOnly(2024, 1, 1), 999));
 

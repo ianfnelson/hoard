@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Instruments;
                                                                    
 public record GetInstrumentsLookupQuery : IQuery<List<LookupDto>>;                                         
                                                                    
-public class GetInstrumentsLookupQueryHandler(HoardContext context)                                                         
+public class GetInstrumentsLookupHandler(HoardContext context)                                                         
     : IQueryHandler<GetInstrumentsLookupQuery, List<LookupDto>>  
 {                                                                
     public async Task<List<LookupDto>> HandleAsync(GetInstrumentsLookupQuery request, CancellationToken ct)  

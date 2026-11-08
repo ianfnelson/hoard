@@ -19,7 +19,7 @@ public class GetInstrumentsLookupHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsLookupQueryHandler(context);
+        var handler = new GetInstrumentsLookupHandler(context);
 
         // Act
         var result = await handler.HandleAsync(new GetInstrumentsLookupQuery(), CancellationToken.None);
@@ -34,7 +34,7 @@ public class GetInstrumentsLookupHandlerTests
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyList()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetInstrumentsLookupQueryHandler(context);
+        var handler = new GetInstrumentsLookupHandler(context);
 
         var result = await handler.HandleAsync(new GetInstrumentsLookupQuery(), CancellationToken.None);
 

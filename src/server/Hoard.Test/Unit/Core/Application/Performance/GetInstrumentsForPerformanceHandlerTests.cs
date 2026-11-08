@@ -22,7 +22,7 @@ public class GetInstrumentsForPerformanceHandlerTests
         );
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForBackfillHandler(context, NullLogger<GetInstrumentsForBackfillHandler>.Instance);
+        var handler = new GetInstrumentsForPerformanceHandler(context, NullLogger<GetInstrumentsForPerformanceHandler>.Instance);
 
         // Act
         var result = await handler.HandleAsync(new GetInstrumentsForPerformanceQuery(null));
@@ -41,7 +41,7 @@ public class GetInstrumentsForPerformanceHandlerTests
         context.Positions.Add(new Position { Id = 1, PortfolioId = 1, InstrumentId = 1, OpenDate = new DateOnly(2024, 1, 1) });
         await context.SaveChangesAsync();
 
-        var handler = new GetInstrumentsForBackfillHandler(context, NullLogger<GetInstrumentsForBackfillHandler>.Instance);
+        var handler = new GetInstrumentsForPerformanceHandler(context, NullLogger<GetInstrumentsForPerformanceHandler>.Instance);
 
         // Act
         var result = await handler.HandleAsync(new GetInstrumentsForPerformanceQuery(1));
@@ -55,7 +55,7 @@ public class GetInstrumentsForPerformanceHandlerTests
     public async Task HandleAsync_NonExistentInstrumentId_ReturnsEmpty()
     {
         await using var context = TestContextFactory.Create();
-        var handler = new GetInstrumentsForBackfillHandler(context, NullLogger<GetInstrumentsForBackfillHandler>.Instance);
+        var handler = new GetInstrumentsForPerformanceHandler(context, NullLogger<GetInstrumentsForPerformanceHandler>.Instance);
 
         var result = await handler.HandleAsync(new GetInstrumentsForPerformanceQuery(999));
 

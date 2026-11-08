@@ -15,14 +15,14 @@ public class ProcessCalculateHoldingValuationsHandlerTests : IDisposable
 {
     private readonly HoardContext _context;
     private readonly Mock<IBus> _bus = new();
-    private readonly ProcessCalculateHoldingsValuationHandler _handler;
+    private readonly ProcessCalculateHoldingValuationsHandler _handler;
 
     public ProcessCalculateHoldingValuationsHandlerTests()
     {
         _context = TestContextFactory.Create();
-        _handler = new ProcessCalculateHoldingsValuationHandler(
+        _handler = new ProcessCalculateHoldingValuationsHandler(
             _bus.Object,
-            NullLogger<ProcessCalculateHoldingsValuationHandler>.Instance,
+            NullLogger<ProcessCalculateHoldingValuationsHandler>.Instance,
             _context,
             TimeProvider.System);
     }

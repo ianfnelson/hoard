@@ -6,7 +6,7 @@ namespace Hoard.Core.Application.Instruments;
 public record CreateInstrumentCommand(InstrumentWriteDto Dto) 
     : ICommand<int>;
 
-public class CreateTransactionHandler(IMapper mapper, HoardContext context)
+public class CreateInstrumentHandler(IMapper mapper, HoardContext context)
     : ICommandHandler<CreateInstrumentCommand, int>
 {
     public async Task<int> HandleAsync(CreateInstrumentCommand command, CancellationToken ct = default)

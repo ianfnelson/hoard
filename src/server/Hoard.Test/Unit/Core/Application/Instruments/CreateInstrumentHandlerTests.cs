@@ -19,7 +19,7 @@ public class CreateInstrumentHandlerTests : IDisposable
         var instrument = new Instrument { Name = "Test Stock", Ticker = "TST", CurrencyId = "GBP" };
         _mapper.Setup(m => m.Map<InstrumentWriteDto, Instrument>(dto)).Returns(instrument);
 
-        var handler = new Hoard.Core.Application.Instruments.CreateTransactionHandler(_mapper.Object, _context);
+        var handler = new CreateInstrumentHandler(_mapper.Object, _context);
 
         // Act
         var id = await handler.HandleAsync(new CreateInstrumentCommand(dto));

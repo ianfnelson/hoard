@@ -7,7 +7,7 @@ namespace Hoard.Core.Application.Portfolios;
 
 public record GetPortfolioPositionsQuery(int PortfolioId, bool? IsOpen) : IQuery<PortfolioPositionsDto?>;
 
-public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortfolioHandler> logger)
+public class GetPortfolioPositionsHandler(HoardContext context, ILogger<GetPortfolioPositionsHandler> logger)
     : IQueryHandler<GetPortfolioPositionsQuery, PortfolioPositionsDto?>
 {
     public async Task<PortfolioPositionsDto?> HandleAsync(GetPortfolioPositionsQuery query, CancellationToken ct = default)

@@ -8,7 +8,6 @@ public interface IBlobStorageService
     Task<string> UploadContractNoteAsync(string reference, Stream fileStream, CancellationToken ct = default);
     Task<(Stream Stream, string ContentType)> DownloadContractNoteAsync(string reference, CancellationToken ct = default);
     Task<bool> DeleteContractNoteAsync(string reference, CancellationToken ct = default);
-    Task<bool> ContractNoteExistsAsync(string reference, CancellationToken ct = default);
 }
 
 public class AzureBlobStorage : IBlobStorageService
@@ -48,13 +47,6 @@ public class AzureBlobStorage : IBlobStorageService
         var blobClient = _containerClient.GetBlobClient(blobName);
         var response = await blobClient.DeleteIfExistsAsync(cancellationToken: ct);
         return response.Value;
-    }
-
-    public async Task<bool> ContractNoteExistsAsync(string reference, CancellationToken ct = default)
-    {
-        var blobName = GetBlobName(reference);
-        var blobClient = _containerClient.GetBlobClient(blobName);
-        return await blobClient.ExistsAsync(ct);
     }
 
     private static string GetBlobName(string reference) => $"{ContractNotesFolder}/{reference}.pdf";

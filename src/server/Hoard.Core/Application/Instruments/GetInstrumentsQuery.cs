@@ -97,9 +97,13 @@ public sealed class GetInstrumentsHandler(HoardContext context)
                 ? query.OrderBy(i => i.Name)
                 : query.OrderByDescending(i => i.Name),
 
-            "tickerDisplay" => request.SortDirection == "asc"
+            "ticker" => request.SortDirection == "asc"
                 ? query.OrderBy(i => i.Ticker)
                 : query.OrderByDescending(i => i.Ticker),
+
+            "assetclassname" => request.SortDirection == "asc"
+                ? query.OrderBy(i => i.AssetSubclass.AssetClass.Name)
+                : query.OrderByDescending(i => i.AssetSubclass.AssetClass.Name),
 
             _ => query.OrderBy(i => i.Name)
         };
