@@ -134,6 +134,10 @@ public class ProcessRefreshNewsBatchHandler(
                 await bus.Publish(new NewsArticleCreatedEvent(
                     newsRunId, pipelineMode, instrumentId, newsArticle.Id, newsArticle.PublishedUtc, newsArticle.Headline));
             }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex,

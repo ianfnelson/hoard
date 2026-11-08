@@ -176,6 +176,33 @@ public class ProcessRefreshNewsBatchHandlerTests : IDisposable
         Assert.Equal("Will succeed", articles[0].Headline);
     }
 
+    [Fact]
+    public async Task HandleAsync_Cancelled_StopsAndDoesNotPublishNewsRefreshedEvent()
+    {
+        await AddInstrumentWithNewsFeed();
+        using var cts = new CancellationTokenSource();
+
+        _clarionClient.Setup(c => c.GetArticlesAsync("TST", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<ArticleSummary>
+            {
+                new() { Source = "Investegate", SourceArticleId = "CXL01", PublishedUtc = DateTime.UtcNow, Ticker = "TST", Headline = "Cancelled", Url = "http://example.com/1" },
+                new() { Source = "Investegate", SourceArticleId = "CXL02", PublishedUtc = DateTime.UtcNow, Ticker = "TST", Headline = "Never fetched", Url = "http://example.com/2" }
+            });
+
+        _clarionClient.Setup(c => c.GetArticleAsync("CXL01", It.IsAny<CancellationToken>()))
+            .Returns<string, CancellationToken>((_, token) =>
+            {
+                cts.Cancel();
+                return Task.FromException<Article>(new OperationCanceledException(token));
+            });
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => _handler.HandleAsync(
+            new ProcessRefreshNewsBatchCommand(Guid.NewGuid(), PipelineMode.CloseOfDay, 1), cts.Token));
+
+        _clarionClient.Verify(c => c.GetArticleAsync("CXL02", It.IsAny<CancellationToken>()), Times.Never);
+        _bus.Verify(b => b.Publish(It.IsAny<NewsRefreshedEvent>(), null), Times.Never);
+    }
+
     public void Dispose()
     {
         _context.Dispose();
