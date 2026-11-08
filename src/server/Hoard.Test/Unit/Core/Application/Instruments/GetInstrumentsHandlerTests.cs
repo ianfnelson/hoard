@@ -123,6 +123,55 @@ public class GetInstrumentsHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_SortByTickerDescending()
+    {
+        // Arrange
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.Instruments.AddRange(
+            new Instrument { Id = 1, Name = "Alpha Inc", Ticker = "AAA", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 },
+            new Instrument { Id = 2, Name = "Zebra Corp", Ticker = "MMM", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 },
+            new Instrument { Id = 3, Name = "Middle Ltd", Ticker = "ZZZ", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 1 }
+        );
+        await context.SaveChangesAsync();
+
+        var handler = new GetInstrumentsHandler(context);
+
+        // Act
+        var result = await handler.HandleAsync(new GetInstrumentsQuery { SortBy = "ticker", SortDirection = "desc" });
+
+        // Assert
+        Assert.Equal(["ZZZ", "MMM", "AAA"], result.Items.Select(i => i.Ticker));
+    }
+
+    [Fact]
+    public async Task HandleAsync_SortByAssetClassNameAscending()
+    {
+        // Arrange
+        await using var context = TestContextFactory.Create();
+        TestData.SeedReferenceData(context);
+        context.AssetClasses.AddRange(
+            TestData.AssetClass(id: 2, name: "Bonds"),
+            TestData.AssetClass(id: 3, name: "Equities"));
+        context.AssetSubclasses.AddRange(
+            TestData.AssetSubclass(id: 2, name: "Gilts", assetClassId: 2),
+            TestData.AssetSubclass(id: 3, name: "UK Equities", assetClassId: 3));
+        context.Instruments.AddRange(
+            new Instrument { Id = 1, Name = "Alpha Inc", Ticker = "ALP", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 3 },
+            new Instrument { Id = 2, Name = "Zebra Gilt", Ticker = "ZEB", CurrencyId = "GBP", InstrumentTypeId = 1, AssetSubclassId = 2 }
+        );
+        await context.SaveChangesAsync();
+
+        var handler = new GetInstrumentsHandler(context);
+
+        // Act
+        var result = await handler.HandleAsync(new GetInstrumentsQuery { SortBy = "assetClassName", SortDirection = "asc" });
+
+        // Assert
+        Assert.Equal(["Bonds", "Equities"], result.Items.Select(i => i.AssetClassName));
+    }
+
+    [Fact]
     public async Task HandleAsync_EmptyDatabase_ReturnsEmptyPagedResult()
     {
         await using var context = TestContextFactory.Create();
