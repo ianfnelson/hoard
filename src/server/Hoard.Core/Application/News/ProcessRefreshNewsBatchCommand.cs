@@ -1,6 +1,6 @@
-using Clarion;
 using Hoard.Core.Data;
 using Hoard.Core.Domain.Entities;
+using Hoard.Core.Infrastructure.Integrations;
 using Hoard.Messages;
 using Hoard.Messages.News;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ public record ProcessRefreshNewsBatchCommand(
 public class ProcessRefreshNewsBatchHandler(
     IBus bus,
     HoardContext context,
-    IClarionClient clarionClient,
+    INewsService newsService,
     ILogger<ProcessRefreshNewsBatchHandler> logger)
     : ICommandHandler<ProcessRefreshNewsBatchCommand>
 {
@@ -65,9 +65,9 @@ public class ProcessRefreshNewsBatchHandler(
             newSummaries.Count);
     }
 
-    private async Task<IReadOnlyList<Clarion.Models.ArticleSummary>> GetArticleSummariesAsync(InstrumentDataFeed newsFeed, CancellationToken ct)
+    private async Task<IReadOnlyList<SourceArticleSummaryDto>> GetArticleSummariesAsync(InstrumentDataFeed newsFeed, CancellationToken ct)
     {
-        var articleSummaries = await clarionClient.GetArticlesAsync(newsFeed.Configuration.Ticker, ct);
+        var articleSummaries = await newsService.GetArticleSummariesAsync(newsFeed.Configuration.Ticker, ct);
 
         if (newsFeed.Configuration.ImportStartUtc.HasValue)
         {
@@ -87,8 +87,8 @@ public class ProcessRefreshNewsBatchHandler(
             .ToHashSetAsync(ct);
     }
 
-    private static List<Clarion.Models.ArticleSummary> FilterNewSummaries(
-        IReadOnlyList<Clarion.Models.ArticleSummary> articleSummaries,
+    private static List<SourceArticleSummaryDto> FilterNewSummaries(
+        IReadOnlyList<SourceArticleSummaryDto> articleSummaries,
         HashSet<string> existingSourceIds)
     {
         return articleSummaries
@@ -100,7 +100,7 @@ public class ProcessRefreshNewsBatchHandler(
         Guid newsRunId,
         PipelineMode pipelineMode,
         int instrumentId,
-        List<Clarion.Models.ArticleSummary> newSummaries,
+        List<SourceArticleSummaryDto> newSummaries,
         DateTime retrievedUtc,
         CancellationToken ct)
     {
@@ -113,7 +113,7 @@ public class ProcessRefreshNewsBatchHandler(
                     await Task.Delay(TimeSpan.FromSeconds(2), ct);
                 }
 
-                var article = await clarionClient.GetArticleAsync(summary.SourceArticleId, ct);
+                var article = await newsService.GetArticleAsync(summary.SourceArticleId, ct);
 
                 var newsArticle = new NewsArticle
                 {

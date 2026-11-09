@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPriceService, YahooFinance>();
         services.AddScoped<IPortfolioValuationsPdfService, PortfolioValuationsPdfService>();
         services.AddSingleton<IClarionClient>(_ => ClarionClient.Create());
+        services.AddSingleton<INewsService, ClarionNewsService>();
 
         // Azure Blob Storage
         var blobConnectionString = configuration.GetConnectionString("AzureBlobStorage")
