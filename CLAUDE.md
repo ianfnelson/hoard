@@ -146,9 +146,9 @@ Run `npm run format` after making changes to ensure consistent formatting.
 
 The system uses Rebus with RabbitMQ for message-based processing. Multi-step workflows use Rebus sagas for coordination. Two main flows:
 
-**Close-of-day processing:** Start -> Holdings + Prices -> Positions + Valuations -> Performance + Snapshots -> End
+**Close-of-day processing:** Start -> Holdings + Prices -> Positions + Valuations + Analysis -> Performance + Snapshots -> End
 
-**Reactive (daytime):** Transactions -> Holdings -> Positions + Valuations -> Performance + Snapshots
+**Reactive (daytime):** Transactions -> Holdings -> Positions + Valuations (also driven by Prices and Quotes) -> Performance + Snapshots
 
 Key event chains:
 - Transaction changes trigger holding recalculation
