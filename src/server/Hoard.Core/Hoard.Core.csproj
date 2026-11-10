@@ -29,7 +29,7 @@
 
     <!-- Transitive pins: Clarion and Microsoft.Data.SqlClient reference versions with known vulnerabilities. -->
     <ItemGroup>
-      <PackageReference Include="AngleSharp" Version="1.9.1" />
+      <PackageReference Include="AngleSharp" Version="1.10.1" />
       <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
     </ItemGroup>
 
