@@ -23,9 +23,9 @@
       <PackageReference Include="Hangfire" Version="1.8.25" />
       <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
       <PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />
-      <PackageReference Include="Rebus" Version="8.9.5" />
+      <PackageReference Include="Rebus" Version="8.10.0" />
       <PackageReference Include="Rebus.RabbitMq" Version="10.1.2" />
-      <PackageReference Include="Rebus.ServiceProvider" Version="10.7.2" />
+      <PackageReference Include="Rebus.ServiceProvider" Version="10.8.0" />
     </ItemGroup>
 
 </Project>
