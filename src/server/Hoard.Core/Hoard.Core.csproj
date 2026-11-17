@@ -29,8 +29,8 @@
 
     <!-- Transitive pins: Clarion and Microsoft.Data.SqlClient reference versions with known vulnerabilities. -->
     <ItemGroup>
-      <PackageReference Include="AngleSharp" Version="1.9.1" />
-      <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+      <PackageReference Include="AngleSharp" Version="1.10.4" />
+      <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
     </ItemGroup>
 
     <ItemGroup>
@@ -39,18 +39,18 @@
       <PackageReference Include="ExcelFinancialFunctions" Version="3.2.0" />
       <PackageReference Include="FluentValidation" Version="12.2.0" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.15" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.14" />
-      <PackageReference Include="Rebus" Version="8.9.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.15" />
+      <PackageReference Include="Rebus" Version="8.10.0" />
       <PackageReference Include="Rebus.RabbitMq" Version="10.1.2" />
-      <PackageReference Include="Rebus.ServiceProvider" Version="10.7.2" />
+      <PackageReference Include="Rebus.ServiceProvider" Version="10.8.0" />
       <PackageReference Include="Rebus.SqlServer" Version="8.4.2" />
       <PackageReference Include="Scrutor" Version="7.0.0" />
-      <PackageReference Include="QuestPDF" Version="2026.9.1" />
+      <PackageReference Include="QuestPDF" Version="2026.9.2" />
       <PackageReference Include="YahooFinanceApiNext" Version="2.3.11" />
     </ItemGroup>
 
